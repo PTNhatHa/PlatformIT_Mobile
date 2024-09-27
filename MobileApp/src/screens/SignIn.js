@@ -1,11 +1,11 @@
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
-import BoyIT from "../../../assets/images/BoyIT.png";
-import AccountIcon from "../../../assets/icons/Account.png";
-import LockIcon from "../../../assets/icons/Lock.png";
-import Facebook from "../../../assets/icons/Facebook.png";
-import Google from "../../../assets/icons/Google.png";
-import Github from "../../../assets/icons/Github.png";
+import BoyIT from "../../assets/images/BoyIT.png";
+import AccountIcon from "../../assets/icons/Account.png";
+import LockIcon from "../../assets/icons/Lock.png";
+import Facebook from "../../assets/icons/Facebook.png";
+import Google from "../../assets/icons/Google.png";
+import Github from "../../assets/icons/Github.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
 import { COLORS } from "../constants";
