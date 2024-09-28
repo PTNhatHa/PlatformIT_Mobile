@@ -10,7 +10,7 @@ import { Image } from "react-native";
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
 
-export const BottomTab = ()=>{
+export const StudentBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
     return(
         <Tab.Navigator
