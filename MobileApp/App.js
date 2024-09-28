@@ -5,14 +5,14 @@ import SignIn from './src/screens/SignIn';
 import SignUp from './src/screens/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
-import { StudentBottomTab } from './src/navigation/BottomTab';
+import { StudentBottomTab, TeacherBottomTab } from './src/navigation/BottomTab';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         {/* <SigninSignup/> */}
-        <StudentBottomTab/>
+        <TeacherBottomTab/>
       </NavigationContainer>
     </SafeAreaView>
     
