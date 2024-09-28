@@ -8,6 +8,7 @@ import ChatIcon from "../../assets/icons/Chat.png";
 import AccountIcon from "../../assets/icons/Account.png";
 import { Image } from "react-native";
 import { COLORS } from "../constants";
+import { Home } from "../screens/Home";
 
 export const BottomTab = ()=>{
     const Tab = createBottomTabNavigator()
@@ -16,11 +17,23 @@ export const BottomTab = ()=>{
             screenOptions={({route})=>({
                 tabBarIcon: (({color})=>{
                     let iconName
-                    if(route.name === "Sign in"){
+                    if(route.name === "Home"){
                         iconName=HomeIcon
                     }
-                    if(route.name === "Sign up"){
+                    if(route.name === "My Course"){
                         iconName=CourseIcon
+                    }
+                    if(route.name === "My Test"){
+                        iconName=TestIcon
+                    }
+                    if(route.name === "Noti"){
+                        iconName=NotiIcon
+                    }
+                    if(route.name === "Chat"){
+                        iconName=ChatIcon
+                    }
+                    if(route.name === "Account"){
+                        iconName=AccountIcon
                     }
                     return <Image source={iconName} tintColor={color} style={{ width: 20, height: 20 }}/>
                 }),
@@ -28,14 +41,12 @@ export const BottomTab = ()=>{
                 tabBarInactiveTintColor: COLORS.lightText
             })}
         >
-            <Tab.Screen
-                name="Sign in"
-                component={SignIn}
-            />
-            <Tab.Screen
-                name="Sign up"
-                component={SignUp}
-            />
+            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="My Course" component={Home} />
+            <Tab.Screen name="My Test" component={Home} />
+            <Tab.Screen name="Noti" component={Home} />
+            <Tab.Screen name="Chat" component={Home} />
+            <Tab.Screen name="Account" component={Home} />
         </Tab.Navigator>
     )
 }
