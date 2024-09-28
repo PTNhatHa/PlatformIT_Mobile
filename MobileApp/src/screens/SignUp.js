@@ -7,16 +7,13 @@ import AccountIcon from "../../assets/icons/Account.png";
 import LockIcon from "../../assets/icons/Lock.png";
 import UnlockIcon from "../../assets/icons/Unlock.png";
 import TinIcon from "../../assets/icons/Tin.png";
-
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
 import { COLORS } from "../constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
 
-const { width, height } = Dimensions.get('window');
-
-export default SignUp = () => {
+export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
     const handleOnChecked = ()=>{
         setCheck(!check)
@@ -31,7 +28,7 @@ export default SignUp = () => {
                 />
             <ScrollView contentContainerStyle={styles.container}>
                 {/* Top */}
-                <View style={styles.topSignIn}>
+                <View style={styles.topSignUp}>
                     <Image source={GirlIT}/>
                     <View style={{ rowGap: 5, alignItems: "flex-start" }}>
                         <View>
@@ -41,6 +38,7 @@ export default SignUp = () => {
                         <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
                         <ButtonBlu
                             title={"Sign In"}
+                            action={()=>{navigation.navigate("Sign in")}}
                         />
                     </View>
                 </View>
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
       background: {
         ...StyleSheet.absoluteFillObject,
       },
-      topSignIn: {
+      topSignUp: {
         flexDirection: "row",
         columnGap: 16,
         alignItems: "center",
@@ -149,10 +147,4 @@ const styles = StyleSheet.create({
         color: COLORS.stroke,
         fontSize: 16
       },
-      party3:{
-        borderWidth: 1,
-        borderColor: COLORS.stroke,
-        borderRadius: 90,
-        padding: 6
-      }
 })

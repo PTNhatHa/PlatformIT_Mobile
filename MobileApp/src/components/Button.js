@@ -3,7 +3,7 @@ import { COLORS } from "../constants"
 
 export const ButtonBlu = ({title, action, fontSize})=>{
     return(
-        <TouchableOpacity style={styles.btn_bl}>
+        <TouchableOpacity style={styles.btn_bl} onPress={action}>
             <Text style={[styles.btnText, { fontSize: fontSize || 16 }]}>{title}</Text>
         </TouchableOpacity>
     )

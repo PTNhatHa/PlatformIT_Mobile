@@ -12,8 +12,8 @@ import { COLORS } from "../constants";
 
 const { width, height } = Dimensions.get('window');
 
-export default SignIn = () => {
-
+export default SignIn = ({navigation}) => {
+    
     return(
         <View style={styles.container}>
             <LinearGradient
@@ -33,6 +33,7 @@ export default SignIn = () => {
                     <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
                     <ButtonBlu
                         title={"Sign Up"}
+                        action={()=>{navigation.navigate("Sign up")}}
                     />
                 </View>
             </View>
