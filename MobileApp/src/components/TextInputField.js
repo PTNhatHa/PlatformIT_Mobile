@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, TextInput, View } from "react-native"
 import { COLORS } from "../constants"
 
 export const TextInputIcon = ({
-    value, icon, placeholder, onchangeText, error
+    value, icon, placeholder, onchangeText, error, keyboardType
 }) => {
     return(
         <View>
@@ -13,6 +13,8 @@ export const TextInputIcon = ({
                     value={value}
                     placeholder={placeholder}
                     onChangeText={(v)=>onchangeText(v)}
+                    keyboardType={keyboardType || "default"}
+                    
                 />
             </View>
             {error && <Text style={styles.error}>{error}</Text>}

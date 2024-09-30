@@ -1,4 +1,4 @@
-import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import GirlIT from "../../assets/images/GirlIT.png";
 import PenIcon from "../../assets/icons/Pen.png";
@@ -15,9 +15,103 @@ import { useState } from "react";
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
-    const handleOnChecked = ()=>{
-        setCheck(!check)
+    const [name, setName] = useState("")
+    const [errorName, setErrorName] = useState(null)
+    const [email, setEmail] = useState("")
+    const [errorEmail, setErrorEmail] = useState(null)
+    const [username, setUsername] = useState("")
+    const [errorUsername, setErrorUsername] = useState(null)
+    const [password, setPassword] = useState("")
+    const [errorPassword, setErrorPassword] = useState(null)
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [errorConfirm, setErrorConfirm] = useState(null)
+    const [tin, setTin] = useState("")
+    const [errorTin, setErrorTin] = useState(null)
+    const handleOnchangeName = (v)=>{
+        setName(v)
+        setErrorName(null)
+        if(!v) setErrorName("Require!")
     }
+    const handleOnchangeEmail = (v)=>{
+        setEmail(v)
+        setErrorEmail(null)
+        if(!v) setErrorEmail("Require!")
+    }
+    const handleOnchangeUsername = (v)=>{
+        setUsername(v)
+        setErrorUsername(null)
+        if(!v) setErrorUsername("Require!")
+    }
+    const handleOnchangePassword = (v)=>{
+        setPassword(v)
+        setErrorPassword(null)
+        if(!v) setErrorPassword("Require!")
+    }
+    const handleOnchangeTin = (v)=>{
+        setTin(v)
+        setErrorTin(null)
+        if(!v) setErrorTin("Require!")
+    }
+    const handleCofirm = (v)=>{
+        setConfirmPassword(v)
+        if(password === v){
+            setErrorConfirm(null)
+        } else {
+            setErrorConfirm("Not match with password")
+        }
+    }
+    const handleSignup = async ()=>{
+        let checkNull = true
+        if(!name){
+            setErrorName("Require!")
+            checkNull = false
+        }
+        if(!email){
+            setErrorEmail("Require!")
+            checkNull = false
+        }
+        if(!username){
+            setErrorUsername("Require!")
+            checkNull = false
+        }
+        if(!password){
+            setErrorPassword("Require!")
+            checkNull = false
+        }
+        if(!confirmPassword){
+            setErrorConfirm("Require!")
+            checkNull = false
+        }
+        if(check){
+            if(!tin){
+                setErrorTin("Require!")
+                checkNull = false
+            }
+        }
+        if(checkNull)
+        {
+            try{
+                const response = await fakeApi(username, password)
+                if(response.success){
+                    Alert.alert("Sign up", "Sign up successfully")
+                    setErrorConfirm(null)
+                } else{
+                    setErrorConfirm("Invalid account")
+                }
+            }
+            catch (error){
+                setErrorConfirm("Can't call API")
+            }
+        }
+    }
+    const fakeApi = (user, pass)=>{
+        return new Promise((resolve) => {
+            setTimeout(()=>{
+                resolve({success: user === "user" && pass === "pass"})
+            }, 1000)
+        })
+    }
+
     return(
         <View style={{ flex: 1}}>
             <LinearGradient
@@ -48,53 +142,62 @@ export default SignUp = ({navigation}) => {
                     <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign up</Text>
                     <View style={{width: "100%", rowGap: 6}}>
                         <TextInputIcon
-                            // value={"User"}
-                            placeholder={"Username"}
-                            icon={PenIcon}
-                            // error={"Error"}
-                        />
-                        <TextInputIcon
-                            // value={"User"}
+                            value={name}
                             placeholder={"Name"}
-                            icon={MailIcon}
-                            // error={"Error"}
+                            icon={PenIcon}
+                            onchangeText={handleOnchangeName}
+                            error={errorName}
                         />
                         <TextInputIcon
-                            // value={"User"}
+                            value={email}
                             placeholder={"Mail"}
-                            icon={AccountIcon}
-                            // error={"Error"}
+                            icon={MailIcon}
+                            onchangeText={handleOnchangeEmail}
+                            keyboardType={"email-address"}
+                            error={errorEmail}
                         />
                         <TextInputIcon
-                            // value={"User"}
+                            value={username}
+                            placeholder={"Username"}
+                            icon={AccountIcon}
+                            onchangeText={handleOnchangeUsername}
+                            error={errorUsername}
+                        />
+                        <TextInputIcon
+                            value={password}
                             placeholder={"Password"}
                             icon={LockIcon}
-                            // error={"Error"}
+                            onchangeText={handleOnchangePassword}
+                            error={errorPassword}
                         />
                         <TextInputIcon
-                            // value={"User"}
+                            value={confirmPassword}
                             placeholder={"Confirm Password"}
                             icon={UnlockIcon}
-                            // error={"Error"}
+                            onchangeText={handleCofirm}
+                            error={errorConfirm}
                         />
                         <CheckBox
                             rightTextStyle ={{ color: check ? COLORS.secondMain : COLORS.lightText}}
                             isChecked={check}
-                            onClick={()=>handleOnChecked()}
+                            onClick={()=>setCheck(!check)}
                             rightText="Register as Admin Center"
                         />
                         {check &&
                             <TextInputIcon
-                                // value={"User"}
+                                value={tin}
                                 placeholder={"TIN"}
                                 icon={TinIcon}
-                                // error={"Error"}
+                                onchangeText={handleOnchangeTin}
+                                keyboardType={"numeric"}
+                                error={errorTin}
                             />
                         }
                     </View>
                     <ButtonBlu 
                         title={"Sign Up"}
                         fontSize={20}
+                        action={()=>handleSignup()}
                     />
                     
                 </View>
