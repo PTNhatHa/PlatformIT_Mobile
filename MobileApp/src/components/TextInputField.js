@@ -12,7 +12,7 @@ export const TextInputIcon = ({
                     style={styles.input}
                     value={value}
                     placeholder={placeholder}
-                    onchangeText={onchangeText}
+                    onChangeText={(v)=>onchangeText(v)}
                 />
             </View>
             {error && <Text style={styles.error}>{error}</Text>}

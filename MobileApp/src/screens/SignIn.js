@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
 import AccountIcon from "../../assets/icons/Account.png";
@@ -7,13 +7,37 @@ import Facebook from "../../assets/icons/Facebook.png";
 import Google from "../../assets/icons/Google.png";
 import Github from "../../assets/icons/Github.png";
 import { ButtonBlu } from "../components/Button";
-import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
+import { TextInputIcon} from "../components/TextInputField";
 import { COLORS } from "../constants";
+import { useState } from "react";
 
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
     
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [error, setError] = useState(null)
+    const handleSignin = async ()=>{
+        try{
+            const response = await fakeApi(username, password)
+            if(response.success){
+                Alert.alert("Sign in", "Sign in successfully")
+            } else{
+                setError("Invalid account")
+            }
+        }
+        catch (error){
+            setError("Can't call API")
+        }
+    }
+    const fakeApi = (user, pass)=>{
+        return new Promise((resolve) => {
+            setTimeout(()=>{
+                resolve({success: user === "user" && pass === "pass"})
+            }, 1000)
+        })
+    }
     return(
         <View style={styles.container}>
             <LinearGradient
@@ -43,16 +67,17 @@ export default SignIn = ({navigation}) => {
                 <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign in</Text>
                 <View style={{width: "100%", rowGap: 6}}>
                     <TextInputIcon
-                        // value={"User"}
+                        value={username}
                         placeholder={"Username"}
                         icon={AccountIcon}
-                        // error={"Error"}
+                        onchangeText={setUsername}
                     />
                     <TextInputIcon
-                        // value={"User"}
+                        value={password}
                         placeholder={"Password"}
                         icon={LockIcon}
-                        // error={"Error"}
+                        onchangeText={setPassword}
+                        error={error}
                     />
                     <TouchableOpacity>
                         <Text style={styles.textGray}>Forgot your password?</Text>
@@ -61,6 +86,7 @@ export default SignIn = ({navigation}) => {
                 <ButtonBlu 
                     title={"Sign In"}
                     fontSize={20}
+                    action={handleSignin}
                 />
                 <Text style={styles.textGray}>------- Students can sign in with -------</Text>
                 <View style={{columnGap: 12, flexDirection: "row"}}>
