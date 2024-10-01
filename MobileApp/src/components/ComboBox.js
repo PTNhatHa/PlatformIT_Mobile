@@ -8,6 +8,7 @@ import RNPickerSelect from 'react-native-picker-select';
 export const ComboBox = ({
     label, value, onchangeText = ()=>{}, isGender = true
 }) => {
+    const [textColor, setTextColor] = useState(COLORS.lightText)
     const [listNations, setNations] = useState([])
     useEffect(()=>{
         const fetchNation = async()=>{
@@ -35,6 +36,8 @@ export const ComboBox = ({
     }, [isGender, listNations]);
     const handleOnchangeText = (v)=>{
         onchangeText(v || value)
+        if(v !== value)
+            setTextColor("black")
     }
     return(
         <View>
@@ -46,7 +49,7 @@ export const ComboBox = ({
                     style={{
                         ... pickerSelectStyles.inputAndroid, 
                         inputAndroid: {
-                            color: COLORS.lightText
+                            color: textColor
                         }
                     }}
                     value={value}

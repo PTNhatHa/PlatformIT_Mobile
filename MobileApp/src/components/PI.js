@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, SectionList, StyleSheet, View } from "react-native"
+import { ScrollView, StyleSheet, View } from "react-native"
 import { TextInputLabel } from "./TextInputField"
 import { useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
@@ -11,29 +11,23 @@ export const PersionalInfor = ()=>{
     const [birthday, setBirthday] = useState(new Date())
     const [gender, setGender] = useState("Female")
     const [nationality, setNationality] = useState("Hungary")
-    const data = [
-        { key: "Name", component: <TextInputLabel label={"Name"} value={name} onchangeText={setName}/>},
-        { key: "PhoneNumber", component: <TextInputLabel label={"Phone Number"} value={phoneNumber} onchangeText={setPhoneNumber} keyboardType={"phone-pad"}/>},
-        { key: "Email", component: <TextInputLabel label={"Email"} value={email} onchangeText={setEmail} keyboardType={"email-address"}/>},
-        { key: "Gender", component: <ComboBox label={"Gender"} value={gender} onchangeText={setGender}/>},
-        { key: "Birthday", component: <DateTimePickerComponent label='Birthday' value={birthday} setValue={setBirthday}/>},
-        { key: "Nationality", component: <ComboBox label={"Nationality"} value={nationality} onchangeText={setNationality} isGender={false}/>},
-        
-    ]
     return(
         <View style={{ flex: 1}}>
-            <FlatList 
-                contentContainerStyle={stylesPI.container}
-                data={data}
-                keyExtractor={(item)=>item.key.toString()}
-                renderItem={({item})=> item.component}
-                nestedScrollEnabled={true}
-            />
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.body}>
+                    <TextInputLabel label={"Name"} value={name} onchangeText={setName}/>
+                    <TextInputLabel label={"Phone Number"} value={phoneNumber} onchangeText={setPhoneNumber} keyboardType={"phone-pad"}/>
+                    <TextInputLabel label={"Email"} value={email} onchangeText={setEmail} keyboardType={"email-address"}/>
+                    <ComboBox label={"Gender"} value={gender} onchangeText={setGender}/>
+                    <DateTimePickerComponent label='Birthday' value={birthday} setValue={setBirthday}/>
+                    <ComboBox label={"Nationality"} value={nationality} onchangeText={setNationality} isGender={false}/>
+                </View>
+            </ScrollView>
         </View>
     )
 }
 
-const stylesPI = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         padding: 16,
         width: "100%",
