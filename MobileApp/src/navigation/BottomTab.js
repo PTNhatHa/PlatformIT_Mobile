@@ -1,13 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-
-import HomeIcon from "../../assets/icons/Home.png";
-import CourseIcon from "../../assets/icons/Course.png";
-import TestIcon from "../../assets/icons/Test.png";
-import NotiIcon from "../../assets/icons/Noti.png";
-import ChatIcon from "../../assets/icons/Chat.png";
-import AccountIcon from "../../assets/icons/Account.png";
-
-import { Image } from "react-native";
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
 import { PersionalInfor } from "../components/PI";
@@ -18,26 +12,24 @@ export const StudentBottomTab = ()=>{
         <Tab.Navigator
             screenOptions={({route})=>({
                 tabBarIcon: (({color})=>{
-                    let iconName
                     if(route.name === "Home"){
-                        iconName=HomeIcon
+                        return <Feather name="home" size={24} color={color}/>
                     }
                     if(route.name === "My Course"){
-                        iconName=CourseIcon
+                        return <AntDesign name="book" size={24} color={color} />
                     }
                     if(route.name === "My Test"){
-                        iconName=TestIcon
+                        return <Ionicons name="documents-outline" size={24} color={color} />
                     }
                     if(route.name === "Noti"){
-                        iconName=NotiIcon
+                        return <Ionicons name="notifications-outline" size={24} color={color} />
                     }
                     if(route.name === "Chat"){
-                        iconName=ChatIcon
+                        return <Ionicons name="chatbubble-outline" size={24} color={color} />
                     }
                     if(route.name === "Account"){
-                        iconName=AccountIcon
+                        return <Feather name="user" size={24} color={color} />
                     }
-                    return <Image source={iconName} tintColor={color} style={{ width: 20, height: 20 }}/>
                 }),
                 tabBarActiveTintColor: COLORS.main,
                 tabBarInactiveTintColor: COLORS.lightText
@@ -59,26 +51,24 @@ export const TeacherBottomTab = ()=>{
         <Tab.Navigator
             screenOptions={({route})=>({
                 tabBarIcon: (({color})=>{
-                    let iconName
                     if(route.name === "Home"){
-                        iconName=HomeIcon
+                        return <Feather name="home" size={24} color={color}/>
                     }
                     if(route.name === "My Course"){
-                        iconName=CourseIcon
+                        return <AntDesign name="book" size={24} color={color} />
                     }
                     if(route.name === "My Lecture"){
-                        iconName=TestIcon
+                        return <Ionicons name="documents-outline" size={24} color={color} />
                     }
                     if(route.name === "Noti"){
-                        iconName=NotiIcon
+                        return <Ionicons name="notifications-outline" size={24} color={color} />
                     }
                     if(route.name === "Chat"){
-                        iconName=ChatIcon
+                        return <Ionicons name="chatbubble-outline" size={24} color={color} />
                     }
                     if(route.name === "Account"){
-                        iconName=AccountIcon
+                        return <Feather name="user" size={24} color={color} />
                     }
-                    return <Image source={iconName} tintColor={color} style={{ width: 20, height: 20 }}/>
                 }),
                 tabBarActiveTintColor: COLORS.main,
                 tabBarInactiveTintColor: COLORS.lightText

@@ -1,8 +1,8 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from "react";
-import { Button, Image, StyleSheet, Text, TextInput, View } from "react-native"
+import { Image, StyleSheet, Text, TextInput, View } from "react-native"
 import { COLORS } from '../constants';
-import DateIcon from "../../assets/icons/Calendar.png";
+import Feather from '@expo/vector-icons/Feather';
 import { TouchableOpacity } from 'react-native';
 
 export const DateTimePickerComponent = ({
@@ -31,7 +31,7 @@ export const DateTimePickerComponent = ({
                     readOnly
                 />
                 <TouchableOpacity onPress={()=>setShow(true)}>
-                    <Image source={DateIcon} style={{ width: 20, height: 20}}/>
+                <Feather name="calendar" size={24} color={isChoose?"black":COLORS.lightText} />
                 </TouchableOpacity>
             </View>
             {show &&
