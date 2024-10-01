@@ -78,6 +78,7 @@ export default SignIn = ({navigation}) => {
                         icon={LockIcon}
                         onchangeText={setPassword}
                         error={error}
+                        isPassword={true}
                     />
                     <TouchableOpacity>
                         <Text style={styles.textGray}>Forgot your password?</Text>

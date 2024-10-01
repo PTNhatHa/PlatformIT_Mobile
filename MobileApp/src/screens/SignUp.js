@@ -169,6 +169,7 @@ export default SignUp = ({navigation}) => {
                             icon={LockIcon}
                             onchangeText={handleOnchangePassword}
                             error={errorPassword}
+                            isPassword={true}
                         />
                         <TextInputIcon
                             value={confirmPassword}
@@ -176,6 +177,7 @@ export default SignUp = ({navigation}) => {
                             icon={UnlockIcon}
                             onchangeText={handleCofirm}
                             error={errorConfirm}
+                            isPassword={true}
                         />
                         <CheckBox
                             rightTextStyle ={{ color: check ? COLORS.secondMain : COLORS.lightText}}

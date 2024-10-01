@@ -6,24 +6,18 @@ import SignUp from './src/screens/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
 import { StudentBottomTab, TeacherBottomTab } from './src/navigation/BottomTab';
+import { TextInputLabel } from './src/components/TextInputField';
+import { PersionalInfor } from './src/components/PI';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
-        <SigninSignup/>
+        {/* <SigninSignup/> */}
         {/* <TeacherBottomTab/> */}
+        <PersionalInfor/>
       </NavigationContainer>
     </SafeAreaView>
     
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
