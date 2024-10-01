@@ -6,14 +6,13 @@ import DateIcon from "../../assets/icons/Calendar.png";
 import { TouchableOpacity } from 'react-native';
 
 export const DateTimePickerComponent = ({
-    label="label"
+    label="label", value, setValue
 })=>{
-    const [date, setDate] = useState(new Date())
     const [show, setShow] = useState(false)
     const [isChoose, setIsChoose] = useState(false)
     const handleOnChange = (e, selectDate)=>{
-        const currentDate = selectDate || date
-        setDate(currentDate)
+        const currentDate = selectDate || value
+        setValue(currentDate)
         setShow(false)
         setIsChoose(true)
     }
@@ -28,7 +27,7 @@ export const DateTimePickerComponent = ({
             <View style={styles.container}>
                 <TextInput 
                     style={[styles.input, {color: isChoose?"black":COLORS.lightText}]}
-                    value={formatDateTime(date)}
+                    value={formatDateTime(value)}
                     readOnly
                 />
                 <TouchableOpacity onPress={()=>setShow(true)}>
@@ -39,7 +38,7 @@ export const DateTimePickerComponent = ({
                 <DateTimePicker 
                     mode="date" 
                     onChange={handleOnChange}
-                    value={date} 
+                    value={value} 
                     display="default"
                 />
             }

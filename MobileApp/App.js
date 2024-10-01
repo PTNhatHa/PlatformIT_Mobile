@@ -8,6 +8,7 @@ import { SigninSignup } from './src/navigation/SigninSignup';
 import { StudentBottomTab, TeacherBottomTab } from './src/navigation/BottomTab';
 import { TextInputLabel } from './src/components/TextInputField';
 import { PersionalInfor } from './src/components/PI';
+import { ComboBox } from './src/components/ComboBox';
 
 export default function App() {
   return (
