@@ -10,6 +10,7 @@ import AccountIcon from "../../assets/icons/Account.png";
 import { Image } from "react-native";
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
+import { PersionalInfor } from "../components/PI";
 
 export const StudentBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
@@ -47,7 +48,7 @@ export const StudentBottomTab = ()=>{
             <Tab.Screen name="My Test" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="Account" component={Home} />
+            <Tab.Screen name="Account" component={PersionalInfor} />
         </Tab.Navigator>
     )
 }
@@ -88,7 +89,7 @@ export const TeacherBottomTab = ()=>{
             <Tab.Screen name="My Lecture" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="Account" component={Home} />
+            <Tab.Screen name="Account" component={PersionalInfor} />
         </Tab.Navigator>
     )
 }

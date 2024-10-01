@@ -47,7 +47,6 @@ export const ComboBox = ({
                     items={listBox}
                     onValueChange={(v)=> handleOnchangeText(v)}
                     style={{
-                        ... pickerSelectStyles.inputAndroid, 
                         inputAndroid: {
                             color: textColor
                         }
@@ -59,18 +58,6 @@ export const ComboBox = ({
         </View>
     )
 }
-const pickerSelectStyles = StyleSheet.create({
-    inputAndroid: {
-      fontSize: 16,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
-      borderWidth: 0.5,
-      borderColor: COLORS.main,
-      borderRadius: 8,
-      paddingRight: 30,
-    },
-
-  });
 const styles = StyleSheet.create({
     container: {
         borderWidth: 1,

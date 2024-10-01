@@ -16,7 +16,8 @@ export default function App() {
       <NavigationContainer>
         {/* <SigninSignup/> */}
         {/* <TeacherBottomTab/> */}
-        <PersionalInfor/>
+        {/* <PersionalInfor/> */}
+        <StudentBottomTab/>
       </NavigationContainer>
     </SafeAreaView>
     
