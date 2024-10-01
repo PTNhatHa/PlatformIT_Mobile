@@ -8,9 +8,23 @@ export const ButtonBlu = ({title, action, fontSize})=>{
         </TouchableOpacity>
     )
 }
+
+export const ButtonWhite = ({title, action, fontSize})=>{
+    return(
+        <TouchableOpacity style={styles.btn_wh} onPress={action}>
+            <Text style={[styles.btnText, { fontSize: fontSize || 16 }]}>{title}</Text>
+        </TouchableOpacity>
+    )
+}
 const styles = StyleSheet.create({
     btn_bl: {
         backgroundColor: COLORS.secondMain,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+    },
+    btn_wh: {
+        backgroundColor: "white",
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 8,
