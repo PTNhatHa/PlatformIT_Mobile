@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from "react";
-import { Image, StyleSheet, Text, TextInput, View } from "react-native"
+import { StyleSheet, Text, TextInput, View } from "react-native"
 import { COLORS } from '../constants';
 import Feather from '@expo/vector-icons/Feather';
 import { TouchableOpacity } from 'react-native';

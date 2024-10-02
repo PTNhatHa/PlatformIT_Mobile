@@ -4,24 +4,32 @@ import { useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
 import { ComboBox } from "./ComboBox"
 import { ButtonGreen, ButtonWhite } from "./Button"
-import Ima from "../../assets/images/BoyIT.png"
+import Img from "../../assets/images/BoyIT.png"
 import Feather from '@expo/vector-icons/Feather';
-
 import { COLORS } from "../constants"
 import { TouchableOpacity } from "react-native"
-export const PersionalInfor = ()=>{
-    const [name, setName] = useState("Nhật Hạ")
-    const [phoneNumber, setPhoneNumber] = useState("0123456789")
-    const [email, setEmail] = useState("nhatha@gmail.com")
-    const [birthday, setBirthday] = useState(new Date())
-    const [gender, setGender] = useState("Female")
-    const [nationality, setNationality] = useState("Hungary")
+
+export const PersionalInfor = ({
+    initAvata=Img,
+    initName="Nhật Hạ", 
+    initPhoneNumber="0123456789", 
+    initEmail="nhatha@gmail.com", 
+    initBirthday=new Date(), 
+    initGender="Female", 
+    initNationality="Hungary"
+})=>{
+    const [name, setName] = useState(initName)
+    const [phoneNumber, setPhoneNumber] = useState(initPhoneNumber)
+    const [email, setEmail] = useState(initEmail)
+    const [birthday, setBirthday] = useState(initBirthday)
+    const [gender, setGender] = useState(initGender)
+    const [nationality, setNationality] = useState(initNationality)
     return(
         <View style={styles.PI}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.avataWrapper}>
                     <View style={styles.avataInner}>
-                        <Image style={styles.avataImage} source={Ima}/>
+                        <Image style={styles.avataImage} source={initAvata}/>
                         <TouchableOpacity style={styles.avataCamera}>
                             <Feather name="camera" size={20} color={COLORS.main} />
                         </TouchableOpacity>

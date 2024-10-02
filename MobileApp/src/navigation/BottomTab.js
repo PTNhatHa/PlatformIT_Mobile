@@ -5,6 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
 import { PersionalInfor } from "../components/PI";
+import { StudentPI } from "../screens/Student/StudentPI";
 
 export const StudentBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
@@ -40,7 +41,7 @@ export const StudentBottomTab = ()=>{
             <Tab.Screen name="My Test" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="Account" component={PersionalInfor} />
+            <Tab.Screen name="Account" component={StudentPI} />
         </Tab.Navigator>
     )
 }
