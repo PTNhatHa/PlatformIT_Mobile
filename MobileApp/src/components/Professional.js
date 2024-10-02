@@ -24,10 +24,7 @@ export const Professional = ({
     const [professions, setProfessions] = useState(initProfessions)
     const [selectImg, setSelectImg] = useState("")
     const [textColor, setTextColor] = useState(COLORS.lightText)
-    const handleOnchangeText = (v)=>{
-        onchangeText(v)
-        setTextColor("black")
-    }
+
     const handleAddNew = ()=>{
         const idMax = Math.max(...professions.map(item => item.id), 0)
         const newProfessions = [...professions, { id: idMax + 1 }]
@@ -40,6 +37,25 @@ export const Professional = ({
     const handleSelectImg = (select)=>{
         setSelectImg(select)
     }
+    const handleChangeData = (id, value, key)=>{
+        setTextColor("black")
+        const newProfessions = professions.map((item)=>{
+            if(item.id === id && key === "title"){
+                return{
+                    ...item,
+                    title: value,
+                }
+            }
+            if(item.id === id && key === "description"){
+                return{
+                    ...item,
+                    description: value,
+                }
+            }
+            return item
+        })
+        setProfessions(newProfessions)
+    }
     return(
         <View style={{flex: 1}}>
             <View style={{rowGap: 10}}>
@@ -50,13 +66,13 @@ export const Professional = ({
                         style={[styles.input, {color: textColor}]}
                         value={item.title}
                         placeholder={"Title"}
-                        onChangeText={(v)=>handleOnchangeText(v)}
+                        onChangeText={(v)=>handleChangeData(item.id, v, "title")}
                     />
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
                         value={item.description}
                         placeholder={"Desciption"}
-                        onChangeText={(v)=>handleOnchangeText(v)}
+                        onChangeText={(v)=>handleChangeData(item.id, v, "description")}
                     />
                     <View style={styles.wrapbtn}>
                         <TouchableOpacity style={styles.btn}>
