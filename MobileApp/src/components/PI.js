@@ -54,7 +54,7 @@ export const PersionalInfor = ({
 
 const styles = StyleSheet.create({
     PI: {
-        flex: 1,
+        // flex: 1,
         backgroundColor: "white"
     },
     container: {

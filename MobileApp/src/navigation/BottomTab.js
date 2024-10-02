@@ -6,6 +6,7 @@ import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
 import { PersionalInfor } from "../components/PI";
 import { StudentPI } from "../screens/Student/StudentPI";
+import { TeacherPI } from "../screens/Teacher/TeacherPI";
 
 export const StudentBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
@@ -80,7 +81,7 @@ export const TeacherBottomTab = ()=>{
             <Tab.Screen name="My Lecture" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="Account" component={PersionalInfor} />
+            <Tab.Screen name="Account" component={TeacherPI} />
         </Tab.Navigator>
     )
 }

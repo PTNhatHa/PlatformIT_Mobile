@@ -9,6 +9,8 @@ import { StudentBottomTab, TeacherBottomTab } from './src/navigation/BottomTab';
 import { TextInputLabel } from './src/components/TextInputField';
 import { PersionalInfor } from './src/components/PI';
 import { ComboBox } from './src/components/ComboBox';
+import { TeacherPI } from './src/screens/Teacher/TeacherPI';
+import { Professional } from './src/components/Professional';
 
 export default function App() {
   return (
@@ -17,7 +19,9 @@ export default function App() {
         {/* <SigninSignup/> */}
         {/* <TeacherBottomTab/> */}
         {/* <PersionalInfor/> */}
-        <StudentBottomTab/>
+        {/* <StudentBottomTab/> */}
+        {/* <TeacherPI/> */}
+        <Professional label={"Professional Qualifications"}/>
       </NavigationContainer>
     </SafeAreaView>
     
