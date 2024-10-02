@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 
@@ -41,8 +41,8 @@ export const Professional = ({
         setSelectImg(select)
     }
     return(
-        <View>
-            <ScrollView contentContainerStyle={{rowGap: 10}}>
+        <View style={{flex: 1}}>
+            <View style={{rowGap: 10}}>
                 <Text>{label}</Text>
                 {professions.map((item)=>
                 <View style={styles.container} key={item.id}>
@@ -77,15 +77,20 @@ export const Professional = ({
                 <TouchableOpacity style={styles.btn} onPress={handleAddNew}>
                     <AntDesign name="plus" size={20} color={COLORS.stroke} />
                 </TouchableOpacity>
-            </ScrollView>
-            {selectImg &&
+            </View>
+            <Modal
+                visible={!!selectImg}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={()=>setSelectImg("")}
+            >
                 <View style={styles.selectImgWrapper}>
                     <TouchableOpacity style={styles.close} onPress={()=>setSelectImg("")}>
                         <AntDesign name="close" size={30} color="white" />
                     </TouchableOpacity>
                     <Image source={{uri: selectImg}} style={styles.selectImg}/>
                 </View>
-            }
+            </Modal>
         </View>
     )
 }
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText
     },
     image: {
-        width: 245,
+        width: 215,
         height: 200,
         resizeMode: 'contain',
         borderWidth: 1,

@@ -17,11 +17,11 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         {/* <SigninSignup/> */}
-        {/* <TeacherBottomTab/> */}
+        <TeacherBottomTab/>
         {/* <PersionalInfor/> */}
         {/* <StudentBottomTab/> */}
         {/* <TeacherPI/> */}
-        <Professional label={"Professional Qualifications"}/>
+        {/* <Professional label={"Professional Qualifications"}/> */}
       </NavigationContainer>
     </SafeAreaView>
     

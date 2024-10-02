@@ -3,6 +3,7 @@ import { PersionalInfor } from "../../components/PI"
 import { TextInputLabel } from "../../components/TextInputField"
 import { useState } from "react"
 import { COLORS } from "../../constants"
+import { Professional } from "../../components/Professional"
 
 export const TeacherPI = ()=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
@@ -17,6 +18,7 @@ export const TeacherPI = ()=>{
                     <View style={styles.body}>
                         <TextInputLabel label={"Affiliated Center"} value={center}/>
                         <TextInputLabel label={"Teaching Specialization"} value={specialize}/>
+                        <Professional label={"Professional Qualifications"}/>
                     </View>
                 </ScrollView>
             </ScrollView>
