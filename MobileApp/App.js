@@ -16,8 +16,8 @@ export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
-        {/* <SigninSignup/> */}
-        <TeacherBottomTab/>
+        <SigninSignup/>
+        {/* <TeacherBottomTab/> */}
         {/* <PersionalInfor/> */}
         {/* <StudentBottomTab/> */}
         {/* <TeacherPI/> */}

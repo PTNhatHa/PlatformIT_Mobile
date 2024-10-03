@@ -12,6 +12,7 @@ import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
 import { COLORS } from "../constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
+import { signup } from "../services/authentication";
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
@@ -27,6 +28,13 @@ export default SignUp = ({navigation}) => {
     const [errorConfirm, setErrorConfirm] = useState(null)
     const [tin, setTin] = useState("")
     const [errorTin, setErrorTin] = useState(null)
+    const validateEmail = (email) => {
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            )
+    }
     const handleOnchangeName = (v)=>{
         setName(v)
         setErrorName(null)
@@ -36,6 +44,7 @@ export default SignUp = ({navigation}) => {
         setEmail(v)
         setErrorEmail(null)
         if(!v) setErrorEmail("Require!")
+        if(!validateEmail(v)) setErrorEmail("Invalid!")
     }
     const handleOnchangeUsername = (v)=>{
         setUsername(v)
@@ -91,25 +100,20 @@ export default SignUp = ({navigation}) => {
         if(checkNull)
         {
             try{
-                const response = await fakeApi(username, password)
+                const response = await signup(name, email, username, password, tin)
+                if(response.error){
+                    setErrorConfirm(response.data)
+                }
                 if(response.success){
-                    Alert.alert("Sign up", "Sign up successfully")
+                    Alert.alert("Sign up", response.data)
                     setErrorConfirm(null)
-                } else{
-                    setErrorConfirm("Invalid account")
+                    navigation.navigate("Sign in")
                 }
             }
             catch (error){
                 setErrorConfirm("Can't call API")
             }
         }
-    }
-    const fakeApi = (user, pass)=>{
-        return new Promise((resolve) => {
-            setTimeout(()=>{
-                resolve({success: user === "user" && pass === "pass"})
-            }, 1000)
-        })
     }
 
     return(

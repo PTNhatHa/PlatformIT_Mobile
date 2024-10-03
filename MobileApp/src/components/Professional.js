@@ -59,7 +59,7 @@ export const Professional = ({
     return(
         <View style={{flex: 1}}>
             <View style={{rowGap: 10}}>
-                <Text>{label}</Text>
+                <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
                 {professions.map((item)=>
                 <View style={styles.container} key={item.id}>
                     <TextInput 
