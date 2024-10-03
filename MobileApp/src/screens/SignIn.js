@@ -10,6 +10,7 @@ import { ButtonBlu } from "../components/Button";
 import { TextInputIcon} from "../components/TextInputField";
 import { COLORS } from "../constants";
 import { useState } from "react";
+import { signin } from "../services/authentication";
 
 const { width, height } = Dimensions.get('window');
 
@@ -20,23 +21,24 @@ export default SignIn = ({navigation}) => {
     const [error, setError] = useState(null)
     const handleSignin = async ()=>{
         try{
-            const response = await fakeApi(username, password)
-            if(response.success){
-                Alert.alert("Sign in", "Sign in successfully")
+            const response = await signin(username, password)
+            if(response.error){
+                setError(response.data)
             } else{
-                setError("Invalid account")
+                Alert.alert("Sign in", "Sign in successfully")
+                if(response.idRole === 3){
+                    // Student
+                    navigation.navigate("Student")
+                }
+                if(response.idRole === 4){
+                    // Teacher
+                    navigation.navigate("Teacher")
+                }
             }
         }
         catch (error){
             setError("Can't call API")
         }
-    }
-    const fakeApi = (user, pass)=>{
-        return new Promise((resolve) => {
-            setTimeout(()=>{
-                resolve({success: user === "user" && pass === "pass"})
-            }, 1000)
-        })
     }
     return(
         <View style={styles.container}>
