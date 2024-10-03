@@ -1,11 +1,6 @@
 import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
-import AccountIcon from "../../assets/icons/Account.png";
-import LockIcon from "../../assets/icons/Lock.png";
-import Facebook from "../../assets/icons/Facebook.png";
-import Google from "../../assets/icons/Google.png";
-import Github from "../../assets/icons/Github.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon} from "../components/TextInputField";
 import { COLORS } from "../constants";
@@ -13,7 +8,8 @@ import { useEffect, useState } from "react";
 import { signinApi } from "../services/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SET_INFO, useUser } from "../contexts/UserContext";
-
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
@@ -94,13 +90,13 @@ export default SignIn = ({navigation}) => {
                     <TextInputIcon
                         value={username}
                         placeholder={"Username"}
-                        icon={AccountIcon}
+                        icon={<Feather name="user" size={24} color="black" />}
                         onchangeText={setUsername}
                     />
                     <TextInputIcon
                         value={password}
                         placeholder={"Password"}
-                        icon={LockIcon}
+                        icon={<Feather name="lock" size={24} color="black" />}
                         onchangeText={setPassword}
                         error={error}
                         isPassword={true}
@@ -117,13 +113,13 @@ export default SignIn = ({navigation}) => {
                 <Text style={styles.textGray}>------- Students can sign in with -------</Text>
                 <View style={{columnGap: 12, flexDirection: "row"}}>
                     <TouchableOpacity style={styles.party3}>
-                        <Image source={Facebook}/>
+                        <FontAwesome name="facebook" size={16} color="black" />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.party3}>
-                        <Image source={Google}/>
+                        <FontAwesome name="google-plus" size={16} color="black" />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.party3}>
-                        <Image source={Github}/>
+                        <Feather name="github" size={16} color="black" />   
                     </TouchableOpacity>
                 </View>
             </View>
@@ -181,6 +177,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.stroke,
         borderRadius: 90,
-        padding: 6
+        padding: 6,
+        width: 35,
+        height: 35,
+        justifyContent: "center",
+        alignItems: "center"
       }
 })

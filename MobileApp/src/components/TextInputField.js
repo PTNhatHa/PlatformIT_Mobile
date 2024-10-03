@@ -8,7 +8,8 @@ export const TextInputIcon = ({
     return(
         <View>
             <View style={styles.container}>
-                <Image source={icon}/>
+                {icon}
+                {/* <Image source={icon}/> */}
                 <TextInput 
                     style={styles.input}
                     value={value}

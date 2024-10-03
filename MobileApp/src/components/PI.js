@@ -10,28 +10,29 @@ import { COLORS } from "../constants"
 import { TouchableOpacity } from "react-native"
 import { useUser } from "../contexts/UserContext"
 
-export const PersionalInfor = ({
-    initAvata=Img,
-    initName="Nhật Hạ", 
-    initPhoneNumber="0123456789", 
-    initEmail="nhatha@gmail.com", 
-    initBirthday=new Date(), 
-    initGender="Female", 
-    initNationality="Hungary"
-})=>{
+const init = {
+    initAvata: Img,
+    initName: "Nhật Hạ", 
+    initPhoneNumber: "0123456789", 
+    initEmail: "nhatha@gmail.com", 
+    initBirthday: new Date(), 
+    initGender: "Female", 
+    initNationality: "Hungary",
+}
+export const PersionalInfor = ({navigation})=>{
     const {state, dispatch} = useUser()
     const [name, setName] = useState(state.user.name)
-    const [phoneNumber, setPhoneNumber] = useState(initPhoneNumber)
+    const [phoneNumber, setPhoneNumber] = useState(init.initPhoneNumber)
     const [email, setEmail] = useState(state.user.email)
-    const [birthday, setBirthday] = useState(initBirthday)
-    const [gender, setGender] = useState(initGender)
-    const [nationality, setNationality] = useState(initNationality)
+    const [birthday, setBirthday] = useState(init.initBirthday)
+    const [gender, setGender] = useState(init.initGender)
+    const [nationality, setNationality] = useState(init.initNationality)
     return(
         <View style={styles.PI}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.avataWrapper}>
                     <View style={styles.avataInner}>
-                        <Image style={styles.avataImage} source={initAvata}/>
+                        <Image style={styles.avataImage} source={init.initAvata}/>
                         <TouchableOpacity style={styles.avataCamera}>
                             <Feather name="camera" size={20} color={COLORS.main} />
                         </TouchableOpacity>
@@ -46,7 +47,7 @@ export const PersionalInfor = ({
                     <ComboBox label={"Nationality"} value={nationality} onchangeText={setNationality} isGender={false}/>
                 </View>
                 <View style={styles.bottom}>
-                    <ButtonWhite title={"Change Password"}/>
+                    <ButtonWhite title={"Change Password"} action={()=> navigation.navigate("Change password")}/>
                     <ButtonGreen title={"Save Change"}/>
                 </View>
             </ScrollView>

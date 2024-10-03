@@ -9,6 +9,7 @@ import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
 import { TeacherPI } from "../screens/Teacher/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Account } from "../screens/Student/TabAccount/Account";
+import { ChangePassword } from "../screens/ChangePassword";
 
 const StackAccountScreen = ()=>{
     const StackAccount = createNativeStackNavigator()
@@ -25,6 +26,10 @@ const StackAccountScreen = ()=>{
             <StackAccount.Screen
                 name="Your infomation"
                 component={StudentPI}
+            />
+            <StackAccount.Screen
+                name="Change password"
+                component={ChangePassword}
             />
         </StackAccount.Navigator>
     )

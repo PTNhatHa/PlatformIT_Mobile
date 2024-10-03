@@ -1,18 +1,13 @@
 import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import GirlIT from "../../assets/images/GirlIT.png";
-import PenIcon from "../../assets/icons/Pen.png";
-import MailIcon from "../../assets/icons/Mail.png";
-import AccountIcon from "../../assets/icons/Account.png";
-import LockIcon from "../../assets/icons/Lock.png";
-import UnlockIcon from "../../assets/icons/Unlock.png";
-import TinIcon from "../../assets/icons/Tin.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
 import { COLORS } from "../constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
 import { signupApi } from "../services/authentication";
+import Feather from '@expo/vector-icons/Feather';
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
@@ -148,14 +143,14 @@ export default SignUp = ({navigation}) => {
                         <TextInputIcon
                             value={name}
                             placeholder={"Name"}
-                            icon={PenIcon}
+                            icon={<Feather name="pen-tool" size={24} color="black" style={{ transform: [{ rotate: '-90deg' }] }}/>}
                             onchangeText={handleOnchangeName}
                             error={errorName}
                         />
                         <TextInputIcon
                             value={email}
                             placeholder={"Mail"}
-                            icon={MailIcon}
+                            icon={<Feather name="mail" size={24} color="black" />}
                             onchangeText={handleOnchangeEmail}
                             keyboardType={"email-address"}
                             error={errorEmail}
@@ -163,14 +158,14 @@ export default SignUp = ({navigation}) => {
                         <TextInputIcon
                             value={username}
                             placeholder={"Username"}
-                            icon={AccountIcon}
+                            icon={<Feather name="user" size={24} color="black" />}
                             onchangeText={handleOnchangeUsername}
                             error={errorUsername}
                         />
                         <TextInputIcon
                             value={password}
                             placeholder={"Password"}
-                            icon={LockIcon}
+                            icon={<Feather name="lock" size={24} color="black" />}
                             onchangeText={handleOnchangePassword}
                             error={errorPassword}
                             isPassword={true}
@@ -178,7 +173,7 @@ export default SignUp = ({navigation}) => {
                         <TextInputIcon
                             value={confirmPassword}
                             placeholder={"Confirm Password"}
-                            icon={UnlockIcon}
+                            icon={<Feather name="unlock" size={24} color="black" />}
                             onchangeText={handleCofirm}
                             error={errorConfirm}
                             isPassword={true}
@@ -193,7 +188,7 @@ export default SignUp = ({navigation}) => {
                             <TextInputIcon
                                 value={tin}
                                 placeholder={"TIN"}
-                                icon={TinIcon}
+                                icon={<Feather name="credit-card" size={24} color="black" />}
                                 onchangeText={handleOnchangeTin}
                                 keyboardType={"numeric"}
                                 error={errorTin}

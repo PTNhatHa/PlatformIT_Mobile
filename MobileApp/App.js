@@ -13,6 +13,7 @@ import { TeacherPI } from './src/screens/Teacher/TeacherPI';
 import { Professional } from './src/components/Professional';
 import { Account } from './src/screens/Student/TabAccount/Account';
 import { UserProvider } from './src/contexts/UserContext';
+import { ChangePassword } from './src/screens/ChangePassword';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <UserProvider>
           <SigninSignup/>
           {/* <Account/> */}
+          {/* <ChangePassword/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
