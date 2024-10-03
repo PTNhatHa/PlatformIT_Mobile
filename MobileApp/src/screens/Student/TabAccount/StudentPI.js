@@ -1,6 +1,6 @@
 import { PersionalInfor } from "../../../components/PI"
 
-export const StudentPI = ()=>{
+export const StudentPI = ({navigation})=>{
     return(
         <PersionalInfor/>
     )
