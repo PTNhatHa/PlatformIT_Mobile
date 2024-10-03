@@ -11,7 +11,7 @@ import { PersionalInfor } from './src/components/PI';
 import { ComboBox } from './src/components/ComboBox';
 import { TeacherPI } from './src/screens/Teacher/TeacherPI';
 import { Professional } from './src/components/Professional';
-import { Account } from './src/screens/Student/TabAccount/Account';
+import { Account } from './src/screens/Student/TabAccount/StudentAccount';
 import { UserProvider } from './src/contexts/UserContext';
 import { ChangePassword } from './src/screens/ChangePassword';
 

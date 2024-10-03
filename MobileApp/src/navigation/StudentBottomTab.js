@@ -4,11 +4,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
-import { PersionalInfor } from "../components/PI";
 import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
-import { TeacherPI } from "../screens/Teacher/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Account } from "../screens/Student/TabAccount/Account";
+import { StudentAccount } from "../screens/Student/TabAccount/StudentAccount";
 import { ChangePassword } from "../screens/ChangePassword";
 
 const StackAccountScreen = ()=>{
@@ -21,7 +19,7 @@ const StackAccountScreen = ()=>{
         >
             <StackAccount.Screen
                 name="Account"
-                component={Account}
+                component={StudentAccount}
             />
             <StackAccount.Screen
                 name="Your infomation"

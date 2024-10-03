@@ -5,14 +5,14 @@ import { useState } from "react"
 import { COLORS } from "../../constants"
 import { Professional } from "../../components/Professional"
 
-export const TeacherPI = ()=>{
+export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
     const [specialize, setspecialize] = useState("Chuyên ngành giảng dạy")
     return(
         <View style={styles.PI}>
             <ScrollView>
                 <Text style={styles.title}>Your information</Text>
-                <PersionalInfor/>
+                <PersionalInfor navigation={navigation}/>
                 <Text style={styles.title}>More information</Text>
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.body}>

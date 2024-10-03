@@ -4,11 +4,34 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
-import { PersionalInfor } from "../components/PI";
-import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
 import { TeacherPI } from "../screens/Teacher/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Account } from "../screens/Student/TabAccount/Account";
+import { ChangePassword } from "../screens/ChangePassword";
+import { TeacherAccount } from "../screens/Teacher/TeacherAccount";
+
+const StackAccountScreen = ()=>{
+    const StackAccount = createNativeStackNavigator()
+    return(
+        <StackAccount.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackAccount.Screen
+                name="Account"
+                component={TeacherAccount}
+            />
+            <StackAccount.Screen
+                name="Your infomation"
+                component={TeacherPI}
+            />
+            <StackAccount.Screen
+                name="Change password"
+                component={ChangePassword}
+            />
+        </StackAccount.Navigator>
+    )
+}
 
 export const TeacherBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
@@ -31,12 +54,13 @@ export const TeacherBottomTab = ()=>{
                     if(route.name === "Chat"){
                         return <Ionicons name="chatbubble-outline" size={24} color={color} />
                     }
-                    if(route.name === "Account"){
+                    if(route.name === "AccountScreen"){
                         return <Feather name="user" size={24} color={color} />
                     }
                 }),
                 tabBarActiveTintColor: COLORS.main,
-                tabBarInactiveTintColor: COLORS.lightText
+                tabBarInactiveTintColor: COLORS.lightText,
+                headerShown: false
             })}
         >
             <Tab.Screen name="Home" component={Home} />
@@ -44,7 +68,7 @@ export const TeacherBottomTab = ()=>{
             <Tab.Screen name="My Lecture" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="Account" component={TeacherPI} />
+            <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
         </Tab.Navigator>
     )
 }

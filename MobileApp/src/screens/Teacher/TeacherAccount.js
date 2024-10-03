@@ -1,12 +1,10 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import { useUser } from "../../../contexts/UserContext"
-import BoyIT from "../../../../assets/images/BoyIT.png";
-import { COLORS } from "../../../constants";
+import BoyIT from "../../../assets/images/BoyIT.png";
 import { TouchableOpacity } from "react-native";
-import { ButtonGreen } from "../../../components/Button";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../contexts/UserContext";
+import { COLORS } from "../../constants";
 
-export const Account = ({navigation})=>{
+export const TeacherAccount = ({navigation})=>{
     const {state, dispatch} = useUser()
     return(
         <View style={styles.container}>
@@ -17,9 +15,6 @@ export const Account = ({navigation})=>{
             <View>
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>
                     <Text style={styles.text}>View Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.nav}>
-                    <Text style={styles.text}>Payment History</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.bottom}>
