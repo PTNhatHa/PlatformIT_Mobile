@@ -9,31 +9,54 @@ import Github from "../../assets/icons/Github.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon} from "../components/TextInputField";
 import { COLORS } from "../constants";
-import { useState } from "react";
-import { signin } from "../services/authentication";
+import { useEffect, useState } from "react";
+import { signinApi } from "../services/authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SET_INFO, useUser } from "../contexts/UserContext";
 
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
-    
+    const {state, dispatch} = useUser()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(null)
+    useEffect(()=>{
+        const loadUserData = async()=>{
+            const idUser = await AsyncStorage.getItem('idUser')
+            if(idUser){
+                const oldUser = await AsyncStorage.getItem('username')
+                const oldPass = await AsyncStorage.getItem('password')
+                setUsername(oldUser)
+                setPassword(oldPass)
+            }
+        }
+        loadUserData()
+    }, [])
     const handleSignin = async ()=>{
         try{
-            const response = await signin(username, password)
+            const response = await signinApi(username, password)
             if(response.error){
                 setError(response.data)
             } else{
                 Alert.alert("Sign in", "Sign in successfully")
+                const idUser = response.idUser
+                await AsyncStorage.setItem('idUser', idUser)
+                await AsyncStorage.setItem('username', username)
+                await AsyncStorage.setItem('password', password)
                 if(response.idRole === 3){
                     // Student
+                    const user = { name: "NhatHa", email: "Nhatha@gmail.com", idRole: 3}
+                    dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Student")
                 }
                 if(response.idRole === 4){
                     // Teacher
+                    const user = { name: "NhatHa", email: "Nhatha@gmail.com", idRole: 4}
+                    dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Teacher")
                 }
+                setError("")
             }
         }
         catch (error){

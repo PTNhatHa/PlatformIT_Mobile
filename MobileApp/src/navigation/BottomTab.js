@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { COLORS } from "../constants";
 import { Home } from "../screens/Home";
 import { PersionalInfor } from "../components/PI";
-import { StudentPI } from "../screens/Student/StudentPI";
+import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
 import { TeacherPI } from "../screens/Teacher/TeacherPI";
 
 export const StudentBottomTab = ()=>{

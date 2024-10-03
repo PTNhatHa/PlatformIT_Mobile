@@ -11,17 +11,17 @@ import { PersionalInfor } from './src/components/PI';
 import { ComboBox } from './src/components/ComboBox';
 import { TeacherPI } from './src/screens/Teacher/TeacherPI';
 import { Professional } from './src/components/Professional';
+import { Account } from './src/screens/Student/TabAccount/Account';
+import { UserProvider } from './src/contexts/UserContext';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
-        <SigninSignup/>
-        {/* <TeacherBottomTab/> */}
-        {/* <PersionalInfor/> */}
-        {/* <StudentBottomTab/> */}
-        {/* <TeacherPI/> */}
-        {/* <Professional label={"Professional Qualifications"}/> */}
+        <UserProvider>
+          <SigninSignup/>
+          {/* <Account/> */}
+        </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
     

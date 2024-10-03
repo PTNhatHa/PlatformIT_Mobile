@@ -12,7 +12,7 @@ import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
 import { COLORS } from "../constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
-import { signup } from "../services/authentication";
+import { signupApi } from "../services/authentication";
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
@@ -100,7 +100,7 @@ export default SignUp = ({navigation}) => {
         if(checkNull)
         {
             try{
-                const response = await signup(name, email, username, password, tin)
+                const response = await signupApi(name, email, username, password, tin)
                 if(response.error){
                     setErrorConfirm(response.data)
                 }

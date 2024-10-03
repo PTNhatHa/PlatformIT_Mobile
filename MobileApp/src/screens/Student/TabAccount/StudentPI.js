@@ -1,4 +1,4 @@
-import { PersionalInfor } from "../../components/PI"
+import { PersionalInfor } from "../../../components/PI"
 
 export const StudentPI = ()=>{
     return(

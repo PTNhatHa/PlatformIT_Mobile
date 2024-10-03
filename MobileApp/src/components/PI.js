@@ -8,6 +8,7 @@ import Img from "../../assets/images/BoyIT.png"
 import Feather from '@expo/vector-icons/Feather';
 import { COLORS } from "../constants"
 import { TouchableOpacity } from "react-native"
+import { useUser } from "../contexts/UserContext"
 
 export const PersionalInfor = ({
     initAvata=Img,
@@ -18,9 +19,10 @@ export const PersionalInfor = ({
     initGender="Female", 
     initNationality="Hungary"
 })=>{
-    const [name, setName] = useState(initName)
+    const {state, dispatch} = useUser()
+    const [name, setName] = useState(state.user.name)
     const [phoneNumber, setPhoneNumber] = useState(initPhoneNumber)
-    const [email, setEmail] = useState(initEmail)
+    const [email, setEmail] = useState(state.user.email)
     const [birthday, setBirthday] = useState(initBirthday)
     const [gender, setGender] = useState(initGender)
     const [nationality, setNationality] = useState(initNationality)
