@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon} from "../components/TextInputField";
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import { useEffect, useState } from "react";
 import { signinApi } from "../services/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";

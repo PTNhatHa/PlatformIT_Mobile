@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import { Home } from "../screens/Home";
 import { TeacherPI } from "../screens/Teacher/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";

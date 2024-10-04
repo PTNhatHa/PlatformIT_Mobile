@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, Text, View } from "react-native"
 import { PersionalInfor } from "../../components/PI"
 import { TextInputLabel } from "../../components/TextInputField"
 import { useState } from "react"
-import { COLORS } from "../../constants"
+import { COLORS } from "../../utils/constants"
 import { Professional } from "../../components/Professional"
 
 export const TeacherPI = ({navigation})=>{

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 import { Tag } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -25,26 +25,33 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
     return(
         <TouchableOpacity style={styles.container}>
             <Image source={data.img} style={styles.img}/>
-            <View>
+            <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
-                <View style={styles.tags}>
-                    <Tag label={data.listTags.find(i => i.id === 1).value}/>
-                    <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
-                </View>
+                {data.listTags.length > 0 && 
+                    <View style={styles.tags}>
+                        <Tag label={data.listTags[0].value}/>
+                        {data.listTags.length > 1 && 
+                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        }
+                        
+                    </View>
+                }
                 <View style={styles.tags}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
                         {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
                     </Text>
                 </View>
-                <View style={styles.tags}>
-                    <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                    <Text style={styles.dataText}>
-                        {data.isRegist ? "Registing" : 
-                            `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                    </Text>
-                </View>
-                <View style={[styles.tags, {justifyContent: "flex-end"}]}>
+                {data.startRegist &&
+                    <View style={styles.tags}>
+                        <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>
+                            {data.isRegist ? "Registing" : 
+                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                        </Text>
+                    </View>
+                }
+                <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.costSale}</Text>
                     <Text style={styles.cost}>{data.cost}</Text>
                 </View>
@@ -68,10 +75,15 @@ export const CardHorizontalCenter = ({data = initCenter})=>{
             <Image source={data.img} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.title}</Text>
-                <View style={styles.tags}>
-                    <Tag label={data.listTags.find(i => i.id === 1).value}/>
-                    <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
-                </View>
+                {data.listTags.length > 0 && 
+                    <View style={styles.tags}>
+                        <Tag label={data.listTags[0].value}/>
+                        {data.listTags.length > 1 && 
+                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        }
+                        
+                    </View>
+                }
             </View>
         </TouchableOpacity>
     )
@@ -101,7 +113,8 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         borderRadius: 8,
         rowGap: 6,
-        width: 170,
+        width: 160,
+        marginRight: 10
     },
     img: {
         width: "100%",
@@ -128,6 +141,13 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: COLORS.stroke
     },
+    wrapCost:{
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 2,
+        justifyContent: "flex-end",
+        flex: 1,
+    },
     costSale:{
         fontSize: 16,
         fontWeight: "bold",
@@ -145,7 +165,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         rowGap: 6,
         width: 150,
-        alignItems: "center"
+        alignItems: "center",
+        marginRight: 10
     },
     avata: {
         borderWidth: 1,

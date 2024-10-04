@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const initProfessions = [

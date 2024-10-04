@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TextInput, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 import { useState } from "react"
 
 export const TextInputIcon = ({

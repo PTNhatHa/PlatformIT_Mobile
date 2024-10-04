@@ -6,7 +6,7 @@ import { ComboBox } from "./ComboBox"
 import { ButtonGreen, ButtonWhite } from "./Button"
 import Img from "../../assets/images/BoyIT.png"
 import Feather from '@expo/vector-icons/Feather';
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 import { TouchableOpacity } from "react-native"
 import { useUser } from "../contexts/UserContext"
 

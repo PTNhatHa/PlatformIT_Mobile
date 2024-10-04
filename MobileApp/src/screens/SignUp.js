@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import GirlIT from "../../assets/images/GirlIT.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
 import { signupApi } from "../services/authentication";

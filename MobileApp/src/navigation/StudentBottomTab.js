@@ -2,12 +2,29 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import { Home } from "../screens/Home";
 import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StudentAccount } from "../screens/Student/TabAccount/StudentAccount";
 import { ChangePassword } from "../screens/ChangePassword";
+import { StudentHome } from "../screens/Student/TabHome/StudentHome";
+
+const StackHomeScreen = ()=>{
+    const StackHome = createNativeStackNavigator()
+    return(
+        <StackHome.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackHome.Screen
+                name="Home"
+                component={StudentHome}
+            />
+        </StackHome.Navigator>
+    )
+}
 
 const StackAccountScreen = ()=>{
     const StackAccount = createNativeStackNavigator()
@@ -39,7 +56,7 @@ export const StudentBottomTab = ()=>{
         <Tab.Navigator
             screenOptions={({route})=>({
                 tabBarIcon: (({color})=>{
-                    if(route.name === "Home"){
+                    if(route.name === "HomeScreen"){
                         return <Feather name="home" size={24} color={color}/>
                     }
                     if(route.name === "My Course"){
@@ -63,7 +80,7 @@ export const StudentBottomTab = ()=>{
                 headerShown: false
             })}
         >
-            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }}/>
             <Tab.Screen name="My Course" component={Home} />
             <Tab.Screen name="My Test" component={Home} />
             <Tab.Screen name="Noti" component={Home} />

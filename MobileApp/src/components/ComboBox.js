@@ -2,7 +2,7 @@ import { FlatList, Image, StyleSheet, Text, TouchableOpacity } from "react-nativ
 import ArrowDown from "../../assets/icons/ArrowDown.png";
 import { View } from "react-native";
 import { TextInput } from "react-native";
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import { useEffect, useState } from "react";
 import RNPickerSelect from 'react-native-picker-select';
 export const ComboBox = ({

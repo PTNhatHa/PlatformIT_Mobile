@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native"
 import { useUser } from "../../../contexts/UserContext"
 import BoyIT from "../../../../assets/images/BoyIT.png";
-import { COLORS } from "../../../constants";
+import { COLORS } from "../../../utils/constants";
 import { TouchableOpacity } from "react-native";
 
 export const StudentAccount = ({navigation})=>{

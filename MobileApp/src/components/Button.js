@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 
 export const ButtonBlu = ({title, action, fontSize})=>{
     return(
