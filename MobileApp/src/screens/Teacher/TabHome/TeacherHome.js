@@ -1,6 +1,7 @@
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { commonStyles } from "../../../utils/constants"
-import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../../../components/CardHorizontal"
+import { CardHorizontalAssignment, CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../../../components/CardHorizontal"
+import { CardVirticalAssignment } from "../../../components/CardVertical"
 
 const initCourse=[
     {
@@ -101,10 +102,60 @@ const initTeacher=[
         description: "Description"
     },
 ]
-
-export const StudentHome = ()=>{
+const initAssignment = [
+    {
+        id: 1,
+        title: "Title",
+        img: "",
+        nameCourse: "OOP",
+        due: new Date(),
+        duration: 45,
+        type: "Test",
+        isPublish: true,
+        submitted: 0.8
+    },
+    {
+        id: 2,
+        title: "Title",
+        img: "",
+        nameCourse: "OOP",
+        due: new Date(),
+        duration: 45,
+        type: "Test",
+        isPublish: false,
+        submitted: 0
+    },
+    {
+        id: 3,
+        title: "Title",
+        img: "",
+        nameCourse: "OOP",
+        due: new Date(),
+        duration: null,
+        type: "Exercise",
+        isPublish: true,
+        submitted: 0.9
+    },
+]
+export const TeacherHome = ()=>{
     return(
         <ScrollView style={styles.container}>
+            <View style={styles.wrapper}>
+                <View style={styles.top}>
+                    <Text style={commonStyles.title}>Ongoing Assignments</Text>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}}>
+                        <Text style={commonStyles.viewAll}>View all assignments</Text>
+                    </TouchableOpacity>
+                </View>
+                <FlatList
+                    data={initAssignment}
+                    horizontal={true}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => <CardHorizontalAssignment data={item} />}
+                    showsHorizontalScrollIndicator={false}
+                    style={styles.list}
+                />
+            </View>
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Courses</Text>

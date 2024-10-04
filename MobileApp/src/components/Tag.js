@@ -9,6 +9,14 @@ export const Tag = ({label})=>{
     )
 }
 
+export const TagNoColor = ({label})=>{
+    return(
+        <View style={[styles.container, {backgroundColor: COLORS.lightText}]}>
+            <Text style={[styles.text, {color: COLORS.stroke}]}>{label}</Text>
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container:{
         paddingHorizontal: 8,

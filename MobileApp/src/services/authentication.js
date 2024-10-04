@@ -1,20 +1,20 @@
 import axios from "axios"
-const baseUrl = "http://localhost:5251/api/Authentication"
+const baseUrl = "http://192.168.2.3:8081/api/Authentication"
 export const signupApi = async (name, email, username, password, tin)=>{
     // const url = baseUrl + "/signup"
     // console.log("Url: ", url);
     // return await axios.post(url, {
     //     "fullName": name,
-    //     "email": email,
+    //     "email": "string",
     //     "username": username,
     //     "password": password,
     //     "tin": tin
     // })
     // .then(response => {
-    //     console.log("==> ", response);
+    //     console.log("==>Response:  ", response.data);
     // })
     // .catch(error => {
-    //     console.log("==> ", error);
+    //     console.log("==>Error:  ", error);
     // })
     switch(username){
         case "Email":

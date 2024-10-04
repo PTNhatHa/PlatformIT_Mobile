@@ -4,7 +4,9 @@ export const COLORS = {
     main: '#397979',
     secondMain: '#003B57',
     stroke: "#757575",
-    lightText: "#D9D9D9"
+    lightText: "#D9D9D9",
+    yellow: "#FFCC00",
+    green: "#34C759"
 };
 
 export const commonStyles = StyleSheet.create({

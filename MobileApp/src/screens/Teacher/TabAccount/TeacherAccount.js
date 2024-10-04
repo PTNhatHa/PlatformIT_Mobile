@@ -1,8 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native"
-import BoyIT from "../../../assets/images/BoyIT.png";
 import { TouchableOpacity } from "react-native";
-import { useUser } from "../../contexts/UserContext";
-import { COLORS } from "../../utils/constants";
+import { useUser } from "../../../contexts/UserContext";
+import { COLORS } from "../../../utils/constants";
 
 export const TeacherAccount = ({navigation})=>{
     const {state, dispatch} = useUser()

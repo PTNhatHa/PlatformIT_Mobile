@@ -106,7 +106,7 @@ export default SignUp = ({navigation}) => {
                 }
             }
             catch (error){
-                setErrorConfirm("Can't call API")
+                console.log("==>Error:  ", error);
             }
         }
     }

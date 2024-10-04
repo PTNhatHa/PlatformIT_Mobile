@@ -1,9 +1,10 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
-import { Tag } from "./Tag"
+import { Tag, TagNoColor } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { formatDateTime } from "../utils/utils";
+import { useState, useEffect } from "react"
 
 const initCourse={
     img: "",
@@ -42,15 +43,17 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
                         {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
                     </Text>
                 </View>
-                {data.startRegist &&
                     <View style={styles.tags}>
-                        <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>
-                            {data.isRegist ? "Registing" : 
-                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                        </Text>
+                        {data.startRegist &&
+                            <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
+                        }
+                        {data.startRegist &&
+                            <Text style={styles.dataText}>
+                                {data.isRegist ? "Registing" : 
+                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                            </Text>
+                        }
                     </View>
-                }
                 <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.costSale}</Text>
                     <Text style={styles.cost}>{data.cost}</Text>
@@ -106,6 +109,54 @@ export const CardHorizontalTeacher = ({data = initTeacher})=>{
     )
 }
 
+const initAssignment = {
+    id: 1,
+    title: "Title",
+    img: "",
+    nameCourse: "OOP",
+    due: new Date(),
+    duration: 45,
+    type: "Test",
+    isPublish: true,
+    submitted: 0.8
+}
+export const CardHorizontalAssignment = ({data = initAssignment})=>{
+    const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
+    useEffect(()=>{
+        if(data.submitted > 0.8){
+            setCircleColor(COLORS.green)
+        } else{
+            setCircleColor(!data.isPublish? COLORS.lightText: COLORS.yellow)
+        }
+    }, [data.isPublish, data.submitted])
+    return(
+        <TouchableOpacity style={styles.container}>
+            <Image source={data.img} style={styles.img}/>
+            <View style={{flex: 1}}>
+                <Text style={styles.title}>{data.title}</Text>
+                <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
+                <View style={styles.tags}>
+                    <Feather name="calendar" size={12} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>Due date: {formatDateTime(data.due)}</Text>
+                </View>
+                <View style={styles.tags}>
+                    {data.duration &&
+                        <Feather name="clock" size={12} color={COLORS.stroke} />
+                    }
+                    {data.duration &&
+                        <Text style={styles.dataText}>Duration: {data.duration} min</Text>
+                    }
+                    </View>
+                <View style={[styles.tags, {alignSelf: "flex-end"}]}>
+                    <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
+                    <TagNoColor label={data.type}/>
+                    <TagNoColor label={data.isPublish ? "Publish": "Unpublish"}/>
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         padding: 12,
@@ -132,6 +183,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         columnGap: 2,
+        minHeight: 13
     },
     tagsText: {
         fontSize: 10,
@@ -174,5 +226,10 @@ const styles = StyleSheet.create({
         borderRadius: 90,
         width: 80,
         height: 80
+    },
+    circle: {
+        height: 16,
+        width: 16,
+        borderRadius: 90,
     }
 })

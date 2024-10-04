@@ -1,9 +1,9 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native"
-import { PersionalInfor } from "../../components/PI"
-import { TextInputLabel } from "../../components/TextInputField"
+import { PersionalInfor } from "../../../components/PI"
+import { TextInputLabel } from "../../../components/TextInputField"
 import { useState } from "react"
-import { COLORS } from "../../utils/constants"
-import { Professional } from "../../components/Professional"
+import { COLORS } from "../../../utils/constants"
+import { Professional } from "../../../components/Professional"
 
 export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
