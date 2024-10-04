@@ -1,9 +1,115 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { formatDateTime } from "../utils/utils";
-import { TagNoColor } from "./Tag";
+import { Tag, TagNoColor } from "./Tag";
 import { useState, useEffect } from "react"
+
+
+const initCourse={
+    img: "",
+    title: "Title",
+    listTags: [
+        { id: 1, value: "Web developer"},
+        { id: 2, value: "Backend"},
+        { id: 3, value: "Frontend"},
+    ],
+    startCourse: new Date(),
+    endCourse: new Date(),
+    startRegist: new Date(),
+    endRegist: new Date(),
+    isRegist: true,
+    cost: 120,
+    costSale: 100
+}
+export const CardVirticalCourse = ({data = initCourse})=>{
+    return(
+        <TouchableOpacity style={styles.container}>
+            <Image source={data.img} style={styles.img}/>
+            <View style={{ flex: 1}}>
+                <Text style={styles.title}>{data.title}</Text>
+                {data.listTags.length > 0 && 
+                    <View style={styles.content}>
+                        <Tag label={data.listTags[0].value}/>
+                        {data.listTags.length > 1 && 
+                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        }
+                        
+                    </View>
+                }
+                <View style={styles.content}>
+                    <Feather name="clock" size={10} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>
+                        {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
+                    </Text>
+                </View>
+                    <View style={styles.content}>
+                        {data.startRegist &&
+                            <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
+                        }
+                        {data.startRegist &&
+                            <Text style={styles.dataText}>
+                                {data.isRegist ? "Registing" : 
+                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                            </Text>
+                        }
+                    </View>
+                <View style={styles.wrapCost}>
+                    <Text style={styles.costSale}>${data.costSale}</Text>
+                    <Text style={styles.cost}>{data.cost}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+const initCenter={
+    img: "",
+    title: "Title",
+    listTags: [
+        { id: 1, value: "Web developer"},
+        { id: 2, value: "Backend"},
+        { id: 3, value: "Frontend"},
+    ],
+}
+export const CardVirticalCenter = ({data = initCenter})=>{
+    return(
+        <TouchableOpacity style={styles.container}>
+            <Image source={data.img} style={styles.img}/>
+            <View>
+                <Text style={styles.title}>{data.title}</Text>
+                {data.listTags.length > 0 && 
+                    <View style={styles.content}>
+                        <Tag label={data.listTags[0].value}/>
+                        {data.listTags.length > 1 && 
+                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        }
+                        
+                    </View>
+                }
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+const initTeacher={
+    img: "",
+    name: "Name",
+    description: "Description"
+}
+export const CardVirticalTeacher = ({data = initTeacher})=>{
+    return(
+        <TouchableOpacity style={styles.container}>
+            <Image source={data.img} style={styles.avata}/>
+            <View>
+                <Text style={styles.title}>{data.name}</Text>
+                <Text style={styles.dataText}>{data.description}</Text>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 
 const initAssignment = {
     id: 1,
@@ -56,12 +162,12 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         borderRadius: 8,
         marginBottom: 10,
-        flexDirection: "column",
+        flexDirection: "row",
         columnGap: 10
     },
     img: {
-        width: 90,
-        height: 90,
+        width: 95,
+        height: 95,
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 4,
@@ -84,5 +190,28 @@ const styles = StyleSheet.create({
         height: 16,
         width: 16,
         borderRadius: 90,
-    }
+    },
+    wrapCost:{
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 2,
+        justifyContent: "flex-end",
+    },
+    costSale:{
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.secondMain
+    },
+    cost: {
+        fontSize: 10,
+        textDecorationLine: 'line-through',
+        color: COLORS.stroke
+    },
+    avata: {
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        borderRadius: 90,
+        width: 80,
+        height: 80
+    },
 })
