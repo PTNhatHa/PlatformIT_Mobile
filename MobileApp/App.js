@@ -4,6 +4,7 @@ import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
 import { CardVirticalAssignment, CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from './src/components/CardVertical';
 import { TeacherHome } from './src/screens/Teacher/TabHome/TeacherHome';
+import { ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/screens/ViewAll';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <UserProvider>
           <SigninSignup/>
           {/* <TeacherHome/> */}
+          {/* <ViewAll/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

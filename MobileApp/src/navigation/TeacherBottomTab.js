@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ChangePassword } from "../screens/ChangePassword";
 import { TeacherAccount } from "../screens/Teacher/TabAccount/TeacherAccount";
 import { TeacherHome } from "../screens/Teacher/TabHome/TeacherHome";
+import { ViewAll } from "../screens/ViewAll";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -21,6 +22,10 @@ const StackHomeScreen = ()=>{
             <StackHome.Screen
                 name="Home"
                 component={TeacherHome}
+            />
+            <StackHome.Screen
+                name="View All"
+                component={ViewAll}
             />
         </StackHome.Navigator>
     )

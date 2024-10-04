@@ -29,7 +29,7 @@ export const CardVirticalCourse = ({data = initCourse})=>{
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
-                {data.listTags.length > 0 && 
+                {data.listTags?.length > 0 && 
                     <View style={styles.content}>
                         <Tag label={data.listTags[0].value}/>
                         {data.listTags.length > 1 && 
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         columnGap: 2, 
+        minHeight: 13
     },
     dataText: {
         fontSize: 12,
