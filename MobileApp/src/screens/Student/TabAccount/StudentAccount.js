@@ -9,8 +9,8 @@ export const StudentAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={BoyIT} style={styles.avataImage}/>
-                <Text style={styles.text}>NhatHa</Text>
+                <Image source={state.user.avaImg} style={styles.avataImage}/>
+                <Text style={styles.text}>{state.user.name}</Text>
             </View>
             <View>
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>

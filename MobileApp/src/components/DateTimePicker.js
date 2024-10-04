@@ -4,6 +4,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native"
 import { COLORS } from '../constants';
 import Feather from '@expo/vector-icons/Feather';
 import { TouchableOpacity } from 'react-native';
+import { formatDateTime } from '../utils/utils';
 
 export const DateTimePickerComponent = ({
     label="label", value, setValue
@@ -16,11 +17,6 @@ export const DateTimePickerComponent = ({
         setShow(false)
         setIsChoose(true)
     }
-    const formatDateTime = (date) => {
-        // Định dạng ngày theo chuẩn của Mỹ
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-        return date ? date.toLocaleDateString('en-US', options) : '';
-    };
     return(
         <View >
             <Text style={styles.input}>{label}</Text>

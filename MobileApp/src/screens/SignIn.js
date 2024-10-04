@@ -42,13 +42,13 @@ export default SignIn = ({navigation}) => {
                 await AsyncStorage.setItem('password', password)
                 if(response.idRole === 3){
                     // Student
-                    const user = { name: "NhatHa", email: "Nhatha@gmail.com", idRole: 3, avaImg: BoyIT}
+                    const user = { name: "NhatHa Student", email: "Nhatha@gmail.com", idRole: 3, avaImg: BoyIT}
                     dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Student")
                 }
                 if(response.idRole === 4){
                     // Teacher
-                    const user = { name: "NhatHa", email: "Nhatha@gmail.com", idRole: 4, avaImg: BoyIT}
+                    const user = { name: "NhatHa Teacher", email: "Nhatha@gmail.com", idRole: 4, avaImg: BoyIT}
                     dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Teacher")
                 }

@@ -14,15 +14,17 @@ import { Professional } from './src/components/Professional';
 import { Account } from './src/screens/Student/TabAccount/StudentAccount';
 import { UserProvider } from './src/contexts/UserContext';
 import { ChangePassword } from './src/screens/ChangePassword';
+import { Tag } from './src/components/Tag';
+import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from './src/components/Card';
+import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <Account/> */}
-          {/* <ChangePassword/> */}
+          {/* <SigninSignup/> */}
+          <StudentHome/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
