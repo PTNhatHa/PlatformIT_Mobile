@@ -98,9 +98,11 @@ export default SignUp = ({navigation}) => {
                 const response = await signupApi(name, email, username, password, tin)
                 if(response.error){
                     setErrorConfirm(response.data)
-                }
-                if(response.success){
-                    Alert.alert("Sign up", response.data)
+                }else
+                if(response){
+                    Alert.alert("Sign up", "Sign up successfully")
+                    await AsyncStorage.setItem('username', username)
+                    await AsyncStorage.setItem('password', "")
                     setErrorConfirm(null)
                     navigation.navigate("Sign in")
                 }

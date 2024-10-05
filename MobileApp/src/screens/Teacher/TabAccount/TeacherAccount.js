@@ -9,7 +9,7 @@ export const TeacherAccount = ({navigation})=>{
         <View style={styles.container}>
             <View style={styles.top}>
                 <Image source={state.user.avaImg} style={styles.avataImage}/>
-                <Text style={styles.text}>{state.user.name}</Text>
+                <Text style={styles.text}>{state.user.fullname}</Text>
             </View>
             <View>
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>

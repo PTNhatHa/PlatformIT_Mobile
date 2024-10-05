@@ -37,18 +37,18 @@ export default SignIn = ({navigation}) => {
             } else{
                 Alert.alert("Sign in", "Sign in successfully")
                 const idUser = response.idUser
-                await AsyncStorage.setItem('idUser', idUser)
+                await AsyncStorage.setItem('idUser', JSON.stringify(response.idUser))
                 await AsyncStorage.setItem('username', username)
                 await AsyncStorage.setItem('password', password)
-                if(response.idRole === 3){
+                if(response.idRole == 3){
                     // Student
-                    const user = { name: "NhatHa Student", email: "Nhatha@gmail.com", idRole: 3, avaImg: BoyIT}
+                    const user = response
                     dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Student")
                 }
-                if(response.idRole === 4){
+                if(response.idRole == 4){
                     // Teacher
-                    const user = { name: "NhatHa Teacher", email: "Nhatha@gmail.com", idRole: 4, avaImg: BoyIT}
+                    const user = response
                     dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Teacher")
                 }

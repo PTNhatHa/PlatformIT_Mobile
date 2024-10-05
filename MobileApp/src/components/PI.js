@@ -21,9 +21,9 @@ const init = {
 }
 export const PersionalInfor = ({navigation})=>{
     const {state, dispatch} = useUser()
-    const [name, setName] = useState(state.user.name)
+    const [name, setName] = useState(state.user.fullname)
     const [phoneNumber, setPhoneNumber] = useState(init.initPhoneNumber)
-    const [email, setEmail] = useState(state.user.email)
+    const [email, setEmail] = useState(init.initEmail)
     const [birthday, setBirthday] = useState(init.initBirthday)
     const [gender, setGender] = useState(init.initGender)
     const [nationality, setNationality] = useState(init.initNationality)

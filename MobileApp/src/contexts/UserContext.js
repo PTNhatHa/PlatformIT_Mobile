@@ -8,7 +8,13 @@ export const SET_INFO = 'SET_INFO'
 
 const initialState = {
     idUser: null,
-    user: null
+    user: {
+        "fullname": "", 
+        "idAccount": null, 
+        "idCenter": null, 
+        "idRole": null, 
+        "idUser": null
+    }
 }
 
 // Định nghĩa Reducer
@@ -28,7 +34,7 @@ const UserProvider = ({children}) => {
         const loadUserData = async()=>{
             const idUser = await AsyncStorage.getItem('idUser')
             if(idUser){
-                const user = {name: "NhatHa"}
+                const user = {fullname: "NhatHa"}
                 dispatch({ type: SET_INFO, payload: {idUser, user}})
             }
         }
