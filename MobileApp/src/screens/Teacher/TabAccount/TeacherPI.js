@@ -1,18 +1,48 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native"
 import { PersionalInfor } from "../../../components/PI"
 import { TextInputLabel } from "../../../components/TextInputField"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { COLORS } from "../../../utils/constants"
 import { Professional } from "../../../components/Professional"
+import { useUser } from "../../../contexts/UserContext"
+import { getUserInfo } from "../../../services/user"
 
 export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
-    const [specialize, setspecialize] = useState("Chuyên ngành giảng dạy")
+    const [specialize, setSpecialize] = useState("Chuyên ngành giảng dạy")
+    const {state, dispatch} = useUser()
+    const [data, setData] = useState()
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getUserInfo(state.idUser);
+                setData(response);
+                setCenter(response.centerName)
+                setSpecialize(response.teachingMajor)
+            } catch (error) {
+                console.error("Error fetching user info: ", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [state.idUser]);
+
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
     return(
         <View style={styles.PI}>
             <ScrollView>
                 <Text style={styles.title}>Your information</Text>
-                <PersionalInfor navigation={navigation}/>
+                <PersionalInfor navigation={navigation} info={data}/>
                 <Text style={styles.title}>More information</Text>
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.body}>

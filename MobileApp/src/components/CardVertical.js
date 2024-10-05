@@ -215,4 +215,8 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80
     },
+    tagsText: {
+        fontSize: 10,
+        color: COLORS.main
+    },
 })

@@ -11,28 +11,32 @@ import { TouchableOpacity } from "react-native"
 import { useUser } from "../contexts/UserContext"
 
 const init = {
-    initAvata: Img,
-    initName: "Nhật Hạ", 
-    initPhoneNumber: "0123456789", 
-    initEmail: "nhatha@gmail.com", 
-    initBirthday: new Date(), 
-    initGender: "Female", 
-    initNationality: "Hungary",
+    "fullName": "fullName",
+    "email": "ex@email.com",
+    "phoneNumber": null,
+    "gender": null,
+    "dob": null,
+    "nationality": null,
+    "centerName": null,
+    "teachingMajor": null,
+    "description": null,
+    "links": null,
+    "qualificationModels": null
 }
-export const PersionalInfor = ({navigation})=>{
+export const PersionalInfor = ({navigation, info = init})=>{
     const {state, dispatch} = useUser()
-    const [name, setName] = useState(state.user.fullname)
-    const [phoneNumber, setPhoneNumber] = useState(init.initPhoneNumber)
-    const [email, setEmail] = useState(init.initEmail)
-    const [birthday, setBirthday] = useState(init.initBirthday)
-    const [gender, setGender] = useState(init.initGender)
-    const [nationality, setNationality] = useState(init.initNationality)
+    const [name, setName] = useState(info.fullName)
+    const [phoneNumber, setPhoneNumber] = useState(info.phoneNumber)
+    const [email, setEmail] = useState(info.email)
+    const [birthday, setBirthday] = useState(info.dob)
+    const [gender, setGender] = useState(info.gender)
+    const [nationality, setNationality] = useState(info.nationality)
     return(
         <View style={styles.PI}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.avataWrapper}>
                     <View style={styles.avataInner}>
-                        <Image style={styles.avataImage} source={init.initAvata}/>
+                        <Image style={styles.avataImage} source={info.link}/>
                         <TouchableOpacity style={styles.avataCamera}>
                             <Feather name="camera" size={20} color={COLORS.main} />
                         </TouchableOpacity>

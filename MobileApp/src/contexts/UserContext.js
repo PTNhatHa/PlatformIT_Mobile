@@ -14,7 +14,20 @@ const initialState = {
         "idCenter": null, 
         "idRole": null, 
         "idUser": null
-    }
+    },
+    info: {
+        "fullName": "bo",
+        "email": "bo@email.com",
+        "phoneNumber": null,
+        "gender": null,
+        "dob": null,
+        "nationality": null,
+        "centerName": null,
+        "teachingMajor": null,
+        "description": null,
+        "links": null,
+        "qualificationModels": null
+      }
 }
 
 // Định nghĩa Reducer
