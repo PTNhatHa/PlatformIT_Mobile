@@ -8,6 +8,7 @@ import CheckBox from "react-native-check-box";
 import { useState } from "react";
 import { signupApi } from "../services/authentication";
 import Feather from '@expo/vector-icons/Feather';
+import { validateEmail } from "../utils/utils";
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
@@ -23,13 +24,6 @@ export default SignUp = ({navigation}) => {
     const [errorConfirm, setErrorConfirm] = useState(null)
     const [tin, setTin] = useState("")
     const [errorTin, setErrorTin] = useState(null)
-    const validateEmail = (email) => {
-        return String(email)
-            .toLowerCase()
-            .match(
-                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            )
-    }
     const handleOnchangeName = (v)=>{
         setName(v)
         setErrorName(null)

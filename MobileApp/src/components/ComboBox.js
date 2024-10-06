@@ -15,7 +15,9 @@ export const ComboBox = ({
             try{
                 const response = await fetch("https://restcountries.com/v3.1/all")
                 const data = await response.json()
-                const allNations = data.map(item => ({ label: item.name.common, value: item.name.common}))
+                const allNations = data
+                    .map(item => ({ label: item.name.common, value: item.name.common}))
+                    .sort((a,b) => a.label.localeCompare(b.label))
                 setNations(allNations)
             } catch(e){
                 console.log("Error fetch API Nation");

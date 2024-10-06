@@ -14,7 +14,7 @@ export const TeacherPI = ({navigation})=>{
     const [description, setDescription] = useState("Description")
     const {state, dispatch} = useUser()
     const [data, setData] = useState()
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,7 +44,9 @@ export const TeacherPI = ({navigation})=>{
         <View style={styles.PI}>
             <ScrollView>
                 <Text style={styles.title}>Your information</Text>
-                {/* <PersionalInfor navigation={navigation} info={data}/> */}
+                {data &&
+                    <PersionalInfor navigation={navigation} info={data}/>
+                }
                 <Text style={styles.title}>More information</Text>
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.body}>

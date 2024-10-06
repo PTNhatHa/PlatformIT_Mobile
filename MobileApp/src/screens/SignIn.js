@@ -1,4 +1,4 @@
-import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
 import { ButtonBlu } from "../components/Button";
@@ -10,16 +10,75 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SET_INFO, useUser } from "../contexts/UserContext";
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { validateEmail } from "../utils/utils";
 const { width, height } = Dimensions.get('window');
+
+export const ForgotPassword = ()=>{
+    const [email, setEmail] = useState("")
+    const [errorEmail, setErrorEmail] = useState(null)
+    const [isDone, setIsDone] = useState(false)
+    const handleOnchangeEmail = (v)=>{
+        setEmail(v)
+        setErrorEmail(null)
+        if(!v) setErrorEmail("Require!")
+        if(!validateEmail(v)) setErrorEmail("Invalid!")
+    }
+    const handleSendEmail=()=>{
+        if(email)
+            setIsDone(true)
+        else {
+            setIsDone(false)
+            setErrorEmail("Require")
+        }
+    }
+    return(
+        <View style={[styles.wrapSignIn, {height: "", paddingVertical: 24}]}>
+            <Text style={{ fontSize: 20, fontWeight: "bold"}}>Forgot your password?</Text>
+            <TextInputIcon
+                value={email}
+                placeholder={"Mail"}
+                icon={<Feather name="mail" size={24} color="black" />}
+                onchangeText={handleOnchangeEmail}
+                keyboardType={"email-address"}
+                error={errorEmail}
+            />
+            {isDone &&
+                <Text style={styles.isSend}>Check your mail to receive a new password</Text>
+            }
+            <ButtonBlu title={"Send"} action={handleSendEmail}/>
+        </View>
+    )
+}
 
 export default SignIn = ({navigation}) => {
     const {state, dispatch} = useUser()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(null)
+    const [isForgot, setIsForgot] = useState(false)
+    const [email, setEmail] = useState("")
+    const [errorEmail, setErrorEmail] = useState(null)
+    const [isDone, setIsDone] = useState(false)
+    const handleOnchangeEmail = (v)=>{
+        setEmail(v)
+        setErrorEmail(null)
+        if(!v) setErrorEmail("Require!")
+        if(!validateEmail(v)) setErrorEmail("Invalid!")
+    }
+    const handleSendEmail=()=>{
+        if(email)
+            setIsDone(true)
+        else {
+            setIsDone(false)
+            setErrorEmail("Require")
+        }
+    }
+
     useEffect(()=>{
         const loadUserData = async()=>{
             const idUser = await AsyncStorage.getItem('idUser')
+            // console.log("==>id: ", idUser);
             if(idUser){
                 const oldUser = await AsyncStorage.getItem('username')
                 const oldPass = await AsyncStorage.getItem('password')
@@ -101,7 +160,7 @@ export default SignIn = ({navigation}) => {
                         error={error}
                         isPassword={true}
                     />
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>setIsForgot(true)}>
                         <Text style={styles.textGray}>Forgot your password?</Text>
                     </TouchableOpacity>
                 </View>
@@ -123,6 +182,33 @@ export default SignIn = ({navigation}) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <Modal
+                visible={isForgot}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={()=>setIsForgot(false)}
+            >
+                <View style={styles.selectImgWrapper}>
+                    <View style={[styles.wrapSignIn, styles.forgot]}>
+                        <TouchableOpacity style={styles.close} onPress={()=>setIsForgot(false)}>
+                            <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 20, fontWeight: "bold"}}>Forgot your password?</Text>
+                        <TextInputIcon
+                            value={email}
+                            placeholder={"Mail"}
+                            icon={<Feather name="mail" size={24} color="black" />}
+                            onchangeText={handleOnchangeEmail}
+                            keyboardType={"email-address"}
+                            error={errorEmail}
+                        />
+                        {isDone &&
+                            <Text style={styles.isSend}>Check your mail to receive a new password</Text>
+                        }
+                        <ButtonBlu title={"Send"} action={handleSendEmail}/>
+                    </View>
+                </View>
+            </Modal>
         </View>
     )
 }
@@ -137,24 +223,24 @@ const styles = StyleSheet.create({
         paddingVertical: 48,
         rowGap: 32
       },
-      background: {
+    background: {
         ...StyleSheet.absoluteFillObject,
       },
-      topSignIn: {
+    topSignIn: {
         flexDirection: "row",
         columnGap: 16,
         alignItems: "center"
       },
-      topTextBig: {
+    topTextBig: {
         fontSize: 20,
         fontWeight: "bold",
         color: "#fafafa"
       },
-      topTextSmall: {
+    topTextSmall: {
         fontSize: 16,
         color: "#fafafa"
       },
-      wrapSignIn: {
+    wrapSignIn: {
         backgroundColor: "white",
         height: "75%",
         width: "100%",
@@ -169,11 +255,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 40,
         rowGap: 12,
       },
-      textGray:{
+    textGray:{
         color: COLORS.stroke,
         fontSize: 16
       },
-      party3:{
+    party3:{
         borderWidth: 1,
         borderColor: COLORS.stroke,
         borderRadius: 90,
@@ -182,5 +268,30 @@ const styles = StyleSheet.create({
         height: 35,
         justifyContent: "center",
         alignItems: "center"
-      }
+      },
+    isSend:{
+        color: COLORS.secondMain,
+        fontSize: 16,
+        fontWeight: "bold",
+        justifyContent: "center",
+        textAlign: "center"
+      },
+    selectImgWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    close:{
+        alignSelf: "flex-end"
+    },
+    forgot: {
+        height: "", 
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        paddingBottom: 24
+    }
 })

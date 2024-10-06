@@ -7,16 +7,18 @@ import { TeacherHome } from './src/screens/Teacher/TabHome/TeacherHome';
 import { ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/screens/ViewAll';
 import { TeacherPI } from './src/screens/Teacher/TabAccount/TeacherPI';
 import { SocialLink } from './src/components/SocialLink';
+import { ForgotPassword } from './src/screens/SignIn';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <TeacherHome/> */}
           {/* <ViewAll/> */}
           {/* <TeacherPI/> */}
+          {/* <ForgotPassword/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

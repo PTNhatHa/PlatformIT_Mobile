@@ -6,7 +6,8 @@ export const COLORS = {
     stroke: "#757575",
     lightText: "#D9D9D9",
     yellow: "#FFCC00",
-    green: "#34C759"
+    green: "#34C759",
+    red: "#C00F0C"
 };
 
 export const commonStyles = StyleSheet.create({

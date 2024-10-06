@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         width: "85%"
     },
     error:{
-        color: "#C00F0C"
+        color: COLORS.red
     },
     inputLabel:{
         fontSize: 16,

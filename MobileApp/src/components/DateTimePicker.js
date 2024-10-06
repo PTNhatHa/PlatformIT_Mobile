@@ -7,12 +7,12 @@ import { TouchableOpacity } from 'react-native';
 import { formatDateTime } from '../utils/utils';
 
 export const DateTimePickerComponent = ({
-    label="label", value, setValue
+    label="label", value = new Date(), setValue
 })=>{
     const [show, setShow] = useState(false)
     const [isChoose, setIsChoose] = useState(false)
     const handleOnChange = (e, selectDate)=>{
-        const currentDate = selectDate || value
+        const currentDate = selectDate || value || new Date()
         setValue(currentDate)
         setShow(false)
         setIsChoose(true)
@@ -24,7 +24,7 @@ export const DateTimePickerComponent = ({
                 <TextInput 
                     style={[styles.input, {color: isChoose?"black":COLORS.lightText}]}
                     value={formatDateTime(value)}
-                    readOnly
+                    editable={false}
                 />
                 <TouchableOpacity onPress={()=>setShow(true)}>
                 <Feather name="calendar" size={24} color={isChoose?"black":COLORS.lightText} />
@@ -34,7 +34,7 @@ export const DateTimePickerComponent = ({
                 <DateTimePicker 
                     mode="date" 
                     onChange={handleOnChange}
-                    value={value} 
+                    value={value instanceof Date ? value : new Date()} 
                     display="default"
                 />
             }
