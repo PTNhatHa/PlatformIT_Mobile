@@ -2,32 +2,35 @@ import { useState } from "react"
 import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { Tag, TagYellow } from "./Tag";
 
 const initProfessions = [
     {
         id: 1,
         title: "aaa",
         description: "aaaaaaaaaa",
-        image: "https://i.pinimg.com/originals/13/5d/7c/135d7c70b6eba155a057046f41b3501e.jpg"
+        image: "https://i.pinimg.com/originals/13/5d/7c/135d7c70b6eba155a057046f41b3501e.jpg",
+        isPending: true
     },
     {
         id: 2,
         title: "bbb",
         description: "bbbbbbbb",
-        image: "https://i.pinimg.com/originals/6b/b0/72/6bb0727d93aaa98defc3f0d2364eb4df.jpg"
+        image: "https://i.pinimg.com/originals/6b/b0/72/6bb0727d93aaa98defc3f0d2364eb4df.jpg",
+        isPending: false
     },
 ]
 
 export const Professional = ({
-    label, value
+    label, value=initProfessions
 }) => {
-    const [professions, setProfessions] = useState(initProfessions)
+    const [professions, setProfessions] = useState(value)
     const [selectImg, setSelectImg] = useState("")
     const [textColor, setTextColor] = useState(COLORS.lightText)
 
     const handleAddNew = ()=>{
         const idMax = Math.max(...professions.map(item => item.id), 0)
-        const newProfessions = [...professions, { id: idMax + 1 }]
+        const newProfessions = [...professions, { id: idMax + 1 , new: true}]
         setProfessions(newProfessions)
     }
     const handleDelete = (select)=>{
@@ -62,6 +65,12 @@ export const Professional = ({
                 <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
                 {professions.map((item)=>
                 <View style={styles.container} key={item.id}>
+                    {item.isPending ? 
+                        <TagYellow label={"Pending"}/>
+                        :
+                        !item.new ? 
+                        <Tag label={"Approved"}/> : ""
+                    }
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
                         value={item.title}
@@ -74,13 +83,15 @@ export const Professional = ({
                         placeholder={"Desciption"}
                         onChangeText={(v)=>handleChangeData(item.id, v, "description")}
                     />
-                    <View style={styles.wrapbtn}>
-                        <TouchableOpacity style={styles.btn}>
-                            <AntDesign name="file1" size={20} color={COLORS.stroke} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.id)}>
-                            <AntDesign name="delete" size={20} color={COLORS.stroke} />
-                        </TouchableOpacity>
+                    <View style={styles.wrap}>
+                        <View style={styles.wrapbtn}>
+                            <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.id)}>
+                                <AntDesign name="delete" size={20} color={COLORS.stroke} />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.btn}>
+                                <AntDesign name="file1" size={20} color={COLORS.stroke} />
+                            </TouchableOpacity>
+                        </View>
                         <TouchableOpacity onPress={()=>handleSelectImg(item.image)}>
                             <Image 
                                 source={{uri: item.image}}
@@ -119,7 +130,8 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         flexDirection: "column",
         columnGap: 8,
-        rowGap: 10
+        rowGap: 10,
+        
     },
     input:{
         fontSize: 16,
@@ -127,6 +139,10 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
+    },
+    wrap:{
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
     wrapbtn:{
         flexDirection: "row",
@@ -140,7 +156,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText
     },
     image: {
-        width: 215,
+        width: 200,
         height: 200,
         resizeMode: 'contain',
         borderWidth: 1,

@@ -8,6 +8,7 @@ import { ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/scr
 import { TeacherPI } from './src/screens/Teacher/TabAccount/TeacherPI';
 import { SocialLink } from './src/components/SocialLink';
 import { ForgotPassword } from './src/screens/SignIn';
+import { Professional } from './src/components/Professional';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           {/* <ViewAll/> */}
           {/* <TeacherPI/> */}
           {/* <ForgotPassword/> */}
+          {/* <Professional/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

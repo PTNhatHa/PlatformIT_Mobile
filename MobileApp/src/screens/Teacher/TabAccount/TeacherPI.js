@@ -7,6 +7,7 @@ import { Professional } from "../../../components/Professional"
 import { useUser } from "../../../contexts/UserContext"
 import { getUserInfo } from "../../../services/user"
 import { SocialLink } from "../../../components/SocialLink"
+import { ButtonGreen } from "../../../components/Button"
 
 export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
@@ -56,6 +57,7 @@ export const TeacherPI = ({navigation})=>{
                         <SocialLink/>
                         <Professional label={"Professional Qualifications"}/>
                     </View>
+                    <ButtonGreen title={"Save Change"}/>
                 </ScrollView>
             </ScrollView>
         </View>        
