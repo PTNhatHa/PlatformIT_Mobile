@@ -6,13 +6,15 @@ import { COLORS } from "../../../utils/constants"
 import { Professional } from "../../../components/Professional"
 import { useUser } from "../../../contexts/UserContext"
 import { getUserInfo } from "../../../services/user"
+import { SocialLink } from "../../../components/SocialLink"
 
 export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
     const [specialize, setSpecialize] = useState("Chuyên ngành giảng dạy")
+    const [description, setDescription] = useState("Description")
     const {state, dispatch} = useUser()
     const [data, setData] = useState()
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,12 +44,14 @@ export const TeacherPI = ({navigation})=>{
         <View style={styles.PI}>
             <ScrollView>
                 <Text style={styles.title}>Your information</Text>
-                <PersionalInfor navigation={navigation} info={data}/>
+                {/* <PersionalInfor navigation={navigation} info={data}/> */}
                 <Text style={styles.title}>More information</Text>
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.body}>
                         <TextInputLabel label={"Affiliated Center"} value={center}/>
                         <TextInputLabel label={"Teaching Specialization"} value={specialize}/>
+                        <TextInputLabel label={"Description"} value={description}/>
+                        <SocialLink/>
                         <Professional label={"Professional Qualifications"}/>
                     </View>
                 </ScrollView>

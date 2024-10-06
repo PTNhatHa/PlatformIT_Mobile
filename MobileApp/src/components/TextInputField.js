@@ -33,7 +33,7 @@ export const TextInputLabel = ({
         setTextColor("black")
     }
     return(
-        <View >
+        <View>
             <Text style={styles.input}>{label}</Text>
             <View style={styles.container}>
                 <TextInput 
