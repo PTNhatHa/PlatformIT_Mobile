@@ -8,8 +8,8 @@ export const TeacherAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={state.user.avaImg} style={styles.avataImage}/>
-                <Text style={styles.text}>{state.user.fullname}</Text>
+                <Image source={state.avatar} style={styles.avataImage}/>
+                <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 90,
         borderWidth: 1,
-        borderColor: COLORS.lightText
+        borderColor: COLORS.lightText,
+        resizeMode: 'contain',
     },
     text:{
         fontSize: 16,

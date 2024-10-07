@@ -12,6 +12,7 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { validateEmail } from "../utils/utils";
+import { getUserInfo } from "../services/user";
 const { width, height } = Dimensions.get('window');
 
 export const ForgotPassword = ()=>{
@@ -77,14 +78,10 @@ export default SignIn = ({navigation}) => {
 
     useEffect(()=>{
         const loadUserData = async()=>{
-            const idUser = await AsyncStorage.getItem('idUser')
-            // console.log("==>id: ", idUser);
-            if(idUser){
-                const oldUser = await AsyncStorage.getItem('username')
-                const oldPass = await AsyncStorage.getItem('password')
-                setUsername(oldUser)
-                setPassword(oldPass)
-            }
+            const oldUser = await AsyncStorage.getItem('username')
+            const oldPass = await AsyncStorage.getItem('password')
+            setUsername(oldUser)
+            setPassword(oldPass)
         }
         loadUserData()
     }, [])
@@ -95,20 +92,21 @@ export default SignIn = ({navigation}) => {
                 setError(response.data)
             } else{
                 Alert.alert("Sign in", "Sign in successfully")
-                const idUser = response.idUser
-                await AsyncStorage.setItem('idUser', JSON.stringify(response.idUser))
                 await AsyncStorage.setItem('username', username)
                 await AsyncStorage.setItem('password', password)
+                const info = await getUserInfo(response.idUser)
+                let userInfo = response
+                if(info.avatar){
+                    userInfo = {
+                        ...response,
+                        "avatar": info
+                    }
+                }
+                dispatch({ type: SET_INFO, payload: userInfo })
                 if(response.idRole == 3){
-                    // Student
-                    const user = response
-                    dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Student")
                 }
                 if(response.idRole == 4){
-                    // Teacher
-                    const user = response
-                    dispatch({ type: SET_INFO, payload: { idUser,user} })
                     navigation.navigate("Teacher")
                 }
                 setError("")

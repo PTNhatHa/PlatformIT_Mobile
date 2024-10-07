@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useReducer } from "react"
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import defautAva from "../../assets/images/DefaultAva.png"
 // Khởi tạo Context
 const UserContext = createContext()
 
@@ -8,33 +8,20 @@ export const SET_INFO = 'SET_INFO'
 
 const initialState = {
     idUser: null,
-    user: {
-        "fullname": "", 
-        "idAccount": null, 
-        "idCenter": null, 
-        "idRole": null, 
-        "idUser": null
-    },
-    info: {
-        "fullName": "bo",
-        "email": "bo@email.com",
-        "phoneNumber": null,
-        "gender": null,
-        "dob": null,
-        "nationality": null,
-        "centerName": null,
-        "teachingMajor": null,
-        "description": null,
-        "links": null,
-        "qualificationModels": null
-      }
+    fullname: "", 
+    idAccount: null, 
+    idCenter: null, 
+    idRole: null, 
+    avatar: defautAva,
 }
 
 // Định nghĩa Reducer
 const userReducer = (state, action) => {
     switch (action.type){
         case SET_INFO:
-            return {...state, idUser: action.payload.idUser, user: action.payload.user}
+            return {
+                ...state, 
+                ...action.payload} // Chỉ cập nhật các trường được truyền vào
         default:
             return state
     }
@@ -43,16 +30,6 @@ const userReducer = (state, action) => {
 // Tạo Provider
 const UserProvider = ({children}) => {
     const [state, dispatch] = useReducer(userReducer, initialState)
-    useEffect(()=>{
-        const loadUserData = async()=>{
-            const idUser = await AsyncStorage.getItem('idUser')
-            if(idUser){
-                const user = {fullname: "NhatHa"}
-                dispatch({ type: SET_INFO, payload: {idUser, user}})
-            }
-        }
-        loadUserData()
-    }, [])
     return(
         <UserContext.Provider value={{ state, dispatch}}>
             {children}

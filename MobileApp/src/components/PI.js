@@ -11,15 +11,22 @@ import { TouchableOpacity } from "react-native"
 import { useUser } from "../contexts/UserContext"
 
 const init = {
-    "fullName": "fullName",
-    "email": "ex@email.com",
-    "phoneNumber": null,
-    "gender": null,
-    "dob": null,
-    "nationality": null,
-    "centerName": null,
-    "teachingMajor": null,
+    "idUser": null,
+    "idRole": null,
+    "fullName": "nhatha",
+    "avatar": null,
+    "email": "nhatha@gmail.com",
+    "phoneNumber": "0123459876",
+    "gender": 1,
+    "dob": "2003-01-22T00:00:00",
+    "nationality": "Vietnam",
+    "centerName": "HAHYWU CENTER",
+    "teachingMajor": "Software Developer",
     "description": null,
+    "joinedDate": null,
+    "status": null,
+    "statusDesc": null,
+    "isMainCenterAdmin": null,
     "links": null,
     "qualificationModels": null
 }
@@ -36,7 +43,7 @@ export const PersionalInfor = ({navigation, info = init})=>{
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.avataWrapper}>
                     <View style={styles.avataInner}>
-                        <Image style={styles.avataImage} source={info.link}/>
+                        <Image style={styles.avataImage} source={state.avatar}/>
                         <TouchableOpacity style={styles.avataCamera}>
                             <Feather name="camera" size={20} color={COLORS.main} />
                         </TouchableOpacity>
