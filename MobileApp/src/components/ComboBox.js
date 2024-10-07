@@ -13,10 +13,10 @@ export const ComboBox = ({
     useEffect(()=>{
         const fetchNation = async()=>{
             try{
-                const response = await fetch("https://restcountries.com/v3.1/all")
+                const response = await fetch("https://valid.layercode.workers.dev/list/countries?format=select&flags=true&value=code&fbclid=IwY2xjawFwM6NleHRuA2FlbQIxMAABHW2K_vJUQRhGVQK2riWrcOBB7qbVU4hzIacUboX7epq6YvAcDw7oT02eVg_aem_YuZo8uFthUzAKAdLVN0y3w")
                 const data = await response.json()
-                const allNations = data
-                    .map(item => ({ label: item.name.common, value: item.name.common}))
+                const allNations = data.countries
+                    .map(item => ({ label: item.label, value: item.value}))
                     .sort((a,b) => a.label.localeCompare(b.label))
                 setNations(allNations)
             } catch(e){
