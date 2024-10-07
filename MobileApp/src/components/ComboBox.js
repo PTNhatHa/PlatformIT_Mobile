@@ -26,9 +26,9 @@ export const ComboBox = ({
         fetchNation()
     }, [])
     const listGender = [
-        { label: "Male", value: "Male"},
-        { label: "Female", value: "Female"},
-        { label: "None", value: "None"},
+        { label: "Male", value: 0},
+        { label: "Female", value: 1},
+        { label: "Other", value: 2},
     ]
     const [listBox, setListBox] = useState(isGender?listGender:listNations)
     useEffect(() => {

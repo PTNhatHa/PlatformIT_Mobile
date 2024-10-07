@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native"
 import { useUser } from "../../../contexts/UserContext"
-import BoyIT from "../../../../assets/images/BoyIT.png";
 import { COLORS } from "../../../utils/constants";
 import { TouchableOpacity } from "react-native";
 
@@ -9,8 +8,8 @@ export const StudentAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={state.user.avaImg} style={styles.avataImage}/>
-                <Text style={styles.text}>{state.user.fullname}</Text>
+                <Image source={state.avatar} style={styles.avataImage}/>
+                <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>

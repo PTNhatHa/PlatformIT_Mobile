@@ -5,7 +5,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { formatDateTime } from "../utils/utils";
 import { Tag, TagNoColor } from "./Tag";
 import { useState, useEffect } from "react"
-
+import DefaultImg from "../../assets/images/DefaultImg.png"
 
 const initCourse={
     img: "",
