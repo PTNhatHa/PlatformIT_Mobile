@@ -38,7 +38,6 @@ export const Professional = ({
         const newProfessions = [...professions, { id: idMax + 1 , new: true}]
         setProfessions(newProfessions)
         setProfess(newProfessions)
-        console.log(newProfessions);
     }
     const handleDelete = (select)=>{
         const newProfessions = professions.filter(item => item.id !== select)
@@ -103,8 +102,8 @@ export const Professional = ({
     }
     return(
         <View style={{flex: 1}}>
+            <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
             <View style={{rowGap: 10}}>
-                <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
                 {professions ? 
                 professions.map((item)=>
                 <View style={styles.container} key={item.id}>
@@ -188,7 +187,6 @@ const styles = StyleSheet.create({
     input:{
         fontSize: 16,
         width: "100%",
-        paddingVertical: 8,
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
     },

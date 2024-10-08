@@ -8,10 +8,10 @@ const iniSocial = [
     { id: 2, title: "Facebook", link: "bbbbbb"},
 ]
 export const SocialLink = ({
-    list = iniSocial, setList=()=>{}
+    value = iniSocial, setValue=()=>{}
 }) => {
     const [textColor, setTextColor] = useState(COLORS.lightText)
-    // const [list, setList] = useState(listSocial)
+    const [list, setList] = useState(value)
     const handleOnchangeText = (id, value, title)=>{
         const newList = list.map((item)=>{
             if(item.id === id && title === "title"){
@@ -29,16 +29,19 @@ export const SocialLink = ({
             return item
         })
         setList(newList)
+        setValue(newList)
         setTextColor("black")
     }
     const handleDelete = (id)=>{
         const newList = list.filter((item)=> item.id !== id)
         setList(newList)
+        setValue(newList)
     }
     const handleAddNew = ()=>{
         const maxId = Math.max(...list.map(item => item.id), 0)
         const newList = [...list, { id: maxId + 1}]
         setList(newList)
+        setValue(newList)
     }
     return(
         <View>
