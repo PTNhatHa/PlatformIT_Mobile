@@ -1,8 +1,10 @@
 import { useState } from "react"
-import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tag, TagYellow } from "./Tag";
+import * as DocumentPicker from 'expo-document-picker';
+import { determineFileType } from "../utils/utils";
 
 const initProfessions = [
     {
@@ -59,6 +61,38 @@ export const Professional = ({
         })
         setProfessions(newProfessions)
     }
+    const pickFile = async(itemId)=>{
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: ['image/*', 'application/pdf'],
+                copyToCacheDirectory: true,
+            })
+            if(result){
+                const newList = professions.map((item)=>{
+                    if(item.id  === itemId){
+                        return{
+                            ...item,
+                            title: result.assets[0].name,
+                            image: result.assets[0].uri,
+                        }
+                    }
+                    return item
+                })
+                setProfessions(newList)
+            }
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
+    const openPdf = async(uri)=>{
+        try{
+            await Linking.openURL(uri)
+        }
+        catch(e){
+            console.log("==>Error opening pdf: ", e);
+        }
+    }
     return(
         <View style={{flex: 1}}>
             <View style={{rowGap: 10}}>
@@ -88,16 +122,23 @@ export const Professional = ({
                             <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.id)}>
                                 <AntDesign name="delete" size={20} color={COLORS.stroke} />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.btn}>
+                            <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.id)}>
                                 <AntDesign name="file1" size={20} color={COLORS.stroke} />
                             </TouchableOpacity>
                         </View>
-                        <TouchableOpacity onPress={()=>handleSelectImg(item.image)}>
-                            <Image 
-                                source={{uri: item.image}}
-                                style={styles.image}
-                            />
-                        </TouchableOpacity>
+                        { determineFileType(item.image) === "Image" ?
+                            <TouchableOpacity onPress={()=>handleSelectImg(item.image)}>
+                                <Image 
+                                    source={{uri: item.image}}
+                                    style={styles.image}
+                                />
+                            </TouchableOpacity> 
+                            : 
+                            <TouchableOpacity onPress={()=>openPdf(item.image)}>
+                                <Text style={styles.pdf}>Open pdf</Text>
+                            </TouchableOpacity>
+                        }
+                        
                     </View>
                 </View>
                 )}
@@ -177,4 +218,9 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: "contain",
     },
+    pdf:{
+        color: COLORS.main,
+        fontStyle: "italic",
+        fontWeight: "bold"
+    }
 })

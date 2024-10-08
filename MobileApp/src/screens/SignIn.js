@@ -66,7 +66,6 @@ export default SignIn = ({navigation}) => {
             if(response.error){
                 setError(response.data)
             } else{
-                Alert.alert("Sign in", "Sign in successfully")
                 await AsyncStorage.setItem('username', username)
                 await AsyncStorage.setItem('password', password)
                 const info = await getUserInfo(response.idUser)
@@ -79,10 +78,13 @@ export default SignIn = ({navigation}) => {
                 }
                 dispatch({ type: SET_INFO, payload: userInfo })
                 if(response.idRole == 3){
+                    Alert.alert("Sign in", "Sign in successfully" + response.idRole)
                     navigation.navigate("Student")
-                }
-                if(response.idRole == 4){
+                } else if(response.idRole == 4){
+                    Alert.alert("Sign in", "Sign in successfully" + response.idRole)
                     navigation.navigate("Teacher")
+                } else{
+                    Alert.alert("Notification", "We do not support 'Admin Platform' and 'Admin Center' accounts here. Please log in on your computer to continue")
                 }
                 setError("")
             }

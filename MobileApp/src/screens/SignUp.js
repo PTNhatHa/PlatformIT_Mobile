@@ -9,6 +9,7 @@ import { useState } from "react";
 import { signupApi } from "../services/authentication";
 import Feather from '@expo/vector-icons/Feather';
 import { validateEmail } from "../utils/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default SignUp = ({navigation}) => {
     const [check, setCheck] = useState(false)
@@ -94,6 +95,7 @@ export default SignUp = ({navigation}) => {
                     setErrorConfirm(response.data)
                 }else
                 if(response){
+                    console.log(response);
                     Alert.alert("Sign up", "Sign up successfully")
                     await AsyncStorage.setItem('username', username)
                     await AsyncStorage.setItem('password', "")
