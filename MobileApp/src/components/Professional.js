@@ -7,37 +7,43 @@ import * as DocumentPicker from 'expo-document-picker';
 import { determineFileType } from "../utils/utils";
 
 const initProfessions = [
-    {
-        id: 1,
-        title: "aaa",
-        description: "aaaaaaaaaa",
-        image: "https://i.pinimg.com/originals/13/5d/7c/135d7c70b6eba155a057046f41b3501e.jpg",
-        isPending: true
-    },
-    {
-        id: 2,
-        title: "bbb",
-        description: "bbbbbbbb",
-        image: "https://i.pinimg.com/originals/6b/b0/72/6bb0727d93aaa98defc3f0d2364eb4df.jpg",
-        isPending: false
-    },
+    // {
+    //     id: 1,
+    //     title: "aaa",
+    //     description: "aaaaaaaaaa",
+    //     image: "https://i.pinimg.com/originals/13/5d/7c/135d7c70b6eba155a057046f41b3501e.jpg",
+    //     isPending: true
+    // },
+    // {
+    //     id: 2,
+    //     title: "bbb",
+    //     description: "bbbbbbbb",
+    //     image: "https://i.pinimg.com/originals/6b/b0/72/6bb0727d93aaa98defc3f0d2364eb4df.jpg",
+    //     isPending: false
+    // },
 ]
 
 export const Professional = ({
-    label, value=initProfessions
+    label, value=initProfessions, setProfessions=()=>{}
 }) => {
-    const [professions, setProfessions] = useState(value)
+    const [professions, setProfess] = useState(value || [])
     const [selectImg, setSelectImg] = useState("")
     const [textColor, setTextColor] = useState(COLORS.lightText)
 
     const handleAddNew = ()=>{
-        const idMax = Math.max(...professions.map(item => item.id), 0)
+        let idMax = 0
+        if(professions){
+            idMax = Math.max(...professions.map(item => item.id), 0)
+        }
         const newProfessions = [...professions, { id: idMax + 1 , new: true}]
         setProfessions(newProfessions)
+        setProfess(newProfessions)
+        console.log(newProfessions);
     }
     const handleDelete = (select)=>{
         const newProfessions = professions.filter(item => item.id !== select)
         setProfessions(newProfessions)
+        setProfess(newProfessions)
     }
     const handleSelectImg = (select)=>{
         setSelectImg(select)
@@ -60,6 +66,7 @@ export const Professional = ({
             return item
         })
         setProfessions(newProfessions)
+        setProfess(newProfessions)
     }
     const pickFile = async(itemId)=>{
         try{
@@ -79,6 +86,7 @@ export const Professional = ({
                     return item
                 })
                 setProfessions(newList)
+                setProfess(newList)
             }
         }
         catch(error){
@@ -97,7 +105,8 @@ export const Professional = ({
         <View style={{flex: 1}}>
             <View style={{rowGap: 10}}>
                 <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
-                {professions.map((item)=>
+                {professions ? 
+                professions.map((item)=>
                 <View style={styles.container} key={item.id}>
                     {item.isPending ? 
                         <TagYellow label={"Pending"}/>
@@ -134,14 +143,16 @@ export const Professional = ({
                                 />
                             </TouchableOpacity> 
                             : 
+                            determineFileType(item.image) === "Pdf" ?
                             <TouchableOpacity onPress={()=>openPdf(item.image)}>
                                 <Text style={styles.pdf}>Open pdf</Text>
                             </TouchableOpacity>
+                            :""
                         }
                         
                     </View>
                 </View>
-                )}
+                ): ""}
                 <TouchableOpacity style={styles.btn} onPress={handleAddNew}>
                     <AntDesign name="plus" size={20} color={COLORS.stroke} />
                 </TouchableOpacity>

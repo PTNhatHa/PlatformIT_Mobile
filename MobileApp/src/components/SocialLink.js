@@ -8,10 +8,10 @@ const iniSocial = [
     { id: 2, title: "Facebook", link: "bbbbbb"},
 ]
 export const SocialLink = ({
-    listSocial = iniSocial
+    list = iniSocial, setList=()=>{}
 }) => {
     const [textColor, setTextColor] = useState(COLORS.lightText)
-    const [list, setList] = useState(listSocial)
+    // const [list, setList] = useState(listSocial)
     const handleOnchangeText = (id, value, title)=>{
         const newList = list.map((item)=>{
             if(item.id === id && title === "title"){

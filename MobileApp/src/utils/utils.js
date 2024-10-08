@@ -14,12 +14,14 @@ export const validateEmail = (email) => {
         )
 }
 export const determineFileType = (uri)=>{
-    const extension = uri.split('.').pop().toLowerCase()
-    if(['jpg', 'jpeg', 'png', 'gif'].includes(extension)){
-        return "Image"
-    } else if(extension === 'pdf'){
-        return "Pdf"
-    } else{
-        return "Unknown"
+    if(uri){
+        const extension = uri.split('.').pop().toLowerCase()
+        if(['jpg', 'jpeg', 'png', 'gif'].includes(extension)){
+            return "Image"
+        } else if(extension === 'pdf'){
+            return "Pdf"
+        } else{
+            return "Unknown"
+        }
     }
 }

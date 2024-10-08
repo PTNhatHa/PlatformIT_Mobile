@@ -13,6 +13,8 @@ export const TeacherPI = ({navigation})=>{
     const [center, setCenter] = useState("Trung tâm trực thuộc")
     const [specialize, setSpecialize] = useState("Chuyên ngành giảng dạy")
     const [description, setDescription] = useState("Description")
+    const [socials, setSocials] = useState(null)
+    const [professionals, setProfessionals] = useState(null)
     const {state, dispatch} = useUser()
     const [data, setData] = useState()
     const [loading, setLoading] = useState(true);
@@ -54,8 +56,8 @@ export const TeacherPI = ({navigation})=>{
                         <TextInputLabel label={"Affiliated Center"} value={center}/>
                         <TextInputLabel label={"Teaching Specialization"} value={specialize}/>
                         <TextInputLabel label={"Description"} value={description}/>
-                        <SocialLink/>
-                        <Professional label={"Professional Qualifications"}/>
+                        <SocialLink listSocial={socials}/>
+                        <Professional label={"Professional Qualifications"} value={professionals} setProfessions={setProfessionals}/>
                     </View>
                     <ButtonGreen title={"Save Change"}/>
                 </ScrollView>
