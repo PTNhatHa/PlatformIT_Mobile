@@ -1,192 +1,98 @@
-import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 
-const initCourse=[
-    {
-        id: 1,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 2,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: false,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 3,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-]
+const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
+const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
+const renderTeacher = ({item})=> <CardVirticalTeacher data={item}/>
 
-const initCenter=[
-    {
-        id: 1,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    {
-        id: 2,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    {
-        id: 3,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-    },
-]
-
-const initTeacher=[
-    {
-        id: 1,
-        img: "",
-        name: "Nhatha",
-        description: "Description"
-    },
-    {
-        id: 2,
-        img: "",
-        name: "Taho",
-        description: "Description"
-    },
-    {
-        id: 3,
-        img: "",
-        name: "Hyy",
-        description: "Description"
-    },
-]
-const initAssignment = [
-    {
-        id: 1,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: true,
-        submitted: 0.8
-    },
-    {
-        id: 2,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: false,
-        submitted: 0
-    },
-    {
-        id: 3,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: null,
-        type: "Exercise",
-        isPublish: true,
-        submitted: 0.9
-    },
-]
-const ViewAllCourse = ({data = initCourse})=>{
-    return(
-        <View>
+const ViewAllRender = ({data = [], type})=>{
+    // console.log(data);
+    const [indexPage, setIndexPage] = useState(1)
+    const [inputIndex, setInputIndex] = useState(1)
+    const numberItem = 2
+    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem))
+    const inputRef = useRef(null)
+    const handleChangeIndex = (isNext)=>{
+        let index = 0
+        if(isNext){
+            index = indexPage + 1
+        } else {
+            index = indexPage - 1
+        }
+        setIndexPage(index)
+        setInputIndex(index)
+        setCurrentData(data.slice((index-1)*numberItem, index*numberItem))
+    }
+    const handleOnChangeText = (v)=>{
+        if(v){
+            const newIndex = parseInt(v, 10)
+            setInputIndex(newIndex)
+        }
+        else setInputIndex("")
+    }
+    const handleOnSubmit = ()=>{
+        if(!isNaN(inputIndex) && inputIndex > 0 && inputIndex <= Math.ceil(data.length / numberItem)){
+            setIndexPage(inputIndex)
+            setCurrentData(data.slice((inputIndex-1)*numberItem, inputIndex*numberItem))
+        } else{
+            setInputIndex(indexPage)
+            Alert.alert("Error Input", "Please enter from 1 to " + Math.ceil(data.length / numberItem))
+        }
+    }
+    const renderFlatlist = (renderItem)=>{
+        return(
             <FlatList
-                data={data}
+                data={currentData}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({item})=>
-                    <CardVirticalCourse data={item}/>
-                }
+                renderItem={renderItem}
             />
+        )
+    }
+    return(
+        <View style={{ flex: 1}}>
+            {renderFlatlist( 
+                type === "Course" ? renderCourse : 
+                type === "Center" ? renderCenter : 
+                renderTeacher
+            )}
+            <View style={styles.bottom}>
+                {indexPage>1 && 
+                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(false)}>
+                        <Text style={[styles.pageNumberText, {color: "white"}]}>Previous</Text>
+                    </TouchableOpacity>
+                }
+                <TouchableOpacity style={styles.wrapPageNumber} onPress={()=> inputRef.current.focus()}>
+                    <TextInput 
+                        ref={inputRef}
+                        style={styles.pageNumberText} 
+                        value={inputIndex.toString()} 
+                        onChangeText={(v)=>handleOnChangeText(v)}
+                        onSubmitEditing={handleOnSubmit}
+                        keyboardType="numeric"    
+                    />
+                    <Text style={styles.pageNumberText}>/{Math.ceil(data.length / numberItem)} pages</Text>
+                </TouchableOpacity>
+                {indexPage < Math.ceil(data.length / numberItem) &&
+                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(true)}>
+                        <Text style={[styles.pageNumberText, {color: "white"}]}>Next</Text>
+                    </TouchableOpacity>
+                }
+            </View>
         </View>
     )
 }
-const ViewAllCenter = ({data = initCenter})=>{
-    return(
-        <View>
-            <FlatList
-                data={data}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({item})=>
-                    <CardVirticalCenter data={item}/>
-                }
-            />
-        </View>
-    )
-}
-const ViewAllTeacher = ({data = initTeacher})=>{
-    return(
-        <View>
-            <FlatList
-                data={data}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({item})=>
-                    <CardVirticalTeacher data={item}/>
-                }
-            />
-        </View>
-    )
-}
-
 const renderScene = ({ route, initCourse, initCenter, initTeacher})=>{
     switch(route.key){
         case 'first':
-            return <ViewAllCourse data={initCourse}/>
+            return <ViewAllRender data={initCourse} type={"Course"}/>
         case 'second':
-            return <ViewAllCenter data={initCenter}/>
+            return <ViewAllRender data={initCenter} type={"Center"}/>
         case 'third':
-            return <ViewAllTeacher data={initTeacher}/>
+            return <ViewAllRender data={initTeacher} type={"Teacher"}/>
         default:
             return null;
     }
@@ -255,4 +161,36 @@ const styles = StyleSheet.create({
         fontSize: 16,
         width: "90%"
     },
+    bottom:{
+        position: "absolute",
+        bottom: 0,
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        columnGap: 20
+    },
+    wrapPageNumber:{
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    pageNumber:{
+        // paddingVertical: 6,
+        // paddingHorizontal: 12,
+        height: 32,
+        width: 100,
+        backgroundColor: "white",
+        alignSelf: "flex-start",
+        borderRadius: 4,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.main
+    },
+    pageNumberText: {
+        color: COLORS.main,
+        fontWeight: "bold",
+        fontSize: 16,
+
+    }
 })
