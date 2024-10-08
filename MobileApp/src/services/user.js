@@ -39,3 +39,19 @@ export const changePassword = async (currentPW, newPW, idUser)=>{
         }
     })
 }
+
+export const forgotPassword = async (email)=>{
+    const url = baseUrl + "/ForgotPassword?email=" + email
+    return await axios.post(url)
+    .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error.response.data);
+        return {
+            error: 400,
+            data: "We couldn't find an account with that email address."
+        }
+    })
+}

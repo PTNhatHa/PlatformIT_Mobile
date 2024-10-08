@@ -12,45 +12,8 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { validateEmail } from "../utils/utils";
-import { getUserInfo } from "../services/user";
+import { forgotPassword, getUserInfo } from "../services/user";
 const { width, height } = Dimensions.get('window');
-
-export const ForgotPassword = ()=>{
-    const [email, setEmail] = useState("")
-    const [errorEmail, setErrorEmail] = useState(null)
-    const [isDone, setIsDone] = useState(false)
-    const handleOnchangeEmail = (v)=>{
-        setEmail(v)
-        setErrorEmail(null)
-        if(!v) setErrorEmail("Require!")
-        if(!validateEmail(v)) setErrorEmail("Invalid!")
-    }
-    const handleSendEmail=()=>{
-        if(email)
-            setIsDone(true)
-        else {
-            setIsDone(false)
-            setErrorEmail("Require")
-        }
-    }
-    return(
-        <View style={[styles.wrapSignIn, {height: "", paddingVertical: 24}]}>
-            <Text style={{ fontSize: 20, fontWeight: "bold"}}>Forgot your password?</Text>
-            <TextInputIcon
-                value={email}
-                placeholder={"Mail"}
-                icon={<Feather name="mail" size={24} color="black" />}
-                onchangeText={handleOnchangeEmail}
-                keyboardType={"email-address"}
-                error={errorEmail}
-            />
-            {isDone &&
-                <Text style={styles.isSend}>Check your mail to receive a new password</Text>
-            }
-            <ButtonBlu title={"Send"} action={handleSendEmail}/>
-        </View>
-    )
-}
 
 export default SignIn = ({navigation}) => {
     const {state, dispatch} = useUser()
@@ -67,9 +30,21 @@ export default SignIn = ({navigation}) => {
         if(!v) setErrorEmail("Require!")
         if(!validateEmail(v)) setErrorEmail("Invalid!")
     }
-    const handleSendEmail=()=>{
-        if(email)
-            setIsDone(true)
+    const handleSendEmail= async()=>{
+        if(email){
+            setIsDone(false)
+            try{
+                const response = await forgotPassword(email)
+                if(response.error){
+                    setErrorEmail(response.data)
+                } else{
+                    setIsDone(true)
+                }
+            }
+            catch(error){
+    
+            }
+        }
         else {
             setIsDone(false)
             setErrorEmail("Require")
@@ -188,7 +163,12 @@ export default SignIn = ({navigation}) => {
             >
                 <View style={styles.selectImgWrapper}>
                     <View style={[styles.wrapSignIn, styles.forgot]}>
-                        <TouchableOpacity style={styles.close} onPress={()=>setIsForgot(false)}>
+                        <TouchableOpacity style={styles.close} onPress={()=>{
+                            setIsForgot(false)
+                            setEmail(null)
+                            setErrorEmail(null)
+                            setIsDone(false)
+                        }}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
                         <Text style={{ fontSize: 20, fontWeight: "bold"}}>Forgot your password?</Text>
