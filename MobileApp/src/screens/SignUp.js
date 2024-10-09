@@ -8,6 +8,7 @@ import CheckBox from "react-native-check-box";
 import { useState } from "react";
 import { signupApi } from "../services/authentication";
 import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { validateEmail } from "../utils/utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -25,6 +26,8 @@ export default SignUp = ({navigation}) => {
     const [errorConfirm, setErrorConfirm] = useState(null)
     const [tin, setTin] = useState("")
     const [errorTin, setErrorTin] = useState(null)
+    const [centerName, setCenterName] = useState("")
+    const [errorCenterName, setErrorCenterName] = useState(null)
     const handleOnchangeName = (v)=>{
         setName(v)
         setErrorName(null)
@@ -50,6 +53,11 @@ export default SignUp = ({navigation}) => {
         setTin(v)
         setErrorTin(null)
         if(!v) setErrorTin("Require!")
+    }
+    const handleOnchangeCenterName = (v)=>{
+        setCenterName(v)
+        setErrorCenterName(null)
+        if(!v) setErrorCenterName("Require!")
     }
     const handleCofirm = (v)=>{
         setConfirmPassword(v)
@@ -90,7 +98,7 @@ export default SignUp = ({navigation}) => {
         if(checkNull)
         {
             try{
-                const response = await signupApi(name, email, username, password, tin)
+                const response = await signupApi(name, email, username, password, centerName, tin)
                 if(response.error){
                     setErrorConfirm(response.data)
                 }else
@@ -183,14 +191,23 @@ export default SignUp = ({navigation}) => {
                             rightText="Register as Admin Center"
                         />
                         {check &&
-                            <TextInputIcon
-                                value={tin}
-                                placeholder={"TIN"}
-                                icon={<Feather name="credit-card" size={24} color="black" />}
-                                onchangeText={handleOnchangeTin}
-                                keyboardType={"numeric"}
-                                error={errorTin}
-                            />
+                            <View  style={{rowGap: 6}}>
+                                <TextInputIcon
+                                    value={tin}
+                                    placeholder={"TIN"}
+                                    icon={<Feather name="credit-card" size={24} color="black" />}
+                                    onchangeText={handleOnchangeTin}
+                                    keyboardType={"numeric"}
+                                    error={errorTin}
+                                />
+                                <TextInputIcon
+                                    value={centerName}
+                                    placeholder={"Center Name"}
+                                    icon={<Ionicons name="business-outline" size={24} color="black" />}
+                                    onchangeText={handleOnchangeCenterName}
+                                    error={errorCenterName}
+                                />
+                            </View>
                         }
                     </View>
                     <ButtonBlu 

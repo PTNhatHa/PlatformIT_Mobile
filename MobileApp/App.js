@@ -195,9 +195,9 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <TeacherHome/> */}
-          <ViewAll initCourse={initCourse} initCenter={initCenter} initTeacher={initTeacher}/>
+          {/* <ViewAll initCourse={initCourse} initCenter={initCenter} initTeacher={initTeacher}/> */}
           {/* <TeacherPI/> */}
           {/* <ForgotPassword/> */}
           {/* <Professional/> */}
