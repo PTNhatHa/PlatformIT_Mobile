@@ -10,6 +10,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
 import { CardHorizontalTeacher } from "../components/CardHorizontal";
+import { CardReview } from "../components/CardReview";
 
 
 const initCourse={
@@ -91,7 +92,10 @@ export const DetailCourse = ({data = initCourse})=>{
             {/* Course Assignments */}
 
             {/* Course review */}
-
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Latest reviews</Text>
+                <CardReview/>
+            </View>
             {/* Teacher */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Teacher</Text>
