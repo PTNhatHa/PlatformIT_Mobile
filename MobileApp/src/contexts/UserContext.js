@@ -11,7 +11,7 @@ const initialState = {
     fullname: "", 
     idAccount: null, 
     idCenter: null, 
-    idRole: null, 
+    idRole: 3, 
     avatar: defautAva,
 }
 
