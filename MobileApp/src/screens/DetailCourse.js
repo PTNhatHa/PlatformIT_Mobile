@@ -9,6 +9,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
+import { CardHorizontalTeacher } from "../components/CardHorizontal";
 
 
 const initCourse={
@@ -27,7 +28,11 @@ const initCourse={
     cost: 120,
     costSale: 100,
     nameCenter: "Center ABC",
-    star: 4.5
+    star: 4.5,
+
+    teacher: {
+
+    }
 }
 
 export const DetailCourse = ({data = initCourse})=>{
@@ -88,6 +93,10 @@ export const DetailCourse = ({data = initCourse})=>{
             {/* Course review */}
 
             {/* Teacher */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Teacher</Text>
+                <CardHorizontalTeacher/>
+            </View>
 
         </ScrollView>
     )
