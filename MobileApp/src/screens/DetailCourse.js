@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
 import { Tag } from "../components/Tag"
@@ -31,9 +31,33 @@ const initCourse={
     nameCenter: "Center ABC",
     star: 4.5,
 
+    reviews: [
+        {
+            id: 1,
+            star: 4,
+            title: "Title",
+            reviewBoby: "ReviewBoby",
+            Reviewer: {
+                img: "",
+                name: "Name reviewer"
+            },
+            date: new Date()
+        },
+        {
+            id: 2,
+            star: 2,
+            title: "Title2",
+            reviewBoby: "ReviewBoby2",
+            Reviewer: {
+                img: "",
+                name: "Name reviewer2"
+            },
+            date: new Date()
+        },
+    ],
     teacher: {
 
-    }
+    },
 }
 
 export const DetailCourse = ({data = initCourse})=>{
@@ -94,7 +118,14 @@ export const DetailCourse = ({data = initCourse})=>{
             {/* Course review */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Latest reviews</Text>
-                <CardReview/>
+                <FlatList
+                    data={data.reviews}
+                    renderItem={({item})=>
+                        <CardReview data={item}/>
+                    }
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                />
             </View>
             {/* Teacher */}
             <View style={styles.wrapper}>
