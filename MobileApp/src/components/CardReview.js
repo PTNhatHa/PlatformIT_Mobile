@@ -16,10 +16,18 @@ const initReview={
 export const CardReview = ({data = initReview})=>{
     const renderStars = ()=>{
         let star = []
-        for(let i=0; i < data.star; i++){
-            star.push(
-                <AntDesign name="star" size={16} color={COLORS.yellow} />
-            )
+        for(let i=0; i < 5; i++){
+            if(i < data.star)
+            {
+                star.push(
+                    <AntDesign name="star" size={16} color={COLORS.yellow} />
+                )
+            } else {
+                star.push(
+                    <AntDesign name="staro" size={16} color={COLORS.yellow} />
+                )
+            }
+            
         }
         return star
     }

@@ -11,7 +11,9 @@ import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
 import { CardHorizontalTeacher } from "../components/CardHorizontal";
 import { CardReview } from "../components/CardReview";
-
+import { ButtonIcon } from "../components/Button";
+import { CardLecture } from "../components/CardLecture";
+import { useState } from "react";
 
 const initCourse={
     img: "",
@@ -31,6 +33,33 @@ const initCourse={
     nameCenter: "Center ABC",
     star: 4.5,
 
+    content: [
+        {
+            section: 1,
+            lecture: [
+                {
+                    title: "Title",
+                    introduction: "introduction",
+                    exercise: 0
+                },
+                {
+                    title: "Title",
+                    introduction: "introduction",
+                    exercise: 3
+                },
+            ]
+        },
+        {
+            section: 2,
+            lecture: [
+                {
+                    title: "Title2",
+                    introduction: "introduction2",
+                    exercise: 1
+                },
+            ]
+        },
+    ],
     reviews: [
         {
             id: 1,
@@ -62,13 +91,31 @@ const initCourse={
 
 export const DetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
+    const [showSections, setShowSections] = useState(data?.content?.map(item => (
+        {
+            section: item.section,
+            isShow: true
+        }
+    )) || [])
+    const handleShowSection = (idSection)=>{
+        const newShow = showSections.map(item => {
+            if(item.section === idSection){
+                return{
+                    ...item,
+                    isShow: !item.isShow
+                }
+            }
+            return item
+        })
+        setShowSections(newShow)
+    }
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Course Information</Text>
                 <Image source={DefaultImg} style={styles.infoImage}/>
-                <View style={{ rowGap: 4}}>
+                <View style={{ rowGap: 2}}>
                     <Text style={styles.infoTitle}>{data.title}</Text>
                     {data.listTags.length > 0 && 
                         <View style={styles.inforContent}>
@@ -105,19 +152,53 @@ export const DetailCourse = ({data = initCourse})=>{
                         <Text style={styles.cost}>{data.cost}</Text>
                     </View>
                 </View>
-                {state.idRole !== 3 &&
+                {state.idRole === 3 &&
                     <TouchableOpacity style={styles.infoBtn}>
                         <Text style={styles.infoBtnText}>Pay for this course</Text>
                     </TouchableOpacity>
                 }
             </View>
-            {/* Course contents */}
 
-            {/* Course Assignments */}
+            {/* Course contents */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Course content</Text>
+                <View>
+                    {data.content.map((item)=>{
+                        let checkIsShow = showSections.find(section => section.section === item.section).isShow
+                        return(
+                            <View key={item.section}>
+                                <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.section)}>
+                                    { checkIsShow ?
+                                        <AntDesign name="caretup" size={16} color="black" />
+                                        :
+                                        <AntDesign name="caretdown" size={16} color="black" />
+                                    }
+                                    <Text style={styles.section}>
+                                        Section {item.section} 
+                                        - {item.lecture.length} {item.lecture.length > 1 ? "lectures" : "lecture"}
+                                    </Text>
+                                </TouchableOpacity>
+                                <View style={[styles.wrapLecture, {height: checkIsShow? "auto" : 0}]}>
+                                    {item.lecture.map(item => 
+                                        <CardLecture data={item}/>
+                                    )}
+                                </View>
+                            </View>
+                        )}
+                    )}
+                </View>
+            </View>
+
+            {/* Course assignments */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Test</Text>
+                
+            </View>
 
             {/* Course review */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Latest reviews</Text>
+                <ButtonIcon title={"Write a review"} icon={<FontAwesome6 name="pen-to-square" size={16} color={COLORS.main} />}/>
                 <FlatList
                     data={data.reviews}
                     renderItem={({item})=>
@@ -127,23 +208,26 @@ export const DetailCourse = ({data = initCourse})=>{
                     showsHorizontalScrollIndicator={false}
                 />
             </View>
+
             {/* Teacher */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Teacher</Text>
                 <CardHorizontalTeacher/>
             </View>
-
         </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        padding: 16,
+        // padding: 16,
     },
     wrapper: {
         width: "100%",
-        paddingVertical: 16,
+        padding: 16,
+        rowGap: 4,
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText
     },
     infoImage: {
         resizeMode: "contain",
@@ -184,5 +268,18 @@ const styles = StyleSheet.create({
     infoBtnText: {
         color: "white",
         fontWeight: "bold"
+    },
+    section:{
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    wrapSection:{
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 4
+    },
+    wrapLecture: {
+        overflow: "hidden",
+        height: "auto"
     }
 })
