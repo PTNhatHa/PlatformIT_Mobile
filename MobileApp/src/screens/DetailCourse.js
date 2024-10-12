@@ -14,6 +14,7 @@ import { CardReview } from "../components/CardReview";
 import { ButtonIcon } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
 import { useState } from "react";
+import { CardAssignmentStudent } from "../components/CardAssignment";
 
 const initCourse={
     img: "",
@@ -60,6 +61,33 @@ const initCourse={
             ]
         },
     ],
+    test:[
+        {
+            id: 1,
+            title: "Title",
+            introduction: "introduction",
+            due: new Date(),
+            duration: 45,
+        },
+        {
+            id: 2,
+            title: "Title2",
+            introduction: "Introduction2222222",
+            due: null,
+            duration: 45,
+        },
+        {
+            id: 3,
+            title: "Title3",
+            introduction: "Introduction3",
+        },
+        {
+            id: 4,
+            title: "Title4",
+            introduction: "Intro",
+            duration: 45,
+        },
+    ],
     reviews: [
         {
             id: 1,
@@ -91,6 +119,7 @@ const initCourse={
 
 export const DetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
+    const [showAllTest, setShowAllTest] = useState(false)
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
             section: item.section,
@@ -178,7 +207,7 @@ export const DetailCourse = ({data = initCourse})=>{
                                         - {item.lecture.length} {item.lecture.length > 1 ? "lectures" : "lecture"}
                                     </Text>
                                 </TouchableOpacity>
-                                <View style={[styles.wrapLecture, {height: checkIsShow? "auto" : 0}]}>
+                                <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                                     {item.lecture.map(item => 
                                         <CardLecture data={item}/>
                                     )}
@@ -192,7 +221,14 @@ export const DetailCourse = ({data = initCourse})=>{
             {/* Course assignments */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Test</Text>
-                
+                <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
+                    {data.test.map(item => 
+                        <CardAssignmentStudent data={item}/>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
+                    <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Course review */}
@@ -278,8 +314,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         columnGap: 4
     },
-    wrapLecture: {
+    wrapShow: {
         overflow: "hidden",
         height: "auto"
+    },
+    showAll:{
+        alignItems: "center"
     }
 })

@@ -122,7 +122,7 @@ const initAssignment = {
     isPublish: true,
     submitted: 0.8
 }
-export const CardVirticalAssignment = ({data = initAssignment})=>{
+export const CardVirticalAssignmentTeacher = ({data = initAssignment})=>{
     const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
     useEffect(()=>{
         if(data.submitted > 0.8){
@@ -137,10 +137,14 @@ export const CardVirticalAssignment = ({data = initAssignment})=>{
             <View style={{flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
                 <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
-                <View style={styles.content}>
-                    <Feather name="calendar" size={12} color={COLORS.stroke} />
-                    <Text style={styles.dataText}>Due date: {formatDateTime(data.due)}</Text>
-                </View>
+                {data.due ? 
+                    <View style={styles.content}>
+                        <Feather name="calendar" size={12} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>Due date: {formatDateTime(data.due)}</Text>
+                    </View>
+                    :
+                    ""
+                }
                 <View style={styles.content}>
                     <Feather name="clock" size={12} color={COLORS.stroke} />
                     <Text style={styles.dataText}>Duration: {data.duration} min</Text>

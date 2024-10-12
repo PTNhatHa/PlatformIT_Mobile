@@ -1,6 +1,6 @@
 import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { commonStyles } from "../../../utils/constants"
-import { CardHorizontalAssignment, CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../../../components/CardHorizontal"
+import { CardHorizontalAssignment, CardHorizontalAssignmentTeacher, CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../../../components/CardHorizontal"
 import { CardVirticalAssignment } from "../../../components/CardVertical"
 
 const initCourse=[
@@ -151,7 +151,7 @@ export const TeacherHome = ({navigation})=>{
                     data={initAssignment}
                     horizontal={true}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalAssignment data={item} />}
+                    renderItem={({ item }) => <CardHorizontalAssignmentTeacher data={item} />}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />

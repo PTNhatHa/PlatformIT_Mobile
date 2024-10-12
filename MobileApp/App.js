@@ -11,6 +11,7 @@ import { ForgotPassword } from './src/screens/SignIn';
 import { Professional } from './src/components/Professional';
 import { DetailCourse } from './src/screens/DetailCourse';
 import { CardLecture } from './src/components/CardLecture';
+import { CardAssignmentStudent } from './src/components/CardAssignment';
 
 export default function App() {
   return (
@@ -19,7 +20,6 @@ export default function App() {
         <UserProvider>
           {/* <SigninSignup/> */}
           <DetailCourse/>
-          {/* <CardLecture/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
