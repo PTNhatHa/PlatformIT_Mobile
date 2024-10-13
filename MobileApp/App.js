@@ -13,14 +13,16 @@ import { DetailCourse } from './src/screens/DetailCourse';
 import { CardLecture } from './src/components/CardLecture';
 import { CardAssignmentStudent } from './src/components/CardAssignment';
 import { DetailTeacher } from './src/screens/DetailTeacher';
+import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
-          <DetailTeacher/>
+          <SigninSignup/>
+          {/* <DetailTeacher/> */}
+          {/* <StudentHome/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

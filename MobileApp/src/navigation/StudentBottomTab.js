@@ -10,6 +10,9 @@ import { StudentAccount } from "../screens/Student/TabAccount/StudentAccount";
 import { ChangePassword } from "../screens/ChangePassword";
 import { StudentHome } from "../screens/Student/TabHome/StudentHome";
 import { ViewAll } from "../screens/ViewAll";
+import { DetailCourse } from "../screens/DetailCourse";
+import { DetailCenter } from "../screens/DetailCenter";
+import { DetailTeacher } from "../screens/DetailTeacher";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -26,6 +29,18 @@ const StackHomeScreen = ()=>{
             <StackHome.Screen
                 name="View All"
                 component={ViewAll}
+            />
+            <StackHome.Screen
+                name="Detail Course"
+                component={DetailCourse}
+            />
+            <StackHome.Screen
+                name="Detail Center"
+                component={DetailCenter}
+            />
+            <StackHome.Screen
+                name="Detail Teacher"
+                component={DetailTeacher}
             />
         </StackHome.Navigator>
     )

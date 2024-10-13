@@ -6,6 +6,7 @@ import { formatDateTime } from "../utils/utils";
 import { Tag, TagNoColor } from "./Tag";
 import { useState, useEffect } from "react"
 import DefaultImg from "../../assets/images/DefaultImg.png"
+import { useNavigation } from "@react-navigation/native";
 
 const initCourse={
     img: "",
@@ -24,8 +25,9 @@ const initCourse={
     costSale: 100
 }
 export const CardVirticalCourse = ({data = initCourse})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")}>
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
@@ -74,8 +76,9 @@ const initCenter={
     ],
 }
 export const CardVirticalCenter = ({data = initCenter})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
             <Image source={data.img} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.title}</Text>
@@ -99,8 +102,9 @@ const initTeacher={
     description: "Description"
 }
 export const CardVirticalTeacher = ({data = initTeacher})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher")}>
             <Image source={data.img} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.name}</Text>
@@ -122,7 +126,7 @@ const initAssignment = {
     isPublish: true,
     submitted: 0.8
 }
-export const CardVirticalAssignmentTeacher = ({data = initAssignment})=>{
+export const CardVirticalAssignmentTeacher = ({data = initAssignment, navigation})=>{
     const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
     useEffect(()=>{
         if(data.submitted > 0.8){

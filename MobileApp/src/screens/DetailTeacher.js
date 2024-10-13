@@ -165,7 +165,7 @@ export const DetailTeacher =({data=initTeacher})=>{
                 <View style={styles.wrapper}>
                     <Text style={commonStyles.title}>Social/Profile link</Text>
                     {data.socials.map(item => 
-                        <TouchableOpacity style={styles.wrapSocail}>
+                        <TouchableOpacity style={styles.wrapSocail} key={item.id}>
                             <Text style={styles.infoText}>{item.title}</Text>
                             <MaterialIcons name="open-in-new" size={16} color={COLORS.stroke} />
                         </TouchableOpacity>
@@ -180,6 +180,7 @@ export const DetailTeacher =({data=initTeacher})=>{
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
+        backgroundColor: "white"
     },
     wrapper: {
         width: "100%",

@@ -233,7 +233,7 @@ export const DetailCourse = ({data = initCourse})=>{
                 <Text style={commonStyles.title}>Test</Text>
                 <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
                     {data.test.map(item => 
-                        <CardAssignmentStudent data={item}/>
+                        <CardAssignmentStudent data={item} key={item.id}/>
                     )}
                 </View>
                 <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
@@ -269,6 +269,7 @@ export const DetailCourse = ({data = initCourse})=>{
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
+        backgroundColor: "white"
     },
     wrapper: {
         width: "100%",

@@ -116,7 +116,7 @@ export const StudentHome = ({navigation})=>{
                     data={initCourse}
                     horizontal={true}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalCourse data={item} />}
+                    renderItem={({ item }) => <CardHorizontalCourse data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />
@@ -132,7 +132,7 @@ export const StudentHome = ({navigation})=>{
                     data={initCenter}
                     horizontal={true}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalCenter data={item} />}
+                    renderItem={({ item }) => <CardHorizontalCenter data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />
@@ -148,7 +148,7 @@ export const StudentHome = ({navigation})=>{
                     data={initTeacher}
                     horizontal={true}
                     keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalTeacher data={item} />}
+                    renderItem={({ item }) => <CardHorizontalTeacher data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />

@@ -20,11 +20,11 @@ export const CardReview = ({data = initReview})=>{
             if(i < data.star)
             {
                 star.push(
-                    <AntDesign name="star" size={16} color={COLORS.yellow} />
+                    <AntDesign name="star" size={16} color={COLORS.yellow} key={i}/>
                 )
             } else {
                 star.push(
-                    <AntDesign name="staro" size={16} color={COLORS.yellow} />
+                    <AntDesign name="staro" size={16} color={COLORS.yellow} key={i}/>
                 )
             }
             

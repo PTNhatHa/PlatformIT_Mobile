@@ -5,8 +5,10 @@ import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
+import { useNavigation } from "@react-navigation/native";
 
 const initCourse={
+    id: 1,
     img: "",
     title: "Title",
     listTags: [
@@ -23,8 +25,9 @@ const initCourse={
     costSale: 100
 }
 export const CardHorizontalCourse = ({data = initCourse})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")}>
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
@@ -73,8 +76,9 @@ const initCenter={
     ],
 }
 export const CardHorizontalCenter = ({data = initCenter})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
             <Image source={data.img} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.title}</Text>
@@ -98,8 +102,9 @@ const initTeacher={
     description: "Description"
 }
 export const CardHorizontalTeacher = ({data = initTeacher})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.containerTecher}>
+        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")}>
             <Image source={data.img} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
                 <Text style={styles.title}>{data.name}</Text>

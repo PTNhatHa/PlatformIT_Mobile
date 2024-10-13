@@ -183,6 +183,7 @@ export const DetailCenter =({data=initCenter})=>{
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
+        backgroundColor: "white"
     },
     wrapper: {
         width: "100%",
