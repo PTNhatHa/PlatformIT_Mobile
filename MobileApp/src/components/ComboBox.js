@@ -56,7 +56,6 @@ export const ComboBox = ({
                     value={value}
                 />
             </View>
-            
         </View>
     )
 }
