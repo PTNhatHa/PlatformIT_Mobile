@@ -9,7 +9,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ChangePassword } from "../screens/ChangePassword";
 import { TeacherAccount } from "../screens/Teacher/TabAccount/TeacherAccount";
 import { TeacherHome } from "../screens/Teacher/TabHome/TeacherHome";
-import { ViewAll } from "../screens/ViewAll";
+import { StudentViewAll, TeacherViewAll, ViewAll } from "../screens/ViewAll";
+import { DetailCourse } from "../screens/DetailCourse";
+import { DetailCenter } from "../screens/DetailCenter";
+import { DetailTeacher } from "../screens/DetailTeacher";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -25,7 +28,19 @@ const StackHomeScreen = ()=>{
             />
             <StackHome.Screen
                 name="View All"
-                component={ViewAll}
+                component={TeacherViewAll}
+            />
+            <StackHome.Screen
+                name="Detail Course"
+                component={DetailCourse}
+            />
+            <StackHome.Screen
+                name="Detail Center"
+                component={DetailCenter}
+            />
+            <StackHome.Screen
+                name="Detail Teacher"
+                component={DetailTeacher}
             />
         </StackHome.Navigator>
     )

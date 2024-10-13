@@ -1,5 +1,5 @@
 import { Alert, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical"
+import { CardVirticalAssignmentTeacher, CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect, useRef } from "react";
@@ -8,6 +8,7 @@ import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
 const renderTeacher = ({item})=> <CardVirticalTeacher data={item}/>
+const renderAssignment = ({item})=> <CardVirticalAssignmentTeacher data={item}/>
 
 const ViewAllRender = ({data = [], type})=>{
     // console.log(data);
@@ -57,7 +58,8 @@ const ViewAllRender = ({data = [], type})=>{
             {renderFlatlist( 
                 type === "Course" ? renderCourse : 
                 type === "Center" ? renderCenter : 
-                renderTeacher
+                type === "Teacher" ? renderTeacher :
+                type === "Assignment" ? renderAssignment : ""
             )}
             <View style={styles.bottom}>
                 {indexPage>1 && 
@@ -85,7 +87,7 @@ const ViewAllRender = ({data = [], type})=>{
         </View>
     )
 }
-const renderScene = ({ route, initCourse, initCenter, initTeacher})=>{
+const renderSceneStudent = ({ route, initCourse, initCenter, initTeacher})=>{
     switch(route.key){
         case 'first':
             return <ViewAllRender data={initCourse} type={"Course"}/>
@@ -97,19 +99,32 @@ const renderScene = ({ route, initCourse, initCenter, initTeacher})=>{
             return null;
     }
 }
+const renderSceneTeacher = ({ route, initCourse, initCenter, initTeacher, initAssignment})=>{
+    switch(route.key){
+        case 'first':
+            return <ViewAllRender data={initCourse} type={"Course"}/>
+        case 'second':
+            return <ViewAllRender data={initCenter} type={"Center"}/>
+        case 'third':
+            return <ViewAllRender data={initTeacher} type={"Teacher"}/>
+        case 'Fourth':
+            return <ViewAllRender data={initAssignment} type={"Assignment"}/>
+        default:
+            return null;
+    }
+}
 const renderTabBar = (props)=>{
     return(
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: COLORS.main, height: 4 }} // Custom line dưới tab
             style={{ backgroundColor: 'white'}} // Background cho header
-            labelStyle={{ color: COLORS.lightText, fontSize: 16, fontWeight: 'bold' }} // Style cho text của tab
+            labelStyle={{ color: COLORS.lightText, fontSize: 13, fontWeight: 'bold' }} // Style cho text của tab
             activeColor={COLORS.main}
             inactiveColor={COLORS.lightText}
         />
     )
 }
-
 
 const Course=[
     {
@@ -204,9 +219,9 @@ const Course=[
         cost: 120,
         costSale: 100
     },
-  ]
-  
-  const Center=[
+]
+
+const Center=[
     {
         id: 1,
         img: "",
@@ -234,9 +249,9 @@ const Course=[
             { id: 3, value: "Frontend"},
         ],
     },
-  ]
-  
-  const Teacher=[
+]
+
+const Teacher=[
     {
         id: 1,
         img: "",
@@ -255,8 +270,8 @@ const Course=[
         name: "Hyy",
         description: "Description"
     },
-  ]
-  const initAssignment = [
+]
+const Assignment = [
     {
         id: 1,
         title: "Title",
@@ -292,7 +307,7 @@ const Course=[
     },
   ]
 
-export const ViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher})=>{
+export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher})=>{
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -315,7 +330,39 @@ export const ViewAll = ({ initCourse = Course, initCenter = Center, initTeacher 
             </View>
             <TabView
                 navigationState={{index, routes}}
-                renderScene={({route})=> renderScene({ route, initCourse, initCenter, initTeacher})}
+                renderScene={({route})=> renderSceneStudent({ route, initCourse, initCenter, initTeacher})}
+                onIndexChange={setIndex}
+                renderTabBar={renderTabBar}
+            />
+        </View>
+    )
+}
+
+export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, initAssignment = Assignment})=>{
+    const [search, setSearch] = useState()
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
+      { key: 'first', title: 'Course' },
+      { key: 'second', title: 'Center' },
+      { key: 'third', title: 'Teacher' },
+      { key: 'Fourth', title: 'Assign' },
+    ]);
+    return(
+        <View style={styles.container}>
+            <View style={styles.wrapperSearch}>
+                <TextInput
+                    value={search}
+                    style={styles.input}
+                    placeholder={"Search"}
+                    onChangeText={(v)=>setSearch(v)}
+                />
+                <TouchableOpacity>
+                    <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
+                </TouchableOpacity>
+            </View>
+            <TabView
+                navigationState={{index, routes}}
+                renderScene={({route})=> renderSceneTeacher({ route, initCourse, initCenter, initTeacher, initAssignment})}
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />
