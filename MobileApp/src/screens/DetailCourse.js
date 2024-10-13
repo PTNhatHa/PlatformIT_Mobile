@@ -2,11 +2,11 @@ import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
 import { Tag } from "../components/Tag"
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
 import { CardHorizontalTeacher } from "../components/CardHorizontal";
@@ -33,6 +33,8 @@ const initCourse={
     costSale: 100,
     nameCenter: "Center ABC",
     star: 4.5,
+    students: 500,
+    intro: "Intro about this course",
 
     content: [
         {
@@ -153,6 +155,7 @@ export const DetailCourse = ({data = initCourse})=>{
                             )}                    
                         </View>
                     }
+                    <Text style={styles.infoText}>{data.intro}</Text>
                     <View style={styles.inforContent}>
                         <AntDesign name="star" size={16} color={COLORS.yellow} />
                         <Text style={styles.infoText}>{data.star}</Text>
@@ -176,6 +179,13 @@ export const DetailCourse = ({data = initCourse})=>{
                         <Ionicons name="business-outline" size={16} color={COLORS.secondMain} />
                         <Text style={styles.infoText}>{data.nameCenter}</Text>
                     </View>
+                    {data.students? 
+                        <View style={styles.inforContent}>
+                            <MaterialCommunityIcons name="account-group-outline" size={16} color={COLORS.stroke} />
+                            <Text style={styles.infoText}>{data.students} students</Text>
+                        </View>
+                        : ""
+                    }
                     <View style={styles.inforContent}>
                         <Text style={styles.costSale}>${data.costSale}</Text>
                         <Text style={styles.cost}>{data.cost}</Text>
@@ -231,12 +241,19 @@ export const DetailCourse = ({data = initCourse})=>{
                 </TouchableOpacity>
             </View>
 
+            {/* Teacher */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Teacher</Text>
+                <CardHorizontalTeacher/>
+            </View>
+            
             {/* Course review */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Latest reviews</Text>
                 <ButtonIcon title={"Write a review"} icon={<FontAwesome6 name="pen-to-square" size={16} color={COLORS.main} />}/>
                 <FlatList
                     data={data.reviews}
+                    keyExtractor={item => item.id}
                     renderItem={({item})=>
                         <CardReview data={item}/>
                     }
@@ -245,11 +262,6 @@ export const DetailCourse = ({data = initCourse})=>{
                 />
             </View>
 
-            {/* Teacher */}
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Teacher</Text>
-                <CardHorizontalTeacher/>
-            </View>
         </ScrollView>
     )
 }

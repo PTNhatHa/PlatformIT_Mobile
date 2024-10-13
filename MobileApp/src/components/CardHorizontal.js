@@ -161,6 +161,24 @@ export const CardHorizontalAssignmentTeacher = ({data = initAssignment})=>{
     )
 }
 
+
+const initProfessional={
+    img: "",
+    title: "Title",
+    description: "description"
+}
+export const CardHorizontalProfessional = ({data = initProfessional})=>{
+    return(
+        <TouchableOpacity style={styles.container}>
+            <Image source={data.img} style={styles.img}/>
+            <View>
+                <Text style={styles.title}>{data.title}</Text>
+                <Text style={styles.dataText}>{data.description}</Text>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         padding: 12,
