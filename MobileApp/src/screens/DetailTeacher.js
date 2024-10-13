@@ -3,20 +3,30 @@ import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { Tag } from "../components/Tag"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
+import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
 
-const initCenter={
+const initTeacher={
     id: 1,
     img: DefaultImg,
-    nameCenter: "Name Center",
+    nameTeacher: "Name Teacher",
     listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
+        { id: 1, value: "Chuyên ngành 1"},
+        { id: 2, value: "Chuyên ngành 2"},
     ],
-    intro: "intro",
+    description: "description",
     students: 500,
+    center: {
+        id:1,
+        img: "",
+        title: "Title",
+        listTags: [
+            { id: 1, value: "Web developer"},
+            { id: 2, value: "Backend"},
+            { id: 3, value: "Frontend"},
+        ],
+    },
     courses: [
         {
             id: 1,
@@ -65,26 +75,6 @@ const initCenter={
             costSale: 100
         },
     ],
-    teachers: [
-        {
-            id: 1,
-            img: "",
-            name: "Nhatha",
-            description: "Description"
-        },
-        {
-            id: 2,
-            img: "",
-            name: "Taho",
-            description: "Description"
-        },
-        {
-            id: 3,
-            img: "",
-            name: "Hyy",
-            description: "Description"
-        },
-    ],
     professional: [
         {
             id: 1,
@@ -98,17 +88,21 @@ const initCenter={
             title: "Title2",
             description: "description2"
         },
+    ],
+    socials: [
+        { id: 1, title: "Github", link: "aaaaaaa"},
+        { id: 2, title: "Facebook", link: "bbbbbb"},
     ]
 }
-export const DetailCenter =({data=initCenter})=>{
+export const DetailTeacher =({data=initTeacher})=>{
     return(
         <ScrollView contentContainerStyle={styles.container}>
-            {/* Center info */}
+            {/* Teacher info */}
             <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Center Information</Text>
+                <Text style={commonStyles.title}>Teacher Information</Text>
                 <Image source={data.img} style={styles.infoImage}/>
                 <View style={{ rowGap: 2}}>
-                    <Text style={styles.infoTitle}>{data.nameCenter}</Text>
+                    <Text style={styles.infoTitle}>{data.nameTeacher}</Text>
                     {data.listTags.length > 0 && 
                         <View style={styles.inforContent}>
                             {data.listTags.map(item => 
@@ -117,7 +111,7 @@ export const DetailCenter =({data=initCenter})=>{
                         </View>
                     }
                 </View>
-                <Text style={styles.infoText}>{data.intro}</Text>
+                <Text style={styles.infoText}>{data.description}</Text>
                 <View style={styles.inforContent}>
                     <AntDesign name="book" size={16} color={COLORS.stroke} />
                     <Text style={styles.infoText}>{data.courses.length} courses</Text>
@@ -129,6 +123,12 @@ export const DetailCenter =({data=initCenter})=>{
                     </View>
                     : ""
                 }
+            </View>
+
+            {/* Center */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Center</Text>
+                <CardHorizontalCenter data={data.center}/>
             </View>
 
             {/* Professional Qualifications */}
@@ -159,23 +159,20 @@ export const DetailCenter =({data=initCenter})=>{
                     showsHorizontalScrollIndicator={false}
                 />
             </View>
-
-            {/* Top Teachers */}
-            <View style={styles.wrapper}>
-                <View style={styles.top}>
-                    <Text style={commonStyles.title}>Top Teachers</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}}>
-                        <Text style={commonStyles.viewAll}>View all teachers</Text>
-                    </TouchableOpacity>
+            
+            {/* Social link */}
+            {data.socials ? 
+                <View style={styles.wrapper}>
+                    <Text style={commonStyles.title}>Social/Profile link</Text>
+                    {data.socials.map(item => 
+                        <TouchableOpacity style={styles.wrapSocail}>
+                            <Text style={styles.infoText}>{item.title}</Text>
+                            <MaterialIcons name="open-in-new" size={16} color={COLORS.stroke} />
+                        </TouchableOpacity>
+                    )}
                 </View>
-                <FlatList
-                    data={data.teachers}
-                    horizontal={true}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalTeacher data={item} />}
-                    showsHorizontalScrollIndicator={false}
-                />
-            </View>
+                : ""
+            }
         </ScrollView>
     )
 }
@@ -195,8 +192,10 @@ const styles = StyleSheet.create({
         resizeMode: "cover",
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        width: "100%",
-        height: 140
+        borderRadius: 90,
+        width: 140,
+        height: 140,
+        alignSelf: "center"
     },
     inforContent:{
         flexDirection: "row",
@@ -215,4 +214,15 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
+    wrapSocail:{
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        borderRadius: 4,
+        paddingVertical: 8,
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexDirection: "row",
+        columnGap: 4,
+        paddingHorizontal: 16
+    }
 })

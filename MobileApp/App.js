@@ -12,7 +12,7 @@ import { Professional } from './src/components/Professional';
 import { DetailCourse } from './src/screens/DetailCourse';
 import { CardLecture } from './src/components/CardLecture';
 import { CardAssignmentStudent } from './src/components/CardAssignment';
-import { DetailCenter } from './src/screens/DetailCenter';
+import { DetailTeacher } from './src/screens/DetailTeacher';
 
 export default function App() {
   return (
@@ -20,7 +20,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           {/* <SigninSignup/> */}
-          <DetailCenter/>
+          <DetailTeacher/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

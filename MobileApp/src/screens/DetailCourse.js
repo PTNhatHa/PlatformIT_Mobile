@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
         width: "100%",
         padding: 16,
         rowGap: 4,
-        borderBottomWidth: 1,
+        // borderBottomWidth: 1,
         borderColor: COLORS.lightText
     },
     infoImage: {
