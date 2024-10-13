@@ -14,6 +14,7 @@ import { CardLecture } from './src/components/CardLecture';
 import { CardAssignmentStudent } from './src/components/CardAssignment';
 import { DetailTeacher } from './src/screens/DetailTeacher';
 import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
+import { DateTimePickerComponent } from './src/components/DateTimePicker';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           {/* <DetailTeacher/> */}
           {/* <StudentHome/> */}
           <FilterCourse/>
+          {/* <DateTimePickerComponent/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

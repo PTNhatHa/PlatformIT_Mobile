@@ -8,6 +8,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import RNPickerSelect from 'react-native-picker-select';
 import { ButtonGreen } from "../components/Button";
 import { Tag } from "../components/Tag";
+import { DateTimePickerComponent } from "../components/DateTimePicker";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -394,6 +395,12 @@ export const FilterCourse = ()=>{
 
     // Filter
     const [listTags, setListTags] = useState([])
+    const [startRegist, setStartRegist] = useState(new Date())
+    const [endRegist, setEndRegist] = useState(new Date())
+    const [startDuration, setStartDuration] = useState(new Date())
+    const [endDuration, setEndDuration] = useState(new Date())
+    const [startCost, setStartCost] = useState(0)
+    const [endCost, setEndCost] = useState(0)
     const allTags = [
         { label: "Tag1", value: 1},
         { label: "Tag2", value: 2},
@@ -409,7 +416,7 @@ export const FilterCourse = ()=>{
     }
     return(
         <View style={stylesFilter.wrapFilter}>
-            <TouchableOpacity style={stylesFilter.close} onPress={()=>setSelectImg("")}>
+            <TouchableOpacity style={stylesFilter.close}>
                 <AntDesign name="close" size={30} color="white" />
             </TouchableOpacity>
             <View style={stylesFilter.innerFilter}>
@@ -451,6 +458,7 @@ export const FilterCourse = ()=>{
                 {/* Filter */}
                 <View style={stylesFilter.container}>
                     <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                    {/* Tags */}
                     <View style={{ rowGap: 2}}>
                         <View style={stylesFilter.field}>
                             <Text style={stylesFilter.smallTitle}>Tags</Text>
@@ -478,6 +486,61 @@ export const FilterCourse = ()=>{
                             )}
                         </View>
                     </View>
+
+                    {/* Course type */}
+                    <View style={stylesFilter.field2}>
+                        <Text style={stylesFilter.smallTitle}>Course type</Text>
+                    </View>
+
+                    {/* Registration date */}
+                    <View style={stylesFilter.field2}>
+                        <Text style={stylesFilter.smallTitle}>Registration date</Text>
+                        <View style={stylesFilter.field}>
+                            <DateTimePickerComponent width="200" value={startRegist} setValue={setStartRegist}/>
+                            <AntDesign name="arrowright" size={24} color="black" />
+                            <DateTimePickerComponent width="200" value={endRegist} setValue={setEndRegist}/>
+                        </View>
+                    </View>
+
+                    {/* Course duration */}
+                    <View style={stylesFilter.field2}>
+                        <Text style={stylesFilter.smallTitle}>Course duration</Text>
+                        <View style={stylesFilter.field}>
+                            <DateTimePickerComponent width="200" value={startDuration} setValue={setStartDuration}/>
+                            <AntDesign name="arrowright" size={24} color="black" />
+                            <DateTimePickerComponent width="200" value={endDuration} setValue={setEndDuration}/>
+                        </View>
+                    </View>
+
+                    {/* Price */}
+                    <View style={stylesFilter.field2}>
+                        <Text style={stylesFilter.smallTitle}>Price</Text>
+                        <View style={stylesFilter.field}>
+                            <View style={stylesFilter.wrapPrice}>
+                                <TextInput 
+                                    style={stylesFilter.textInput} 
+                                    keyboardType="numeric" 
+                                    placeholder="0"
+                                    value={startCost}
+                                    onChangeText={(v)=>setStartCost(v)}
+                                />
+                                <Feather name="dollar-sign" size={20} color={COLORS.lightText} />
+                            </View>
+                            <AntDesign name="arrowright" size={24} color="black" />
+                            <View style={stylesFilter.wrapPrice}>
+                                <TextInput 
+                                    style={stylesFilter.textInput} 
+                                    keyboardType="numeric" 
+                                    placeholder="0"
+                                    value={endCost}
+                                    onChangeText={(v)=>setEndCost(v)}
+                                />
+                                <Feather name="dollar-sign" size={20} color={COLORS.lightText} />
+                            </View>
+                            
+                        </View>
+                    </View>
+
                     <View style={stylesFilter.bottom}>
                         <ButtonGreen title={"Filter"}/>
                     </View>                                                         
@@ -559,7 +622,7 @@ const stylesFilter = StyleSheet.create({
         backgroundColor: "white",
     },
     container:{
-        rowGap: 4,
+        rowGap: 16,
         borderWidth: 1,
         borderColor: COLORS.lightText,
         padding: 16
@@ -570,8 +633,7 @@ const stylesFilter = StyleSheet.create({
         borderRadius: 90,
         width: "40%",
         height: 40,
-        alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
     },
     smallTitle:{
         fontSize: 16,
@@ -600,5 +662,23 @@ const stylesFilter = StyleSheet.create({
     textTag:{
         color: COLORS.main,
         fontSize: 14,
+    },
+    field2: {
+        flexDirection: "column",
+        rowGap: 4
+    },
+    wrapPrice: {
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        borderRadius: 90,
+        width: 148,
+        height: 40,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 16
+    },
+    textInput:{
+        // marginHorizontal: 16
     }
 })
