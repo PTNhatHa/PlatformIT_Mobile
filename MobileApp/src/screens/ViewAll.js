@@ -307,9 +307,10 @@ const Assignment = [
     },
   ]
 
-export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher})=>{
+export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, route})=>{
+    const initialTab = route.params?.initTab || 0
     const [search, setSearch] = useState()
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(initialTab);
     const [routes] = useState([
       { key: 'first', title: 'Course' },
       { key: 'second', title: 'Center' },
@@ -338,9 +339,10 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
     )
 }
 
-export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, initAssignment = Assignment})=>{
+export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, initAssignment = Assignment, route})=>{
+    const initialTab = route.params?.initTab || 0
     const [search, setSearch] = useState()
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(initialTab);
     const [routes] = useState([
       { key: 'first', title: 'Course' },
       { key: 'second', title: 'Center' },

@@ -108,7 +108,7 @@ export const StudentHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Courses</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All")}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 0})}>
                         <Text style={commonStyles.viewAll}>View all courses</Text>
                     </TouchableOpacity>
                 </View>
@@ -124,7 +124,7 @@ export const StudentHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Centers</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All")}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 1})}>
                         <Text style={commonStyles.viewAll}>View all centers</Text>
                     </TouchableOpacity>
                 </View>
@@ -140,7 +140,7 @@ export const StudentHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Teachers</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All")}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 2})}>
                         <Text style={commonStyles.viewAll}>View all Teachers</Text>
                     </TouchableOpacity>
                 </View>
