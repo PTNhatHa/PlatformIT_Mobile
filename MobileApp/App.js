@@ -4,7 +4,7 @@ import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
 import { CardVirticalAssignment, CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from './src/components/CardVertical';
 import { TeacherHome } from './src/screens/Teacher/TabHome/TeacherHome';
-import { FilterCourse, ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/screens/ViewAll';
+import { FilterCourse, TeacherViewAll, ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/screens/ViewAll';
 import { TeacherPI } from './src/screens/Teacher/TabAccount/TeacherPI';
 import { SocialLink } from './src/components/SocialLink';
 import { ForgotPassword } from './src/screens/SignIn';
@@ -24,8 +24,9 @@ export default function App() {
           {/* <SigninSignup/> */}
           {/* <DetailTeacher/> */}
           {/* <StudentHome/> */}
-          <FilterCourse/>
+          {/* <FilterCourse/> */}
           {/* <DateTimePickerComponent/> */}
+          <TeacherViewAll/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
