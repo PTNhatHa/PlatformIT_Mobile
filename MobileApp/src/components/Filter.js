@@ -124,7 +124,6 @@ export const FilterCourse = ({
                                             color: textColor
                                         }
                                     }}
-                                    value={sortby1}
                                 />
                             </View>
                         </View>  
@@ -225,7 +224,6 @@ export const FilterCenter = ({
     const listSortby1 = [
         { label: "None", value: 0},
         { label: "Name", value: 1},
-        { label: "Cost", value: 2},
     ]
     const listSortby2 = [
         { label: "None", value: 0},
@@ -316,7 +314,6 @@ export const FilterCenter = ({
                                             color: textColor
                                         }
                                     }}
-                                    value={sortby1}
                                 />
                             </View>
                         </View>  
@@ -338,6 +335,73 @@ export const FilterCenter = ({
                     </View>                                                         
                 </View>
 
+            </View>
+        </View>
+    )
+}
+
+export const FilterTeacher = ({
+    dataSort=[], setDataSort=()=>{}, 
+    onPressCancel
+})=>{
+    // Sort
+    const [sortby1, setsortby1] = useState(dataSort.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
+    const listSortby1 = [
+        { label: "None", value: 0},
+        { label: "Name", value: 1},
+    ]
+    const listSortby2 = [
+        { label: "None", value: 0},
+        { label: "Asc", value: 1},
+        { label: "Des", value: 2},
+    ]
+    const [textColor, setTextColor] = useState(COLORS.lightText)
+    const handleSort =()=>{
+        setDataSort({
+            sortby: sortby1,
+            sortway: sortby2
+        })
+        onPressCancel()
+    }
+    return(
+        <View style={stylesFilter.wrapFilter}>
+            <View style={stylesFilter.innerFilter}>
+                {/* Sort */}
+                <View style={stylesFilter.container}>
+                    <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
+                    <View style={stylesFilter.field}>
+                        <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                        <View style={stylesFilter.comboBox}>
+                            <RNPickerSelect
+                                items={listSortby1}
+                                onValueChange={(v)=> setsortby1(v)}
+                                style={{
+                                    inputAndroid: {
+                                        color: textColor
+                                    }
+                                }}
+                                value={sortby1}
+                            />
+                        </View>
+                        <View style={stylesFilter.comboBox}>
+                            <RNPickerSelect
+                                items={listSortby2}
+                                onValueChange={(v)=> setsortby2(v)}
+                                style={{
+                                    inputAndroid: {
+                                        color: textColor
+                                    }
+                                }}
+                                value={sortby2}
+                            />
+                        </View>
+                    </View>  
+                    <View style={stylesFilter.bottom}>
+                        <ButtonWhite title={"Cancel"} action={onPressCancel}/>
+                        <ButtonGreen title={"Sort"} action={handleSort}/>
+                    </View>                                                       
+                </View>
             </View>
         </View>
     )

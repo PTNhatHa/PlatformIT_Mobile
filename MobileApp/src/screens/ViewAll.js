@@ -10,7 +10,7 @@ import { ButtonGreen, ButtonWhite } from "../components/Button";
 import { Tag } from "../components/Tag";
 import { DateTimePickerComponent } from "../components/DateTimePicker";
 import { RadioBtn } from "../components/RadioBtn";
-import { FilterCenter, FilterCourse } from "../components/Filter";
+import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -319,8 +319,13 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(true);
-    const [dataSort, setDataSort] = useState([]);
-    const [dataFilter, setDataFilter] = useState([]);
+
+    const [dataSortCourse, setDataSortCourse] = useState([]);
+    const [dataFilterCourse, setDataFilterCourse] = useState([]);
+    const [dataSortCenter, setDataSortCenter] = useState([]);
+    const [dataFilterCenter, setDataFilterCenter] = useState([]);
+    const [dataSortTeacher, setDataSortTeacher] = useState([]);
+
     const [routes] = useState([
       { key: 'first', title: 'Course' },
       { key: 'second', title: 'Center' },
@@ -351,18 +356,24 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
             >
                 {index === 0 ?
                     <FilterCourse 
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        dataFilter={dataFilter}
-                        setDataFilter={setDataFilter}
+                        dataSort={dataSortCourse}
+                        setDataSort={setDataSortCourse}
+                        dataFilter={dataFilterCourse}
+                        setDataFilter={setDataFilterCourse}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> :
                     index === 1 ?
                     <FilterCenter
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        dataFilter={dataFilter}
-                        setDataFilter={setDataFilter}
+                        dataSort={dataSortCenter}
+                        setDataSort={setDataSortCenter}
+                        dataFilter={dataFilterCenter}
+                        setDataFilter={setDataFilterCenter}
+                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                    /> :
+                    index === 2 ?
+                    <FilterTeacher
+                        dataSort={dataSortTeacher}
+                        setDataSort={setDataSortTeacher}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> : ""
                 }
@@ -376,8 +387,13 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(true);
-    const [dataSort, setDataSort] = useState([]);
-    const [dataFilter, setDataFilter] = useState([]);
+
+    const [dataSortCourse, setDataSortCourse] = useState([]);
+    const [dataFilterCourse, setDataFilterCourse] = useState([]);
+    const [dataSortCenter, setDataSortCenter] = useState([]);
+    const [dataFilterCenter, setDataFilterCenter] = useState([]);
+    const [dataSortTeacher, setDataSortTeacher] = useState([]);
+
     const [routes] = useState([
       { key: 'first', title: 'Course' },
       { key: 'second', title: 'Center' },
@@ -409,18 +425,24 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
             >
                 {index === 0 ?
                     <FilterCourse 
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        dataFilter={dataFilter}
-                        setDataFilter={setDataFilter}
+                        dataSort={dataSortCourse}
+                        setDataSort={setDataSortCourse}
+                        dataFilter={dataFilterCourse}
+                        setDataFilter={setDataFilterCourse}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> :
                     index === 1 ?
                     <FilterCenter
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        dataFilter={dataFilter}
-                        setDataFilter={setDataFilter}
+                        dataSort={dataSortCenter}
+                        setDataSort={setDataSortCenter}
+                        dataFilter={dataFilterCenter}
+                        setDataFilter={setDataFilterCenter}
+                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                    /> :
+                    index === 2 ?
+                    <FilterTeacher
+                        dataSort={dataSortTeacher}
+                        setDataSort={setDataSortTeacher}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> : ""
                 }
