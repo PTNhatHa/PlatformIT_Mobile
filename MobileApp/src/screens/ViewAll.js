@@ -318,7 +318,7 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
     const initialTab = route.params?.initTab || 0
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
-    const [isOpenModal, setIsOpenModal] = useState(true);
+    const [isOpenModal, setIsOpenModal] = useState(false);
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
     const [dataFilterCourse, setDataFilterCourse] = useState([]);
@@ -386,7 +386,7 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
     const initialTab = route?.params?.initTab || 0
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
-    const [isOpenModal, setIsOpenModal] = useState(true);
+    const [isOpenModal, setIsOpenModal] = useState(false);
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
     const [dataFilterCourse, setDataFilterCourse] = useState([]);
