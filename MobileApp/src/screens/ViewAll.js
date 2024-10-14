@@ -10,7 +10,7 @@ import { ButtonGreen, ButtonWhite } from "../components/Button";
 import { Tag } from "../components/Tag";
 import { DateTimePickerComponent } from "../components/DateTimePicker";
 import { RadioBtn } from "../components/RadioBtn";
-import { FilterCourse } from "../components/Filter";
+import { FilterCenter, FilterCourse } from "../components/Filter";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -318,6 +318,9 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
     const initialTab = route.params?.initTab || 0
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
+    const [isOpenModal, setIsOpenModal] = useState(true);
+    const [dataSort, setDataSort] = useState([]);
+    const [dataFilter, setDataFilter] = useState([]);
     const [routes] = useState([
       { key: 'first', title: 'Course' },
       { key: 'second', title: 'Center' },
@@ -342,8 +345,27 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />
-            <Modal>
-
+            <Modal
+                visible={isOpenModal}
+                animationType="fade"
+            >
+                {index === 0 ?
+                    <FilterCourse 
+                        dataSort={dataSort}
+                        setDataSort={setDataSort}
+                        dataFilter={dataFilter}
+                        setDataFilter={setDataFilter}
+                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                    /> :
+                    index === 1 ?
+                    <FilterCenter
+                        dataSort={dataSort}
+                        setDataSort={setDataSort}
+                        dataFilter={dataFilter}
+                        setDataFilter={setDataFilter}
+                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                    /> : ""
+                }
             </Modal>
         </View>
     )
@@ -385,14 +407,22 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
                 visible={isOpenModal}
                 animationType="fade"
             >
-                {index === 0 &&
+                {index === 0 ?
                     <FilterCourse 
                         dataSort={dataSort}
                         setDataSort={setDataSort}
                         dataFilter={dataFilter}
                         setDataFilter={setDataFilter}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    />
+                    /> :
+                    index === 1 ?
+                    <FilterCenter
+                        dataSort={dataSort}
+                        setDataSort={setDataSort}
+                        dataFilter={dataFilter}
+                        setDataFilter={setDataFilter}
+                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                    /> : ""
                 }
             </Modal>
         </View>

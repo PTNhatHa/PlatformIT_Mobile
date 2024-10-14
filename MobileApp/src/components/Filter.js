@@ -14,8 +14,8 @@ export const FilterCourse = ({
     onPressCancel
 })=>{
     // Sort
-    const [sortby1, setsortby1] = useState(0)
-    const [sortby2, setsortby2] = useState(0)
+    const [sortby1, setsortby1] = useState(dataSort.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
         { label: "Name", value: 1},
@@ -29,14 +29,14 @@ export const FilterCourse = ({
     const [textColor, setTextColor] = useState(COLORS.lightText)
 
     // Filter
-    const [listTags, setListTags] = useState([])
-    const [startRegist, setStartRegist] = useState(new Date())
-    const [endRegist, setEndRegist] = useState(new Date())
-    const [startDuration, setStartDuration] = useState(new Date())
-    const [endDuration, setEndDuration] = useState(new Date())
-    const [startCost, setStartCost] = useState(0)
-    const [endCost, setEndCost] = useState(0)
-    const [selectType, setSelectType] = useState("All")
+    const [listTags, setListTags] = useState(dataFilter.tags || [])
+    const [startRegist, setStartRegist] = useState(dataFilter.startRegist || new Date())
+    const [endRegist, setEndRegist] = useState(dataFilter.endRegist || new Date())
+    const [startDuration, setStartDuration] = useState(dataFilter.startDuration || new Date())
+    const [endDuration, setEndDuration] = useState(dataFilter.endDuration || new Date())
+    const [startCost, setStartCost] = useState(dataFilter.startCost || 0)
+    const [endCost, setEndCost] = useState(dataFilter.endCost || 0)
+    const [selectType, setSelectType] = useState(dataFilter.courseType || "All")
     const allTags = [
         { label: "Tag1", value: 1},
         { label: "Tag2", value: 2},
@@ -55,6 +55,7 @@ export const FilterCourse = ({
             sortby: sortby1,
             sortway: sortby2
         })
+        onPressCancel()
     }
     const handleFilter =()=>{
         setDataFilter({
@@ -67,6 +68,7 @@ export const FilterCourse = ({
             startCost: startCost,
             endCost: endCost
         })
+        onPressCancel()
     }
     return(
         <View style={stylesFilter.wrapFilter}>
@@ -198,6 +200,135 @@ export const FilterCourse = ({
                                 <Feather name="dollar-sign" size={20} color={COLORS.lightText} />
                             </View>
                             
+                        </View>
+                    </View>
+
+                    <View style={stylesFilter.bottom}>
+                        <ButtonWhite title={"Cancel"} action={onPressCancel}/>
+                        <ButtonGreen title={"Filter"} action={handleFilter}/>
+                    </View>                                                         
+                </View>
+
+            </View>
+        </View>
+    )
+}
+
+export const FilterCenter = ({
+    dataSort=[], setDataSort=()=>{}, 
+    dataFilter=[], setDataFilter=()=>{},
+    onPressCancel
+})=>{
+    // Sort
+    const [sortby1, setsortby1] = useState(dataSort.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
+    const listSortby1 = [
+        { label: "None", value: 0},
+        { label: "Name", value: 1},
+        { label: "Cost", value: 2},
+    ]
+    const listSortby2 = [
+        { label: "None", value: 0},
+        { label: "Asc", value: 1},
+        { label: "Des", value: 2},
+    ]
+    const [textColor, setTextColor] = useState(COLORS.lightText)
+
+    // Filter
+    const [listTags, setListTags] = useState(dataFilter.tags || [])
+    const allTags = [
+        { label: "Tag1", value: 1},
+        { label: "Tag2", value: 2},
+    ]
+    const handleChooseTag = (v)=>{
+        if(!listTags.includes(v) && v !== null){
+            setListTags([...listTags, v])
+        }
+    }
+    const handleDeleteTag = (v)=>{
+        const newList = listTags.filter(item => item !== v)
+        setListTags(newList)
+    }
+    const handleSort =()=>{
+        setDataSort({
+            sortby: sortby1,
+            sortway: sortby2
+        })
+        onPressCancel()
+    }
+    const handleFilter =()=>{
+        setDataFilter({
+            tags: listTags,
+        })
+        onPressCancel()
+    }
+    return(
+        <View style={stylesFilter.wrapFilter}>
+            <View style={stylesFilter.innerFilter}>
+                {/* Sort */}
+                <View style={stylesFilter.container}>
+                    <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
+                    <View style={stylesFilter.field}>
+                        <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                        <View style={stylesFilter.comboBox}>
+                            <RNPickerSelect
+                                items={listSortby1}
+                                onValueChange={(v)=> setsortby1(v)}
+                                style={{
+                                    inputAndroid: {
+                                        color: textColor
+                                    }
+                                }}
+                                value={sortby1}
+                            />
+                        </View>
+                        <View style={stylesFilter.comboBox}>
+                            <RNPickerSelect
+                                items={listSortby2}
+                                onValueChange={(v)=> setsortby2(v)}
+                                style={{
+                                    inputAndroid: {
+                                        color: textColor
+                                    }
+                                }}
+                                value={sortby2}
+                            />
+                        </View>
+                    </View>  
+                    <View style={stylesFilter.bottom}>
+                        <ButtonGreen title={"Sort"} action={handleSort}/>
+                    </View>                                                         
+                </View>
+
+                {/* Filter */}
+                <View style={stylesFilter.container}>
+                    <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                    {/* Tags */}
+                    <View style={{ rowGap: 2}}>
+                        <View style={stylesFilter.field}>
+                            <Text style={stylesFilter.smallTitle}>Tags</Text>
+                            <View style={[stylesFilter.comboBox, { width: "80%"}]}>
+                                <RNPickerSelect
+                                    items={allTags}
+                                    onValueChange={(v)=> handleChooseTag(v)}
+                                    style={{
+                                        inputAndroid: {
+                                            color: textColor
+                                        }
+                                    }}
+                                    value={sortby1}
+                                />
+                            </View>
+                        </View>  
+                        <View style={stylesFilter.tags}>
+                            {listTags.map(item => 
+                                <View style={stylesFilter.wrapTag} key={item}>
+                                    <Text style={stylesFilter.textTag}>{item}</Text>
+                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item)}>
+                                        <AntDesign name="close" size={18} color={COLORS.main} />
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     </View>
 
