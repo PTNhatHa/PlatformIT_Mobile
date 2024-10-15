@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useUser } from "../contexts/UserContext"
-// const baseUrl = "http://192.168.2.3:5251/api/User"
-const baseUrl = "http://192.168.1.165:5251/api/User"
+const baseUrl = "http://192.168.2.3:5251/api/User"
+// const baseUrl = "http://192.168.1.165:5251/api/User"
 export const getUserInfo = async (idUser)=>{
     const url = baseUrl + "/showPI?id=" + idUser
     return await axios.get(url)

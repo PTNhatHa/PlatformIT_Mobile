@@ -35,6 +35,7 @@ export default SignUp = ({navigation}) => {
     const [isVerify, setIsVerify] = useState(false)
     const [otp, setOtp] = useState(null)
     const [errorOTP, setErrorOTP] = useState(null)
+    const [isVerifyDone, setIsVerifyDone] = useState(false)
 
     const handleOnchangeName = (v)=>{
         setName(v)
@@ -46,6 +47,7 @@ export default SignUp = ({navigation}) => {
         setErrorEmail(null)
         if(!v) setErrorEmail("Require!")
         if(!validateEmail(v)) setErrorEmail("Invalid!")
+        setIsVerifyDone(false)
     }
     const handleOnchangeUsername = (v)=>{
         setUsername(v)
@@ -105,17 +107,25 @@ export default SignUp = ({navigation}) => {
         }
         if(checkNull)
         {
-            try{
-                const response = await checkEmail(email)
-                if(response.error){
-                    setErrorEmail(response.data)
-                }else
-                if(response){
-                    await handleSendOTP()
+            if(!isVerifyDone){
+                setLoading(true)
+                try{
+                    const response = await checkEmail(email)
+                    if(response.error){
+                        setErrorEmail(response.data)
+                    }else
+                    if(response){
+                        await handleSendOTP()
+                    }
                 }
-            }
-            catch (error){
-                console.log("==>Error:  ", error);
+                catch (error){
+                    console.log("==>Error:  ", error);
+                }
+                finally{
+                    setLoading(false)
+                }
+            } else{
+                await handleSignup()
             }
         }
     }
@@ -147,6 +157,7 @@ export default SignUp = ({navigation}) => {
                 setErrorOTP(response.data)
             }else
             if(response){
+                setIsVerifyDone(true)
                 await handleSignup()
             }
         }
