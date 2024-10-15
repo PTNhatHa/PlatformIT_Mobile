@@ -56,3 +56,26 @@ export const forgotPassword = async (email)=>{
         }
     })
 }
+
+export const updateUserBasicPI = async (idUser, fullName, phoneNumber, gender, dob, nationality)=>{
+    const url = baseUrl + "/UpdateUserBasicPI"
+    return await axios.post(url, {
+        "idUser": idUser,
+        "fullName": fullName,
+        "phoneNumber": phoneNumber,
+        "gender": gender,
+        "dob": dob,
+        "nationality": nationality
+      })
+    .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error.response.data);
+        return {
+            error: 400,
+            data: error.response.data
+        }
+    })
+}

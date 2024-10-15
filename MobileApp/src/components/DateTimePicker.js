@@ -23,7 +23,7 @@ export const DateTimePickerComponent = ({
             <View style={[styles.container, {width: width}]}>
                 <TextInput 
                     style={[styles.input, {color: isChoose?"black":COLORS.lightText}]}
-                    value={formatDateTime(value)}
+                    value={formatDateTime(new Date(value))}
                     editable={false}
                 />
                 <TouchableOpacity onPress={()=>setShow(true)}>
@@ -34,7 +34,7 @@ export const DateTimePickerComponent = ({
                 <DateTimePicker 
                     mode="date" 
                     onChange={handleOnChange}
-                    value={value instanceof Date ? value : new Date()} 
+                    value={value instanceof Date ? new Date(value) : new Date()} 
                     display="default"
                 />
             }

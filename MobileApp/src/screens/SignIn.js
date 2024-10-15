@@ -83,7 +83,7 @@ export default SignIn = ({navigation}) => {
                     }
                 }
                 dispatch({ type: SET_INFO, payload: userInfo })
-                console.log(response);
+                // console.log(response);
                 if(response.idRole == 3){
                     Alert.alert("Sign in", "Sign in successfully" + response.idRole)
                     navigation.navigate("Student")

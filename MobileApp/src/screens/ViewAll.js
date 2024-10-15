@@ -340,7 +340,7 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
                     placeholder={"Search"}
                     onChangeText={(v)=>setSearch(v)}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                     <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                 </TouchableOpacity>
             </View>
