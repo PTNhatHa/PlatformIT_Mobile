@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-nativ
 import { COLORS } from "../utils/constants"
 import { useState} from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
+import RNPickerSelect from 'react-native-picker-select';
 
 const iniSocial = [
     { id: 1, title: "Github", link: "aaaaaaa"},
@@ -43,17 +44,31 @@ export const SocialLink = ({
         setList(newList)
         setValue(newList)
     }
+    const listTitle = [
+        { label: "Github", value: "Github"},
+        { label: "Linkedln", value: "Linkedln"},
+        { label: "Youtube", value: "Youtube"},
+        { label: "Facebook", value: "Facebook"},
+        { label: "Portfolio", value: "Portfolio"},
+    ]
     return(
         <View>
             <Text style={styles.label}>Social/Professional Profile Links</Text>
             {list.map((item)=>
                 <View style={styles.container} key={item.id}>
-                    <TextInput 
-                        style={[styles.title, {color: textColor}]}
-                        value={item.title}
-                        placeholder={"Title"}
-                        onChangeText={(v)=>handleOnchangeText(item.id, v, "title")}
-                    />
+                    <View style={styles.title}>
+                        <RNPickerSelect
+                            items={listTitle}
+                            onValueChange={(v)=>handleOnchangeText(item.id, v, "title")}
+                            style={{
+                                inputAndroid: {
+                                    color: textColor,
+                                }
+                            }}
+                            value={item.title}
+                            useNativeAndroidPickerStyle={false}
+                        />
+                    </View>
                     <TextInput 
                         style={[styles.link, {color: textColor}]}
                         value={item.link}

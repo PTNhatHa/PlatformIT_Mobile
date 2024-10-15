@@ -85,10 +85,10 @@ export default SignIn = ({navigation}) => {
                 dispatch({ type: SET_INFO, payload: userInfo })
                 // console.log(response);
                 if(response.idRole == 3){
-                    Alert.alert("Sign in", "Sign in successfully" + response.idRole)
+                    Alert.alert("Sign in", "Sign in successfully")
                     navigation.navigate("Student")
                 } else if(response.idRole == 4){
-                    Alert.alert("Sign in", "Sign in successfully" + response.idRole)
+                    Alert.alert("Sign in", "Sign in successfully")
                     navigation.navigate("Teacher")
                 } else{
                     Alert.alert("Notification", "We do not support 'Admin Platform' and 'Admin Center' accounts here. Please log in on your computer to continue")
