@@ -5,26 +5,26 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import RNPickerSelect from 'react-native-picker-select';
 
 const iniSocial = [
-    { id: 1, title: "Github", link: "aaaaaaa"},
-    { id: 2, title: "Facebook", link: "bbbbbb"},
+    { idProfileLink: 1, name: "Github", url: "aaaaaaa"},
+    { idProfileLink: 2, name: "Facebook", url: "bbbbbb"},
 ]
 export const SocialLink = ({
     value = iniSocial, setValue=()=>{}
 }) => {
     const [textColor, setTextColor] = useState(COLORS.lightText)
     const [list, setList] = useState(value)
-    const handleOnchangeText = (id, value, title)=>{
+    const handleOnchangeText = (idProfileLink, value, name)=>{
         const newList = list.map((item)=>{
-            if(item.id === id && title === "title"){
+            if(item.idProfileLink === idProfileLink && name === "name"){
                 return{
                     ...item,
-                    title: value,
+                    name: value,
                 }
             }
-            if(item.id === id && title === "link"){
+            if(item.idProfileLink === idProfileLink && name === "url"){
                 return{
                     ...item,
-                    link: value,
+                    url: value,
                 }
             }
             return item
@@ -33,20 +33,20 @@ export const SocialLink = ({
         setValue(newList)
         setTextColor("black")
     }
-    const handleDelete = (id)=>{
-        const newList = list.filter((item)=> item.id !== id)
+    const handleDelete = (idProfileLink)=>{
+        const newList = list.filter((item)=> item.idProfileLink !== idProfileLink)
         setList(newList)
         setValue(newList)
     }
     const handleAddNew = ()=>{
-        const maxId = Math.max(...list.map(item => item.id), 0)
-        const newList = [...list, { id: maxId + 1}]
+        const maxId = Math.max(...list.map(item => item.idProfileLink), 0)
+        const newList = [...list, { idProfileLink: maxId + 1, name: "", url: ""}]
         setList(newList)
         setValue(newList)
     }
     const listTitle = [
         { label: "Github", value: "Github"},
-        { label: "Linkedln", value: "Linkedln"},
+        { label: "LinkedIn", value: "LinkedIn"},
         { label: "Youtube", value: "Youtube"},
         { label: "Facebook", value: "Facebook"},
         { label: "Portfolio", value: "Portfolio"},
@@ -55,27 +55,27 @@ export const SocialLink = ({
         <View>
             <Text style={styles.label}>Social/Professional Profile Links</Text>
             {list.map((item)=>
-                <View style={styles.container} key={item.id}>
+                <View style={styles.container} key={item.idProfileLink}>
                     <View style={styles.title}>
                         <RNPickerSelect
                             items={listTitle}
-                            onValueChange={(v)=>handleOnchangeText(item.id, v, "title")}
+                            onValueChange={(v)=>handleOnchangeText(item.idProfileLink, v, "name")}
                             style={{
                                 inputAndroid: {
                                     color: textColor,
                                 }
                             }}
-                            value={item.title}
+                            value={item.name}
                             useNativeAndroidPickerStyle={false}
                         />
                     </View>
                     <TextInput 
                         style={[styles.link, {color: textColor}]}
-                        value={item.link}
+                        value={item.url}
                         placeholder={"Link"}
-                        onChangeText={(v)=>handleOnchangeText(item.id, v, "link")}
+                        onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "link")}
                     />
-                    <TouchableOpacity onPress={()=>handleDelete(item.id)}>
+                    <TouchableOpacity onPress={()=>handleDelete(item.idProfileLink)}>
                         <AntDesign name="delete" size={20} color={COLORS.stroke} />
                     </TouchableOpacity>
                 </View>
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 90,
-        paddingHorizontal: 16,
+        paddingHorizontal: 10,
         paddingVertical: 8,
         flexDirection: "row",
         columnGap: 8,

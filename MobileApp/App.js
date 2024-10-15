@@ -21,13 +21,13 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <DetailTeacher/> */}
           {/* <StudentHome/> */}
           {/* <FilterCourse/> */}
           {/* <DateTimePickerComponent/> */}
           {/* <TeacherViewAll/> */}
-          <SocialLink/>
+          {/* <SocialLink/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

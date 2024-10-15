@@ -79,3 +79,22 @@ export const updateUserBasicPI = async (idUser, fullName, phoneNumber, gender, d
         }
     })
 }
+
+export const addProfileLink = async (idUser, name, link)=>{
+    const url = baseUrl + "/AddProfileLink?IdUser=" + idUser
+    return await axios.post(url, {
+        "name": name,
+        "url": link
+      })
+    .then(response => {
+        console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("==>Error: ", error.response.data);
+        return {
+            error: 400,
+            data: error.response.data
+        }
+    })
+}
