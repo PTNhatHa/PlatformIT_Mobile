@@ -87,11 +87,27 @@ export const addProfileLink = async (idUser, name, link)=>{
         "url": link
       })
     .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error.response.data);
+        return {
+            error: 400,
+            data: error.response.data
+        }
+    })
+}
+
+export const deleteProfileLink = async (id)=>{
+    const url = baseUrl + "/DeleteProfileLink?id=" + id
+    return await axios.delete(url)
+    .then(response => {
         console.log("==>Response: ", response.data);
         return response.data
     })
     .catch(error => {
-        console.log("==>Error: ", error.response.data);
+        console.log("==>Error: ", error);
         return {
             error: 400,
             data: error.response.data

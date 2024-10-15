@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { COLORS } from "../../../utils/constants"
 import { Professional } from "../../../components/Professional"
 import { useUser } from "../../../contexts/UserContext"
-import { addProfileLink, getUserInfo } from "../../../services/user"
+import { addProfileLink, deleteProfileLink, getUserInfo } from "../../../services/user"
 import { SocialLink } from "../../../components/SocialLink"
 import { ButtonGreen } from "../../../components/Button"
 
@@ -42,6 +42,7 @@ export const TeacherPI = ({navigation})=>{
 
     const handleSavePITeacher = async ()=>{
         setLoading(true)
+        console.log(oldPI.links !== socials);
         try{
             if(oldPI.links !== socials){
                 // Add
@@ -54,7 +55,24 @@ export const TeacherPI = ({navigation})=>{
                         if(response.error){
                             Alert.alert("Warning", response.data)
                         }else{
-                            Alert.alert("Noti", "Add social link done^^")
+                            Alert.alert("Noti", "Add social link done^v^")
+                        }
+                    } catch(e){
+                        console.log("Error add Social links: ", e);
+                    }
+                })
+                // Delete
+                const deleteData = oldPI.links.filter(link => {
+                    return !socials.some(social => social ===link)
+                })
+                console.log(deleteData);
+                deleteData.map( async (item)=>{
+                    try{
+                        const response = await deleteProfileLink(item.idProfileLink)
+                        if(response.error){
+                            Alert.alert("Warning", response.data)
+                        }else{
+                            Alert.alert("Noti", "Delete social link done^o^")
                         }
                     } catch(e){
                         console.log("Error add Social links: ", e);
