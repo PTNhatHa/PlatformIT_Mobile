@@ -26,10 +26,10 @@ const initCourse={
     costSale: 100,
     nameCenter: "Center HAHYWU",
 }
-export const CardVirticalCourse = ({data = initCourse})=>{
+export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")}>
+        <TouchableOpacity style={styles.container} onPress={isTeacher ? ()=> navigation.navigate("Detail My Course") : ()=> navigation.navigate("Detail Course")}>
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
