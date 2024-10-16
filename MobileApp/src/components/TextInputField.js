@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TextInput, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 import { useState } from "react"
 
 export const TextInputIcon = ({
@@ -8,7 +8,8 @@ export const TextInputIcon = ({
     return(
         <View>
             <View style={styles.container}>
-                <Image source={icon}/>
+                {icon}
+                {/* <Image source={icon}/> */}
                 <TextInput 
                     style={styles.input}
                     value={value}
@@ -32,7 +33,7 @@ export const TextInputLabel = ({
         setTextColor("black")
     }
     return(
-        <View >
+        <View>
             <Text style={styles.input}>{label}</Text>
             <View style={styles.container}>
                 <TextInput 
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
         width: "85%"
     },
     error:{
-        color: "#C00F0C"
+        color: COLORS.red
     },
     inputLabel:{
         fontSize: 16,

@@ -1,32 +1,42 @@
-import { Alert, Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import GirlIT from "../../assets/images/GirlIT.png";
-import PenIcon from "../../assets/icons/Pen.png";
-import MailIcon from "../../assets/icons/Mail.png";
-import AccountIcon from "../../assets/icons/Account.png";
-import LockIcon from "../../assets/icons/Lock.png";
-import UnlockIcon from "../../assets/icons/Unlock.png";
-import TinIcon from "../../assets/icons/Tin.png";
-import { ButtonBlu } from "../components/Button";
+import { ButtonBlu, ButtonGreen, ButtonWhite } from "../components/Button";
 import { TextInputIcon, TextInputLabel } from "../components/TextInputField";
-import { COLORS } from "../constants";
+import { COLORS } from "../utils/constants";
 import CheckBox from "react-native-check-box";
 import { useState } from "react";
+import { checkEmail, sendOTP, signupApi, verifyOTP } from "../services/authentication";
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { validateEmail } from "../utils/utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default SignUp = ({navigation}) => {
+    const [loading, setLoading] = useState(false);
+
     const [check, setCheck] = useState(false)
-    const [name, setName] = useState("")
+    const [name, setName] = useState("StudentNhatha")
     const [errorName, setErrorName] = useState(null)
-    const [email, setEmail] = useState("")
+    const [email, setEmail] = useState("vivo@snapmail.cc")
     const [errorEmail, setErrorEmail] = useState(null)
-    const [username, setUsername] = useState("")
+    const [username, setUsername] = useState("StudentNhatha")
     const [errorUsername, setErrorUsername] = useState(null)
-    const [password, setPassword] = useState("")
+    const [password, setPassword] = useState("StudentNhatha")
     const [errorPassword, setErrorPassword] = useState(null)
-    const [confirmPassword, setConfirmPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("StudentNhatha")
     const [errorConfirm, setErrorConfirm] = useState(null)
     const [tin, setTin] = useState("")
     const [errorTin, setErrorTin] = useState(null)
+    const [centerName, setCenterName] = useState("")
+    const [errorCenterName, setErrorCenterName] = useState(null)
+
+    const [isVerify, setIsVerify] = useState(false)
+    const [otp, setOtp] = useState(null)
+    const [errorOTP, setErrorOTP] = useState(null)
+    const [isVerifyDone, setIsVerifyDone] = useState(false)
+
     const handleOnchangeName = (v)=>{
         setName(v)
         setErrorName(null)
@@ -36,6 +46,8 @@ export default SignUp = ({navigation}) => {
         setEmail(v)
         setErrorEmail(null)
         if(!v) setErrorEmail("Require!")
+        if(!validateEmail(v)) setErrorEmail("Invalid!")
+        setIsVerifyDone(false)
     }
     const handleOnchangeUsername = (v)=>{
         setUsername(v)
@@ -52,6 +64,11 @@ export default SignUp = ({navigation}) => {
         setErrorTin(null)
         if(!v) setErrorTin("Require!")
     }
+    const handleOnchangeCenterName = (v)=>{
+        setCenterName(v)
+        setErrorCenterName(null)
+        if(!v) setErrorCenterName("Require!")
+    }
     const handleCofirm = (v)=>{
         setConfirmPassword(v)
         if(password === v){
@@ -60,7 +77,7 @@ export default SignUp = ({navigation}) => {
             setErrorConfirm("Not match with password")
         }
     }
-    const handleSignup = async ()=>{
+    const handleOnPressSignup = async()=>{
         let checkNull = true
         if(!name){
             setErrorName("Require!")
@@ -90,121 +107,229 @@ export default SignUp = ({navigation}) => {
         }
         if(checkNull)
         {
-            try{
-                const response = await fakeApi(username, password)
-                if(response.success){
-                    Alert.alert("Sign up", "Sign up successfully")
-                    setErrorConfirm(null)
-                } else{
-                    setErrorConfirm("Invalid account")
+            if(!isVerifyDone){
+                setLoading(true)
+                try{
+                    const response = await checkEmail(email)
+                    if(response.error){
+                        setErrorEmail(response.data)
+                    }else
+                    if(response){
+                        await handleSendOTP()
+                    }
                 }
-            }
-            catch (error){
-                setErrorConfirm("Can't call API")
+                catch (error){
+                    console.log("==>Error:  ", error);
+                }
+                finally{
+                    setLoading(false)
+                }
+            } else{
+                await handleSignup()
             }
         }
     }
-    const fakeApi = (user, pass)=>{
-        return new Promise((resolve) => {
-            setTimeout(()=>{
-                resolve({success: user === "user" && pass === "pass"})
-            }, 1000)
-        })
+    const handleSendOTP = async ()=>{
+        try{
+            setLoading(true)
+            const response = await sendOTP(email)
+            if(response.error){
+                setErrorEmail(response.data)
+            }else
+            if(response){
+                setOtp(null)
+                setErrorConfirm(null)
+                setIsVerify(true)
+            }
+        }
+        catch (error){
+            console.log("==>Error send OTP:  ", error);
+        }
+        finally{
+            setLoading(false)
+        }
+    }
+    const handleVerifyOTP = async ()=>{
+        setLoading(true)
+        try{
+            const response = await verifyOTP(email, otp)
+            if(response.error){
+                setErrorOTP(response.data)
+            }else
+            if(response){
+                setIsVerifyDone(true)
+                await handleSignup()
+            }
+        }
+        catch (error){
+            console.log("==>Error verifyOTP:  ", error);
+        }
+        finally{
+            setLoading(false)
+        }
+    }
+    const handleSignup = async ()=>{
+        setLoading(true)
+        try{
+            const response = await signupApi(name, email, username, password, centerName, tin)
+            setLoading(false)
+            if(response.error){
+                setOtp(null)
+                setIsVerify(false)
+                setErrorConfirm(response.data)
+            }else
+            if(response){
+                console.log(response);
+                Alert.alert("Sign up", "Sign up successfully")
+                await AsyncStorage.setItem('username', username)
+                await AsyncStorage.setItem('password', "")
+                setErrorConfirm(null)
+                navigation.navigate("Sign in")
+            }
+        }
+        catch (error){
+            console.log("==>Error signupApi:  ", error);
+        }
     }
 
     return(
-        <View style={{ flex: 1}}>
-            <LinearGradient
-                    // Định nghĩa màu gradient
-                    colors={['#003B57', '#409E8E']}
-                    locations={[0,0.5]}
-                    style={styles.background}
-                />
-            <ScrollView contentContainerStyle={styles.container}>
-                {/* Top */}
-                <View style={styles.topSignUp}>
-                    <Image source={GirlIT}/>
-                    <View style={{ rowGap: 5, alignItems: "flex-start" }}>
-                        <View>
-                            <Text style={styles.topTextBig}>Learn IT</Text>
-                            <Text style={styles.topTextBig}>Easily and Effectively!</Text>
-                        </View>
-                        <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
-                        <ButtonBlu
-                            title={"Sign In"}
-                            action={()=>{navigation.navigate("Sign in")}}
-                        />
-                    </View>
-                </View>
-
-                {/* Sign up */}
-                <View style={styles.wrapSignUp}>
-                    <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign up</Text>
-                    <View style={{width: "100%", rowGap: 6}}>
-                        <TextInputIcon
-                            value={name}
-                            placeholder={"Name"}
-                            icon={PenIcon}
-                            onchangeText={handleOnchangeName}
-                            error={errorName}
-                        />
-                        <TextInputIcon
-                            value={email}
-                            placeholder={"Mail"}
-                            icon={MailIcon}
-                            onchangeText={handleOnchangeEmail}
-                            keyboardType={"email-address"}
-                            error={errorEmail}
-                        />
-                        <TextInputIcon
-                            value={username}
-                            placeholder={"Username"}
-                            icon={AccountIcon}
-                            onchangeText={handleOnchangeUsername}
-                            error={errorUsername}
-                        />
-                        <TextInputIcon
-                            value={password}
-                            placeholder={"Password"}
-                            icon={LockIcon}
-                            onchangeText={handleOnchangePassword}
-                            error={errorPassword}
-                            isPassword={true}
-                        />
-                        <TextInputIcon
-                            value={confirmPassword}
-                            placeholder={"Confirm Password"}
-                            icon={UnlockIcon}
-                            onchangeText={handleCofirm}
-                            error={errorConfirm}
-                            isPassword={true}
-                        />
-                        <CheckBox
-                            rightTextStyle ={{ color: check ? COLORS.secondMain : COLORS.lightText}}
-                            isChecked={check}
-                            onClick={()=>setCheck(!check)}
-                            rightText="Register as Admin Center"
-                        />
-                        {check &&
-                            <TextInputIcon
-                                value={tin}
-                                placeholder={"TIN"}
-                                icon={TinIcon}
-                                onchangeText={handleOnchangeTin}
-                                keyboardType={"numeric"}
-                                error={errorTin}
-                            />
-                        }
-                    </View>
-                    <ButtonBlu 
-                        title={"Sign Up"}
-                        fontSize={20}
-                        action={()=>handleSignup()}
+        <>
+            <View style={{ flex: 1}}>
+                <LinearGradient
+                        // Định nghĩa màu gradient
+                        colors={['#003B57', '#409E8E']}
+                        locations={[0,0.5]}
+                        style={styles.background}
                     />
-                    
+                <ScrollView contentContainerStyle={styles.container}>
+                    {/* Top */}
+                    <View style={styles.topSignUp}>
+                        <Image source={GirlIT}/>
+                        <View style={{ rowGap: 5, alignItems: "flex-start" }}>
+                            <View>
+                                <Text style={styles.topTextBig}>Learn IT</Text>
+                                <Text style={styles.topTextBig}>Easily and Effectively!</Text>
+                            </View>
+                            <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
+                            <ButtonBlu
+                                title={"Sign In"}
+                                action={()=>{navigation.navigate("Sign in")}}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Sign up */}
+                    <View style={styles.wrapSignUp}>
+                        <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign up</Text>
+                        <View style={{width: "100%", rowGap: 6}}>
+                            <TextInputIcon
+                                value={name}
+                                placeholder={"Name"}
+                                icon={<Feather name="pen-tool" size={24} color="black" style={{ transform: [{ rotate: '-90deg' }] }}/>}
+                                onchangeText={handleOnchangeName}
+                                error={errorName}
+                            />
+                            <TextInputIcon
+                                value={email}
+                                placeholder={"Mail"}
+                                icon={<Feather name="mail" size={24} color="black" />}
+                                onchangeText={handleOnchangeEmail}
+                                keyboardType={"email-address"}
+                                error={errorEmail}
+                            />
+                            <TextInputIcon
+                                value={username}
+                                placeholder={"Username"}
+                                icon={<Feather name="user" size={24} color="black" />}
+                                onchangeText={handleOnchangeUsername}
+                                error={errorUsername}
+                            />
+                            <TextInputIcon
+                                value={password}
+                                placeholder={"Password"}
+                                icon={<Feather name="lock" size={24} color="black" />}
+                                onchangeText={handleOnchangePassword}
+                                error={errorPassword}
+                                isPassword={true}
+                            />
+                            <TextInputIcon
+                                value={confirmPassword}
+                                placeholder={"Confirm Password"}
+                                icon={<Feather name="unlock" size={24} color="black" />}
+                                onchangeText={handleCofirm}
+                                error={errorConfirm}
+                                isPassword={true}
+                            />
+                            <CheckBox
+                                rightTextStyle ={{ color: check ? COLORS.secondMain : COLORS.lightText}}
+                                isChecked={check}
+                                onClick={()=>setCheck(!check)}
+                                rightText="Register as Admin Center"
+                            />
+                            {check &&
+                                <View  style={{rowGap: 6}}>
+                                    <TextInputIcon
+                                        value={tin}
+                                        placeholder={"TIN"}
+                                        icon={<Feather name="credit-card" size={24} color="black" />}
+                                        onchangeText={handleOnchangeTin}
+                                        keyboardType={"numeric"}
+                                        error={errorTin}
+                                    />
+                                    <TextInputIcon
+                                        value={centerName}
+                                        placeholder={"Center Name"}
+                                        icon={<Ionicons name="business-outline" size={24} color="black" />}
+                                        onchangeText={handleOnchangeCenterName}
+                                        error={errorCenterName}
+                                    />
+                                </View>
+                            }
+                        </View>
+                        <ButtonBlu 
+                            title={"Sign Up"}
+                            fontSize={20}
+                            action={()=>handleOnPressSignup()}
+                        />
+                        
+                    </View>
+                </ScrollView>
+                {/* Verify OTP */}
+                <Modal
+                    visible={isVerify}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={()=>setIsVerify(false)}
+                >
+                    <View style={styles.selectImgWrapper}>
+                        <View style={[styles.wrapSignUp, styles.verify]}>
+                            <TouchableOpacity style={styles.close} onPress={()=>setIsVerify(false)}>
+                                <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                            </TouchableOpacity>
+                            <Text style={{ fontSize: 20, fontWeight: "bold"}}>Verify Your Email</Text>
+                            <TextInputIcon
+                                value={otp}
+                                placeholder={"OTP"}
+                                icon={<Feather name="key" size={24} color="black" />}
+                                onchangeText={setOtp}
+                                keyboardType={"numeric"}
+                                error={errorOTP}
+                            />
+                            <Text style={styles.isSend}>Check your mail to receive an OTP</Text>
+                            <View style={{ flexDirection: "row", columnGap: 4}}>
+                                <ButtonGreen title={"Verify"} action={handleVerifyOTP}/>
+                                <ButtonWhite title={"Send again"} action={handleSendOTP}/>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+            </View> 
+            { loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
                 </View>
-            </ScrollView>
-        </View>
+            }
+        </>
     )
 }
 
@@ -252,4 +377,37 @@ const styles = StyleSheet.create({
         color: COLORS.stroke,
         fontSize: 16
       },
+      isSend:{
+        color: COLORS.secondMain,
+        fontSize: 16,
+        fontWeight: "bold",
+        justifyContent: "center",
+        textAlign: "center"
+      },
+    selectImgWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    close:{
+        alignSelf: "flex-end"
+    },
+    verify: {
+        minHeight: 0, 
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        paddingBottom: 24
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })

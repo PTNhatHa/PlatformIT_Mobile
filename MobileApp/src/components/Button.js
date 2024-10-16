@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../constants"
+import { COLORS } from "../utils/constants"
 
 export const ButtonBlu = ({title, action, fontSize})=>{
     return(
@@ -24,6 +24,16 @@ export const ButtonGreen = ({title, action, fontSize})=>{
         </TouchableOpacity>
     )
 }
+
+export const ButtonIcon = ({title, action, fontSize, icon})=>{
+    return(
+        <TouchableOpacity style={styles.btn_icon} onPress={action}>
+            {icon}
+            <Text style={[styles.btnTextWhite, { fontSize: fontSize || 12 }]}>{title}</Text>
+        </TouchableOpacity>
+    )
+}
+
 const styles = StyleSheet.create({
     btn_bl: {
         backgroundColor: COLORS.secondMain,
@@ -56,5 +66,17 @@ const styles = StyleSheet.create({
     btnTextWhite: {
         color: COLORS.main,
         fontWeight: "bold",
-    }
+    },
+    btn_icon: {
+        backgroundColor: "white",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: COLORS.main,
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 4
+    },
 })

@@ -1,27 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SignIn from './src/screens/SignIn';
-import SignUp from './src/screens/SignUp';
 import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
-import { StudentBottomTab, TeacherBottomTab } from './src/navigation/BottomTab';
-import { TextInputLabel } from './src/components/TextInputField';
-import { PersionalInfor } from './src/components/PI';
-import { ComboBox } from './src/components/ComboBox';
-import { TeacherPI } from './src/screens/Teacher/TeacherPI';
+import { UserProvider } from './src/contexts/UserContext';
+import { CardVirticalAssignment, CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from './src/components/CardVertical';
+import { TeacherHome } from './src/screens/Teacher/TabHome/TeacherHome';
+import { FilterCourse, TeacherViewAll, ViewAll, ViewAllCenter, ViewAllCourse, ViewAllTeacher } from './src/screens/ViewAll';
+import { TeacherPI } from './src/screens/Teacher/TabAccount/TeacherPI';
+import { SocialLink } from './src/components/SocialLink';
+import { ForgotPassword } from './src/screens/SignIn';
 import { Professional } from './src/components/Professional';
+import { DetailCourse } from './src/screens/DetailCourse';
+import { CardLecture } from './src/components/CardLecture';
+import { CardAssignmentStudent } from './src/components/CardAssignment';
+import { DetailTeacher } from './src/screens/DetailTeacher';
+import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
+import { DateTimePickerComponent } from './src/components/DateTimePicker';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
-        {/* <SigninSignup/> */}
-        <TeacherBottomTab/>
-        {/* <PersionalInfor/> */}
-        {/* <StudentBottomTab/> */}
-        {/* <TeacherPI/> */}
-        {/* <Professional label={"Professional Qualifications"}/> */}
+        <UserProvider>
+          <SigninSignup/>
+          {/* <DetailTeacher/> */}
+          {/* <StudentHome/> */}
+          {/* <FilterCourse/> */}
+          {/* <DateTimePickerComponent/> */}
+          {/* <TeacherViewAll/> */}
+          {/* <SocialLink/> */}
+        </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
     
