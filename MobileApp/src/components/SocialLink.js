@@ -40,7 +40,7 @@ export const SocialLink = ({
     }
     const handleAddNew = ()=>{
         const maxId = Math.max(...list.map(item => item.idProfileLink), 0)
-        const newList = [...list, { idProfileLink: maxId + 1, name: "", url: ""}]
+        const newList = [...list, { idProfileLink: maxId + 1, name: "", url: "", isNew: true}]
         setList(newList)
         setValue(newList)
     }
@@ -67,13 +67,15 @@ export const SocialLink = ({
                             }}
                             value={item.name}
                             useNativeAndroidPickerStyle={false}
+                            disabled={item.isNew !== true}
                         />
                     </View>
                     <TextInput 
                         style={[styles.link, {color: textColor}]}
                         value={item.url}
-                        placeholder={"Link"}
-                        onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "link")}
+                        placeholder={"url"}
+                        onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "url")}
+                        editable={item.isNew === true}
                     />
                     <TouchableOpacity onPress={()=>handleDelete(item.idProfileLink)}>
                         <AntDesign name="delete" size={20} color={COLORS.stroke} />

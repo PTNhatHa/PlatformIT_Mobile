@@ -42,7 +42,6 @@ export const TeacherPI = ({navigation})=>{
 
     const handleSavePITeacher = async ()=>{
         setLoading(true)
-        console.log(oldPI.links !== socials);
         try{
             if(oldPI.links !== socials){
                 // Add
@@ -65,7 +64,6 @@ export const TeacherPI = ({navigation})=>{
                 const deleteData = oldPI.links.filter(link => {
                     return !socials.some(social => social ===link)
                 })
-                console.log(deleteData);
                 deleteData.map( async (item)=>{
                     try{
                         const response = await deleteProfileLink(item.idProfileLink)
@@ -80,7 +78,7 @@ export const TeacherPI = ({navigation})=>{
                 })
             }
         } catch(e){
-
+            console.log("Error handleSavePITeacher: ", e);
         } finally{
             setLoading(false)
         }

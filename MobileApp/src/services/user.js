@@ -103,11 +103,11 @@ export const deleteProfileLink = async (id)=>{
     const url = baseUrl + "/DeleteProfileLink?id=" + id
     return await axios.delete(url)
     .then(response => {
-        console.log("==>Response: ", response.data);
+        // console.log("==>Response: ", response.data);
         return response.data
     })
     .catch(error => {
-        console.log("==>Error: ", error);
+        // console.log("==>Error: ", error);
         return {
             error: 400,
             data: error.response.data
