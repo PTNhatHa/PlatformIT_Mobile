@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useUser } from "../contexts/UserContext"
-const baseUrl = "http://192.168.2.3:5251/api/User"
+const baseUrl = "http://192.168.2.3:5000/api/User"
 // const baseUrl = "http://192.168.1.165:5251/api/User"
 export const getUserInfo = async (idUser)=>{
     const url = baseUrl + "/showPI?id=" + idUser
@@ -133,6 +133,30 @@ export const updateTeacherSpecializedPI = async (idUser, teachingMajor, descript
         return {
             error: 400,
             data: error.response.data
+        }
+    })
+}
+
+export const changeAvatar = async (idUser, linkAva)=>{
+    const url = baseUrl + "/ChangeAvatar"
+    const formData = new FormData()
+    formData.append('IdUser', idUser)
+    formData.append('AvatarFile', linkAva)
+    console.log(url);
+    return await axios.post(url, formData,{
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    .then(response => {
+        console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("==>Error: ", error);
+        return {
+            error: 400,
+            data: error
         }
     })
 }

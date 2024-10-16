@@ -1,5 +1,5 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5251/api/Authen"
+const baseUrl = "http://192.168.2.3:5000/api/Authen"
 // const baseUrl = "http://192.168.1.165:5251/api/Authen"
 export const signupApi = async (name, email, username, password, centerName, tin)=>{
     const url = baseUrl + "/signup"

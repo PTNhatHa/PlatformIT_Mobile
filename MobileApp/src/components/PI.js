@@ -9,7 +9,8 @@ import Feather from '@expo/vector-icons/Feather';
 import { COLORS } from "../utils/constants"
 import { TouchableOpacity } from "react-native"
 import { useUser } from "../contexts/UserContext"
-import { updateUserBasicPI } from "../services/user"
+import { changeAvatar, updateUserBasicPI } from "../services/user"
+import * as DocumentPicker from 'expo-document-picker';
 
 const init = {
     "idUser": null,
@@ -33,6 +34,11 @@ const init = {
 }
 export const PersionalInfor = ({navigation, info = init})=>{
     const {state, dispatch} = useUser()
+    const [avata, setAvata] = useState({
+        uri: info.avatar,
+        name: 'avatar.png',
+        type: 'image/png' 
+    })
     const [name, setName] = useState(info.fullName)
     const [phoneNumber, setPhoneNumber] = useState(info.phoneNumber)
     const [email, setEmail] = useState(info.email)
@@ -40,6 +46,7 @@ export const PersionalInfor = ({navigation, info = init})=>{
     const [gender, setGender] = useState(info.gender)
     const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
+    const [isChangeAva, setIsChangeAva] = useState(false)
     const handleUpdateBasicPI = async()=>{
         try{
             setIsLoading(true)
@@ -49,10 +56,37 @@ export const PersionalInfor = ({navigation, info = init})=>{
             } else{
                 Alert.alert("Notification", response)
             }
+            if(isChangeAva){
+                const responseAva = await changeAvatar(state.idUser, avata)
+                if(responseAva.error){
+                    Alert.alert("Warning", responseAva.data)
+                } else{
+                    Alert.alert("Notification", responseAva)
+                }
+            }
         } catch(e){
             console.log("Error handleUpdateBasicPI", e);
         } finally{
             setIsLoading(false)
+        }
+    }
+    const pickFile = async()=>{
+        setIsChangeAva(true)
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: ['image/*'],
+                copyToCacheDirectory: true,
+            })
+            if(result){
+                setAvata({
+                    uri: result.assets[0].uri,
+                    name: 'avatar.png',
+                    type: result.assets[0].mimeType 
+                })
+            }
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
         }
     }
     return(
@@ -61,8 +95,8 @@ export const PersionalInfor = ({navigation, info = init})=>{
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.avataWrapper}>
                         <View style={styles.avataInner}>
-                            <Image style={styles.avataImage} source={state.avatar}/>
-                            <TouchableOpacity style={styles.avataCamera}>
+                            <Image style={styles.avataImage} source={{uri: avata.uri}}/>
+                            <TouchableOpacity style={styles.avataCamera} onPress={pickFile}>
                                 <Feather name="camera" size={20} color={COLORS.main} />
                             </TouchableOpacity>
                         </View>
@@ -131,7 +165,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.main,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white"
+        backgroundColor: COLORS.lightText
     },
     wrapLoading:{
         position: "absolute", 
