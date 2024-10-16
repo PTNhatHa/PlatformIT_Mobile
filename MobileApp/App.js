@@ -15,6 +15,7 @@ import { CardAssignmentStudent } from './src/components/CardAssignment';
 import { DetailTeacher } from './src/screens/DetailTeacher';
 import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
 import { DateTimePickerComponent } from './src/components/DateTimePicker';
+import { StudentAllCourse } from './src/screens/Student/TabMyCourse/StudentAllCourse';
 
 export default function App() {
   return (
@@ -22,12 +23,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <DetailTeacher/> */}
-          {/* <StudentHome/> */}
-          {/* <FilterCourse/> */}
-          {/* <DateTimePickerComponent/> */}
-          {/* <TeacherViewAll/> */}
-          {/* <SocialLink/> */}
+          {/* <StudentAllCourse/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

@@ -1,20 +1,20 @@
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import DefaultImg from "../../assets/images/DefaultImg.png"
-import { COLORS, commonStyles } from "../utils/constants"
-import { Tag } from "../components/Tag"
+import DefaultImg from "../../../../assets/images/DefaultImg.png"
+import { COLORS, commonStyles } from "../../../utils/constants"
+import { Tag } from "../../../components/Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { formatDateTime } from "../utils/utils";
-import { useUser } from "../contexts/UserContext";
-import { CardHorizontalTeacher } from "../components/CardHorizontal";
-import { CardReview } from "../components/CardReview";
-import { ButtonIcon } from "../components/Button";
-import { CardLecture } from "../components/CardLecture";
+import { formatDateTime } from "../../../utils/utils";
+import { useUser } from "../../../contexts/UserContext";
+import { CardHorizontalTeacher } from "../../../components/CardHorizontal";
+import { CardReview } from "../../../components/CardReview";
+import { ButtonIcon } from "../../../components/Button";
+import { CardLecture } from "../../../components/CardLecture";
 import { useState } from "react";
-import { CardAssignmentStudent } from "../components/CardAssignment";
+import { CardAssignmentStudent } from "../../../components/CardAssignment";
 
 const initCourse={
     img: "",
@@ -119,8 +119,10 @@ const initCourse={
     },
 }
 
-export const DetailCourse = ({data = initCourse})=>{
+export const StudentDetailCourse = ()=>{
+    const data = initCourse
     const {state, dispatch} = useUser()
+    const [selectBtn, setSelectBtn] = useState(1)
     const [showAllTest, setShowAllTest] = useState(false)
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
@@ -193,7 +195,7 @@ export const DetailCourse = ({data = initCourse})=>{
                 </View>
                 {state.idRole === 3 &&
                     <TouchableOpacity style={styles.infoBtn}>
-                        <Text style={styles.infoBtnText}>Pay for this course</Text>
+                        <Text style={styles.infoBtnText}>View payment history</Text>
                     </TouchableOpacity>
                 }
             </View>
@@ -241,15 +243,35 @@ export const DetailCourse = ({data = initCourse})=>{
                 </TouchableOpacity>
             </View>
 
+            {/* Board */}
+            <View style={styles.wrapper}>
+                <Text style={commonStyles.title}>Board</Text>
+                <View style={styles.board}>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
+                        <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity  onPress={()=>setSelectBtn(2)}>
+                        <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Notification</Text>
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    {selectBtn === 1 ? 
+                    <Text>Progress</Text>:
+                    <Text>Notification</Text>
+                    }
+                </View>
+            </View>
+            
             {/* Teacher */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Teacher</Text>
-                <CardHorizontalTeacher/>
+                <CardHorizontalTeacher isBtn={true}/>
             </View>
             
             {/* Course review */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Latest reviews</Text>
+                <ButtonIcon title={"Write a review"} icon={<FontAwesome6 name="pen-to-square" size={16} color={COLORS.main} />}/>
                 <FlatList
                     data={data.reviews}
                     keyExtractor={item => item.id}
@@ -332,6 +354,29 @@ const styles = StyleSheet.create({
     },
     showAll:{
         alignItems: "center"
+    },
+    board: {
+        flexDirection: "row",
+        columnGap: 4,
+        justifyContent: "center"
+    },
+    boardBtn: {
+        justifyContent: "center"
+    },
+    normalBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        color: COLORS.stroke,
+        fontWeight: "bold",
+    },
+    selectBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        fontSize: 16,
+        color: COLORS.main,
+        fontWeight: "bold",
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.main
     },
     wrapSectionLecture:{
         padding: 8,

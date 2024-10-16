@@ -13,6 +13,8 @@ import { StudentViewAll, ViewAll } from "../screens/ViewAll";
 import { DetailCourse } from "../screens/DetailCourse";
 import { DetailCenter } from "../screens/DetailCenter";
 import { DetailTeacher } from "../screens/DetailTeacher";
+import { StudentAllCourse } from "../screens/Student/TabMyCourse/StudentAllCourse";
+import { StudentDetailCourse } from "../screens/Student/TabMyCourse/StudentDetailCourse";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -46,6 +48,25 @@ const StackHomeScreen = ()=>{
     )
 }
 
+const StackMyCourseScreen = ()=>{
+    const StackMyCourse = createNativeStackNavigator()
+    return(
+        <StackMyCourse.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackMyCourse.Screen
+                name="MyCourse"
+                component={StudentAllCourse}
+            />
+            <StackMyCourse.Screen
+                name="DetailCourse"
+                component={StudentDetailCourse}
+            />
+        </StackMyCourse.Navigator>
+    )
+}
 const StackAccountScreen = ()=>{
     const StackAccount = createNativeStackNavigator()
     return(
@@ -101,7 +122,7 @@ export const StudentBottomTab = ()=>{
             })}
         >
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }}/>
-            <Tab.Screen name="My Course" component={Home} />
+            <Tab.Screen name="My Course" component={StackMyCourseScreen} />
             <Tab.Screen name="My Test" component={Home} />
             <Tab.Screen name="Noti" component={Home} />
             <Tab.Screen name="Chat" component={Home} />

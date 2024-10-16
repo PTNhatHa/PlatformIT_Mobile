@@ -7,6 +7,7 @@ import { Tag, TagNoColor } from "./Tag";
 import { useState, useEffect } from "react"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { useNavigation } from "@react-navigation/native";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const initCourse={
     img: "",
@@ -22,7 +23,8 @@ const initCourse={
     endRegist: new Date(),
     isRegist: true,
     cost: 120,
-    costSale: 100
+    costSale: 100,
+    nameCenter: "Center HAHYWU",
 }
 export const CardVirticalCourse = ({data = initCourse})=>{
     const navigation = useNavigation()
@@ -46,17 +48,17 @@ export const CardVirticalCourse = ({data = initCourse})=>{
                         {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
                     </Text>
                 </View>
-                    <View style={styles.content}>
-                        {data.startRegist &&
-                            <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                        }
-                        {data.startRegist &&
-                            <Text style={styles.dataText}>
-                                {data.isRegist ? "Registing" : 
-                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                            </Text>
-                        }
-                    </View>
+                <View style={styles.content}>
+                    {data.startRegist &&
+                        <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
+                    }
+                    {data.startRegist &&
+                        <Text style={styles.dataText}>
+                            {data.isRegist ? "Registing" : 
+                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                        </Text>
+                    }
+                </View>
                 <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.costSale}</Text>
                     <Text style={styles.cost}>{data.cost}</Text>
@@ -157,6 +159,38 @@ export const CardVirticalAssignmentTeacher = ({data = initAssignment, navigation
                     <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
                     <TagNoColor label={data.type}/>
                     <TagNoColor label={data.isPublish ? "Publish": "Unpublish"}/>
+                </View>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
+
+export const CardCourseStudent = ({data = initCourse})=>{
+    const navigation = useNavigation()
+    return(
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("DetailCourse")}>
+            <Image source={data.img} style={styles.img}/>
+            <View style={{ flex: 1}}>
+                <Text style={styles.title}>{data.title}</Text>
+                {data.listTags?.length > 0 && 
+                    <View style={styles.content}>
+                        <Tag label={data.listTags[0].value}/>
+                        {data.listTags.length > 1 && 
+                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        }
+                        
+                    </View>
+                }
+                <View style={styles.content}>
+                    <Feather name="clock" size={10} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>
+                        {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
+                    </Text>
+                </View>
+                <View style={styles.content}>
+                    <Ionicons name="business-outline" size={10} color={COLORS.secondMain} />
+                    <Text style={styles.dataText}>{data.nameCenter}</Text>
                 </View>
             </View>
         </TouchableOpacity>

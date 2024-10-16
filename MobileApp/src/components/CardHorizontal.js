@@ -3,9 +3,11 @@ import { COLORS } from "../utils/constants"
 import { Tag, TagNoColor } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native";
+import { ButtonIcon } from "./Button";
 
 const initCourse={
     id: 1,
@@ -101,15 +103,21 @@ const initTeacher={
     name: "Name",
     description: "Description"
 }
-export const CardHorizontalTeacher = ({data = initTeacher})=>{
+export const CardHorizontalTeacher = ({data = initTeacher, isBtn = false})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")}>
+            
             <Image source={data.img} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
                 <Text style={styles.title}>{data.name}</Text>
                 <Text style={styles.dataText}>{data.description}</Text>
             </View>
+            {isBtn &&
+            <View>
+                <ButtonIcon title={"Chat"} icon={<Ionicons name="chatbubble-outline" size={16} color={COLORS.main} />}/>
+            </View>
+            }
         </TouchableOpacity>
     )
 }
