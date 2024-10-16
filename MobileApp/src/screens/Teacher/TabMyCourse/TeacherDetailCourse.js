@@ -220,13 +220,16 @@ export const TeacherDetailCourse = ()=>{
                                     </Text>
                                 </TouchableOpacity>
                                 <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
+                                    <ButtonIcon title={"Add new lecture"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
                                     {item.lecture.map(item => 
                                         <CardLecture data={item}/>
                                     )}
                                 </View>
                             </View>
+                            
                         )}
                     )}
+                    <ButtonIcon title={"Add new section"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
                 </View>
             </View>
 
@@ -351,11 +354,12 @@ const styles = StyleSheet.create({
     wrapSection:{
         flexDirection: "row",
         alignItems: "center",
-        columnGap: 4
+        columnGap: 4,
     },
     wrapShow: {
         overflow: "hidden",
-        height: "auto"
+        height: "auto",
+        marginTop: 4
     },
     showAll:{
         alignItems: "center"
