@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, View } from "react-native"
 import { TextInputLabel } from "./TextInputField"
 import { useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
@@ -116,9 +116,15 @@ export const PersionalInfor = ({navigation, info = init})=>{
                 </ScrollView>
             </View>
             {isLoading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
+                <Modal
+                    visible={isLoading}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <View style={styles.wrapLoading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                </Modal>
             }  
         </>
     )

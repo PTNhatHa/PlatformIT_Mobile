@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
+import { ActivityIndicator, Alert, Modal, ScrollView, StyleSheet, Text, View } from "react-native"
 import { PersionalInfor } from "../../../components/PI"
 import { TextInputLabel } from "../../../components/TextInputField"
 import { useState, useEffect } from "react"
@@ -92,7 +92,6 @@ export const TeacherPI = ({navigation})=>{
             }
 
             // Professional
-            console.log(oldPI.qualificationModels !== professionals);
             if(oldPI.qualificationModels !== professionals){
                 // Add
                 const dataAdd = professionals.filter(item => item.new)
@@ -162,10 +161,16 @@ export const TeacherPI = ({navigation})=>{
                 </ScrollView>
             </View>   
             {loading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
-            }
+                <Modal
+                    visible={loading}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <View style={styles.wrapLoading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                </Modal>
+            } 
         </>      
     )
 }

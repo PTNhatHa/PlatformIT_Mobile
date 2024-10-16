@@ -79,7 +79,7 @@ export default SignIn = ({navigation}) => {
                 if(info.avatar){
                     userInfo = {
                         ...response,
-                        "avatar": info
+                        "avatar": info.avatar
                     }
                 }
                 dispatch({ type: SET_INFO, payload: userInfo })
