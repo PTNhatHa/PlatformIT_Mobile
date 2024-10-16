@@ -9,18 +9,23 @@ import { determineFileType } from "../utils/utils";
 const initProfessions = [
     // {
     //     id: 1,
-    //     title: "aaa",
+    //     qualificationName: "aaa",
     //     description: "aaaaaaaaaa",
-    //     image: "https://i.pinimg.com/originals/13/5d/7c/135d7c70b6eba155a057046f41b3501e.jpg",
+    //     path: {
+    //         uri: "",
+    //         name: 'avatar.png',
+    //         type: ""
+    //     },
     //     isPending: true
     // },
-    // {
-    //     id: 2,
-    //     title: "bbb",
-    //     description: "bbbbbbbb",
-    //     image: "https://i.pinimg.com/originals/6b/b0/72/6bb0727d93aaa98defc3f0d2364eb4df.jpg",
-    //     isPending: false
-    // },
+    {
+        "idQualification": 1,
+        "path": "",
+        "qualificationName": null,
+        "description": null,
+        "status": 2
+    }
+
 ]
 
 export const Professional = ({
@@ -33,30 +38,44 @@ export const Professional = ({
     const handleAddNew = ()=>{
         let idMax = 0
         if(professions){
-            idMax = Math.max(...professions.map(item => item.id), 0)
+            idMax = Math.max(...professions.map(item => item.idQualification), 0)
         }
-        const newProfessions = [...professions, { id: idMax + 1 , new: true}]
+        const newProfessions = [...professions, { 
+            idQualification: idMax + 1 , 
+            qualificationName: "",
+            description: "",
+            path: "",
+            new: true,
+        }]
         setProfessions(newProfessions)
         setProfess(newProfessions)
     }
     const handleDelete = (select)=>{
-        const newProfessions = professions.filter(item => item.id !== select)
+        const newProfessions = professions.map((item)=>{
+            if(item.idQualification === select){
+                return{
+                    ...item,
+                    delete: true
+                }
+            }
+            return item
+        })
         setProfessions(newProfessions)
         setProfess(newProfessions)
     }
     const handleSelectImg = (select)=>{
         setSelectImg(select)
     }
-    const handleChangeData = (id, value, key)=>{
+    const handleChangeData = (idQualification, value, key)=>{
         setTextColor("black")
         const newProfessions = professions.map((item)=>{
-            if(item.id === id && key === "title"){
+            if(item.idQualification === idQualification && key === "qualificationName"){
                 return{
                     ...item,
-                    title: value,
+                    qualificationName: value,
                 }
             }
-            if(item.id === id && key === "description"){
+            if(item.idQualification === idQualification && key === "description"){
                 return{
                     ...item,
                     description: value,
@@ -75,11 +94,10 @@ export const Professional = ({
             })
             if(result){
                 const newList = professions.map((item)=>{
-                    if(item.id  === itemId){
+                    if(item.idQualification  === itemId){
                         return{
                             ...item,
-                            title: result.assets[0].name,
-                            image: result.assets[0].uri,
+                            path: result.assets[0],
                         }
                     }
                     return item
@@ -105,9 +123,9 @@ export const Professional = ({
             <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
             <View style={{rowGap: 10}}>
                 {professions ? 
-                professions.map((item)=>
-                <View style={styles.container} key={item.id}>
-                    {item.isPending ? 
+                professions.map((item)=> !item.delete ?
+                <View style={styles.container} key={item.idQualification}>
+                    {item.status === 2 ? 
                         <TagYellow label={"Pending"}/>
                         :
                         !item.new ? 
@@ -115,43 +133,63 @@ export const Professional = ({
                     }
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
-                        value={item.title}
+                        value={item.qualificationName}
                         placeholder={"Title"}
-                        onChangeText={(v)=>handleChangeData(item.id, v, "title")}
+                        onChangeText={(v)=>handleChangeData(item.idQualification, v, "qualificationName")}
+                        editable={item.new === true}
                     />
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
                         value={item.description}
                         placeholder={"Desciption"}
-                        onChangeText={(v)=>handleChangeData(item.id, v, "description")}
+                        onChangeText={(v)=>handleChangeData(item.idQualification, v, "description")}
+                        editable={item.new === true}
                     />
                     <View style={styles.wrap}>
                         <View style={styles.wrapbtn}>
-                            <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.id)}>
+                            {item.new ? 
+                                <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
+                                    <AntDesign name="file1" size={20} color={COLORS.stroke} />
+                                </TouchableOpacity>
+                                : ""  
+                            }
+                            <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.idQualification)}>
                                 <AntDesign name="delete" size={20} color={COLORS.stroke} />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.id)}>
-                                <AntDesign name="file1" size={20} color={COLORS.stroke} />
-                            </TouchableOpacity>
-                        </View>
-                        { determineFileType(item.image) === "Image" ?
-                            <TouchableOpacity onPress={()=>handleSelectImg(item.image)}>
-                                <Image 
-                                    source={{uri: item.image}}
-                                    style={styles.image}
-                                />
-                            </TouchableOpacity> 
+                        </View> 
+                        { item.new ? 
+                                determineFileType(item.path.uri) === "Image" ?
+                                <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
+                                    <Image 
+                                        source={{uri: item.path.uri}}
+                                        style={styles.image}
+                                    />
+                                </TouchableOpacity> 
+                                : 
+                                determineFileType(item.path.uri) === "Pdf" ?
+                                <TouchableOpacity onPress={()=>openPdf(item.path.uri)}>
+                                    <Text style={styles.pdf}>Open pdf</Text>
+                                </TouchableOpacity>
+                                :""
                             : 
-                            determineFileType(item.image) === "Pdf" ?
-                            <TouchableOpacity onPress={()=>openPdf(item.image)}>
-                                <Text style={styles.pdf}>Open pdf</Text>
-                            </TouchableOpacity>
-                            :""
+                                determineFileType(item.path) === "Image" ?
+                                <TouchableOpacity onPress={()=>handleSelectImg(item.path)}>
+                                    <Image 
+                                        source={{uri: item.path}}
+                                        style={styles.image}
+                                    />
+                                </TouchableOpacity> 
+                                : 
+                                determineFileType(item.path) === "Pdf" ?
+                                <TouchableOpacity onPress={()=>openPdf(item.path)}>
+                                    <Text style={styles.pdf}>Open pdf</Text>
+                                </TouchableOpacity>
+                                :"" 
                         }
-                        
+                         
                     </View>
                 </View>
-                ): ""}
+                :""): ""}
                 <TouchableOpacity style={styles.btn} onPress={handleAddNew}>
                     <AntDesign name="plus" size={20} color={COLORS.stroke} />
                 </TouchableOpacity>

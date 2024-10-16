@@ -149,14 +149,59 @@ export const changeAvatar = async (idUser, linkAva)=>{
         },
     })
     .then(response => {
-        console.log("==>Response: ", response.data);
+        // console.log("==>Response: ", response.data);
         return response.data
     })
     .catch(error => {
-        console.log("==>Error: ", error);
+        // console.log("==>Error: ", error);
         return {
             error: 400,
             data: error
+        }
+    })
+}
+
+export const addQualification = async (idUser, QualificationName, Description, QualificationFile)=>{
+    const url = baseUrl + "/AddQualification?IdUser=" + idUser
+    const formData = new FormData()
+    formData.append('QualificationName', QualificationName)
+    formData.append('Description', Description)
+    formData.append('QualificationFile', {
+        uri: QualificationFile.uri || "",
+        name: 'avatar.png',
+        type: QualificationFile.mimeType || "" 
+    }) 
+    console.log(QualificationFile);
+    return await axios.post(url, formData,{
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error);
+        return {
+            error: 400,
+            data: error
+        }
+    })
+}
+
+export const deleteQualification = async (id)=>{
+    const url = baseUrl + "/DeleteQualification?id=" + id
+    return await axios.delete(url)
+    .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error);
+        return {
+            error: 400,
+            data: error.response.data
         }
     })
 }

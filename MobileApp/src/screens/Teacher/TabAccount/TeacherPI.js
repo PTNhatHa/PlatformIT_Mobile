@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { COLORS } from "../../../utils/constants"
 import { Professional } from "../../../components/Professional"
 import { useUser } from "../../../contexts/UserContext"
-import { addProfileLink, deleteProfileLink, getUserInfo, updateTeacherSpecializedPI } from "../../../services/user"
+import { addProfileLink, addQualification, deleteProfileLink, deleteQualification, getUserInfo, updateTeacherSpecializedPI } from "../../../services/user"
 import { SocialLink } from "../../../components/SocialLink"
 import { ButtonGreen } from "../../../components/Button"
 
@@ -90,6 +90,41 @@ export const TeacherPI = ({navigation})=>{
                     }
                 }))
             }
+
+            // Professional
+            console.log(oldPI.qualificationModels !== professionals);
+            if(oldPI.qualificationModels !== professionals){
+                // Add
+                const dataAdd = professionals.filter(item => item.new)
+                await Promise.all(dataAdd.map( async (item)=>{
+                    try{
+                        const response = await addQualification(state.idUser, item.qualificationName, item.description, item.path)
+                        if(response.error){
+                            Alert.alert("Warning", response.data)
+                        }else{
+                            Alert.alert("Noti", "Add professionals done ^3^")
+                        }
+                    } catch(e){
+                        console.log("Error add professionals: ", e);
+                    }
+                }))
+
+                // Delete
+                const dataDelete = professionals.filter(item => item.delete === true && item.new !== true)
+                await Promise.all(dataDelete.map( async (item)=>{
+                    try{
+                        const response = await deleteQualification(item.idQualification)
+                        if(response.error){
+                            Alert.alert("Warning", response.data)
+                        }else{
+                            Alert.alert("Noti", "Delete professionals done ^3^")
+                        }
+                    } catch(e){
+                        console.log("Error delete professionals: ", e);
+                    }
+                }))
+            }
+
         } catch(e){
             console.log("Error handleSavePITeacher: ", e);
         } finally{
