@@ -35,13 +35,15 @@ export const TextInputLabel = ({
     return(
         <View>
             <Text style={styles.input}>{label}</Text>
-            <View style={styles.container}>
+            <View style={[styles.container, label === "Bio" ? {borderRadius: 20} : ""]}>
                 <TextInput 
                     style={[styles.inputLabel, {color: textColor}]}
                     value={value}
                     placeholder={placeholder}
                     onChangeText={(v)=>handleOnchangeText(v)}
                     keyboardType={keyboardType || "default"}
+                    multiline={label === "Bio"}
+                    editable={label !== "Affiliated Center" && label !== "Email"}
                 />
             </View>
         </View>

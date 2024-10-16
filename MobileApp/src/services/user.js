@@ -114,3 +114,25 @@ export const deleteProfileLink = async (id)=>{
         }
     })
 }
+
+export const updateTeacherSpecializedPI = async (idUser, teachingMajor, description)=>{
+    const url = baseUrl + "/UpdateTeacherSpecializedPI"
+    return await axios.post(url, {
+        "idUser": idUser,
+        "teachingMajor": teachingMajor,
+        "description": description,
+        "links": [],
+        "qualificationModels": []
+    })
+    .then(response => {
+        // console.log("==>Response: ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error: ", error.response.data);
+        return {
+            error: 400,
+            data: error.response.data
+        }
+    })
+}

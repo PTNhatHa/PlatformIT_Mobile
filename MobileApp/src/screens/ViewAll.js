@@ -21,7 +21,7 @@ const ViewAllRender = ({data = [], type})=>{
     // console.log(data);
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
-    const numberItem = 2
+    const numberItem = 4
     const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem))
     const inputRef = useRef(null)
     const handleChangeIndex = (isNext)=>{
@@ -57,6 +57,7 @@ const ViewAllRender = ({data = [], type})=>{
                 data={currentData}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderItem}
+                style={styles.wrapList}
             />
         )
     }
@@ -478,8 +479,9 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
-        columnGap: 20
+        columnGap: 20,
+        backgroundColor: "white",
+        paddingTop: 10
     },
     wrapPageNumber:{
         flexDirection: "row",
@@ -487,8 +489,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     pageNumber:{
-        // paddingVertical: 6,
-        // paddingHorizontal: 12,
         height: 32,
         width: 100,
         backgroundColor: "white",
@@ -502,6 +502,8 @@ const styles = StyleSheet.create({
         color: COLORS.main,
         fontWeight: "bold",
         fontSize: 16,
-
     },
+    wrapList: {
+        marginBottom: 30
+    }
 })

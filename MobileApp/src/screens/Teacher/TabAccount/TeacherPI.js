@@ -5,7 +5,7 @@ import { useState, useEffect } from "react"
 import { COLORS } from "../../../utils/constants"
 import { Professional } from "../../../components/Professional"
 import { useUser } from "../../../contexts/UserContext"
-import { addProfileLink, deleteProfileLink, getUserInfo } from "../../../services/user"
+import { addProfileLink, deleteProfileLink, getUserInfo, updateTeacherSpecializedPI } from "../../../services/user"
 import { SocialLink } from "../../../components/SocialLink"
 import { ButtonGreen } from "../../../components/Button"
 
@@ -43,12 +43,25 @@ export const TeacherPI = ({navigation})=>{
     const handleSavePITeacher = async ()=>{
         setLoading(true)
         try{
+            // Teaching & Bio
+            try{
+                const response = await updateTeacherSpecializedPI(state.idUser, teaching, description)
+                if(response.error){
+                    Alert.alert("Warning", response.data)
+                }else{
+                    Alert.alert("Noti", "Save change done 0o0")
+                }
+            } catch(e){
+                console.log("Error updateTeacherSpecializedPI: ", e);
+            }
+
+            // Social Links
             if(oldPI.links !== socials){
                 // Add
                 const dataAdd = socials.filter(social => {
                     return !oldPI.links.some(link => link.name === social.name && link.url === social.url)
                 })
-                dataAdd.map( async (item)=>{
+                await Promise.all(dataAdd.map( async (item)=>{
                     try{
                         const response = await addProfileLink(state.idUser, item.name, item.url)
                         if(response.error){
@@ -59,12 +72,12 @@ export const TeacherPI = ({navigation})=>{
                     } catch(e){
                         console.log("Error add Social links: ", e);
                     }
-                })
+                }))
                 // Delete
                 const deleteData = oldPI.links.filter(link => {
                     return !socials.some(social => social ===link)
                 })
-                deleteData.map( async (item)=>{
+                await Promise.all(deleteData.map( async (item)=>{
                     try{
                         const response = await deleteProfileLink(item.idProfileLink)
                         if(response.error){
@@ -75,7 +88,7 @@ export const TeacherPI = ({navigation})=>{
                     } catch(e){
                         console.log("Error add Social links: ", e);
                     }
-                })
+                }))
             }
         } catch(e){
             console.log("Error handleSavePITeacher: ", e);
@@ -104,8 +117,8 @@ export const TeacherPI = ({navigation})=>{
                     <ScrollView contentContainerStyle={styles.container}>
                         <View style={styles.body}>
                             <TextInputLabel label={"Affiliated Center"} value={center}/>
-                            <TextInputLabel label={"Teaching Specialization"} value={teaching}/>
-                            <TextInputLabel label={"Description"} value={description}/>
+                            <TextInputLabel label={"Teaching Specialization"} value={teaching} onchangeText={setTeaching}/>
+                            <TextInputLabel label={"Bio"} value={description} onchangeText={setDescription}/>
                             <SocialLink value={socials} setValue={setSocials}/>
                             <Professional label={"Professional Qualifications"} value={professionals} setProfessions={setProfessionals}/>
                         </View>
