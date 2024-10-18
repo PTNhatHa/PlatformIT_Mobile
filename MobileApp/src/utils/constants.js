@@ -2,12 +2,13 @@ import { StyleSheet } from "react-native";
 
 export const COLORS = {
     main: '#397979',
+    main30: "#C0D3D3",
     secondMain: '#003B57',
     stroke: "#757575",
     lightText: "#D9D9D9",
     yellow: "#FFCC00",
     green: "#34C759",
-    red: "#C00F0C"
+    red: "#C00F0C",
 };
 
 export const commonStyles = StyleSheet.create({
@@ -20,6 +21,13 @@ export const commonStyles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "bold",
         color: COLORS.stroke,
+    },
+    shadow: {
+        shadowColor: "#000", // Màu của bóng đổ
+        shadowOffset: { width: 10, height: 10 }, // Độ lệch của bóng đổ
+        shadowOpacity: 0.25, // Độ mờ của bóng đổ
+        shadowRadius: 10, // Bán kính của bóng đổ
+        elevation: 10, // Độ cao của bóng đổ (chỉ dành cho Android)
     }
 })
 

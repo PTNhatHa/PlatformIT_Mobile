@@ -8,7 +8,7 @@ export const StudentAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={state.avatar} style={styles.avataImage}/>
+                <Image source={{uri: state.avatar}} style={styles.avataImage}/>
                 <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>
@@ -47,7 +47,8 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 90,
         borderWidth: 1,
-        borderColor: COLORS.lightText
+        borderColor: COLORS.lightText,
+        resizeMode: "cover"
     },
     text:{
         fontSize: 16,

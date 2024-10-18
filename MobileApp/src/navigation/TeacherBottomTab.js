@@ -6,7 +6,7 @@ import { COLORS } from "../utils/constants";
 import { Home } from "../screens/Home";
 import { TeacherPI } from "../screens/Teacher/TabAccount/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ChangePassword } from "../screens/ChangePassword";
+import { ChangePassword } from "../components/ChangePassword";
 import { TeacherAccount } from "../screens/Teacher/TabAccount/TeacherAccount";
 import { TeacherHome } from "../screens/Teacher/TabHome/TeacherHome";
 import { StudentViewAll, TeacherViewAll, ViewAll } from "../screens/ViewAll";

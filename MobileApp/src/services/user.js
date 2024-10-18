@@ -18,6 +18,7 @@ export const getUserInfo = async (idUser)=>{
     })
 }
 export const changePassword = async (currentPW, newPW, idUser)=>{
+    // console.log("==>zooo");
     const url = baseUrl + "/ChangePassword"
     return await axios.post(url, {
         "currentPW": currentPW,

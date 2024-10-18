@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         borderRadius: 90,
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        resizeMode: 'contain',
+        resizeMode: "cover",
     },
     text:{
         fontSize: 16,

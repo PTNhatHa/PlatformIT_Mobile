@@ -236,6 +236,7 @@ export const TeacherDetailCourse = ()=>{
             {/* Course assignments */}
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Test</Text>
+                <ButtonIcon title={"Add new test"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
                 <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
                     {data.test.map(item => 
                         <CardAssignmentStudent data={item} key={item.id}/>
@@ -270,11 +271,11 @@ export const TeacherDetailCourse = ()=>{
                 </View>
             </View>
             
-            {/* Teacher */}
+            {/* Teacher
             <View style={styles.wrapper}>
                 <Text style={commonStyles.title}>Teacher</Text>
-                <CardHorizontalTeacher isBtn={true}/>
-            </View>
+                <CardHorizontalTeacher/>
+            </View> */}
             
             {/* Course review */}
             <View style={styles.wrapper}>

@@ -16,6 +16,9 @@ import { DetailTeacher } from './src/screens/DetailTeacher';
 import { StudentHome } from './src/screens/Student/TabHome/StudentHome';
 import { DateTimePickerComponent } from './src/components/DateTimePicker';
 import { StudentAllCourse } from './src/screens/Student/TabMyCourse/StudentAllCourse';
+import { TextInputLabel } from './src/components/TextInputField';
+import { PersionalInfor } from './src/components/PI';
+import { StudentPI } from './src/screens/Student/TabAccount/StudentPI';
 
 export default function App() {
   return (
@@ -24,6 +27,7 @@ export default function App() {
         <UserProvider>
           <SigninSignup/>
           {/* <StudentAllCourse/> */}
+          {/* <StudentPI/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
