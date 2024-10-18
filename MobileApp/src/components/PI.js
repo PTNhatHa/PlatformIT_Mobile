@@ -8,8 +8,8 @@ import Img from "../../assets/images/BoyIT.png"
 import Feather from '@expo/vector-icons/Feather';
 import { COLORS, commonStyles } from "../utils/constants"
 import { TouchableOpacity } from "react-native"
-import { useUser } from "../contexts/UserContext"
-import { changeAvatar, updateUserBasicPI } from "../services/user"
+import { SET_INFO, useUser } from "../contexts/UserContext"
+import { changeAvatar, getUserInfo, updateUserBasicPI } from "../services/user"
 import * as DocumentPicker from 'expo-document-picker';
 
 const init = {
@@ -62,6 +62,8 @@ export const PersionalInfor = ({info = init})=>{
                     Alert.alert("Warning", responseAva.data)
                 } else{
                     Alert.alert("Notification", responseAva)
+                    const info = await getUserInfo(state.idUser)
+                    dispatch({ type: SET_INFO, payload: { "avatar": info.avatar }})
                 }
             }
         } catch(e){

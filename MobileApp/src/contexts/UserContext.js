@@ -21,7 +21,8 @@ const userReducer = (state, action) => {
         case SET_INFO:
             return {
                 ...state, 
-                ...action.payload} // Chỉ cập nhật các trường được truyền vào
+                ...action.payload
+            } // Chỉ cập nhật các trường được truyền vào
         default:
             return state
     }
