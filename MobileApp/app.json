@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "MobilePlait",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -32,7 +33,7 @@
     "extra": {
       "eas": {
         "projectId": "b6dd9eef-5f1b-45ba-83cf-bda1cdd0143f",
-        "androidClientId": "847422297229-o3q7678vfiifq1kvp5sn4lfid2jbt4hs.apps.googleusercontent.com"
+        "androidClientId": "847422297229-67dueiivmi291jo5iqluvbtersfi7ale.apps.googleusercontent.com"
       }
     }
   }

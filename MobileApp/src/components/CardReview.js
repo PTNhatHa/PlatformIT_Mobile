@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         rowGap: 6,
         width: 200,
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: "white"
     },
     star: {
         flexDirection: "row",

@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
         // borderRadius: 8,
-        marginBottom: 10,
-        columnGap: 10
+        columnGap: 10,
+        backgroundColor: "white"
     },
     title:{
         fontSize: 18,

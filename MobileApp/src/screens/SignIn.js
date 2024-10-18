@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
 import { ButtonBlu } from "../components/Button";
@@ -13,6 +13,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { validateEmail } from "../utils/utils";
 import { forgotPassword, getUserInfo } from "../services/user";
+import * as Google from 'expo-auth-session/providers/google';
+
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
@@ -103,6 +105,37 @@ export default SignIn = ({navigation}) => {
         }
     }
 
+    // Login-google
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        androidClientId: '847422297229-67dueiivmi291jo5iqluvbtersfi7ale.apps.googleusercontent.com',
+        redirectUri: 'https://auth.expo.io/@phanha182/MobileApp',
+    });
+    
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { authentication } = response;
+            console.log(authentication.accessToken);
+            // // Gửi access token tới backend
+            // fetch('http://your-backend-url/api/authen/google-login', {
+            //     method: 'POST',
+            //     headers: {
+            //     'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({
+            //     token: authentication.accessToken,
+            //     }),
+            // })
+            // .then(response => response.json())
+            // .then(data => {
+            //     // Xử lý logic sau khi đăng nhập thành công
+            //     console.log(data);
+            // })
+            // .catch(error => {
+            //     console.error('Error:', error);
+            // });
+        }
+    }, [response]);
+
     return(
         <>
             <View style={styles.container}>
@@ -160,7 +193,7 @@ export default SignIn = ({navigation}) => {
                         <TouchableOpacity style={styles.party3}>
                             <FontAwesome name="facebook" size={16} color="black" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.party3}>
+                        <TouchableOpacity style={styles.party3} onPress={()=>promptAsync()}>
                             <FontAwesome name="google-plus" size={16} color="black" />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.party3}>

@@ -26,12 +26,8 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <StudentAllCourse/> */}
-          {/* <StudentPI/> */}
-          {/* <Professional/> */}
-          {/* <SocialLink/> */}
-          {/* <SpecialPI/> */}
+          {/* <SigninSignup/> */}
+          <DetailCourse/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

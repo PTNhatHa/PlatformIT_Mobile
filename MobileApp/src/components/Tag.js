@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: 4,
-        backgroundColor: 'rgba(20, 174, 92, 0.3)',
+        backgroundColor: '#B9E7CF',
         alignSelf: "flex-start"
     },
     text:{
