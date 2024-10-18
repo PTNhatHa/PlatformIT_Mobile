@@ -32,7 +32,7 @@ const init = {
     "links": null,
     "qualificationModels": null
 }
-export const PersionalInfor = ({navigation, info = init})=>{
+export const PersionalInfor = ({info = init})=>{
     const {state, dispatch} = useUser()
     const [avata, setAvata] = useState({
         uri: info.avatar,

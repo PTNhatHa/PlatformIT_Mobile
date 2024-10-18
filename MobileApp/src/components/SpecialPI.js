@@ -1,44 +1,16 @@
 import { ActivityIndicator, Alert, Modal, ScrollView, StyleSheet, Text, View } from "react-native"
-import { PersionalInfor } from "../../../components/PI"
-import { TextInputLabel } from "../../../components/TextInputField"
+import { TextInputLabel } from "../components/TextInputField"
 import { useState, useEffect } from "react"
-import { COLORS } from "../../../utils/constants"
-import { Professional } from "../../../components/Professional"
-import { useUser } from "../../../contexts/UserContext"
-import { addProfileLink, addQualification, deleteProfileLink, deleteQualification, getUserInfo, updateTeacherSpecializedPI } from "../../../services/user"
-import { SocialLink } from "../../../components/SocialLink"
-import { ButtonGreen } from "../../../components/Button"
+import { useUser } from "../contexts/UserContext"
+import { ButtonGreen, ButtonWhite } from "./Button"
+import { COLORS, commonStyles } from "../utils/constants"
 
-export const SpecialPI = ({navigation})=>{
-    const [center, setCenter] = useState("Trung tâm trực thuộc")
-    const [teaching, setTeaching] = useState("Chuyên ngành giảng dạy")
-    const [description, setDescription] = useState("Description")
-    const [socials, setSocials] = useState([])
-    const [professionals, setProfessionals] = useState([])
+export const SpecialPI = ({initData=[]})=>{
+    const [center, setCenter] = useState(initData.centerName)
+    const [teaching, setTeaching] = useState(initData.teachingMajor)
+    const [description, setDescription] = useState(initData.description)
     const {state, dispatch} = useUser()
-    const [data, setData] = useState()
-    const [loading, setLoading] = useState(true);
-    const [oldPI, setOldPI] = useState([]);
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getUserInfo(state.idUser);
-                setOldPI(response)
-                setData(response);
-                setCenter(response.centerName)
-                setTeaching(response.teachingMajor)
-                setDescription(response.description)
-                setSocials(response.links)
-                setProfessionals(response.qualificationModels)
-            } catch (error) {
-                console.error("Error fetching user info: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [state.idUser]);
+    const [loading, setLoading] = useState(false);
 
     const handleSavePITeacher = async ()=>{
         setLoading(true)
@@ -54,76 +26,6 @@ export const SpecialPI = ({navigation})=>{
             } catch(e){
                 console.log("Error updateTeacherSpecializedPI: ", e);
             }
-
-            // Social Links
-            if(oldPI.links !== socials){
-                // Add
-                const dataAdd = socials.filter(social => {
-                    return !oldPI.links.some(link => link.name === social.name && link.url === social.url)
-                })
-                await Promise.all(dataAdd.map( async (item)=>{
-                    try{
-                        const response = await addProfileLink(state.idUser, item.name, item.url)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Add social link done^v^")
-                        }
-                    } catch(e){
-                        console.log("Error add Social links: ", e);
-                    }
-                }))
-                // Delete
-                const deleteData = oldPI.links.filter(link => {
-                    return !socials.some(social => social ===link)
-                })
-                await Promise.all(deleteData.map( async (item)=>{
-                    try{
-                        const response = await deleteProfileLink(item.idProfileLink)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Delete social link done^o^")
-                        }
-                    } catch(e){
-                        console.log("Error add Social links: ", e);
-                    }
-                }))
-            }
-
-            // Professional
-            if(oldPI.qualificationModels !== professionals){
-                // Add
-                const dataAdd = professionals.filter(item => item.new)
-                await Promise.all(dataAdd.map( async (item)=>{
-                    try{
-                        const response = await addQualification(state.idUser, item.qualificationName, item.description, item.path)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Add professionals done ^3^")
-                        }
-                    } catch(e){
-                        console.log("Error add professionals: ", e);
-                    }
-                }))
-
-                // Delete
-                const dataDelete = professionals.filter(item => item.delete === true && item.new !== true)
-                await Promise.all(dataDelete.map( async (item)=>{
-                    try{
-                        const response = await deleteQualification(item.idQualification)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Delete professionals done ^3^")
-                        }
-                    } catch(e){
-                        console.log("Error delete professionals: ", e);
-                    }
-                }))
-            }
-
         } catch(e){
             console.log("Error handleSavePITeacher: ", e);
         } finally{
@@ -139,26 +41,23 @@ export const SpecialPI = ({navigation})=>{
             </View>
         );
     }
+    const handleDiscard = ()=>{
+        setTeaching(initData.teachingMajor)
+        setDescription(initData.description)
+    }
     return(
         <>
             <View style={styles.PI}>
-                <ScrollView>
-                    <Text style={styles.title}>Your information</Text>
-                    {data &&
-                        <PersionalInfor navigation={navigation} info={data}/>
-                    }
-                    <Text style={styles.title}>More information</Text>
-                    <ScrollView contentContainerStyle={styles.container}>
-                        <View style={styles.body}>
-                            <TextInputLabel label={"Affiliated Center"} value={center}/>
-                            <TextInputLabel label={"Teaching Specialization"} value={teaching} onchangeText={setTeaching}/>
-                            <TextInputLabel label={"Bio"} value={description} onchangeText={setDescription}/>
-                            <SocialLink value={socials} setValue={setSocials}/>
-                            <Professional label={"Professional Qualifications"} value={professionals} setProfessions={setProfessionals}/>
-                        </View>
-                        <ButtonGreen title={"Save Change"} action={handleSavePITeacher}/>
-                    </ScrollView>
-                </ScrollView>
+                <Text style={commonStyles.title}>Basic information</Text>
+                <View style={styles.body}>
+                    <TextInputLabel label={"Affiliated Center"} value={center}/>
+                    <TextInputLabel label={"Teaching Specialization"} value={teaching} onchangeText={setTeaching}/>
+                    <TextInputLabel label={"Bio"} value={description} onchangeText={setDescription}/>
+                </View>
+                <View style={styles.bottom}>
+                    <ButtonWhite title={"Discard Changes"} action={handleDiscard}/>
+                    <ButtonGreen title={"Save Changes"} action={handleSavePITeacher}/>
+                </View>
             </View>   
             {loading &&
                 <Modal
@@ -176,8 +75,11 @@ export const SpecialPI = ({navigation})=>{
 }
 const styles = StyleSheet.create({
     PI: {
-        flex: 1,
-        backgroundColor: "white"
+        ...commonStyles.shadow,
+        backgroundColor: "white",
+        padding: 16,
+        borderRadius: 8,
+        rowGap: 10,
     },
     container: {
         padding: 16,
@@ -204,5 +106,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
-    }
+    },
+    bottom: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
 })

@@ -19,6 +19,7 @@ import { StudentAllCourse } from './src/screens/Student/TabMyCourse/StudentAllCo
 import { TextInputLabel } from './src/components/TextInputField';
 import { PersionalInfor } from './src/components/PI';
 import { StudentPI } from './src/screens/Student/TabAccount/StudentPI';
+import { SpecialPI } from './src/components/SpecialPI';
 
 export default function App() {
   return (
@@ -28,6 +29,9 @@ export default function App() {
           <SigninSignup/>
           {/* <StudentAllCourse/> */}
           {/* <StudentPI/> */}
+          {/* <Professional/> */}
+          {/* <SocialLink/> */}
+          {/* <SpecialPI/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

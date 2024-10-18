@@ -9,8 +9,11 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ChangePassword } from '../../../components/ChangePassword';
+import { SpecialPI } from '../../../components/SpecialPI';
+import { SocialLink } from '../../../components/SocialLink';
+import { Professional } from '../../../components/Professional';
 
-export const TeacherPI = ({ navigation }) => {
+export const TeacherPI = () => {
     const { state, dispatch } = useUser();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -47,13 +50,13 @@ export const TeacherPI = ({ navigation }) => {
                         <Text style={styles.tab}>Personal Infomation</Text>
                     }
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 3 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(2)}>
+                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 3 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(3)}>
                 <Ionicons name="school" size={18} color={COLORS.main} />
                     {indexTab === 3 &&
                         <Text style={styles.tab}>Specialized Infomation</Text>
                     }
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 2 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(3)}>
+                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 2 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(2)}>
                 <MaterialIcons name="security" size={18} color={COLORS.main} />
                     {indexTab === 2 &&
                         <Text style={styles.tab}>Scurity</Text>
@@ -62,10 +65,17 @@ export const TeacherPI = ({ navigation }) => {
             </View>
             <>
                 {indexTab === 1 &&
-                    <PersionalInfor navigation={navigation} info={data} />
+                    <PersionalInfor info={data} />
                 }
                 {indexTab === 2 &&
                     <ChangePassword/>
+                }
+                {indexTab === 3 &&
+                    <View style={styles.wrap3}>
+                        <SpecialPI initData={data}/>
+                        <SocialLink value={data.links}/>
+                        <Professional value={data.qualificationModels}/>
+                    </View>
                 }
             </>
         </ScrollView>
@@ -95,7 +105,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: COLORS.main
     },
-    wrapBody: {
-
+    wrap3: {
+        rowGap: 30
     }
 })

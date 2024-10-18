@@ -34,6 +34,15 @@ export const ButtonIcon = ({title, action, fontSize, icon})=>{
     )
 }
 
+export const ButtonIconLightGreen = ({title, action, fontSize, icon})=>{
+    return(
+        <TouchableOpacity style={[styles.btn_icon, {backgroundColor: COLORS.main30, borderWidth: 0,}]} onPress={action}>
+            {icon}
+            <Text style={[styles.btnTextWhite, { fontSize: fontSize || 12 }]}>{title}</Text>
+        </TouchableOpacity>
+    )
+}
+
 const styles = StyleSheet.create({
     btn_bl: {
         backgroundColor: COLORS.secondMain,
@@ -69,8 +78,8 @@ const styles = StyleSheet.create({
     },
     btn_icon: {
         backgroundColor: "white",
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         borderRadius: 4,
         borderWidth: 1,
         borderColor: COLORS.main,

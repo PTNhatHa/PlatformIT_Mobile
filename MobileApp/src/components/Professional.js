@@ -1,23 +1,15 @@
 import { useState } from "react"
-import { FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../utils/constants"
+import { Alert, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { COLORS, commonStyles } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tag, TagYellow } from "./Tag";
 import * as DocumentPicker from 'expo-document-picker';
 import { determineFileType } from "../utils/utils";
+import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
+import { addQualification, deleteQualification } from "../services/user";
+import { useUser } from "../contexts/UserContext";
 
 const initProfessions = [
-    // {
-    //     id: 1,
-    //     qualificationName: "aaa",
-    //     description: "aaaaaaaaaa",
-    //     path: {
-    //         uri: "",
-    //         name: 'avatar.png',
-    //         type: ""
-    //     },
-    //     isPending: true
-    // },
     {
         "idQualification": 1,
         "path": "",
@@ -29,8 +21,9 @@ const initProfessions = [
 ]
 
 export const Professional = ({
-    label, value=initProfessions, setProfessions=()=>{}
+    value=initProfessions
 }) => {
+    const {state, dispatch} = useUser()
     const [professions, setProfess] = useState(value || [])
     const [selectImg, setSelectImg] = useState("")
     const [textColor, setTextColor] = useState(COLORS.lightText)
@@ -45,9 +38,8 @@ export const Professional = ({
             qualificationName: "",
             description: "",
             path: "",
-            new: true,
+            isNew: true,
         }]
-        setProfessions(newProfessions)
         setProfess(newProfessions)
     }
     const handleDelete = (select)=>{
@@ -60,7 +52,6 @@ export const Professional = ({
             }
             return item
         })
-        setProfessions(newProfessions)
         setProfess(newProfessions)
     }
     const handleSelectImg = (select)=>{
@@ -83,7 +74,6 @@ export const Professional = ({
             }
             return item
         })
-        setProfessions(newProfessions)
         setProfess(newProfessions)
     }
     const pickFile = async(itemId)=>{
@@ -102,7 +92,6 @@ export const Professional = ({
                     }
                     return item
                 })
-                setProfessions(newList)
                 setProfess(newList)
             }
         }
@@ -118,17 +107,53 @@ export const Professional = ({
             console.log("==>Error opening pdf: ", e);
         }
     }
+    const handleSave = async ()=>{
+        try {
+            // Add
+            const dataAdd = professions.filter(item => item.isNew)
+            await Promise.all(dataAdd.map( async (item)=>{
+                try{
+                    const response = await addQualification(state.idUser, item.qualificationName, item.description, item.path)
+                    if(response.error){
+                        Alert.alert("Warning", response.data)
+                    }else{
+                        Alert.alert("Noti", "Add professionals done ^3^")
+                    }
+                } catch(e){
+                    console.log("Error add professionals: ", e);
+                }
+            }))
+            console.log(dataAdd);
+            // Delete
+            const dataDelete = professions.filter(item => item.delete === true && item.new !== true)
+            await Promise.all(dataDelete.map( async (item)=>{
+                try{
+                    const response = await deleteQualification(item.idQualification)
+                    if(response.error){
+                        Alert.alert("Warning", response.data)
+                    }else{
+                        Alert.alert("Noti", "Delete professionals done ^3^")
+                    }
+                } catch(e){
+                    console.log("Error delete professionals: ", e);
+                }
+            })) 
+        } catch (error) {
+            
+        }
+    }
     return(
-        <View style={{flex: 1}}>
-            <Text style={[styles.input, {borderBottomWidth: 0}]}>{label}</Text>
-            <View style={{rowGap: 10}}>
+        <View style={styles.wrapContainer}>
+            <Text style={[commonStyles.title]}>Professional Qualifications</Text>
+            <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
+            <View style={{rowGap: 10, paddingTop: 10}}>
                 {professions ? 
                 professions.map((item)=> !item.delete ?
                 <View style={styles.container} key={item.idQualification}>
                     {item.status === 2 ? 
                         <TagYellow label={"Pending"}/>
                         :
-                        !item.new ? 
+                        !item.isNew ? 
                         <Tag label={"Approved"}/> : ""
                     }
                     <TextInput 
@@ -147,7 +172,7 @@ export const Professional = ({
                     />
                     <View style={styles.wrap}>
                         <View style={styles.wrapbtn}>
-                            {item.new ? 
+                            {item.isNew ? 
                                 <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
                                     <AntDesign name="file1" size={20} color={COLORS.stroke} />
                                 </TouchableOpacity>
@@ -157,7 +182,7 @@ export const Professional = ({
                                 <AntDesign name="delete" size={20} color={COLORS.stroke} />
                             </TouchableOpacity>
                         </View> 
-                        { item.new ? 
+                        { item.isNew ? 
                                 determineFileType(item.path.uri) === "Image" ?
                                 <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
                                     <Image 
@@ -190,9 +215,10 @@ export const Professional = ({
                     </View>
                 </View>
                 :""): ""}
-                <TouchableOpacity style={styles.btn} onPress={handleAddNew}>
-                    <AntDesign name="plus" size={20} color={COLORS.stroke} />
-                </TouchableOpacity>
+                <View style={styles.bottom}>
+                    <ButtonWhite title={"Discard Changes"} action={()=>setProfess(value)}/>
+                    <ButtonGreen title={"Save Changes"} action={handleSave}/>
+                </View>
             </View>
             <Modal
                 visible={!!selectImg}
@@ -211,6 +237,12 @@ export const Professional = ({
     )
 }
 const styles = StyleSheet.create({
+    wrapContainer: {
+        ...commonStyles.shadow,
+        backgroundColor: "white",
+        padding: 16,
+        borderRadius: 8
+    },
     container: {
         borderWidth: 1,
         borderColor: COLORS.lightText,
@@ -269,5 +301,9 @@ const styles = StyleSheet.create({
         color: COLORS.main,
         fontStyle: "italic",
         fontWeight: "bold"
-    }
+    },
+    bottom: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
 })

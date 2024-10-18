@@ -56,7 +56,7 @@ export const StudentPI = ({ navigation }) => {
             </View>
             <>
                 {indexTab === 1 &&
-                    <PersionalInfor navigation={navigation} info={data} />
+                    <PersionalInfor info={data} />
                 }
                 {indexTab === 2 &&
                     <ChangePassword/>

@@ -32,7 +32,7 @@ export const TextInputLabel = ({
     }
     return(
         <>
-            <View style={[styles.container, label === "Bio" ? {borderRadius: 20} : ""]}>
+            <View style={styles.container}>
                 <Text style={styles.label}>{label}</Text>
                 <TextInput 
                     style={[styles.inputLabel]}
