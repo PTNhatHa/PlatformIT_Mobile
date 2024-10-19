@@ -205,7 +205,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         // marginBottom: 10,
         flexDirection: "row",
-        columnGap: 10
+        columnGap: 10,
+        backgroundColor: "white"
     },
     img: {
         width: 95,

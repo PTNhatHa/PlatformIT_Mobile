@@ -200,7 +200,7 @@ export const DetailCenter =({data=initCenter})=>{
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
-        backgroundColor: "white"
+        backgroundColor: "#FAFAFA"
     },
     wrapper: {
         padding: 12,
@@ -208,13 +208,6 @@ const styles = StyleSheet.create({
         rowGap: 10,
         backgroundColor: "#4D768A",
         borderRadius: 8
-    },
-    infoImage: {
-        resizeMode: "cover",
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        width: "100%",
-        height: 140
     },
     inforContent:{
         flexDirection: "row",
@@ -230,11 +223,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "white"
     },
-    top: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-
     
     wrapInfo: {
         ...commonStyles.shadow,
