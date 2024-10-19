@@ -148,61 +148,62 @@ export const DetailCourse = ({data = initCourse})=>{
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
-            <View style={[styles.wrapInfo, showInfo && {height: 280}]}>
+            <View style={[styles.wrapInfo, showInfo && {height: 300}]}>
                 <ImageBackground
                     source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
                     style={styles.infoImg}
                 />
                 <View style={styles.wrapInfoContent}>
-                    <Text style={styles.infoTitle}>{data.title}</Text>
-                    {showInfo &&
-                        <>
-                            {data.listTags.length > 0 && 
-                                <View style={styles.inforContent}>
-                                    {data.listTags.map(item => 
-                                        <Tag label={item.value}/>  
-                                    )}                    
-                                </View>
-                            }
-                            <Text style={styles.infoText}>{data.intro}</Text>
-                            <View style={styles.inforContent}>
-                                <Feather name="clock" size={16} color="white" />
-                                <Text style={styles.infoText}>{formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}</Text>
-                            </View>
-                            <View style={styles.inforContent}>
-                            {data.startRegist &&
-                                    <FontAwesome6 name="pen-to-square" size={16} color="white" />
+                    <>
+                        <Text style={styles.infoTitle}>{data.title}</Text>
+                        {showInfo &&
+                            <>
+                                {data.listTags.length > 0 && 
+                                    <View style={styles.inforContent}>
+                                        {data.listTags.map(item => 
+                                            <Tag label={item.value}/>  
+                                        )}                    
+                                    </View>
                                 }
+                                <Text style={styles.infoText}>{data.intro}</Text>
+                                <View style={styles.inforContent}>
+                                    <Feather name="clock" size={16} color="white" />
+                                    <Text style={styles.infoText}>{formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}</Text>
+                                </View>
+                                <View style={styles.inforContent}>
                                 {data.startRegist &&
-                                    <Text style={styles.infoText}>
-                                        {data.isRegist ? "Registing" : 
-                                            `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                                    </Text>
-                                }
-                            </View>
-                            <View style={styles.inforContent}>
-                                <Ionicons name="business-outline" size={16} color="white" />
-                                <Text style={styles.infoText}>{data.nameCenter}</Text>
-                            </View>
-                            {data.students? 
-                                <View style={styles.inforContent}>
-                                    <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
-                                    <Text style={styles.infoText}>{data.students} students</Text>
+                                        <FontAwesome6 name="pen-to-square" size={16} color="white" />
+                                    }
+                                    {data.startRegist &&
+                                        <Text style={styles.infoText}>
+                                            {data.isRegist ? "Registing" : 
+                                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                                        </Text>
+                                    }
                                 </View>
-                                : ""
-                            }
-                            <View style={styles.inforContent}>
-                                <Text style={styles.costSale}>${data.costSale}</Text>
-                                <Text style={styles.cost}>{data.cost}</Text>
-                            </View>
-                            {state.idRole === 3 &&
-                                <TouchableOpacity style={styles.infoBtn}>
-                                    <Text style={styles.infoBtnText}>Pay for this course</Text>
-                                </TouchableOpacity>
-                            }
-                        </>
-                    }
-
+                                <View style={styles.inforContent}>
+                                    <Ionicons name="business-outline" size={16} color="white" />
+                                    <Text style={styles.infoText}>{data.nameCenter}</Text>
+                                </View>
+                                {data.students? 
+                                    <View style={styles.inforContent}>
+                                        <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
+                                        <Text style={styles.infoText}>{data.students} students</Text>
+                                    </View>
+                                    : ""
+                                }
+                                <View style={styles.inforContent}>
+                                    <Text style={styles.costSale}>${data.costSale}</Text>
+                                    <Text style={styles.cost}>{data.cost}</Text>
+                                </View>
+                                {state.idRole === 3 &&
+                                    <TouchableOpacity style={styles.infoBtn}>
+                                        <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                    </TouchableOpacity>
+                                }
+                            </>
+                        }
+                    </>
                     <TouchableOpacity style={styles.btnUpDown} onPress={()=>setShowInfo(!showInfo)}>
                         {showInfo ? 
                             <Entypo name="chevron-up" size={30} color="white" />
@@ -350,7 +351,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     infoTitle:{
-        fontSize: 16,
+        fontSize: 24,
         fontWeight: "bold",
         color: "white"
     },
@@ -425,7 +426,8 @@ const styles = StyleSheet.create({
         height: '100%',
         padding: 16,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        // paddingTop: 50
+        justifyContent: "flex-end",
+        paddingBottom: 50
     },
     btnUpDown:{
         position: "absolute",
@@ -479,6 +481,7 @@ const styles = StyleSheet.create({
     wrapperBottom: {
         padding: 16,
         rowGap: 10,
+        height: 600
     },
     board: {
         flexDirection: "row",

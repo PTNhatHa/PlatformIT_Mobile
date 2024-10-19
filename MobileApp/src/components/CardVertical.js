@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 8,
-        marginBottom: 10,
+        // marginBottom: 10,
         flexDirection: "row",
         columnGap: 10
     },

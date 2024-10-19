@@ -20,6 +20,7 @@ import { TextInputLabel } from './src/components/TextInputField';
 import { PersionalInfor } from './src/components/PI';
 import { StudentPI } from './src/screens/Student/TabAccount/StudentPI';
 import { SpecialPI } from './src/components/SpecialPI';
+import { DetailCenter } from './src/screens/DetailCenter';
 
 export default function App() {
   return (
@@ -27,7 +28,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           {/* <SigninSignup/> */}
-          <DetailCourse/>
+          <DetailCenter/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

@@ -200,7 +200,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         rowGap: 6,
         width: 160,
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: "white"
     },
     img: {
         width: "100%",
