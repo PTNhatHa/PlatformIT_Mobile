@@ -25,6 +25,7 @@ import { TeacherDetailCourse } from './src/screens/Teacher/TabMyCourse/TeacherDe
 import { StudentDetailCourse } from './src/screens/Student/TabMyCourse/StudentDetailCourse';
 import { TeacherDetailAttendance } from './src/screens/Teacher/TabMyCourse/TeacherDetailAttendance';
 import { CardProgress } from './src/components/CardProgress';
+import { CardNoti } from './src/components/CardNotification';
 
 export default function App() {
   return (
@@ -32,8 +33,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <TeacherDetailAttendance/> */}
-          {/* <CardProgress/> */}
+          {/* <CardNoti/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

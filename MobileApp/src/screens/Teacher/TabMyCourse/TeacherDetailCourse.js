@@ -17,6 +17,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { CardStudentAttendance } from "../../../components/CardStudent";
 import { CardVirticalAssignmentTeacher } from "../../../components/CardVertical";
 import { CardProgress } from "../../../components/CardProgress";
+import { CardNoti } from "../../../components/CardNotification";
 
 const initCourse={
     img: "",
@@ -150,7 +151,26 @@ const initCourse={
             doneAsgm: 2,
             assignment: 10
         },
-    
+    ],
+    noti: [
+        {
+            id: 1,
+            title: "Notification 1",
+            body: "body",
+            onDate: new Date(),
+        },
+        {
+            id: 2,
+            title: "Notification 2",
+            body: "body",
+            onDate: new Date(),
+        },
+        {
+            id: 3,
+            title: "Notification 3",
+            body: "body",
+            onDate: new Date(),
+        },
     ]
 
 }
@@ -371,17 +391,17 @@ export const TeacherDetailCourse = ({data = initCourse})=>{
                         )}
                     </View>
                 : selectBtn === 3 ?    
-                    <View>
-                        <Text>Noti</Text>
+                    <View style={styles.wrapShow}>
+                        {data.noti.map(item => 
+                            <CardNoti data={item} key={item.id}/>
+                        )}
                     </View>
                 :
-                <View>
                     <View style={styles.wrapShow}>
                         {data.attendance.map(item => 
                             <CardStudentAttendance data={item} key={item.id}/>
                         )}
                     </View>
-                </View>
                 }
             </View>         
         </ScrollView>

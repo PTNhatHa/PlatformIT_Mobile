@@ -23,15 +23,22 @@ export const CardProgress = ({data = initStudent})=>{
             <Image source={data.img} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.fullname}</Text>
+                {/* <View style={styles.content}>
+                    <Feather name="mail" size={14} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>{data.email}</Text>
+                </View>
                 <View style={styles.content}>
-                    <Text style={styles.dataText}>Lectures</Text>
+                    <Text style={styles.dataText}>Attended on: {formatDateTime(data.attended)}</Text>
+                </View> */}
+                <View style={styles.content}>
+                    <Text style={[styles.dataText, {width: 80}]}>Lectures</Text>
                     <View style={styles.wrapProgress}>
                         <View style={[styles.fullProgress, {width: progressLecture}]}/>
                     </View>
                     <Text style={[styles.dataText, { width: 40, textAlign: "right"}]}>{data.learned}/{data.lectures}</Text>
                 </View>
                 <View style={styles.content}>
-                    <Text style={styles.dataText}>Assignments</Text>
+                    <Text style={[styles.dataText, {width: 80}]}>Assignments</Text>
                     <View style={styles.wrapProgress}>
                         <View style={[styles.fullProgress, {width: progressAsgm}]}/>
                     </View>
@@ -65,7 +72,6 @@ const styles = StyleSheet.create({
     dataText: {
         fontSize: 12,
         color: COLORS.stroke,
-        width: 80,
     },
     avata: {
         borderWidth: 1,
