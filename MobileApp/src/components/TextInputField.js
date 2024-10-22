@@ -25,7 +25,7 @@ export const TextInputIcon = ({
 }
 
 export const TextInputLabel = ({
-    label, value, placeholder, onchangeText = ()=>{}, keyboardType, isPassword, error
+    label, value, placeholder, onchangeText = ()=>{}, keyboardType, isPassword, error, isEditable = true
 }) => {
     const handleOnchangeText = (v)=>{
         onchangeText(v)
@@ -41,7 +41,7 @@ export const TextInputLabel = ({
                     onChangeText={(v)=>handleOnchangeText(v)}
                     keyboardType={keyboardType || "default"}
                     multiline={label === "Bio"}
-                    editable={label !== "Affiliated Center" && label !== "Email"}
+                    editable={label !== "Affiliated Center" && label !== "Email" && isEditable}
                     secureTextEntry={isPassword}
                 />
             </View>

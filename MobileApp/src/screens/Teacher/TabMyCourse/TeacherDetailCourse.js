@@ -14,6 +14,9 @@ import { useState } from "react";
 import { CardAssignmentStudent } from "../../../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
+import { CardStudentAttendance } from "../../../components/CardStudent";
+import { CardVirticalAssignmentTeacher } from "../../../components/CardVertical";
+import { CardProgress } from "../../../components/CardProgress";
 
 const initCourse={
     img: "",
@@ -113,9 +116,43 @@ const initCourse={
             date: new Date()
         },
     ],
-    teacher: {
+    attendance: [
+        {
+            idUser: 1,
+            avatar: "",
+            fullname: "NhatHa", 
+            email: "nhatha@gmail.com",
+            attended: new Date(),
+            learned: 7,
+            lectures: 12,
+            doneAsgm: 4,
+            assignment: 10
+        },
+        {
+            idUser: 2,
+            avatar: "",
+            fullname: "Hyy", 
+            email: "hyyy@gmail.com",
+            attended: new Date(),
+            learned: 5,
+            lectures: 12,
+            doneAsgm: 7,
+            assignment: 10
+        },
+        {
+            idUser: 3,
+            avatar: "",
+            fullname: "Taho", 
+            email: "Taho@gmail.com",
+            attended: new Date(),
+            learned: 9,
+            lectures: 12,
+            doneAsgm: 2,
+            assignment: 10
+        },
+    
+    ]
 
-    },
 }
 
 export const TeacherDetailCourse = ({data = initCourse})=>{
@@ -322,20 +359,16 @@ export const TeacherDetailCourse = ({data = initCourse})=>{
                         )}
                     </>
                 : selectBtn === 1 ?
-                    <View>
-                        {/* Course assignments */}
-                        <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
-                            {data.test.map(item => 
-                                <CardAssignmentStudent data={item} key={item.id}/>
-                            )}
-                        </View>
-                        <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
-                            <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
-                        </TouchableOpacity>
+                    <View style={styles.wrapShow}>
+                        {data.test.map(item => 
+                            <CardVirticalAssignmentTeacher data={item} key={item.id}/>
+                        )}
                     </View>
                 : selectBtn === 2 ?   
-                    <View>
-                        <Text>Progress</Text>
+                    <View style={styles.wrapShow}>
+                        {data.attendance.map(item => 
+                            <CardProgress data={item} key={item.id}/>
+                        )}
                     </View>
                 : selectBtn === 3 ?    
                     <View>
@@ -343,7 +376,11 @@ export const TeacherDetailCourse = ({data = initCourse})=>{
                     </View>
                 :
                 <View>
-                    <Text>Attendance</Text>
+                    <View style={styles.wrapShow}>
+                        {data.attendance.map(item => 
+                            <CardStudentAttendance data={item} key={item.id}/>
+                        )}
+                    </View>
                 </View>
                 }
             </View>         
@@ -412,7 +449,8 @@ const styles = StyleSheet.create({
     },
     wrapShow: {
         overflow: "hidden",
-        height: "auto"
+        height: "auto",
+        rowGap: 4
     },
     showAll:{
         alignItems: "center"

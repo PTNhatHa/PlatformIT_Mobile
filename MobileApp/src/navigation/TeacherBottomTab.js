@@ -15,6 +15,7 @@ import { DetailCenter } from "../screens/DetailCenter";
 import { DetailTeacher } from "../screens/DetailTeacher";
 import { TeacherAllCourse } from "../screens/Teacher/TabMyCourse/TeacherAllCourse";
 import { TeacherDetailCourse } from "../screens/Teacher/TabMyCourse/TeacherDetailCourse";
+import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherDetailAttendance";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -63,6 +64,10 @@ const StackMyCourseScreen = ()=>{
             <StackMyCourse.Screen
                 name="Detail My Course"
                 component={TeacherDetailCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail Attendance"
+                component={TeacherDetailAttendance}
             />
 
         </StackMyCourse.Navigator>

@@ -23,14 +23,17 @@ import { SpecialPI } from './src/components/SpecialPI';
 import { DetailCenter } from './src/screens/DetailCenter';
 import { TeacherDetailCourse } from './src/screens/Teacher/TabMyCourse/TeacherDetailCourse';
 import { StudentDetailCourse } from './src/screens/Student/TabMyCourse/StudentDetailCourse';
+import { TeacherDetailAttendance } from './src/screens/Teacher/TabMyCourse/TeacherDetailAttendance';
+import { CardProgress } from './src/components/CardProgress';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
-          <TeacherDetailCourse/>
+          <SigninSignup/>
+          {/* <TeacherDetailAttendance/> */}
+          {/* <CardProgress/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

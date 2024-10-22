@@ -2,9 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
-import { Tag, TagNoColor } from "./Tag";
-import { useState, useEffect } from "react"
-import DefaultImg from "../../assets/images/DefaultImg.png"
+
 const initAssignment = {
     id: 1,
     title: "Title",
