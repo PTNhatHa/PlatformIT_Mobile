@@ -59,7 +59,7 @@ export const TeacherPI = () => {
                 <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 2 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(2)}>
                 <MaterialIcons name="security" size={18} color={COLORS.main} />
                     {indexTab === 2 &&
-                        <Text style={styles.tab}>Scurity</Text>
+                        <Text style={styles.tab}>Security</Text>
                     }
                 </TouchableOpacity>
             </View>

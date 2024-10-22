@@ -159,14 +159,16 @@ export const Professional = ({
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
                         value={item.qualificationName}
-                        placeholder={"Title"}
+                        placeholder={"*Title"}
+                        placeholderTextColor={COLORS.red}
                         onChangeText={(v)=>handleChangeData(item.idQualification, v, "qualificationName")}
                         editable={item.new === true}
                     />
                     <TextInput 
                         style={[styles.input, {color: textColor}]}
                         value={item.description}
-                        placeholder={"Desciption"}
+                        placeholder={"*Desciption"}
+                        placeholderTextColor={COLORS.red}
                         onChangeText={(v)=>handleChangeData(item.idQualification, v, "description")}
                         editable={item.new === true}
                     />

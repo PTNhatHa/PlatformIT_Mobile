@@ -108,7 +108,7 @@ const initCenter={
 }
 export const DetailCenter =({data=initCenter})=>{
     const [selectBtn, setSelectBtn] = useState(0)
-    const [showInfo, setShowInfo] = useState(false)
+    const [showInfo, setShowInfo] = useState(true)
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Center info */}

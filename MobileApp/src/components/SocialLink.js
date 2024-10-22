@@ -115,7 +115,8 @@ export const SocialLink = ({
                     <TextInput 
                         style={[styles.link]}
                         value={item.url}
-                        placeholder={"url"}
+                        placeholder={"*Url"}
+                        placeholderTextColor={COLORS.red}
                         onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "url")}
                         editable={item.isNew === true}
                     />

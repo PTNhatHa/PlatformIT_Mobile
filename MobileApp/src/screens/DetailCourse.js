@@ -124,7 +124,7 @@ const initCourse={
 export const DetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
-    const [showInfo, setShowInfo] = useState(false)
+    const [showInfo, setShowInfo] = useState(true)
     const [showAllTest, setShowAllTest] = useState(false)
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
     wrapperBottom: {
         padding: 16,
         rowGap: 10,
-        height: 600
+        minHeight: 600
     },
     board: {
         flexDirection: "row",

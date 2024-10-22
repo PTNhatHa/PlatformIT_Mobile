@@ -55,6 +55,7 @@ export const PersionalInfor = ({info = init})=>{
                 Alert.alert("Warning", response.data)
             } else{
                 Alert.alert("Notification", response)
+                dispatch({ type: SET_INFO, payload: { "fullname": name }})
             }
             if(isChangeAva){
                 const responseAva = await changeAvatar(state.idUser, avata)

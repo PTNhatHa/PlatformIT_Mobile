@@ -1,5 +1,4 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import DefaultImg from "../../../../assets/images/DefaultImg.png"
+import { FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { Tag } from "../../../components/Tag"
 import Feather from '@expo/vector-icons/Feather';
@@ -9,12 +8,12 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { formatDateTime } from "../../../utils/utils";
 import { useUser } from "../../../contexts/UserContext";
-import { CardHorizontalTeacher } from "../../../components/CardHorizontal";
 import { CardReview } from "../../../components/CardReview";
-import { ButtonIcon } from "../../../components/Button";
 import { CardLecture } from "../../../components/CardLecture";
 import { useState } from "react";
 import { CardAssignmentStudent } from "../../../components/CardAssignment";
+import Entypo from '@expo/vector-icons/Entypo';
+import { LinearGradient } from "expo-linear-gradient";
 
 const initCourse={
     img: "",
@@ -119,10 +118,10 @@ const initCourse={
     },
 }
 
-export const TeacherDetailCourse = ()=>{
-    const data = initCourse
+export const TeacherDetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
+    const [showInfo, setShowInfo] = useState(true)
     const [showAllTest, setShowAllTest] = useState(false)
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
@@ -142,145 +141,128 @@ export const TeacherDetailCourse = ()=>{
         })
         setShowSections(newShow)
     }
+    
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Course Information</Text>
-                <Image source={DefaultImg} style={styles.infoImage}/>
-                <View style={{ rowGap: 2}}>
-                    <Text style={styles.infoTitle}>{data.title}</Text>
-                    {data.listTags.length > 0 && 
-                        <View style={styles.inforContent}>
-                            {data.listTags.map(item => 
-                                <Tag label={item.value}/>  
-                            )}                    
-                        </View>
-                    }
-                    <Text style={styles.infoText}>{data.intro}</Text>
-                    <View style={styles.inforContent}>
-                        <AntDesign name="star" size={16} color={COLORS.yellow} />
-                        <Text style={styles.infoText}>{data.star}</Text>
-                    </View>
-                    <View style={styles.inforContent}>
-                        <Feather name="clock" size={16} color={COLORS.stroke} />
-                        <Text style={styles.infoText}>{formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}</Text>
-                    </View>
-                    <View style={styles.inforContent}>
-                    {data.startRegist &&
-                            <FontAwesome6 name="pen-to-square" size={16} color={COLORS.stroke} />
-                        }
-                        {data.startRegist &&
-                            <Text style={styles.infoText}>
-                                {data.isRegist ? "Registing" : 
-                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                            </Text>
-                        }
-                    </View>
-                    <View style={styles.inforContent}>
-                        <Ionicons name="business-outline" size={16} color={COLORS.secondMain} />
-                        <Text style={styles.infoText}>{data.nameCenter}</Text>
-                    </View>
-                    {data.students? 
-                        <View style={styles.inforContent}>
-                            <MaterialCommunityIcons name="account-group-outline" size={16} color={COLORS.stroke} />
-                            <Text style={styles.infoText}>{data.students} students</Text>
-                        </View>
-                        : ""
-                    }
-                    <View style={styles.inforContent}>
-                        <Text style={styles.costSale}>${data.costSale}</Text>
-                        <Text style={styles.cost}>{data.cost}</Text>
-                    </View>
-                </View>
-                {state.idRole === 3 &&
-                    <TouchableOpacity style={styles.infoBtn}>
-                        <Text style={styles.infoBtnText}>View payment history</Text>
-                    </TouchableOpacity>
-                }
-            </View>
-
-            {/* Course contents */}
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Course content</Text>
-                <View>
-                    {data.content.map((item)=>{
-                        let checkIsShow = showSections.find(section => section.section === item.section).isShow
-                        return(
-                            <View key={item.section} style={styles.wrapSectionLecture}>
-                                <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.section)}>
-                                    { checkIsShow ?
-                                        <AntDesign name="caretup" size={16} color="black" />
-                                        :
-                                        <AntDesign name="caretdown" size={16} color="black" />
-                                    }
-                                    <Text style={styles.section}>
-                                        Section {item.section} 
-                                        - {item.lecture.length} {item.lecture.length > 1 ? "lectures" : "lecture"}
-                                    </Text>
-                                </TouchableOpacity>
-                                <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                                    <ButtonIcon title={"Add new lecture"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
-                                    {item.lecture.map(item => 
-                                        <CardLecture data={item}/>
-                                    )}
+            <View style={[styles.wrapInfo, showInfo && {height: 300}]}>
+                <ImageBackground
+                    source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
+                    style={styles.infoImg}
+                />
+                <View style={styles.wrapInfoContent}>
+                    <>
+                        <Text style={styles.infoTitle}>{data.title}</Text>
+                        {showInfo &&
+                            <>
+                                {data.listTags.length > 0 && 
+                                    <View style={styles.inforContent}>
+                                        {data.listTags.map(item => 
+                                            <Tag label={item.value}/>  
+                                        )}                    
+                                    </View>
+                                }
+                                <Text style={styles.infoText}>{data.intro}</Text>
+                                <View style={styles.inforContent}>
+                                    <Feather name="clock" size={16} color="white" />
+                                    <Text style={styles.infoText}>{formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}</Text>
                                 </View>
-                            </View>
-                            
-                        )}
-                    )}
-                    <ButtonIcon title={"Add new section"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
+                                <View style={styles.inforContent}>
+                                {data.startRegist &&
+                                        <FontAwesome6 name="pen-to-square" size={16} color="white" />
+                                    }
+                                    {data.startRegist &&
+                                        <Text style={styles.infoText}>
+                                            {data.isRegist ? "Registing" : 
+                                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                                        </Text>
+                                    }
+                                </View>
+                                <View style={styles.inforContent}>
+                                    <Ionicons name="business-outline" size={16} color="white" />
+                                    <Text style={styles.infoText}>{data.nameCenter}</Text>
+                                </View>
+                                {data.students? 
+                                    <View style={styles.inforContent}>
+                                        <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
+                                        <Text style={styles.infoText}>{data.students} students</Text>
+                                    </View>
+                                    : ""
+                                }
+                                <View style={styles.inforContent}>
+                                    <Text style={styles.costSale}>${data.costSale}</Text>
+                                    <Text style={styles.cost}>{data.cost}</Text>
+                                </View>
+                                {state.idRole === 3 &&
+                                    <TouchableOpacity style={styles.infoBtn}>
+                                        <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                    </TouchableOpacity>
+                                }
+                            </>
+                        }
+                    </>
+                    <TouchableOpacity style={styles.btnUpDown} onPress={()=>setShowInfo(!showInfo)}>
+                        {showInfo ? 
+                            <Entypo name="chevron-up" size={30} color="white" />
+                            :
+                            <Entypo name="chevron-down" size={30} color="white" />
+                        }
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            {/* Course assignments */}
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Test</Text>
-                <ButtonIcon title={"Add new test"} icon={<FontAwesome6 name="plus" size={16} color={COLORS.main} />}/>
-                <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
-                    {data.test.map(item => 
-                        <CardAssignmentStudent data={item} key={item.id}/>
-                    )}
-                </View>
-                <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
-                    <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
+            <View style={styles.wrapMiniCard}>
+                {/* Teacher */}
+                <TouchableOpacity>
+                    <LinearGradient 
+                        colors={['#4D768A', '#75A2A2']} 
+                        style={styles.miniCard}
+                        start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
+                        end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
+                    >
+                        <View style={styles.titleCard}>
+                            <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
+                            <Text style={styles.titleCardText}>Teacher</Text>
+                        </View>
+                        <View style={styles.contentCard}>
+                            <Image source={""} style={styles.avata}/>
+                            <View>
+                                <Text style={styles.titleContentCard}>Name</Text>
+                                <Text style={styles.dataText}>description</Text>
+                            </View>
+                        </View>
+                    </LinearGradient>
+                </TouchableOpacity>
+
+                {/* Center */}
+                <TouchableOpacity>
+                    <LinearGradient 
+                        colors={['#4D768A', '#75A2A2']} 
+                        style={styles.miniCard}
+                        start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
+                        end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
+                    >
+                        <View style={styles.titleCard}>
+                            <Ionicons name="business" size={16} color={COLORS.secondMain} />
+                            <Text style={styles.titleCardText}>Center</Text>
+                        </View>
+                        <View style={styles.contentCard}>
+                            <Image source={""} style={styles.avata}/>
+                            <View>
+                                <Text style={styles.titleContentCard}>Name</Text>
+                                <Text style={styles.dataText}>description</Text>
+                            </View>
+                        </View>
+                    </LinearGradient>
                 </TouchableOpacity>
             </View>
-
-            {/* Board */}
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Board</Text>
-                <View style={styles.board}>
-                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
-                        <Text style={selectBtn === 0 ? styles.selectBtn : styles.normalBtn}>Attendance</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
-                        <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity  onPress={()=>setSelectBtn(2)}>
-                        <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Notification</Text>
-                    </TouchableOpacity>
-                </View>
-                <View>
-                    {selectBtn === 0 ? 
-                    <Text>Attendance</Text>:
-                    selectBtn === 1 ? 
-                    <Text>Progress</Text> :
-                    <Text>Notification</Text>
-                    }
-                </View>
-            </View>
-            
-            {/* Teacher
-            <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Teacher</Text>
-                <CardHorizontalTeacher/>
-            </View> */}
             
             {/* Course review */}
             <View style={styles.wrapper}>
-                <Text style={commonStyles.title}>Latest reviews</Text>
-                <ButtonIcon title={"Write a review"} icon={<FontAwesome6 name="pen-to-square" size={16} color={COLORS.main} />}/>
+                <View style={styles.titleCard}>
+                    <AntDesign name="star" size={16} color={COLORS.yellow}/>
+                    <Text style={styles.titleCardText}>4.8/5 Rating</Text>
+                </View>
                 <FlatList
                     data={data.reviews}
                     keyExtractor={item => item.id}
@@ -292,6 +274,79 @@ export const TeacherDetailCourse = ()=>{
                 />
             </View>
 
+            <View style={styles.wrapperBottom}>
+                <View style={styles.board}>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
+                        <Text style={selectBtn === 0 ? styles.selectBtn : styles.normalBtn}>Content</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
+                        <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(4)}>
+                        <Text style={selectBtn === 4 ? styles.selectBtn : styles.normalBtn}>Attendance</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
+                        <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(3)}>
+                        <Text style={selectBtn === 3 ? styles.selectBtn : styles.normalBtn}>Noti</Text>
+                    </TouchableOpacity>
+                </View>
+                {selectBtn === 0 ?
+                    <>
+                        {/* Course contents */}
+                        {data.content.map((item)=>{
+                            let checkIsShow = showSections.find(section => section.section === item.section).isShow
+                            return(
+                                <View key={item.section} style={styles.wrapSectionLecture}>
+                                    <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.section)}>
+                                        <Text style={[styles.section, {flex: 1}]}>
+                                            Section {item.section} 
+                                        </Text>
+                                        <Text style={styles.section}>
+                                            {item.lecture.length} {item.lecture.length > 1 ? "lectures" : "lecture"}
+                                        </Text>
+                                        { checkIsShow ?
+                                            <Entypo name="chevron-up" size={20} color="black" />
+                                            :
+                                            <Entypo name="chevron-down" size={20} color="black" />
+                                        }
+                                    </TouchableOpacity>
+                                    <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
+                                        {item.lecture.map(item => 
+                                            <CardLecture data={item}/>
+                                        )}
+                                    </View>
+                                </View>
+                            )}
+                        )}
+                    </>
+                : selectBtn === 1 ?
+                    <View>
+                        {/* Course assignments */}
+                        <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
+                            {data.test.map(item => 
+                                <CardAssignmentStudent data={item} key={item.id}/>
+                            )}
+                        </View>
+                        <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
+                            <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
+                        </TouchableOpacity>
+                    </View>
+                : selectBtn === 2 ?   
+                    <View>
+                        <Text>Progress</Text>
+                    </View>
+                : selectBtn === 3 ?    
+                    <View>
+                        <Text>Noti</Text>
+                    </View>
+                :
+                <View>
+                    <Text>Attendance</Text>
+                </View>
+                }
+            </View>         
         </ScrollView>
     )
 }
@@ -299,21 +354,14 @@ export const TeacherDetailCourse = ()=>{
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
-        backgroundColor: "white"
+        backgroundColor: "#FAFAFA"
     },
     wrapper: {
-        width: "100%",
-        padding: 16,
-        rowGap: 4,
-        // borderBottomWidth: 1,
-        borderColor: COLORS.lightText
-    },
-    infoImage: {
-        resizeMode: "contain",
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        width: "100%",
-        height: 140
+        padding: 12,
+        marginHorizontal: 16,
+        rowGap: 10,
+        backgroundColor: "#4D768A",
+        borderRadius: 8
     },
     inforContent:{
         flexDirection: "row",
@@ -321,54 +369,141 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     infoTitle:{
-        fontSize: 16,
-        fontWeight: "bold"
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "white"
     },
     infoText: {
         fontSize: 14,
-        color: COLORS.stroke
+        color: "white"
     },
     costSale:{
         fontSize: 16,
         fontWeight: "bold",
-        color: COLORS.secondMain
+        color: "white"
     },
     cost: {
         fontSize: 10,
         textDecorationLine: 'line-through',
-        color: COLORS.stroke
+        color: COLORS.lightText
     },
     infoBtn:{
         alignItems: "center",
-        backgroundColor: COLORS.main,
-        paddingVertical: 4,
-        borderRadius: 4 
+        backgroundColor: "#9BBBBB",
+        padding: 8,
+        borderRadius: 16,
+        marginTop: 8
     },
     infoBtnText: {
-        color: "white",
+        color: "black",
         fontWeight: "bold"
     },
     section:{
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",   
     },
     wrapSection:{
         flexDirection: "row",
         alignItems: "center",
         columnGap: 4,
+        backgroundColor: COLORS.main30,
+        paddingHorizontal: 16,
+        paddingVertical: 8
     },
     wrapShow: {
         overflow: "hidden",
-        height: "auto",
-        marginTop: 4
+        height: "auto"
     },
     showAll:{
         alignItems: "center"
     },
+    wrapSectionLecture:{
+        borderRadius: 8,
+        overflow: "hidden",
+        borderWidth: 1,
+        borderColor: COLORS.lightText
+    },
+
+
+    wrapInfo: {
+        ...commonStyles.shadow,
+        height: 100,
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
+        overflow: "hidden"
+    },
+    infoImg:{
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    wrapInfoContent: {
+        position: "absolute",
+        width: '100%',
+        height: '100%',
+        padding: 16,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: "flex-end",
+        paddingBottom: 50
+    },
+    btnUpDown:{
+        position: "absolute",
+        alignItems: "center",
+        bottom: 10,
+        left: 0,
+        right: 0
+    },
+    wrapMiniCard:{
+        padding: 16,
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    miniCard:{
+        borderRadius: 8,
+        padding: 12,
+        rowGap: 10,
+        width: 170
+    },
+    avata: {
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        borderRadius: 90,
+        width: 40,
+        height: 40,
+        backgroundColor: "white"
+    },
+    titleCard:{
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        backgroundColor: "white",
+        borderRadius: 4,
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        columnGap: 4,
+        alignItems: "center"
+    },
+    titleCardText: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: COLORS.secondMain
+    },
+    contentCard: {
+        flexDirection: "row",
+        columnGap: 8
+    },
+    titleContentCard:{
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    wrapperBottom: {
+        padding: 16,
+        rowGap: 10,
+        minHeight: 600
+    },
     board: {
         flexDirection: "row",
         columnGap: 4,
-        justifyContent: "center"
     },
     boardBtn: {
         justifyContent: "center"
@@ -382,17 +517,11 @@ const styles = StyleSheet.create({
     selectBtn: {
         paddingVertical: 4,
         paddingHorizontal: 8,
-        fontSize: 16,
+        fontSize: 18,
         color: COLORS.main,
         fontWeight: "bold",
-        borderBottomWidth: 1,
+        borderBottomWidth: 2,
         borderBottomColor: COLORS.main
     },
-    wrapSectionLecture:{
-        padding: 8,
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        borderRadius: 8,
-        marginBottom: 8
-    }
 })
+

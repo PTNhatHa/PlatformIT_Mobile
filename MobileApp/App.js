@@ -21,6 +21,8 @@ import { PersionalInfor } from './src/components/PI';
 import { StudentPI } from './src/screens/Student/TabAccount/StudentPI';
 import { SpecialPI } from './src/components/SpecialPI';
 import { DetailCenter } from './src/screens/DetailCenter';
+import { TeacherDetailCourse } from './src/screens/Teacher/TabMyCourse/TeacherDetailCourse';
+import { StudentDetailCourse } from './src/screens/Student/TabMyCourse/StudentDetailCourse';
 
 export default function App() {
   return (
@@ -28,7 +30,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           {/* <SigninSignup/> */}
-          <DetailTeacher/>
+          <TeacherDetailCourse/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

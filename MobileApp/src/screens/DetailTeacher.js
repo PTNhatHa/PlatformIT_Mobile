@@ -99,7 +99,7 @@ const initTeacher={
     ]
 }
 export const DetailTeacher =({data=initTeacher})=>{
-    const [showInfo, setShowInfo] = useState(false)
+    const [showInfo, setShowInfo] = useState(true)
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Teacher info */}
