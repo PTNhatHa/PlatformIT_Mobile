@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Alert, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { useEffect, useState } from "react"
+import { ActivityIndicator, Alert, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tag, TagYellow } from "./Tag";
@@ -26,7 +26,14 @@ export const Professional = ({
     const {state, dispatch} = useUser()
     const [professions, setProfess] = useState(value || [])
     const [selectImg, setSelectImg] = useState("")
-    const [textColor, setTextColor] = useState(COLORS.lightText)
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        setProfess(value || [])
+        setError("")
+        setLoading(false)
+    }, [value])
 
     const handleAddNew = ()=>{
         let idMax = 0
@@ -43,22 +50,13 @@ export const Professional = ({
         setProfess(newProfessions)
     }
     const handleDelete = (select)=>{
-        const newProfessions = professions.map((item)=>{
-            if(item.idQualification === select){
-                return{
-                    ...item,
-                    delete: true
-                }
-            }
-            return item
-        })
+        const newProfessions = professions.filter((item)=> item.idQualification !== select)
         setProfess(newProfessions)
     }
     const handleSelectImg = (select)=>{
         setSelectImg(select)
     }
     const handleChangeData = (idQualification, value, key)=>{
-        setTextColor("black")
         const newProfessions = professions.map((item)=>{
             if(item.idQualification === idQualification && key === "qualificationName"){
                 return{
@@ -107,10 +105,25 @@ export const Professional = ({
             console.log("==>Error opening pdf: ", e);
         }
     }
+    const checkIsNull = (checkData)=>{
+        const isNull = checkData.some(item => {
+            if(item.qualificationName === "" || item.description === "" || item.path === ""){
+                setError("Please fill all.")
+                return true
+            }
+            return false
+        })
+        if(!isNull){
+            setError("")
+        }
+        return isNull
+    }
     const handleSave = async ()=>{
+        setLoading(true)
         try {
             // Add
             const dataAdd = professions.filter(item => item.isNew)
+            if(checkIsNull(dataAdd)) return
             await Promise.all(dataAdd.map( async (item)=>{
                 try{
                     const response = await addQualification(state.idUser, item.qualificationName, item.description, item.path)
@@ -125,7 +138,19 @@ export const Professional = ({
             }))
             console.log(dataAdd);
             // Delete
-            const dataDelete = professions.filter(item => item.delete === true && item.new !== true)
+            const dataDelete = value.filter(item =>{
+                return !professions.some(pro =>{
+                    if(pro.new === true){
+                        return true
+                    }
+                    return(
+                        pro.idQualification === item.idQualification && 
+                        pro.qualificationName === item.qualificationName &&
+                        pro.description === item.description &&
+                        pro.path === item.path
+                    )
+                })
+            })
             await Promise.all(dataDelete.map( async (item)=>{
                 try{
                     const response = await deleteQualification(item.idQualification)
@@ -139,16 +164,21 @@ export const Professional = ({
                 }
             })) 
         } catch (error) {
-            
+            console.log("Error handleSave", error);
+        }
+        finally{
+            setLoading(false)
         }
     }
+
     return(
+        <>
         <View style={styles.wrapContainer}>
             <Text style={[commonStyles.title]}>Professional Qualifications</Text>
             <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
             <View style={{rowGap: 10, paddingTop: 10}}>
                 {professions ? 
-                professions.map((item)=> !item.delete ?
+                professions.map((item)=>
                 <View style={styles.container} key={item.idQualification}>
                     {item.status === 2 ? 
                         <TagYellow label={"Pending"}/>
@@ -157,20 +187,20 @@ export const Professional = ({
                         <Tag label={"Approved"}/> : ""
                     }
                     <TextInput 
-                        style={[styles.input, {color: textColor}]}
+                        style={[styles.input]}
                         value={item.qualificationName}
                         placeholder={"*Title"}
                         placeholderTextColor={COLORS.red}
                         onChangeText={(v)=>handleChangeData(item.idQualification, v, "qualificationName")}
-                        editable={item.new === true}
+                        editable={item.isNew === true}
                     />
                     <TextInput 
-                        style={[styles.input, {color: textColor}]}
+                        style={[styles.input]}
                         value={item.description}
                         placeholder={"*Desciption"}
                         placeholderTextColor={COLORS.red}
                         onChangeText={(v)=>handleChangeData(item.idQualification, v, "description")}
-                        editable={item.new === true}
+                        editable={item.isNew === true}
                     />
                     <View style={styles.wrap}>
                         <View style={styles.wrapbtn}>
@@ -216,7 +246,8 @@ export const Professional = ({
                          
                     </View>
                 </View>
-                :""): ""}
+                ): ""}
+                {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
                 <View style={styles.bottom}>
                     <ButtonWhite title={"Discard Changes"} action={()=>setProfess(value)}/>
                     <ButtonGreen title={"Save Changes"} action={handleSave}/>
@@ -236,6 +267,18 @@ export const Professional = ({
                 </View>
             </Modal>
         </View>
+        {loading &&
+            <Modal
+                visible={loading}
+                transparent={true}
+                animationType="fade"
+            >
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            </Modal>
+        }  
+        </>
     )
 }
 const styles = StyleSheet.create({
@@ -261,6 +304,7 @@ const styles = StyleSheet.create({
         width: "100%",
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
+        color: "black"
     },
     wrap:{
         flexDirection: "row",
@@ -308,4 +352,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between"
     },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })

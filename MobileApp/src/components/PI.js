@@ -1,6 +1,6 @@
 import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Text, View } from "react-native"
 import { TextInputLabel } from "./TextInputField"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
 import { ComboBox } from "./ComboBox"
 import { ButtonGreen, ButtonWhite } from "./Button"
@@ -47,6 +47,19 @@ export const PersionalInfor = ({info = init})=>{
     const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
     const [isChangeAva, setIsChangeAva] = useState(false)
+    useEffect(()=>{
+        setAvata({
+            uri: info.avatar,
+            name: 'avatar.png',
+            type: 'image/png' 
+        })
+        setName(info.fullName),
+        setPhoneNumber(info.phoneNumber)
+        setBirthday(info.dob)
+        setGender(info.gender)
+        setNationality(info.nationality)
+    }, [info])
+
     const handleUpdateBasicPI = async()=>{
         try{
             setIsLoading(true)

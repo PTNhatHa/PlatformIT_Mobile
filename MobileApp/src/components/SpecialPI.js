@@ -12,6 +12,11 @@ export const SpecialPI = ({initData=[]})=>{
     const {state, dispatch} = useUser()
     const [loading, setLoading] = useState(false);
 
+    useEffect(()=>{
+        setTeaching(initData.teachingMajor)
+        setDescription(initData.description)
+    }, [initData])
+
     const handleSavePITeacher = async ()=>{
         setLoading(true)
         try{

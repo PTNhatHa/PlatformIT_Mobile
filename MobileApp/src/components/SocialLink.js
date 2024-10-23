@@ -1,6 +1,6 @@
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
-import { useState} from "react"
+import { useEffect, useState} from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import RNPickerSelect from 'react-native-picker-select';
 import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
@@ -16,6 +16,14 @@ export const SocialLink = ({
 }) => {
     const {state, dispatch} = useUser()
     const [list, setList] = useState(value)
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        setList(value)
+        setLoading(false)
+    }, [value])
+    
     const handleOnchangeText = (idProfileLink, value, name)=>{
         const newList = list.map((item)=>{
             if(item.idProfileLink === idProfileLink && name === "name"){
@@ -35,15 +43,7 @@ export const SocialLink = ({
         setList(newList)
     }
     const handleDelete = (idProfileLink)=>{
-        const newList = list.map((item)=>{
-            if(item.idProfileLink === idProfileLink){
-                return{
-                    ...item,
-                    delete: true
-                }
-            }
-            return item
-        })
+        const newList = list.filter((item)=> item.idProfileLink !== idProfileLink)
         setList(newList)
     }
     const handleAddNew = ()=>{
@@ -58,10 +58,25 @@ export const SocialLink = ({
         { label: "Facebook", value: "Facebook"},
         { label: "Portfolio", value: "Portfolio"},
     ]
+    const checkIsNull = (checkData)=>{
+        const isNull = checkData.some(item => {
+            if(item.name === "" || item.url === ""){
+                setError("Please fill all.")
+                return true
+            }
+            return false
+        })
+        if(!isNull){
+            setError("")
+        }
+        return isNull
+    }
     const handleSave = async()=>{
+        setLoading(true)
         try {
             // Add
             const dataAdd = list.filter(itemList => itemList.isNew)
+            if(checkIsNull(dataAdd)) return
             await Promise.all(dataAdd.map( async (item)=>{
                 try{
                     const response = await addProfileLink(state.idUser, item.name, item.url)
@@ -75,8 +90,19 @@ export const SocialLink = ({
                 }
             }))
             // Delete
-            const deleteData = list.filter(item => item.delete === true && item.new !== true)
-            await Promise.all(deleteData.map( async (item)=>{
+            const dataDelete = value.filter(item =>{
+                return !list.some(i =>{
+                    if(i.new === true){
+                        return true
+                    }
+                    return(
+                        i.idProfileLink === item.idProfileLink &&
+                        i.name === item.name &&
+                        i.url === item.url
+                    )
+                })
+            })
+            await Promise.all(dataDelete.map( async (item)=>{
                 try{
                     const response = await deleteProfileLink(item.idProfileLink)
                     if(response.error){
@@ -90,13 +116,16 @@ export const SocialLink = ({
             }))
         } catch (error) {
             
+        } finally{
+            setLoading(false)
         }
     }
     return(
+        <>
         <View style={styles.wrap}>
             <Text style={commonStyles.title}>Social/Professional Profile Links</Text>
             <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
-            {list.map((item)=> item.delete !== true &&
+            {list.map((item)=>
                 <View style={styles.container} key={item.idProfileLink}>
                     <View style={styles.title}>
                         <RNPickerSelect
@@ -126,11 +155,24 @@ export const SocialLink = ({
                 </View>
                     
             )}
+            {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
             <View style={styles.bottom}>
                 <ButtonWhite title={"Discard Changes"} action={()=>setList(value)}/>
                 <ButtonGreen title={"Save Changes"} action={handleSave}/>
             </View>
         </View>
+        {loading &&
+            <Modal
+                visible={loading}
+                transparent={true}
+                animationType="fade"
+            >
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            </Modal>
+        }  
+        </>
     )
 }
 
@@ -174,4 +216,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between"
     },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })

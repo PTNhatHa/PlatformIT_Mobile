@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PersionalInfor } from "../../../components/PI";
 import { useState, useEffect } from "react";
 import { getUserInfo } from "../../../services/user";
@@ -18,17 +18,18 @@ export const TeacherPI = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [indexTab, setIndexTab] = useState(1)
+    const [refreshing, setRefreshing] = useState(false)
+    const fetchData = async () => {
+        try {
+            const response = await getUserInfo(state.idUser);
+            setData(response);
+        } catch (error) {
+            console.error("Error fetching user info: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getUserInfo(state.idUser);
-                setData(response);
-            } catch (error) {
-                console.error("Error fetching user info: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, [state.idUser]);
 
@@ -41,8 +42,21 @@ export const TeacherPI = () => {
         );
     }
 
+    const handleRefresh = async ()=>{
+        setRefreshing(true)
+        try {
+            await fetchData()
+        } catch (error) {
+            console.log("Error refresh");
+        } finally{
+            setRefreshing(false)
+        }
+    }
     return (
-        <ScrollView contentContainerStyle={styles.wrapPI}>
+        <ScrollView 
+            contentContainerStyle={styles.wrapPI}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}    
+        >
             <View style={styles.tabBar}>
                 <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 1 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(1)}>
                     <FontAwesome5 name="user-alt" size={18} color={COLORS.main} />

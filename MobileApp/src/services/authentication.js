@@ -44,7 +44,6 @@ export const signinApi = async (username, password)=>{
 }
 
 export const checkEmail = async (email)=>{
-    console.log(email);
     const url = baseUrl + "/CheckEmail"
     return await axios.post(url, email, {
         headers: { 'Content-Type': 'application/json' }  // Đảm bảo gửi kiểu chuỗi văn bản
