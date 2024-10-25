@@ -90,7 +90,7 @@ const initCenter={
 export const CardHorizontalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")} key={data.idCenter}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
             <Image source={data.img || DefaultImg} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>

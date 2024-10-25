@@ -19,6 +19,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 
 const initCourse={
+    id: 1,
     img: "",
     title: "Title",
     listTags: [
@@ -146,7 +147,7 @@ export const DetailCourse = ({data = initCourse})=>{
     }
     
     return(
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} key={data.id}>
             {/* Course info */}
             <View style={styles.wrapInfo}>
                 <ImageBackground

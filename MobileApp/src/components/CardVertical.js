@@ -93,7 +93,7 @@ const initCenter={
 export const CardVirticalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")} key={data.idCenter}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
             <Image source={data.avatarPath} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
@@ -132,13 +132,13 @@ export const CardVirticalTeacher = ({data = initTeacher})=>{
                     <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>{data.teachingMajor}</Text>
                 </View>
-                {data.coursesCount.length > 0 ?
+                {/* {data.coursesCount?.length > 0 ?
                     <View style={styles.content}>
                         <AntDesign name="book" size={10} color={COLORS.stroke} />
                         <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
                     </View>
                     : ""
-                }
+                } */}
             </View>
         </TouchableOpacity>
     )

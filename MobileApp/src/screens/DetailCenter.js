@@ -1,16 +1,17 @@
-import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions } from "react-native"
+import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions, ActivityIndicator } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { Tag } from "../components/Tag"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Entypo from '@expo/vector-icons/Entypo';
 import Feather from '@expo/vector-icons/Feather';
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 import { ButtonIconLightGreen } from "../components/Button";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAllTeacherByIdCenter } from "../services/center";
 
 const initCenter={
     id: 1,
@@ -106,9 +107,37 @@ const initCenter={
         },
     ]
 }
-export const DetailCenter =({data=initCenter})=>{
+export const DetailCenter =({route})=>{
+    const idCenter = route.params?.idCenter || 0
     const [selectBtn, setSelectBtn] = useState(0)
-    const [showInfo, setShowInfo] = useState(true)
+    const [data, setData] = useState(initCenter)
+    const [loading, setLoading] = useState(true);
+    const [teacher, setTeacher] = useState(true);
+
+    useEffect(()=>{
+        const getListTeacher = async()=>{
+            try {
+                const response = await getAllTeacherByIdCenter(idCenter)
+                setTeacher(response)
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally{
+                setLoading(false)
+            }
+        }
+        getListTeacher()
+    }, [])
+
+            
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Center info */}
@@ -119,20 +148,20 @@ export const DetailCenter =({data=initCenter})=>{
                 />
                 <View style={styles.wrapInfoContent}>
                     <Text style={styles.infoTitle}>{data.nameCenter}</Text>
-                    <View style={{ rowGap: 2}}>
-                        {data.listTags.length > 0 && 
+                    {/* <View style={{ rowGap: 2}}>
+                        {data.listTags?.length > 0 && 
                             <View style={styles.inforContent}>
-                                {data.listTags.map(item => 
+                                {data.listTags?.map(item => 
                                     <Tag key={item.id} label={item.value}/>  
                                 )}                    
                             </View>
                         }
-                    </View>
+                    </View> */}
                     <Text style={styles.infoText}>{data.intro}</Text>
-                    <View style={styles.inforContent}>
+                    {/* <View style={styles.inforContent}>
                         <AntDesign name="book" size={16} color={"white"} />
-                        <Text style={styles.infoText}>{data.courses.length} courses</Text>
-                    </View>
+                        <Text style={styles.infoText}>{data.courses?.length} courses</Text>
+                    </View> */}
                     {data.students? 
                         <View style={styles.inforContent}>
                             <MaterialCommunityIcons name="account-group-outline" size={16} color={"white"} />
@@ -170,12 +199,12 @@ export const DetailCenter =({data=initCenter})=>{
                 {selectBtn === 0 ?
                         <>
                             <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
-                            {data.courses.map((item)=><CardVirticalCourse data={item} />)}
+                            {/* {data.courses.map((item)=><CardVirticalCourse data={item} />)} */}
                         </>
                     :   
                         <>
                             <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
-                            {data.teachers.map((item)=><CardVirticalTeacher data={item} />)}
+                            {teacher.map((item)=><CardVirticalTeacher data={item} />)}
                         </>
                 }
             </View> 
@@ -253,7 +282,7 @@ const styles = StyleSheet.create({
     wrapperBottom: {
         padding: 16,
         rowGap: 10,
-        height: 600
+        minHeight: 600,
     },
     board: {
         flexDirection: "row",
@@ -277,4 +306,12 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: COLORS.main
     },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })

@@ -15,7 +15,7 @@ import { ButtonIconLightGreen } from "../components/Button";
 import { CardVirticalCourse } from "../components/CardVertical";
 
 const initTeacher={
-    id: 1,
+    idUser: 1,
     img: DefaultImg,
     nameTeacher: "Name Teacher",
     major: "Chuyên ngành 1",
@@ -101,7 +101,7 @@ const initTeacher={
 export const DetailTeacher =({data=initTeacher})=>{
     const [showInfo, setShowInfo] = useState(true)
     return(
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} key={data.idUser}>
             {/* Teacher info */}
             <View style={styles.wrapInfo}>
                 <ImageBackground
