@@ -69,28 +69,34 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
 }
 
 const initCenter={
-    img: "",
-    title: "Title",
-    listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
-    ],
+    // img: "",
+    // title: "Title",
+    // listTags: [
+    //     { id: 1, value: "Web developer"},
+    //     { id: 2, value: "Backend"},
+    //     { id: 3, value: "Frontend"},
+    // ],
+    "idCenter": 1,
+    "centerName": "HAHYWU CENTER",
+    "description": null,
+    "avatarPath": "",
+    "studentsCount": 2,
+    "coursesCount": 1
 }
 export const CardVirticalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
-            <Image source={data.img} style={styles.img}/>
+            <Image source={data.avatarPath} style={styles.img}/>
             <View>
-                <Text style={styles.title}>{data.title}</Text>
-                {data.listTags.length > 0 && 
+                <Text style={styles.title}>{data.centerName}</Text>
+                <Text style={styles.dataText}>Description: {data.description}</Text>
+                {data.listTags?.length > 0 && 
                     <View style={styles.content}>
                         <Tag label={data.listTags[0].value}/>
                         {data.listTags.length > 1 && 
                             <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
                         }
-                        
                     </View>
                 }
             </View>

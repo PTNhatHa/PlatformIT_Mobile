@@ -1,16 +1,11 @@
-import { Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { CardVirticalAssignmentTeacher, CardVirticalCenter, CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical"
 import { COLORS, commonStyles } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect, useRef } from "react";
-import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-import AntDesign from '@expo/vector-icons/AntDesign';
-import RNPickerSelect from 'react-native-picker-select';
-import { ButtonGreen, ButtonWhite } from "../components/Button";
-import { Tag } from "../components/Tag";
-import { DateTimePickerComponent } from "../components/DateTimePicker";
-import { RadioBtn } from "../components/RadioBtn";
+import { TabBar, TabView } from "react-native-tab-view";
 import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter";
+import { getAllCenterCards } from "../services/center";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -21,7 +16,7 @@ const ViewAllRender = ({data = [], type})=>{
     // console.log(data);
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
-    const numberItem = 4
+    const numberItem = 10
     const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem))
     const inputRef = useRef(null)
     const handleChangeIndex = (isNext)=>{
@@ -52,14 +47,27 @@ const ViewAllRender = ({data = [], type})=>{
         }
     }
     const renderFlatlist = (renderItem)=>{
-        return(
-            <FlatList
-                data={currentData}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={renderItem}
-                style={styles.wrapList}
-            />
-        )
+        if(type === "Center"){
+            return(
+                <FlatList
+                    data={currentData}
+                    keyExtractor={(item) => item.idCenter.toString()}
+                    renderItem={renderItem}
+                    style={styles.wrapList}
+                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                />
+            )
+        }else{
+            return(
+                <FlatList
+                    data={currentData}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={renderItem}
+                    style={styles.wrapList}
+                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                />
+            )
+        }
     }
     return(
         <View style={{ flex: 1}}>
@@ -95,12 +103,12 @@ const ViewAllRender = ({data = [], type})=>{
         </View>
     )
 }
-const renderSceneStudent = ({ route, initCourse, initCenter, initTeacher})=>{
+const renderSceneStudent = ({ route, initCourse, dataCenter, initTeacher})=>{
     switch(route.key){
         case 'first':
             return <ViewAllRender data={initCourse} type={"Course"}/>
         case 'second':
-            return <ViewAllRender data={initCenter} type={"Center"}/>
+            return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
             return <ViewAllRender data={initTeacher} type={"Teacher"}/>
         default:
@@ -126,7 +134,7 @@ const renderTabBar = (props)=>{
         <TabBar
             {...props}
             indicatorStyle={{ backgroundColor: COLORS.main, height: 4 }} // Custom line dưới tab
-            style={{ backgroundColor: 'white'}} // Background cho header
+            style={{ backgroundColor: '#FAFAFA'}} // Background cho header
             labelStyle={{ color: COLORS.lightText, fontSize: 13, fontWeight: 'bold' }} // Style cho text của tab
             activeColor={COLORS.main}
             inactiveColor={COLORS.lightText}
@@ -229,36 +237,6 @@ const Course=[
     },
 ]
 
-const Center=[
-    {
-        id: 1,
-        img: "",
-        title: "Center",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    {
-        id: 2,
-        img: "",
-        title: "Center",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    {
-        id: 3,
-        img: "",
-        title: "Center",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-    },
-]
-
 const Teacher=[
     {
         id: 1,
@@ -315,8 +293,11 @@ const Assignment = [
     },
   ]
 
-export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, route})=>{
+export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, route})=>{
     const initialTab = route.params?.initTab || 0
+    const [dataCenter, setDataCenter] = useState([])
+    const [loading, setLoading] = useState(true);
+
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
@@ -332,6 +313,33 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
       { key: 'second', title: 'Center' },
       { key: 'third', title: 'Teacher' },
     ]);
+
+    
+    const getCenterCards = async ()=>{
+        try {
+            const response = await getAllCenterCards()
+            setDataCenter(response)
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getCenterCards()
+    }, [])
+
+        
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.wrapperSearch}>
@@ -347,7 +355,7 @@ export const StudentViewAll = ({ initCourse = Course, initCenter = Center, initT
             </View>
             <TabView
                 navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneStudent({ route, initCourse, initCenter, initTeacher})}
+                renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, initTeacher})}
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />
@@ -455,19 +463,22 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
 const styles = StyleSheet.create({
     container:{
         padding: 16,
-        backgroundColor: "white",
+        backgroundColor: "#FAFAFA",
         flex: 1
     },
     wrapperSearch: {
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
+        ...commonStyles.shadow,
+        shadowRadius: 5,
+
+        backgroundColor: "white",
         borderRadius: 90,
         paddingHorizontal: 16,
         paddingVertical: 8,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: 10
     },
     input:{
         fontSize: 16,
@@ -480,7 +491,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         columnGap: 20,
-        backgroundColor: "white",
+        backgroundColor: "#FAFAFA",
         paddingTop: 10
     },
     wrapPageNumber:{
@@ -504,6 +515,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     wrapList: {
-        marginBottom: 30
+        marginBottom: 50,
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })

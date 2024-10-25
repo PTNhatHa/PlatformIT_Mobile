@@ -8,6 +8,7 @@ import { formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native";
 import { ButtonIcon } from "./Button";
+import DefaultImg from "../../assets/images/DefaultImg.png"
 
 const initCourse={
     id: 1,
@@ -69,22 +70,29 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
 }
 
 const initCenter={
-    img: "",
-    title: "Title",
-    listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
-    ],
+    // img: "",
+    // title: "Title",
+    // listTags: [
+    //     { id: 1, value: "Web developer"},
+    //     { id: 2, value: "Backend"},
+    //     { id: 3, value: "Frontend"},
+    // ],
+    idCenter: 1,
+    centerName: "HAHYWU CENTER",
+    description: null,
+    avatarPath: "",
+    studentsCount: 2,
+    coursesCount: 1
 }
 export const CardHorizontalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
-            <Image source={data.img} style={styles.img}/>
+            <Image source={data.img || DefaultImg} style={styles.img}/>
             <View>
-                <Text style={styles.title}>{data.title}</Text>
-                {data.listTags.length > 0 && 
+                <Text style={styles.title}>{data.centerName}</Text>
+                <Text style={styles.dataText}>Description: {data.description}</Text>
+                {data.listTags?.length > 0 && 
                     <View style={styles.tags}>
                         <Tag label={data.listTags[0].value}/>
                         {data.listTags.length > 1 && 

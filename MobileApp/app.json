@@ -33,8 +33,13 @@
     "extra": {
       "eas": {
         "projectId": "b6dd9eef-5f1b-45ba-83cf-bda1cdd0143f",
-        "androidClientId": "847422297229-67dueiivmi291jo5iqluvbtersfi7ale.apps.googleusercontent.com"
+        "androidClientId": "605777517558-ojtuhupen9p211juela7o4k8gb4sf378.apps.googleusercontent.com"
       }
-    }
+    },
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin"
+      ]
+    ]
   }
 }

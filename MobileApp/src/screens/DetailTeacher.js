@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground } from "react-native"
+import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { Tag } from "../components/Tag"
@@ -103,7 +103,7 @@ export const DetailTeacher =({data=initTeacher})=>{
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Teacher info */}
-            <View style={[styles.wrapInfo, showInfo && {height: 300}]}>
+            <View style={styles.wrapInfo}>
                 <ImageBackground
                     source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
                     style={styles.infoImg}
@@ -111,29 +111,18 @@ export const DetailTeacher =({data=initTeacher})=>{
                 <View style={styles.wrapInfoContent}>
                 {showInfo && <Image source={data.img} style={styles.infoImage}/>}
                 <Text style={styles.infoTitle}>{data.nameTeacher}</Text>    
-                {showInfo &&
-                    <>
-                        <Text style={styles.infoText}>{data.description}</Text>
-                        <View style={styles.inforContent}>
-                            <AntDesign name="book" size={16} color="white" />
-                            <Text style={styles.infoText}>{data.courses.length} courses</Text>
-                        </View>
-                        {data.students? 
-                            <View style={styles.inforContent}>
-                                <SimpleLineIcons name="graduation" size={16} color="white" />
-                                <Text style={styles.infoText}>{data.major}</Text>
-                            </View>
-                            : ""
-                        }
-                    </>
+                <Text style={styles.infoText}>{data.description}</Text>
+                <View style={styles.inforContent}>
+                    <AntDesign name="book" size={16} color="white" />
+                    <Text style={styles.infoText}>{data.courses.length} courses</Text>
+                </View>
+                {data.students? 
+                    <View style={styles.inforContent}>
+                        <SimpleLineIcons name="graduation" size={16} color="white" />
+                        <Text style={styles.infoText}>{data.major}</Text>
+                    </View>
+                    : ""
                 }
-                    <TouchableOpacity style={styles.btnUpDown} onPress={()=>setShowInfo(!showInfo)}>
-                        {showInfo ? 
-                            <Entypo name="chevron-up" size={30} color="white" />
-                            :
-                            <Entypo name="chevron-down" size={30} color="white" />
-                        }
-                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -209,7 +198,7 @@ export const DetailTeacher =({data=initTeacher})=>{
         </ScrollView>
     )
 }
-
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
@@ -260,10 +249,7 @@ const styles = StyleSheet.create({
 
     wrapInfo: {
         ...commonStyles.shadow,
-        height: 100,
-        borderBottomRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        overflow: "hidden"
+        height: width*2/3,
     },
     infoImg:{
         width: '100%',
@@ -278,7 +264,6 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         justifyContent: "flex-end",
-        paddingBottom: 50
     },
     btnUpDown:{
         position: "absolute",
