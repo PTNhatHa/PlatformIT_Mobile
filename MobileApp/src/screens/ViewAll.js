@@ -339,6 +339,59 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
         changeIndex()
     }, [index])
 
+    useEffect(()=>{
+        if(dataSortCenter.sortby && dataSortCenter.sortway){
+            let newData = [...dataCenter]
+            newData.sort((a,b) => {
+                const field = dataSortCenter.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if(dataSortCenter.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    if(aValue === null && bValue === null) return 0
+                    return aValue.localeCompare(bValue)
+                }
+                if(dataSortCenter.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    if(aValue === null && bValue === null) return 0
+                    return bValue.localeCompare(aValue);
+                }
+                return 0
+            })
+            setDataCenter(newData)
+        }
+    }, [index, search, dataSortCenter])
+
+    useEffect(()=>{
+        if(dataSortTeacher.sortby && dataSortTeacher.sortway){
+            let newData = [...dataTeacher]
+            newData.sort((a,b) => {
+                console.log(a, "--", b);
+                const field = dataSortTeacher.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if(dataSortTeacher.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    return aValue.localeCompare(bValue)
+                }
+                if(dataSortTeacher.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    return bValue.localeCompare(aValue);
+                }
+                return 0
+            })
+            setDataTeacher(newData)
+        }
+    }, [index, search, dataSortTeacher])
+
     const handleSearch = async (txt, index)=>{
         setSearch(txt)
         let newData = []
