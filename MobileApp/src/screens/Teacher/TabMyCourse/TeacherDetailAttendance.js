@@ -42,7 +42,6 @@ export const TeacherDetailAttendance = ({info = init})=>{
     const [gender, setGender] = useState(info.gender === 0 ? "Male" : info.gender === 1 ? "Female" :  "Other")
     const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
-    const [isChangeAva, setIsChangeAva] = useState(false)
 
     return(
         <ScrollView>
