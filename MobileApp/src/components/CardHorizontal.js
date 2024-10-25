@@ -4,11 +4,14 @@ import { Tag, TagNoColor } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native";
 import { ButtonIcon } from "./Button";
 import DefaultImg from "../../assets/images/DefaultImg.png"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 
 const initCourse={
     id: 1,
@@ -107,19 +110,27 @@ export const CardHorizontalCenter = ({data = initCenter})=>{
 }
 
 const initTeacher={
-    img: "",
-    name: "Name",
-    description: "Description"
+    // img: "",
+    // name: "Name",
+    // description: "Description"
+    "idUser": 6,
+    "name": "Phan Trần Nhật Hạ",
+    "teachingMajor": "Software Developer; FE; UI, UX Designer",
+    "avatarPath": "",
+    "coursesCount": 0
 }
 export const CardHorizontalTeacher = ({data = initTeacher, isBtn = false})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")}>
-            
-            <Image source={data.img} style={styles.avata}/>
+            <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
-                <Text style={styles.title}>{data.name}</Text>
-                <Text style={styles.dataText}>{data.description}</Text>
+                <Text style={[styles.title, {textAlign: "center"}]}>{data.name}</Text>
+                <Text style={[styles.dataText, {textAlign: "center", color: COLORS.main}]}>{data.teachingMajor}</Text>
+                {data.coursesCount.length > 0 ?
+                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
+                    : ""
+                }
             </View>
             {isBtn &&
             <View>
@@ -262,7 +273,8 @@ const styles = StyleSheet.create({
         rowGap: 6,
         width: 150,
         alignItems: "center",
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: "white"
     },
     avata: {
         borderWidth: 1,

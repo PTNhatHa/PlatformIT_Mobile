@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter";
 import { getAllCenterCards } from "../services/center";
+import { getAllTeacherCards } from "../services/user";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -57,6 +58,16 @@ const ViewAllRender = ({data = [], type})=>{
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />
             )
+        }if(type === "Teacher"){
+            return(
+                <FlatList
+                    data={currentData}
+                    keyExtractor={(item) => item.idUser.toString()}
+                    renderItem={renderItem}
+                    style={styles.wrapList}
+                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                />
+            )
         }else{
             return(
                 <FlatList
@@ -103,26 +114,26 @@ const ViewAllRender = ({data = [], type})=>{
         </View>
     )
 }
-const renderSceneStudent = ({ route, initCourse, dataCenter, initTeacher})=>{
+const renderSceneStudent = ({ route, initCourse, dataCenter, dataTeacher})=>{
     switch(route.key){
         case 'first':
             return <ViewAllRender data={initCourse} type={"Course"}/>
         case 'second':
             return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
-            return <ViewAllRender data={initTeacher} type={"Teacher"}/>
+            return <ViewAllRender data={dataTeacher} type={"Teacher"}/>
         default:
             return null;
     }
 }
-const renderSceneTeacher = ({ route, initCourse, dataCenter, initTeacher, initAssignment})=>{
+const renderSceneTeacher = ({ route, initCourse, dataCenter, dataTeacher, initAssignment})=>{
     switch(route.key){
         case 'first':
             return <ViewAllRender data={initCourse} type={"Course"}/>
         case 'second':
             return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
-            return <ViewAllRender data={initTeacher} type={"Teacher"}/>
+            return <ViewAllRender data={dataTeacher} type={"Teacher"}/>
         case 'Fourth':
             return <ViewAllRender data={initAssignment} type={"Assignment"}/>
         default:
@@ -293,9 +304,8 @@ const Assignment = [
     },
   ]
 
-export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, route})=>{
+export const StudentViewAll = ({ initCourse = Course, route})=>{
     const initialTab = route.params?.initTab || 0
-    const [dataCenter, setDataCenter] = useState([])
     const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState()
@@ -314,11 +324,15 @@ export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, rou
       { key: 'third', title: 'Teacher' },
     ]);
 
-    
-    const getCenterCards = async ()=>{
+    const [dataCenter, setDataCenter] = useState([])
+    const [dataTeacher, setDataTeacher] = useState([])
+
+    const getAllCard = async ()=>{
         try {
-            const response = await getAllCenterCards()
-            setDataCenter(response)
+            const responseCenter = await getAllCenterCards()
+            const responseTeacher = await getAllTeacherCards()
+            setDataCenter(responseCenter || initCenter)
+            setDataTeacher(responseTeacher || initTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -327,7 +341,7 @@ export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, rou
     }
 
     useEffect(()=>{
-        getCenterCards()
+        getAllCard()
     }, [])
 
         
@@ -355,7 +369,7 @@ export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, rou
             </View>
             <TabView
                 navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, initTeacher})}
+                renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, dataTeacher})}
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />
@@ -391,9 +405,8 @@ export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, rou
     )
 }
 
-export const TeacherViewAll = ({ initCourse = Course, initTeacher = Teacher, initAssignment = Assignment, route})=>{
+export const TeacherViewAll = ({ initCourse = Course, initAssignment = Assignment, route})=>{
     const initialTab = route?.params?.initTab || 0
-    const [dataCenter, setDataCenter] = useState([])
     const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState()
@@ -413,10 +426,15 @@ export const TeacherViewAll = ({ initCourse = Course, initTeacher = Teacher, ini
       { key: 'Fourth', title: 'Assign' },
     ]);
 
-    const getCenterCards = async ()=>{
+    const [dataCenter, setDataCenter] = useState([])
+    const [dataTeacher, setDataTeacher] = useState([])
+
+    const getAllCard = async ()=>{
         try {
-            const response = await getAllCenterCards()
-            setDataCenter(response)
+            const responseCenter = await getAllCenterCards()
+            const responseTeacher = await getAllTeacherCards()
+            setDataCenter(responseCenter || initCenter)
+            setDataTeacher(responseTeacher || initTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -425,7 +443,7 @@ export const TeacherViewAll = ({ initCourse = Course, initTeacher = Teacher, ini
     }
 
     useEffect(()=>{
-        getCenterCards()
+        getAllCard()
     }, [])
 
         
@@ -453,7 +471,7 @@ export const TeacherViewAll = ({ initCourse = Course, initTeacher = Teacher, ini
             </View>
             <TabView
                 navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, initTeacher, initAssignment})}
+                renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, dataTeacher, initAssignment})}
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />

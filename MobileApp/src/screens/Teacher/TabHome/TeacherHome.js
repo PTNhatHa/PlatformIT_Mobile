@@ -4,6 +4,7 @@ import { CardHorizontalAssignment, CardHorizontalAssignmentTeacher, CardHorizont
 import { CardVirticalAssignment } from "../../../components/CardVertical"
 import { useEffect, useState } from "react"
 import { getAllCenterCards } from "../../../services/center"
+import { getAllTeacherCards } from "../../../services/user"
 
 const initCourse=[
     {
@@ -140,13 +141,16 @@ const initAssignment = [
     },
 ]
 export const TeacherHome = ({navigation})=>{
-    const [dataCenter, setDataCenter] = useState([])
     const [loading, setLoading] = useState(true);
+    const [dataCenter, setDataCenter] = useState([])
+    const [dataTeacher, setDataTeacher] = useState([])
 
-    const getCenterCards = async ()=>{
+    const getAllCard = async ()=>{
         try {
-            const response = await getAllCenterCards()
-            setDataCenter(response || initCenter)
+            const responseCenter = await getAllCenterCards()
+            const responseTeacher = await getAllTeacherCards()
+            setDataCenter(responseCenter || initCenter)
+            setDataTeacher(responseTeacher || initTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -155,7 +159,7 @@ export const TeacherHome = ({navigation})=>{
     }
 
     useEffect(()=>{
-        getCenterCards()
+        getAllCard()
     }, [])
 
     
@@ -226,9 +230,9 @@ export const TeacherHome = ({navigation})=>{
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={initTeacher}
+                    data={dataTeacher}
                     horizontal={true}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.idUser.toString()}
                     renderItem={({ item }) => <CardHorizontalTeacher data={item} />}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}

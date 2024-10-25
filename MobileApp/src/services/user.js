@@ -205,3 +205,14 @@ export const deleteQualification = async (id)=>{
         }
     })
 }
+
+export const getAllTeacherCards = async ()=>{
+    return await axios.get(baseUrl + "/GetAllTeacherCards")
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getAllTeacherCards: ", error);
+    })
+}

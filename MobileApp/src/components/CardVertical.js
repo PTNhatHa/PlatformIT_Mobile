@@ -2,10 +2,12 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
 import { Tag, TagNoColor } from "./Tag";
 import { useState, useEffect } from "react"
-import DefaultImg from "../../assets/images/DefaultImg.png"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -105,18 +107,33 @@ export const CardVirticalCenter = ({data = initCenter})=>{
 }
 
 const initTeacher={
-    img: "",
-    name: "Name",
-    description: "Description"
+    // img: "",
+    // name: "Name",
+    // description: "Description"
+    "idUser": 6,
+    "name": "Phan Trần Nhật Hạ",
+    "teachingMajor": "Software Developer; FE; UI, UX Designer",
+    "avatarPath": "",
+    "coursesCount": 0
 }
 export const CardVirticalTeacher = ({data = initTeacher})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher")}>
-            <Image source={data.img} style={styles.avata}/>
+            <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.name}</Text>
-                <Text style={styles.dataText}>{data.description}</Text>
+                <View style={styles.content}>
+                    <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>{data.teachingMajor}</Text>
+                </View>
+                {data.coursesCount.length > 0 ?
+                    <View style={styles.content}>
+                        <AntDesign name="book" size={10} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
+                    </View>
+                    : ""
+                }
             </View>
         </TouchableOpacity>
     )
@@ -209,7 +226,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 8,
-        // marginBottom: 10,
         flexDirection: "row",
         columnGap: 10,
         backgroundColor: "white"
