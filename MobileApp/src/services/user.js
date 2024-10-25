@@ -217,8 +217,9 @@ export const getAllTeacherCards = async ()=>{
     })
 }
 
-export const getAllNotificationOfUser = async ({idUser})=>{
-    return await axios.get(baseUrl + "/GetAllNotificationOfUser?IdUser=" + idUser)
+export const getAllNotificationOfUser = async (idUser)=>{
+    const url = baseUrl + "/GetAllNotificationOfUser?IdUser=" + idUser
+    return await axios.get(url)
     .then(response => {
         // console.log(response.data);
         return response.data

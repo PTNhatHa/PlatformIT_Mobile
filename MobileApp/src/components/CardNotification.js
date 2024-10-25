@@ -1,20 +1,26 @@
 import { useNavigation } from "@react-navigation/native"
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
-import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 
-const initNoti={
-    title: "Notification 1",
-    body: "body",
-    onDate: new Date(),
-}
-export const CardNoti = ({data = initNoti})=>{
+const initNoti=  {
+    "idNotification": 1,
+    "idSender": null,
+    "content": "Your qualification: AWS Certification has been approved.",
+    "isRead": 0,
+    "notificationType": 1,
+    "idCourse": null,
+    "relativeTime": "2 days ago"
+  }
+export const CardNoti = ({data = initNoti, isScreen = false})=>{
     return(
         <View style={styles.container}>
-            <Text style={styles.title}>{data.title}</Text>
-            <Text style={styles.dataText}>{data.body}</Text>
-            <Text style={styles.dataDate}>{formatDateTime(data.onDate)}</Text>
+            {isScreen && <Image style={styles.img}/>}
+            <View style={{flexDirection: "column", flex: 1}}>
+                <Text style={styles.title}>Title</Text>
+                <Text style={styles.dataText}>{data.content}</Text>
+                <Text style={styles.dataDate}>{data.relativeTime}</Text>
+            </View>
         </View>
     )
 }
@@ -25,7 +31,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 8,
-        flexDirection: "column",
+        flexDirection: "row",
         columnGap: 10,
         backgroundColor: "white",
     },
@@ -43,4 +49,10 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         alignSelf: "flex-end"
     },
+    img:{
+        width: 50,
+        height: 50,
+        borderRadius: 90,
+        backgroundColor: COLORS.lightText
+    }
 })

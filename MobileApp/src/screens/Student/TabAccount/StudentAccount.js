@@ -5,6 +5,7 @@ import { TouchableOpacity } from "react-native";
 
 export const StudentAccount = ({navigation})=>{
     const {state, dispatch} = useUser()
+    console.log(state.avatar);
     return(
         <View style={styles.container}>
             <View style={styles.top}>

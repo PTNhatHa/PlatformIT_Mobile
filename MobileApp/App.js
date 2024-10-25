@@ -2,6 +2,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
+import { CardNoti } from './src/components/CardNotification';
+import { NotificationScreen } from './src/screens/Notification';
 
 export default function App() {
   return (
@@ -10,6 +12,7 @@ export default function App() {
         <UserProvider>
           <SigninSignup/>
           {/* <CardNoti/> */}
+          {/* <NotificationScreen/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
