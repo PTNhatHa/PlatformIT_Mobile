@@ -115,12 +115,12 @@ const renderSceneStudent = ({ route, initCourse, dataCenter, initTeacher})=>{
             return null;
     }
 }
-const renderSceneTeacher = ({ route, initCourse, initCenter, initTeacher, initAssignment})=>{
+const renderSceneTeacher = ({ route, initCourse, dataCenter, initTeacher, initAssignment})=>{
     switch(route.key){
         case 'first':
             return <ViewAllRender data={initCourse} type={"Course"}/>
         case 'second':
-            return <ViewAllRender data={initCenter} type={"Center"}/>
+            return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
             return <ViewAllRender data={initTeacher} type={"Teacher"}/>
         case 'Fourth':
@@ -391,8 +391,11 @@ export const StudentViewAll = ({ initCourse = Course, initTeacher = Teacher, rou
     )
 }
 
-export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initTeacher = Teacher, initAssignment = Assignment, route})=>{
+export const TeacherViewAll = ({ initCourse = Course, initTeacher = Teacher, initAssignment = Assignment, route})=>{
     const initialTab = route?.params?.initTab || 0
+    const [dataCenter, setDataCenter] = useState([])
+    const [loading, setLoading] = useState(true);
+
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
@@ -409,6 +412,32 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
       { key: 'third', title: 'Teacher' },
       { key: 'Fourth', title: 'Assign' },
     ]);
+
+    const getCenterCards = async ()=>{
+        try {
+            const response = await getAllCenterCards()
+            setDataCenter(response)
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getCenterCards()
+    }, [])
+
+        
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.wrapperSearch}>
@@ -424,7 +453,7 @@ export const TeacherViewAll = ({ initCourse = Course, initCenter = Center, initT
             </View>
             <TabView
                 navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneTeacher({ route, initCourse, initCenter, initTeacher, initAssignment})}
+                renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, initTeacher, initAssignment})}
                 onIndexChange={setIndex}
                 renderTabBar={renderTabBar}
             />

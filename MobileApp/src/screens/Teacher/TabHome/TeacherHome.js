@@ -1,7 +1,9 @@
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { commonStyles } from "../../../utils/constants"
+import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { COLORS, commonStyles } from "../../../utils/constants"
 import { CardHorizontalAssignment, CardHorizontalAssignmentTeacher, CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../../../components/CardHorizontal"
 import { CardVirticalAssignment } from "../../../components/CardVertical"
+import { useEffect, useState } from "react"
+import { getAllCenterCards } from "../../../services/center"
 
 const initCourse=[
     {
@@ -138,6 +140,34 @@ const initAssignment = [
     },
 ]
 export const TeacherHome = ({navigation})=>{
+    const [dataCenter, setDataCenter] = useState([])
+    const [loading, setLoading] = useState(true);
+
+    const getCenterCards = async ()=>{
+        try {
+            const response = await getAllCenterCards()
+            setDataCenter(response || initCenter)
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getCenterCards()
+    }, [])
+
+    
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <ScrollView style={styles.container}>
             <View style={styles.wrapper}>
@@ -180,9 +210,9 @@ export const TeacherHome = ({navigation})=>{
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={initCenter}
+                    data={dataCenter}
                     horizontal={true}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.idCenter.toString()}
                     renderItem={({ item }) => <CardHorizontalCenter data={item} />}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
@@ -223,5 +253,13 @@ const styles = StyleSheet.create({
     },
     list: {
         paddingRight: 10
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })
