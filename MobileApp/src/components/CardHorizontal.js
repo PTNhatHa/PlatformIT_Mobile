@@ -33,7 +33,7 @@ const initCourse={
 export const CardHorizontalCourse = ({data = initCourse})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")} key={data.id}>
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
@@ -90,7 +90,7 @@ const initCenter={
 export const CardHorizontalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")} key={data.idCenter}>
             <Image source={data.img || DefaultImg} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
@@ -122,7 +122,7 @@ const initTeacher={
 export const CardHorizontalTeacher = ({data = initTeacher, isBtn = false})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")}>
+        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")} key={data.idUser}>
             <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
                 <Text style={[styles.title, {textAlign: "center"}]}>{data.name}</Text>

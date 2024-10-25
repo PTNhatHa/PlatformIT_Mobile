@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const initCourse={
+    id: 1,
     img: "",
     title: "Title",
     listTags: [
@@ -31,7 +32,11 @@ const initCourse={
 export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={isTeacher ? ()=> navigation.navigate("Detail My Course") : ()=> navigation.navigate("Detail Course")}>
+        <TouchableOpacity 
+            style={styles.container} 
+            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course") : ()=> navigation.navigate("Detail Course")}
+            key={data.id}    
+        >
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
@@ -88,7 +93,7 @@ const initCenter={
 export const CardVirticalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")} key={data.idCenter}>
             <Image source={data.avatarPath} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
@@ -119,7 +124,7 @@ const initTeacher={
 export const CardVirticalTeacher = ({data = initTeacher})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher")}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher")} key={data.idUser}>
             <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.name}</Text>
