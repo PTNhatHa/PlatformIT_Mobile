@@ -7,6 +7,7 @@ import { TabBar, TabView } from "react-native-tab-view";
 import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter";
 import { getAllCenterCards } from "../services/center";
 import { getAllTeacherCards } from "../services/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -20,6 +21,12 @@ const ViewAllRender = ({data = [], type})=>{
     const numberItem = 10
     const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem))
     const inputRef = useRef(null)
+    
+    useEffect(() => {
+        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem);
+        setCurrentData(newData);
+    }, [data, indexPage]);
+
     const handleChangeIndex = (isNext)=>{
         let index = 0
         if(isNext){
@@ -248,7 +255,6 @@ const Course=[
     },
 ]
 
-
 const Assignment = [
     {
         id: 1,
@@ -285,7 +291,7 @@ const Assignment = [
     },
   ]
 
-export const ScreenViewAll = ({ initCourse = Course, initAssignment = Assignment, route})=>{
+export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
     const initialTab = route.params?.initTab || 0
     const isTeacher = route.params?.isTeacher || false
 
@@ -294,21 +300,74 @@ export const ScreenViewAll = ({ initCourse = Course, initAssignment = Assignment
     const [search, setSearch] = useState()
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [routes, setRoutes] = useState([])
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
     const [dataFilterCourse, setDataFilterCourse] = useState([]);
     const [dataSortCenter, setDataSortCenter] = useState([]);
     const [dataFilterCenter, setDataFilterCenter] = useState([]);
     const [dataSortTeacher, setDataSortTeacher] = useState([]);
-    const [routes, setRoutes] = useState([])
     
+    const [initCourse, setInitCourse] = useState([])
+    const [initCenter, setInitCenter] = useState([])
+    const [initTeacher, setInitTeacher] = useState([])
+    
+    const [dataCourse, setDataCourse] = useState([])
     const [dataCenter, setDataCenter] = useState([])
     const [dataTeacher, setDataTeacher] = useState([])
 
+    useEffect(()=>{
+        AsyncStorage.setItem('searchCourse', "")
+        AsyncStorage.setItem('searchCenter', "")
+        AsyncStorage.setItem('searchTeacher', "")
+    }, [])
+
+    useEffect(()=>{
+        const changeIndex = async()=>{
+            let txt = ""
+            if(index === 0){
+                txt = await AsyncStorage.getItem('searchCourse')
+            }
+            if(index === 1){
+                txt = await AsyncStorage.getItem('searchCenter')
+            }
+            if(index === 2){
+                txt = await AsyncStorage.getItem('searchTeacher')
+            }
+            setSearch(txt)
+        }
+        changeIndex()
+    }, [index])
+
+    const handleSearch = async (txt, index)=>{
+        setSearch(txt)
+        let newData = []
+        if(index === 1){
+            newData = initCenter.filter(center => {
+                return Object.values(center).some(item =>
+                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
+                )
+            })
+            setDataCenter(newData)
+            await AsyncStorage.setItem('searchCenter', txt)
+        }
+        if(index === 2){
+            newData = initTeacher.filter(center => {
+                return Object.values(center).some(item =>
+                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
+                )
+            })
+            setDataTeacher(newData)
+            await AsyncStorage.setItem('searchTeacher', txt)
+        }
+    }
+    
     const getAllCard = async ()=>{
         try {
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
+            setInitCenter(responseCenter)
+            setInitTeacher(responseTeacher)
             setDataCenter(responseCenter)
             setDataTeacher(responseTeacher)
         } catch (error) {
@@ -353,7 +412,7 @@ export const ScreenViewAll = ({ initCourse = Course, initAssignment = Assignment
                     value={search}
                     style={styles.input}
                     placeholder={"Search"}
-                    onChangeText={(v)=>setSearch(v)}
+                    onChangeText={(value)=>handleSearch(value, index)}
                 />
                 <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                     <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>

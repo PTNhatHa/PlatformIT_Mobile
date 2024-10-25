@@ -1,6 +1,7 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5000/api/User"
-// const baseUrl = "http://192.168.1.165:5251/api/User"
+// const baseUrl = "http://192.168.2.3:5000/api/User"
+const baseUrl = "http://192.168.1.215:5000/api/User"
+
 export const getUserInfo = async (idUser)=>{
     const url = baseUrl + "/showPI?id=" + idUser
     return await axios.get(url)
@@ -213,5 +214,16 @@ export const getAllTeacherCards = async ()=>{
     })
     .catch(error => {
         console.log("Error getAllTeacherCards: ", error);
+    })
+}
+
+export const getAllNotificationOfUser = async ({idUser})=>{
+    return await axios.get(baseUrl + "/GetAllNotificationOfUser?IdUser=" + idUser)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getAllNotificationOfUser: ", error);
     })
 }

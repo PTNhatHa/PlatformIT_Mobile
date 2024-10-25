@@ -14,7 +14,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { validateEmail } from "../utils/utils";
 import { forgotPassword, getUserInfo } from "../services/user";
 import * as Google from 'expo-auth-session/providers/google';
-
+import DefaultAva from "../../assets/images/DefaultAva.png"
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
@@ -78,10 +78,15 @@ export default SignIn = ({navigation}) => {
                 await AsyncStorage.setItem('password', password)
                 const info = await getUserInfo(response.idUser)
                 let userInfo = response
-                if(info.avatar){
+                if(info.avatar !== null){
                     userInfo = {
                         ...response,
                         "avatar": info.avatar
+                    } 
+                }else{
+                    userInfo = {
+                        ...response,
+                        "avatar": DefaultAva
                     }
                 }
                 dispatch({ type: SET_INFO, payload: userInfo })

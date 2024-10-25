@@ -8,7 +8,7 @@ export const StudentAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={{uri: state.avatar}} style={styles.avataImage}/>
+                <Image source={{uri: state.avatar.toString()}} style={styles.avataImage}/>
                 <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>
