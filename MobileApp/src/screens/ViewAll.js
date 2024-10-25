@@ -248,26 +248,7 @@ const Course=[
     },
 ]
 
-const Teacher=[
-    {
-        id: 1,
-        img: "",
-        name: "Nhatha",
-        description: "Description"
-    },
-    {
-        id: 2,
-        img: "",
-        name: "Taho",
-        description: "Description"
-    },
-    {
-        id: 3,
-        img: "",
-        name: "Hyy",
-        description: "Description"
-    },
-]
+
 const Assignment = [
     {
         id: 1,
@@ -304,8 +285,10 @@ const Assignment = [
     },
   ]
 
-export const StudentViewAll = ({ initCourse = Course, route})=>{
+export const ScreenViewAll = ({ initCourse = Course, initAssignment = Assignment, route})=>{
     const initialTab = route.params?.initTab || 0
+    const isTeacher = route.params?.isTeacher || false
+
     const [loading, setLoading] = useState(true);
 
     const [search, setSearch] = useState()
@@ -317,13 +300,8 @@ export const StudentViewAll = ({ initCourse = Course, route})=>{
     const [dataSortCenter, setDataSortCenter] = useState([]);
     const [dataFilterCenter, setDataFilterCenter] = useState([]);
     const [dataSortTeacher, setDataSortTeacher] = useState([]);
-
-    const [routes] = useState([
-      { key: 'first', title: 'Course' },
-      { key: 'second', title: 'Center' },
-      { key: 'third', title: 'Teacher' },
-    ]);
-
+    const [routes, setRoutes] = useState([])
+    
     const [dataCenter, setDataCenter] = useState([])
     const [dataTeacher, setDataTeacher] = useState([])
 
@@ -331,8 +309,8 @@ export const StudentViewAll = ({ initCourse = Course, route})=>{
         try {
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
-            setDataCenter(responseCenter || initCenter)
-            setDataTeacher(responseTeacher || initTeacher)
+            setDataCenter(responseCenter)
+            setDataTeacher(responseTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -341,9 +319,23 @@ export const StudentViewAll = ({ initCourse = Course, route})=>{
     }
 
     useEffect(()=>{
+        if(!isTeacher){
+            setRoutes([
+                { key: 'first', title: 'Course' },
+                { key: 'second', title: 'Center' },
+                { key: 'third', title: 'Teacher' },
+              ])
+        } else{
+            setRoutes([
+                { key: 'first', title: 'Course' },
+                { key: 'second', title: 'Center' },
+                { key: 'third', title: 'Teacher' },
+                { key: 'Fourth', title: 'Assign' },
+              ])
+        }
+
         getAllCard()
     }, [])
-
         
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -367,12 +359,21 @@ export const StudentViewAll = ({ initCourse = Course, route})=>{
                     <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                 </TouchableOpacity>
             </View>
-            <TabView
-                navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, dataTeacher})}
-                onIndexChange={setIndex}
-                renderTabBar={renderTabBar}
-            />
+            {isTeacher === true ?
+                <TabView
+                    navigationState={{index, routes}}
+                    renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, dataTeacher, initAssignment})}
+                    onIndexChange={setIndex}
+                    renderTabBar={renderTabBar}
+                />
+            :
+                <TabView
+                    navigationState={{index, routes}}
+                    renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, dataTeacher})}
+                    onIndexChange={setIndex}
+                    renderTabBar={renderTabBar}
+                />
+            }
             <Modal
                 visible={isOpenModal}
                 animationType="fade"
@@ -404,109 +405,6 @@ export const StudentViewAll = ({ initCourse = Course, route})=>{
         </View>
     )
 }
-
-export const TeacherViewAll = ({ initCourse = Course, initAssignment = Assignment, route})=>{
-    const initialTab = route?.params?.initTab || 0
-    const [loading, setLoading] = useState(true);
-
-    const [search, setSearch] = useState()
-    const [index, setIndex] = useState(initialTab);
-    const [isOpenModal, setIsOpenModal] = useState(false);
-
-    const [dataSortCourse, setDataSortCourse] = useState([]);
-    const [dataFilterCourse, setDataFilterCourse] = useState([]);
-    const [dataSortCenter, setDataSortCenter] = useState([]);
-    const [dataFilterCenter, setDataFilterCenter] = useState([]);
-    const [dataSortTeacher, setDataSortTeacher] = useState([]);
-
-    const [routes] = useState([
-      { key: 'first', title: 'Course' },
-      { key: 'second', title: 'Center' },
-      { key: 'third', title: 'Teacher' },
-      { key: 'Fourth', title: 'Assign' },
-    ]);
-
-    const [dataCenter, setDataCenter] = useState([])
-    const [dataTeacher, setDataTeacher] = useState([])
-
-    const getAllCard = async ()=>{
-        try {
-            const responseCenter = await getAllCenterCards()
-            const responseTeacher = await getAllTeacherCards()
-            setDataCenter(responseCenter || initCenter)
-            setDataTeacher(responseTeacher || initTeacher)
-        } catch (error) {
-            console.log("Error: ", error);
-        } finally{
-            setLoading(false)
-        }
-    }
-
-    useEffect(()=>{
-        getAllCard()
-    }, [])
-
-        
-    if (loading) {
-        // Render màn hình chờ khi dữ liệu đang được tải
-        return (
-            <View style={styles.wrapLoading}>
-                <ActivityIndicator size="large" color={COLORS.main} />
-            </View>
-        );
-    }
-
-    return(
-        <View style={styles.container}>
-            <View style={styles.wrapperSearch}>
-                <TextInput
-                    value={search}
-                    style={styles.input}
-                    placeholder={"Search"}
-                    onChangeText={(v)=>setSearch(v)}
-                />
-                <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
-                    <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
-                </TouchableOpacity>
-            </View>
-            <TabView
-                navigationState={{index, routes}}
-                renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, dataTeacher, initAssignment})}
-                onIndexChange={setIndex}
-                renderTabBar={renderTabBar}
-            />
-            <Modal
-                visible={isOpenModal}
-                animationType="fade"
-            >
-                {index === 0 ?
-                    <FilterCourse 
-                        dataSort={dataSortCourse}
-                        setDataSort={setDataSortCourse}
-                        dataFilter={dataFilterCourse}
-                        setDataFilter={setDataFilterCourse}
-                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    /> :
-                    index === 1 ?
-                    <FilterCenter
-                        dataSort={dataSortCenter}
-                        setDataSort={setDataSortCenter}
-                        dataFilter={dataFilterCenter}
-                        setDataFilter={setDataFilterCenter}
-                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    /> :
-                    index === 2 ?
-                    <FilterTeacher
-                        dataSort={dataSortTeacher}
-                        setDataSort={setDataSortTeacher}
-                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    /> : ""
-                }
-            </Modal>
-        </View>
-    )
-}
-
 const styles = StyleSheet.create({
     container:{
         padding: 16,
