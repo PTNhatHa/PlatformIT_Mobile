@@ -326,6 +326,7 @@ export const DetailCourse = ({data = initCourse})=>{
         </ScrollView>
     )
 }
+
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{

@@ -1,4 +1,4 @@
-import { FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { Tag } from "../../../components/Tag"
 import Feather from '@expo/vector-icons/Feather';
@@ -145,7 +145,7 @@ export const StudentDetailCourse = ({data = initCourse})=>{
     return(
         <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
-            <View style={[styles.wrapInfo, showInfo && {height: 300}]}>
+            <View style={styles.wrapInfo}>
                 <ImageBackground
                     source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
                     style={styles.infoImg}
@@ -195,19 +195,12 @@ export const StudentDetailCourse = ({data = initCourse})=>{
                                 </View>
                                 {state.idRole === 3 &&
                                     <TouchableOpacity style={styles.infoBtn}>
-                                        <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                        <Text style={styles.infoBtnText}>View payment history</Text>
                                     </TouchableOpacity>
                                 }
                             </>
                         }
                     </>
-                    <TouchableOpacity style={styles.btnUpDown} onPress={()=>setShowInfo(!showInfo)}>
-                        {showInfo ? 
-                            <Entypo name="chevron-up" size={30} color="white" />
-                            :
-                            <Entypo name="chevron-down" size={30} color="white" />
-                        }
-                    </TouchableOpacity>
                 </View>
             </View>
 
@@ -354,6 +347,7 @@ export const StudentDetailCourse = ({data = initCourse})=>{
     )
 }
 
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
@@ -430,10 +424,7 @@ const styles = StyleSheet.create({
 
     wrapInfo: {
         ...commonStyles.shadow,
-        height: 100,
-        borderBottomRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        overflow: "hidden"
+        height: width*2/3,
     },
     infoImg:{
         width: '100%',
@@ -448,7 +439,6 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: 'rgba(0, 0, 0, 0.6)',
         justifyContent: "flex-end",
-        paddingBottom: 50
     },
     btnUpDown:{
         position: "absolute",

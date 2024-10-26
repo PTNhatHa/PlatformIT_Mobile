@@ -11,10 +11,10 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <CardNoti/> */}
           {/* <NotificationScreen/> */}
-          <ProgressCircle/>
+          {/* <ProgressCircle/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
