@@ -1,18 +1,29 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../utils/constants"
-import { useState} from "react"
+import { ActivityIndicator, Alert, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { COLORS, commonStyles } from "../utils/constants"
+import { useEffect, useState} from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import RNPickerSelect from 'react-native-picker-select';
+import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
+import { useUser } from "../contexts/UserContext";
+import { addProfileLink, deleteProfileLink } from "../services/user";
 
 const iniSocial = [
     { idProfileLink: 1, name: "Github", url: "aaaaaaa"},
     { idProfileLink: 2, name: "Facebook", url: "bbbbbb"},
 ]
 export const SocialLink = ({
-    value = iniSocial, setValue=()=>{}
+    value = iniSocial
 }) => {
-    const [textColor, setTextColor] = useState(COLORS.lightText)
+    const {state, dispatch} = useUser()
     const [list, setList] = useState(value)
+    const [error, setError] = useState("")
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        setList(value)
+        setLoading(false)
+    }, [value])
+    
     const handleOnchangeText = (idProfileLink, value, name)=>{
         const newList = list.map((item)=>{
             if(item.idProfileLink === idProfileLink && name === "name"){
@@ -30,19 +41,15 @@ export const SocialLink = ({
             return item
         })
         setList(newList)
-        setValue(newList)
-        setTextColor("black")
     }
     const handleDelete = (idProfileLink)=>{
         const newList = list.filter((item)=> item.idProfileLink !== idProfileLink)
         setList(newList)
-        setValue(newList)
     }
     const handleAddNew = ()=>{
         const maxId = Math.max(...list.map(item => item.idProfileLink), 0)
-        const newList = [...list, { idProfileLink: maxId + 1, name: "", url: ""}]
+        const newList = [...list, { idProfileLink: maxId + 1, name: "", url: "", isNew: true}]
         setList(newList)
-        setValue(newList)
     }
     const listTitle = [
         { label: "Github", value: "Github"},
@@ -51,9 +58,73 @@ export const SocialLink = ({
         { label: "Facebook", value: "Facebook"},
         { label: "Portfolio", value: "Portfolio"},
     ]
+    const checkIsNull = (checkData)=>{
+        const isNull = checkData.some(item => {
+            if(item.name === "" || item.url === ""){
+                setError("Please fill all.")
+                return true
+            }
+            return false
+        })
+        if(!isNull){
+            setError("")
+        }
+        return isNull
+    }
+    const handleSave = async()=>{
+        setLoading(true)
+        try {
+            // Add
+            const dataAdd = list.filter(itemList => itemList.isNew)
+            if(checkIsNull(dataAdd)) return
+            await Promise.all(dataAdd.map( async (item)=>{
+                try{
+                    const response = await addProfileLink(state.idUser, item.name, item.url)
+                    if(response.error){
+                        Alert.alert("Warning", response.data)
+                    }else{
+                        Alert.alert("Noti", "Add social link done^v^")
+                    }
+                } catch(e){
+                    console.log("Error add Social links: ", e);
+                }
+            }))
+            // Delete
+            const dataDelete = value.filter(item =>{
+                return !list.some(i =>{
+                    if(i.new === true){
+                        return true
+                    }
+                    return(
+                        i.idProfileLink === item.idProfileLink &&
+                        i.name === item.name &&
+                        i.url === item.url
+                    )
+                })
+            })
+            await Promise.all(dataDelete.map( async (item)=>{
+                try{
+                    const response = await deleteProfileLink(item.idProfileLink)
+                    if(response.error){
+                        Alert.alert("Warning", response.data)
+                    }else{
+                        Alert.alert("Noti", "Delete social link done^o^")
+                    }
+                } catch(e){
+                    console.log("Error add Social links: ", e);
+                }
+            }))
+        } catch (error) {
+            
+        } finally{
+            setLoading(false)
+        }
+    }
     return(
-        <View>
-            <Text style={styles.label}>Social/Professional Profile Links</Text>
+        <>
+        <View style={styles.wrap}>
+            <Text style={commonStyles.title}>Social/Professional Profile Links</Text>
+            <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
             {list.map((item)=>
                 <View style={styles.container} key={item.idProfileLink}>
                     <View style={styles.title}>
@@ -62,18 +133,21 @@ export const SocialLink = ({
                             onValueChange={(v)=>handleOnchangeText(item.idProfileLink, v, "name")}
                             style={{
                                 inputAndroid: {
-                                    color: textColor,
+                                    color: "black",
                                 }
                             }}
                             value={item.name}
                             useNativeAndroidPickerStyle={false}
+                            disabled={item.isNew !== true}
                         />
                     </View>
                     <TextInput 
-                        style={[styles.link, {color: textColor}]}
+                        style={[styles.link]}
                         value={item.url}
-                        placeholder={"Link"}
-                        onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "link")}
+                        placeholder={"*Url"}
+                        placeholderTextColor={COLORS.red}
+                        onChangeText={(v)=>handleOnchangeText(item.idProfileLink, v, "url")}
+                        editable={item.isNew === true}
                     />
                     <TouchableOpacity onPress={()=>handleDelete(item.idProfileLink)}>
                         <AntDesign name="delete" size={20} color={COLORS.stroke} />
@@ -81,20 +155,37 @@ export const SocialLink = ({
                 </View>
                     
             )}
-            
-            <TouchableOpacity style={styles.btn} onPress={()=>handleAddNew()}>
-                <AntDesign name="plus" size={20} color={COLORS.stroke} />
-            </TouchableOpacity>
+            {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
+            <View style={styles.bottom}>
+                <ButtonWhite title={"Discard Changes"} action={()=>setList(value)}/>
+                <ButtonGreen title={"Save Changes"} action={handleSave}/>
+            </View>
         </View>
+        {loading &&
+            <Modal
+                visible={loading}
+                transparent={true}
+                animationType="fade"
+            >
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            </Modal>
+        }  
+        </>
     )
 }
 
 const styles = StyleSheet.create({
+    wrap: {
+        ...commonStyles.shadow,
+        backgroundColor: "white",
+        padding: 16,
+        borderRadius: 8
+    },
     container: {
-        borderWidth: 1,
+        borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        borderRadius: 90,
-        paddingHorizontal: 10,
         paddingVertical: 8,
         flexDirection: "row",
         columnGap: 8,
@@ -102,14 +193,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 10
     },
-    label:{
-        fontSize: 16,
-        width: "85%"
-    },
     link:{
         fontSize: 16,
         width: "55%",
         paddingHorizontal: 10,
+        color: "black"
     },
     title: {
         fontSize: 16,
@@ -124,4 +212,16 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
         borderColor: COLORS.lightText,
     },
+    bottom: {
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })

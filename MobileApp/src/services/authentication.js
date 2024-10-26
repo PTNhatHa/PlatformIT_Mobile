@@ -1,6 +1,6 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5251/api/Authen"
-// const baseUrl = "http://192.168.1.165:5251/api/Authen"
+const baseUrl = "http://192.168.2.3:5000/api/Authen"
+// const baseUrl = "http://192.168.1.230:8081/api/Authen"
 export const signupApi = async (name, email, username, password, centerName, tin)=>{
     const url = baseUrl + "/signup"
     return await axios.post(url, {
@@ -44,7 +44,6 @@ export const signinApi = async (username, password)=>{
 }
 
 export const checkEmail = async (email)=>{
-    console.log(email);
     const url = baseUrl + "/CheckEmail"
     return await axios.post(url, email, {
         headers: { 'Content-Type': 'application/json' }  // Đảm bảo gửi kiểu chuỗi văn bản

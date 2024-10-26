@@ -1,25 +1,21 @@
 import { Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import DefaultImg from "../../assets/images/DefaultImg.png"
-import { COLORS, commonStyles } from "../utils/constants"
-import { Tag } from "../components/Tag"
+import { COLORS, commonStyles } from "../../../utils/constants"
+import { Tag } from "../../../components/Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { formatDateTime } from "../utils/utils";
-import { useUser } from "../contexts/UserContext";
-import { CardHorizontalTeacher } from "../components/CardHorizontal";
-import { CardReview } from "../components/CardReview";
-import { ButtonIcon } from "../components/Button";
-import { CardLecture } from "../components/CardLecture";
+import { formatDateTime } from "../../../utils/utils";
+import { useUser } from "../../../contexts/UserContext";
+import { CardReview } from "../../../components/CardReview";
+import { CardLecture } from "../../../components/CardLecture";
 import { useState } from "react";
-import { CardAssignmentStudent } from "../components/CardAssignment";
+import { CardAssignmentStudent } from "../../../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 
 const initCourse={
-    id: 1,
     img: "",
     title: "Title",
     listTags: [
@@ -122,7 +118,7 @@ const initCourse={
     },
 }
 
-export const DetailCourse = ({data = initCourse})=>{
+export const StudentDetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
     const [showInfo, setShowInfo] = useState(true)
@@ -147,7 +143,7 @@ export const DetailCourse = ({data = initCourse})=>{
     }
     
     return(
-        <ScrollView contentContainerStyle={styles.container} key={data.id}>
+        <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
             <View style={styles.wrapInfo}>
                 <ImageBackground
@@ -199,7 +195,7 @@ export const DetailCourse = ({data = initCourse})=>{
                                 </View>
                                 {state.idRole === 3 &&
                                     <TouchableOpacity style={styles.infoBtn}>
-                                        <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                        <Text style={styles.infoBtnText}>View payment history</Text>
                                     </TouchableOpacity>
                                 }
                             </>
@@ -217,9 +213,14 @@ export const DetailCourse = ({data = initCourse})=>{
                         start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
                         end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
                     >
-                        <View style={styles.titleCard}>
-                            <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
-                            <Text style={styles.titleCardText}>Teacher</Text>
+                        <View style={styles.wrapCardTitle}>
+                            <View style={styles.titleCard}>
+                                <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
+                                <Text style={styles.titleCardText}>Teacher</Text>
+                            </View>
+                            <TouchableOpacity style={styles.titleCard}>
+                                <Ionicons name="chatbubble-outline" size={18} color={COLORS.secondMain} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.contentCard}>
                             <Image source={""} style={styles.avata}/>
@@ -256,9 +257,14 @@ export const DetailCourse = ({data = initCourse})=>{
             
             {/* Course review */}
             <View style={styles.wrapper}>
-                <View style={styles.titleCard}>
-                    <AntDesign name="star" size={16} color={COLORS.yellow}/>
-                    <Text style={styles.titleCardText}>4.8/5 Rating</Text>
+                <View style={styles.wrapCardTitle}>
+                    <View style={styles.titleCard}>
+                        <AntDesign name="star" size={16} color={COLORS.yellow}/>
+                        <Text style={styles.titleCardText}>4.8/5 Rating</Text>
+                    </View>
+                    <TouchableOpacity style={styles.titleCard}>
+                        <AntDesign name="edit" size={18} color={COLORS.secondMain} />
+                    </TouchableOpacity>
                 </View>
                 <FlatList
                     data={data.reviews}
@@ -278,6 +284,12 @@ export const DetailCourse = ({data = initCourse})=>{
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
                         <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
+                        <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(3)}>
+                        <Text style={selectBtn === 3 ? styles.selectBtn : styles.normalBtn}>Notification</Text>
                     </TouchableOpacity>
                 </View>
                 {selectBtn === 0 ?
@@ -309,7 +321,7 @@ export const DetailCourse = ({data = initCourse})=>{
                             )}
                         )}
                     </>
-                :   
+                : selectBtn === 1 ?
                     <View>
                         {/* Course assignments */}
                         <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
@@ -320,6 +332,14 @@ export const DetailCourse = ({data = initCourse})=>{
                         <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
                             <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
                         </TouchableOpacity>
+                    </View>
+                : selectBtn === 2 ?   
+                    <View>
+                        <Text>Progress</Text>
+                    </View>
+                : 
+                    <View>
+                        <Text>Noti</Text>
                     </View>
                 }
             </View>         
@@ -496,5 +516,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: COLORS.main
     },
+    wrapCardTitle:{
+        flexDirection: "row",
+        justifyContent: "space-between"
+    }
 })
 

@@ -1,90 +1,37 @@
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native"
-import { PersionalInfor } from "../../../components/PI"
-import { TextInputLabel } from "../../../components/TextInputField"
-import { useState, useEffect } from "react"
-import { COLORS } from "../../../utils/constants"
-import { Professional } from "../../../components/Professional"
-import { useUser } from "../../../contexts/UserContext"
-import { addProfileLink, deleteProfileLink, getUserInfo } from "../../../services/user"
-import { SocialLink } from "../../../components/SocialLink"
-import { ButtonGreen } from "../../../components/Button"
+import { ActivityIndicator, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { PersionalInfor } from "../../../components/PI";
+import { useState, useEffect } from "react";
+import { getUserInfo } from "../../../services/user";
+import { useUser } from "../../../contexts/UserContext";
+import { COLORS } from '../../../utils/constants';
+import { TouchableOpacity } from 'react-native';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { ChangePassword } from '../../../components/ChangePassword';
+import { SpecialPI } from '../../../components/SpecialPI';
+import { SocialLink } from '../../../components/SocialLink';
+import { Professional } from '../../../components/Professional';
 
-export const TeacherPI = ({navigation})=>{
-    const [center, setCenter] = useState("Trung tâm trực thuộc")
-    const [teaching, setTeaching] = useState("Chuyên ngành giảng dạy")
-    const [description, setDescription] = useState("Description")
-    const [socials, setSocials] = useState([])
-    const [professionals, setProfessionals] = useState([])
-    const {state, dispatch} = useUser()
-    const [data, setData] = useState()
+export const TeacherPI = () => {
+    const { state, dispatch } = useUser();
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [oldPI, setOldPI] = useState([]);
-    
+    const [indexTab, setIndexTab] = useState(1)
+    const [refreshing, setRefreshing] = useState(false)
+    const fetchData = async () => {
+        try {
+            const response = await getUserInfo(state.idUser);
+            setData(response);
+        } catch (error) {
+            console.error("Error fetching user info: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getUserInfo(state.idUser);
-                setOldPI(response)
-                setData(response);
-                setCenter(response.centerName)
-                setTeaching(response.teachingMajor)
-                setDescription(response.description)
-                setSocials(response.links)
-                setProfessionals(response.qualificationModels)
-            } catch (error) {
-                console.error("Error fetching user info: ", error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchData();
     }, [state.idUser]);
-
-    const handleSavePITeacher = async ()=>{
-        setLoading(true)
-        console.log(oldPI.links !== socials);
-        try{
-            if(oldPI.links !== socials){
-                // Add
-                const dataAdd = socials.filter(social => {
-                    return !oldPI.links.some(link => link.name === social.name && link.url === social.url)
-                })
-                dataAdd.map( async (item)=>{
-                    try{
-                        const response = await addProfileLink(state.idUser, item.name, item.url)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Add social link done^v^")
-                        }
-                    } catch(e){
-                        console.log("Error add Social links: ", e);
-                    }
-                })
-                // Delete
-                const deleteData = oldPI.links.filter(link => {
-                    return !socials.some(social => social ===link)
-                })
-                console.log(deleteData);
-                deleteData.map( async (item)=>{
-                    try{
-                        const response = await deleteProfileLink(item.idProfileLink)
-                        if(response.error){
-                            Alert.alert("Warning", response.data)
-                        }else{
-                            Alert.alert("Noti", "Delete social link done^o^")
-                        }
-                    } catch(e){
-                        console.log("Error add Social links: ", e);
-                    }
-                })
-            }
-        } catch(e){
-
-        } finally{
-            setLoading(false)
-        }
-    }
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -94,64 +41,85 @@ export const TeacherPI = ({navigation})=>{
             </View>
         );
     }
-    return(
-        <>
-            <View style={styles.PI}>
-                <ScrollView>
-                    <Text style={styles.title}>Your information</Text>
-                    {data &&
-                        <PersionalInfor navigation={navigation} info={data}/>
+
+    const handleRefresh = async ()=>{
+        setRefreshing(true)
+        try {
+            await fetchData()
+        } catch (error) {
+            console.log("Error refresh");
+        } finally{
+            setRefreshing(false)
+        }
+    }
+    return (
+        <ScrollView 
+            contentContainerStyle={styles.wrapPI}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}    
+        >
+            <View style={styles.tabBar}>
+                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 1 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(1)}>
+                    <FontAwesome5 name="user-alt" size={18} color={COLORS.main} />
+                    {indexTab === 1 &&
+                        <Text style={styles.tab}>Personal Infomation</Text>
                     }
-                    <Text style={styles.title}>More information</Text>
-                    <ScrollView contentContainerStyle={styles.container}>
-                        <View style={styles.body}>
-                            <TextInputLabel label={"Affiliated Center"} value={center}/>
-                            <TextInputLabel label={"Teaching Specialization"} value={teaching}/>
-                            <TextInputLabel label={"Description"} value={description}/>
-                            <SocialLink value={socials} setValue={setSocials}/>
-                            <Professional label={"Professional Qualifications"} value={professionals} setProfessions={setProfessionals}/>
-                        </View>
-                        <ButtonGreen title={"Save Change"} action={handleSavePITeacher}/>
-                    </ScrollView>
-                </ScrollView>
-            </View>   
-            {loading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
-            }
-        </>      
-    )
-}
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 3 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(3)}>
+                <Ionicons name="school" size={18} color={COLORS.main} />
+                    {indexTab === 3 &&
+                        <Text style={styles.tab}>Specialized Infomation</Text>
+                    }
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.wraptab, {backgroundColor: indexTab === 2 ? COLORS.main30 : COLORS.lightText}]} onPress={()=>setIndexTab(2)}>
+                <MaterialIcons name="security" size={18} color={COLORS.main} />
+                    {indexTab === 2 &&
+                        <Text style={styles.tab}>Security</Text>
+                    }
+                </TouchableOpacity>
+            </View>
+            <>
+                {indexTab === 1 &&
+                    <PersionalInfor info={data} />
+                }
+                {indexTab === 2 &&
+                    <ChangePassword/>
+                }
+                {indexTab === 3 &&
+                    <View style={styles.wrap3}>
+                        <SpecialPI initData={data}/>
+                        <SocialLink value={data.links}/>
+                        <Professional value={data.qualificationModels}/>
+                    </View>
+                }
+            </>
+        </ScrollView>
+    );
+};
+
 const styles = StyleSheet.create({
-    PI: {
-        flex: 1,
-        backgroundColor: "white"
-    },
-    container: {
+    wrapPI: {
         padding: 16,
-        width: "100%",
-        flexDirection: "column",
-        rowGap: 16,
+        rowGap: 20
     },
-    body: {
-        rowGap: 10,
+    tabBar: {
+        flexDirection: "row",
+        columnGap: 8,
     },
-    title:{
-        fontSize: 18,
-        color: COLORS.main,
-        fontWeight: "bold",
-        borderBottomWidth: 1,
+    wraptab: {
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 8,
         paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderColor: COLORS.lightText
+        alignSelf: "flex-start",
+        borderRadius: 8,
+        height: 40,
     },
-    wrapLoading:{
-        position: "absolute", 
-        width: "100%",
-        height: "100%",
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    tab: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: COLORS.main
+    },
+    wrap3: {
+        rowGap: 30
     }
 })

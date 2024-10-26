@@ -8,7 +8,6 @@ import RNPickerSelect from 'react-native-picker-select';
 export const ComboBox = ({
     label, value, onchangeText = ()=>{}, isGender = true
 }) => {
-    const [textColor, setTextColor] = useState(COLORS.lightText)
     const [listNations, setNations] = useState([])
     useEffect(()=>{
         const fetchNation = async()=>{
@@ -38,50 +37,35 @@ export const ComboBox = ({
     }, [isGender, listNations]);
     const handleOnchangeText = (v)=>{
         onchangeText(v || value)
-        if(v !== value)
-            setTextColor("black")
     }
     return(
-        <View>
-            <Text style={styles.input}>{label}</Text>
-            <View style={styles.container}>
-                <RNPickerSelect
-                    items={listBox}
-                    onValueChange={(v)=> handleOnchangeText(v)}
-                    style={{
-                        inputAndroid: {
-                            color: textColor
-                        }
-                    }}
-                    value={value}
-                />
-            </View>
+        <View style={styles.container}>
+            <Text style={styles.label}>{label}</Text>
+            <RNPickerSelect
+                items={listBox}
+                onValueChange={(v)=> handleOnchangeText(v)}
+                style={{
+                    inputAndroid: styles.inputLabel,
+                }}
+                value={value}
+                useNativeAndroidPickerStyle={false}
+            />
         </View>
     )
 }
 const styles = StyleSheet.create({
     container: {
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        borderRadius: 90,
-    },
-    input:{
-        fontSize: 16,
-        width: "90%",
-    },
-    box: {
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        padding: 16,
-        borderBottomLeftRadius: 8,
-        borderBottomRightRadius: 8,
-        borderTopWidth: 0,
-        width: "100%",
-        maxHeight: 200,
-    },
-    items: {
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
         paddingVertical: 8
-    }
+    },
+    label:{
+        fontSize: 10,
+        color: COLORS.stroke
+    },
+    inputLabel:{
+        fontSize: 16,
+        width: "100%",
+        color: "black"
+    },
 })

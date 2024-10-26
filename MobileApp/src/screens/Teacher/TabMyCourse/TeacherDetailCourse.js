@@ -1,25 +1,26 @@
 import { Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import DefaultImg from "../../assets/images/DefaultImg.png"
-import { COLORS, commonStyles } from "../utils/constants"
-import { Tag } from "../components/Tag"
+import { COLORS, commonStyles } from "../../../utils/constants"
+import { Tag } from "../../../components/Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { formatDateTime } from "../utils/utils";
-import { useUser } from "../contexts/UserContext";
-import { CardHorizontalTeacher } from "../components/CardHorizontal";
-import { CardReview } from "../components/CardReview";
-import { ButtonIcon } from "../components/Button";
-import { CardLecture } from "../components/CardLecture";
+import { formatDateTime } from "../../../utils/utils";
+import { useUser } from "../../../contexts/UserContext";
+import { CardReview } from "../../../components/CardReview";
+import { CardLecture } from "../../../components/CardLecture";
 import { useState } from "react";
-import { CardAssignmentStudent } from "../components/CardAssignment";
+import { CardAssignmentStudent } from "../../../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
+import { CardStudentAttendance } from "../../../components/CardStudent";
+import { CardVirticalAssignmentTeacher } from "../../../components/CardVertical";
+import { CardProgress } from "../../../components/CardProgress";
+import { CardNoti } from "../../../components/CardNotification";
+import { ButtonIconLightGreen } from "../../../components/Button";
 
 const initCourse={
-    id: 1,
     img: "",
     title: "Title",
     listTags: [
@@ -117,12 +118,65 @@ const initCourse={
             date: new Date()
         },
     ],
-    teacher: {
+    attendance: [
+        {
+            idUser: 1,
+            avatar: "",
+            fullname: "NhatHa", 
+            email: "nhatha@gmail.com",
+            attended: new Date(),
+            learned: 7,
+            lectures: 12,
+            doneAsgm: 4,
+            assignment: 10
+        },
+        {
+            idUser: 2,
+            avatar: "",
+            fullname: "Hyy", 
+            email: "hyyy@gmail.com",
+            attended: new Date(),
+            learned: 5,
+            lectures: 12,
+            doneAsgm: 7,
+            assignment: 10
+        },
+        {
+            idUser: 3,
+            avatar: "",
+            fullname: "Taho", 
+            email: "Taho@gmail.com",
+            attended: new Date(),
+            learned: 9,
+            lectures: 12,
+            doneAsgm: 2,
+            assignment: 10
+        },
+    ],
+    noti: [
+        {
+            id: 1,
+            title: "Notification 1",
+            body: "body",
+            onDate: new Date(),
+        },
+        {
+            id: 2,
+            title: "Notification 2",
+            body: "body",
+            onDate: new Date(),
+        },
+        {
+            id: 3,
+            title: "Notification 3",
+            body: "body",
+            onDate: new Date(),
+        },
+    ]
 
-    },
 }
 
-export const DetailCourse = ({data = initCourse})=>{
+export const TeacherDetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
     const [showInfo, setShowInfo] = useState(true)
@@ -147,7 +201,7 @@ export const DetailCourse = ({data = initCourse})=>{
     }
     
     return(
-        <ScrollView contentContainerStyle={styles.container} key={data.id}>
+        <ScrollView contentContainerStyle={styles.container}>
             {/* Course info */}
             <View style={styles.wrapInfo}>
                 <ImageBackground
@@ -279,9 +333,19 @@ export const DetailCourse = ({data = initCourse})=>{
                     <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
                         <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(4)}>
+                        <Text style={selectBtn === 4 ? styles.selectBtn : styles.normalBtn}>Attendance</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
+                        <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(3)}>
+                        <Text style={selectBtn === 3 ? styles.selectBtn : styles.normalBtn}>Noti</Text>
+                    </TouchableOpacity>
                 </View>
                 {selectBtn === 0 ?
                     <>
+                        <ButtonIconLightGreen title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
                         {/* Course contents */}
                         {data.content.map((item)=>{
                             let checkIsShow = showSections.find(section => section.section === item.section).isShow
@@ -300,33 +364,54 @@ export const DetailCourse = ({data = initCourse})=>{
                                             <Entypo name="chevron-down" size={20} color="black" />
                                         }
                                     </TouchableOpacity>
-                                    <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
+                                    <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0, rowGap: 0}]}>
                                         {item.lecture.map(item => 
                                             <CardLecture data={item}/>
                                         )}
+                                        <TouchableOpacity style={styles.addLec}>
+                                            <Entypo name="plus" size={14} color={COLORS.main} />
+                                            <Text style={styles.addLecText}>Add new lecture</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
                             )}
                         )}
                     </>
-                :   
-                    <View>
-                        {/* Course assignments */}
-                        <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
+                : selectBtn === 1 ?
+                    <>
+                        <ButtonIconLightGreen title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                        <View style={styles.wrapShow}>
                             {data.test.map(item => 
-                                <CardAssignmentStudent data={item} key={item.id}/>
+                                <CardVirticalAssignmentTeacher key={item.id}/>
                             )}
                         </View>
-                        <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
-                            <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
-                        </TouchableOpacity>
+                    </>
+                : selectBtn === 2 ?   
+                    <View style={styles.wrapShow}>
+                        {data.attendance.map(item => 
+                            <CardProgress data={item} key={item.id}/>
+                        )}
+                    </View>
+                : selectBtn === 3 ?    
+                    <>
+                        <ButtonIconLightGreen title={"Add new noti"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                        <View style={styles.wrapShow}>
+                            {data.noti.map(item => 
+                                <CardNoti data={item} key={item.id}/>
+                            )}
+                        </View>
+                    </>
+                :
+                    <View style={styles.wrapShow}>
+                        {data.attendance.map(item => 
+                            <CardStudentAttendance data={item} key={item.id}/>
+                        )}
                     </View>
                 }
             </View>         
         </ScrollView>
     )
 }
-
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{
@@ -389,7 +474,8 @@ const styles = StyleSheet.create({
     },
     wrapShow: {
         overflow: "hidden",
-        height: "auto"
+        height: "auto",
+        rowGap: 4
     },
     showAll:{
         alignItems: "center"
@@ -496,5 +582,17 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: COLORS.main
     },
+    addLec: {
+        padding: 12,
+        backgroundColor: "white",
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 4
+    },
+    addLecText:{
+        fontSize: 14,
+        color: COLORS.main,
+        fontWeight: "bold"
+    }
 })
 

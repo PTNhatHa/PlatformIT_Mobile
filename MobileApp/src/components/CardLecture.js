@@ -26,11 +26,10 @@ export const CardLecture = ({data = initLecture})=>{
 const styles = StyleSheet.create({
     container: {
         padding: 12,
-        borderWidth: 1,
+        borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        borderRadius: 8,
-        marginBottom: 10,
-        columnGap: 10
+        columnGap: 10,
+        backgroundColor: "white"
     },
     title:{
         fontSize: 18,

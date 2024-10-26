@@ -1,10 +1,11 @@
-import { Alert, StyleSheet, View } from "react-native"
-import { TextInputIcon } from "../components/TextInputField"
+import { Alert, StyleSheet, Text, View } from "react-native"
+import { TextInputIcon, TextInputLabel } from "./TextInputField"
 import { useState } from "react"
 import Feather from '@expo/vector-icons/Feather';
-import { ButtonGreen, ButtonWhite } from "../components/Button";
+import { ButtonGreen, ButtonWhite } from "./Button";
 import { changePassword } from "../services/user";
 import { useUser } from "../contexts/UserContext";
+import { commonStyles } from "../utils/constants";
 
 export const ChangePassword = ({navigation})=>{
     const {state, dispatch} = useUser()
@@ -17,12 +18,14 @@ export const ChangePassword = ({navigation})=>{
         setErrorConfirm("")
     }
     const handleCofirm = (v)=>{
+        console.log(newPass === v);
         setConfirmPass(v)
         if(newPass === v){
             setErrorConfirm(null)
         } else {
             setErrorConfirm("Not match with password")
         }
+        console.log(errorConfirm);
     }
     const handleChangePassword = ()=>{
         if(!newPass || !confirmPass){
@@ -30,6 +33,7 @@ export const ChangePassword = ({navigation})=>{
         }else
         if(!errorConfirm)
         {
+            console.log("==>zooo");
             const saveChange = async()=>{
                 try{
                     const response = await changePassword(oldPass, newPass, state.idUser)
@@ -37,7 +41,7 @@ export const ChangePassword = ({navigation})=>{
                         setErrorConfirm(response.data)
                     }else if(response.success){
                         Alert.alert("Change Password", response.data)
-                        navigation.goBack()
+                        handleDiscard()
                     }
                 } catch(e){
                     console.log("==>Error: ", e);
@@ -46,32 +50,38 @@ export const ChangePassword = ({navigation})=>{
             saveChange()
         }
     }
+    const handleDiscard = ()=>{
+        setOldPass(null)
+        setNewPass(null)
+        setConfirmPass(null)
+    }
     return(
         <View style={styles.container}>
-            <TextInputIcon 
+            <Text style={commonStyles.title}>Change Password</Text>
+            <TextInputLabel 
+                label={"Old password"} 
                 value={oldPass} 
                 placeholder={"Your old password"}
-                icon={<Feather name="lock" size={24} color="black" />}
                 onchangeText={handleOnChangeOldPass}
                 isPassword={true}
             />
-            <TextInputIcon 
+            <TextInputLabel 
+                label={"New password"} 
                 value={newPass} 
                 placeholder={"Your new password"}
-                icon={<Feather name="lock" size={24} color="black" />}
                 onchangeText={setNewPass}
                 isPassword={true}
             />
-            <TextInputIcon 
+            <TextInputLabel 
+                label={"Confirm new password"} 
                 value={confirmPass} 
                 placeholder={"Confirm your new password"}
-                icon={<Feather name="unlock" size={24} color="black" />}
                 onchangeText={handleCofirm}
                 isPassword={true}
                 error={errorConfirm}
             />
             <View style={styles.btn}>
-                <ButtonWhite title={"Cancel"} action={() => navigation.goBack()}/>
+                <ButtonWhite title={"Discard Changes"} action={handleDiscard}/>
                 <ButtonGreen title={"Save change"} action={handleChangePassword}/>
             </View>
         </View>
@@ -79,13 +89,15 @@ export const ChangePassword = ({navigation})=>{
 }
 const styles = StyleSheet.create({
     container: {
+        ...commonStyles.shadow,
         rowGap: 16,
         padding: 16,
         backgroundColor: "white",
-        flex: 1
+        flex: 1,
+        borderRadius: 8
     },
     btn: {
-        columnGap: 16,
-        flexDirection: "row"
+        flexDirection: "row",
+        justifyContent: "space-between"
     }
 })

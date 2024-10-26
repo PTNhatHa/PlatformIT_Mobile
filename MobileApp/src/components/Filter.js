@@ -223,7 +223,8 @@ export const FilterCenter = ({
     const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
-        { label: "Name", value: 1},
+        { label: "Name Center", value: "centerName"},
+        { label: "Number of Course", value: "coursesCount"},
     ]
     const listSortby2 = [
         { label: "None", value: 0},
@@ -349,7 +350,8 @@ export const FilterTeacher = ({
     const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
-        { label: "Name", value: 1},
+        { label: "Name", value: "name"},
+        { label: "Number of Course", value: "coursesCount"},
     ]
     const listSortby2 = [
         { label: "None", value: 0},

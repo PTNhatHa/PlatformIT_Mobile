@@ -1,15 +1,16 @@
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Text, View } from "react-native"
 import { TextInputLabel } from "./TextInputField"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
 import { ComboBox } from "./ComboBox"
 import { ButtonGreen, ButtonWhite } from "./Button"
 import Img from "../../assets/images/BoyIT.png"
 import Feather from '@expo/vector-icons/Feather';
-import { COLORS } from "../utils/constants"
+import { COLORS, commonStyles } from "../utils/constants"
 import { TouchableOpacity } from "react-native"
-import { useUser } from "../contexts/UserContext"
-import { updateUserBasicPI } from "../services/user"
+import { SET_INFO, useUser } from "../contexts/UserContext"
+import { changeAvatar, getUserInfo, updateUserBasicPI } from "../services/user"
+import * as DocumentPicker from 'expo-document-picker';
 
 const init = {
     "idUser": null,
@@ -31,8 +32,13 @@ const init = {
     "links": null,
     "qualificationModels": null
 }
-export const PersionalInfor = ({navigation, info = init})=>{
+export const PersionalInfor = ({info = init})=>{
     const {state, dispatch} = useUser()
+    const [avata, setAvata] = useState({
+        uri: info.avatar,
+        name: 'avatar.png',
+        type: 'image/png' 
+    })
     const [name, setName] = useState(info.fullName)
     const [phoneNumber, setPhoneNumber] = useState(info.phoneNumber)
     const [email, setEmail] = useState(info.email)
@@ -40,6 +46,20 @@ export const PersionalInfor = ({navigation, info = init})=>{
     const [gender, setGender] = useState(info.gender)
     const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
+    const [isChangeAva, setIsChangeAva] = useState(false)
+    useEffect(()=>{
+        setAvata({
+            uri: info.avatar,
+            name: 'avatar.png',
+            type: 'image/png' 
+        })
+        setName(info.fullName),
+        setPhoneNumber(info.phoneNumber)
+        setBirthday(info.dob)
+        setGender(info.gender)
+        setNationality(info.nationality)
+    }, [info])
+
     const handleUpdateBasicPI = async()=>{
         try{
             setIsLoading(true)
@@ -48,6 +68,17 @@ export const PersionalInfor = ({navigation, info = init})=>{
                 Alert.alert("Warning", response.data)
             } else{
                 Alert.alert("Notification", response)
+                dispatch({ type: SET_INFO, payload: { "fullname": name }})
+            }
+            if(isChangeAva){
+                const responseAva = await changeAvatar(state.idUser, avata)
+                if(responseAva.error){
+                    Alert.alert("Warning", responseAva.data)
+                } else{
+                    Alert.alert("Notification", responseAva)
+                    const info = await getUserInfo(state.idUser)
+                    dispatch({ type: SET_INFO, payload: { "avatar": info.avatar }})
+                }
             }
         } catch(e){
             console.log("Error handleUpdateBasicPI", e);
@@ -55,36 +86,60 @@ export const PersionalInfor = ({navigation, info = init})=>{
             setIsLoading(false)
         }
     }
+    const pickFile = async()=>{
+        setIsChangeAva(true)
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: ['image/*'],
+                copyToCacheDirectory: true,
+            })
+            if(result){
+                setAvata({
+                    uri: result.assets[0].uri,
+                    name: 'avatar.png',
+                    type: result.assets[0].mimeType 
+                })
+            }
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
     return(
         <>
             <View style={styles.PI}>
-                <ScrollView contentContainerStyle={styles.container}>
-                    <View style={styles.avataWrapper}>
-                        <View style={styles.avataInner}>
-                            <Image style={styles.avataImage} source={state.avatar}/>
-                            <TouchableOpacity style={styles.avataCamera}>
-                                <Feather name="camera" size={20} color={COLORS.main} />
-                            </TouchableOpacity>
-                        </View>
+                <Text style={commonStyles.title}>Personal Infomation</Text>
+                <View style={styles.avataWrapper}>
+                    <View style={styles.avataInner}>
+                        <Image style={styles.avataImage} source={{uri: avata.uri}}/>
+                        <TouchableOpacity style={styles.avataCamera} onPress={pickFile}>
+                            <Feather name="camera" size={20} color={COLORS.main} />
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.body}>
-                        <TextInputLabel label={"Name"} value={name} onchangeText={setName}/>
-                        <TextInputLabel label={"Phone Number"} value={phoneNumber} onchangeText={setPhoneNumber} keyboardType={"phone-pad"}/>
-                        <TextInputLabel label={"Email"} value={email} onchangeText={setEmail} keyboardType={"email-address"}/>
-                        <DateTimePickerComponent label='Birthday' value={birthday} setValue={setBirthday}/>
-                        <ComboBox label={"Gender"} value={gender} onchangeText={setGender}/>
-                        <ComboBox label={"Nationality"} value={nationality} onchangeText={setNationality} isGender={false}/>
-                    </View>
-                    <View style={styles.bottom}>
-                        <ButtonWhite title={"Change Password"} action={()=> navigation.navigate("Change password")}/>
-                        <ButtonGreen title={"Save Change"} action={handleUpdateBasicPI}/>
-                    </View>
-                </ScrollView>
+                </View>
+                <View style={styles.body}>
+                    <TextInputLabel label={"Name"} value={name} onchangeText={setName}/>
+                    <TextInputLabel label={"Phone Number"} value={phoneNumber} onchangeText={setPhoneNumber} keyboardType={"phone-pad"}/>
+                    <TextInputLabel label={"Email"} value={email} onchangeText={setEmail} keyboardType={"email-address"}/>
+                    <DateTimePickerComponent label='Birthday' value={birthday} setValue={setBirthday}/>
+                    <ComboBox label={"Gender"} value={gender} onchangeText={setGender}/>
+                    <ComboBox label={"Nationality"} value={nationality} onchangeText={setNationality} isGender={false}/>
+                </View>
+                <View style={styles.bottom}>
+                    <ButtonWhite title={"Discard Changes"}/>
+                    <ButtonGreen title={"Save Changes"} action={handleUpdateBasicPI}/>
+                </View>
             </View>
             {isLoading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
+                <Modal
+                    visible={isLoading}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <View style={styles.wrapLoading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                </Modal>
             }  
         </>
     )
@@ -92,14 +147,11 @@ export const PersionalInfor = ({navigation, info = init})=>{
 
 const styles = StyleSheet.create({
     PI: {
-        // flex: 1,
-        backgroundColor: "white"
-    },
-    container: {
+        ...commonStyles.shadow,
+        backgroundColor: "white",
         padding: 16,
-        width: "100%",
-        flexDirection: "column",
-        rowGap: 16,
+        rowGap: 30,
+        borderRadius: 8
     },
     body: {
         rowGap: 10,
@@ -131,7 +183,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.main,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white"
+        backgroundColor: COLORS.lightText
     },
     wrapLoading:{
         position: "absolute", 

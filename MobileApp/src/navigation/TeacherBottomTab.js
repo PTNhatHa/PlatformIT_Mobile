@@ -6,13 +6,17 @@ import { COLORS } from "../utils/constants";
 import { Home } from "../screens/Home";
 import { TeacherPI } from "../screens/Teacher/TabAccount/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ChangePassword } from "../screens/ChangePassword";
+import { ChangePassword } from "../components/ChangePassword";
 import { TeacherAccount } from "../screens/Teacher/TabAccount/TeacherAccount";
 import { TeacherHome } from "../screens/Teacher/TabHome/TeacherHome";
-import { StudentViewAll, TeacherViewAll, ViewAll } from "../screens/ViewAll";
+import { ScreenViewAll, StudentViewAll, TeacherViewAll, ViewAll } from "../screens/ViewAll";
 import { DetailCourse } from "../screens/DetailCourse";
 import { DetailCenter } from "../screens/DetailCenter";
 import { DetailTeacher } from "../screens/DetailTeacher";
+import { TeacherAllCourse } from "../screens/Teacher/TabMyCourse/TeacherAllCourse";
+import { TeacherDetailCourse } from "../screens/Teacher/TabMyCourse/TeacherDetailCourse";
+import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherDetailAttendance";
+import { NotificationScreen } from "../screens/Notification";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -28,7 +32,7 @@ const StackHomeScreen = ()=>{
             />
             <StackHome.Screen
                 name="View All"
-                component={TeacherViewAll}
+                component={ScreenViewAll}
             />
             <StackHome.Screen
                 name="Detail Course"
@@ -43,6 +47,47 @@ const StackHomeScreen = ()=>{
                 component={DetailTeacher}
             />
         </StackHome.Navigator>
+    )
+}
+
+const StackMyCourseScreen = ()=>{
+    const StackMyCourse = createNativeStackNavigator()
+    return(
+        <StackMyCourse.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackMyCourse.Screen
+                name="MyCourse"
+                component={TeacherAllCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail My Course"
+                component={TeacherDetailCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail Attendance"
+                component={TeacherDetailAttendance}
+            />
+
+        </StackMyCourse.Navigator>
+    )
+}
+
+const StackNotiScreen = ()=>{
+    const StackAccount = createNativeStackNavigator()
+    return(
+        <StackAccount.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackAccount.Screen
+                name="Notification"
+                component={NotificationScreen}
+            />
+        </StackAccount.Navigator>
     )
 }
 
@@ -101,9 +146,9 @@ export const TeacherBottomTab = ()=>{
             })}
         >
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }} />
-            <Tab.Screen name="My Course" component={Home} />
+            <Tab.Screen name="My Course" component={StackMyCourseScreen} />
             <Tab.Screen name="My Lecture" component={Home} />
-            <Tab.Screen name="Noti" component={Home} />
+            <Tab.Screen name="Noti" component={StackNotiScreen} />
             <Tab.Screen name="Chat" component={Home} />
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
         </Tab.Navigator>

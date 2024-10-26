@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "MobilePlait",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -15,6 +16,12 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.plait.mobileapp",
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "42:80:33:E7:8C:2D:31:75:0C:98:03:C8:2B:0F:BF:8A:F3:A5:E2:18"  
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -22,6 +29,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b6dd9eef-5f1b-45ba-83cf-bda1cdd0143f",
+        "androidClientId": "605777517558-ojtuhupen9p211juela7o4k8gb4sf378.apps.googleusercontent.com"
+      }
+    },
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin"
+      ]
+    ]
   }
 }

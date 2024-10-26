@@ -7,7 +7,7 @@ export const TextInputIcon = ({
 }) => {
     return(
         <View>
-            <View style={styles.container}>
+            <View style={styles.containerIcon}>
                 {icon}
                 {/* <Image source={icon}/> */}
                 <TextInput 
@@ -25,31 +25,33 @@ export const TextInputIcon = ({
 }
 
 export const TextInputLabel = ({
-    label, value, placeholder, onchangeText = ()=>{}, keyboardType
+    label, value, placeholder, onchangeText = ()=>{}, keyboardType, isPassword, error, isEditable = true
 }) => {
-    const [textColor, setTextColor] = useState(COLORS.lightText)
     const handleOnchangeText = (v)=>{
         onchangeText(v)
-        setTextColor("black")
     }
     return(
-        <View>
-            <Text style={styles.input}>{label}</Text>
+        <>
             <View style={styles.container}>
+                <Text style={styles.label}>{label}</Text>
                 <TextInput 
-                    style={[styles.inputLabel, {color: textColor}]}
+                    style={[styles.inputLabel]}
                     value={value}
                     placeholder={placeholder}
                     onChangeText={(v)=>handleOnchangeText(v)}
                     keyboardType={keyboardType || "default"}
+                    multiline={label === "Bio"}
+                    editable={label !== "Affiliated Center" && label !== "Email" && isEditable}
+                    secureTextEntry={isPassword}
                 />
             </View>
-        </View>
+            {error && <Text style={styles.error}>{error}</Text>}
+        </>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
+    containerIcon: {
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 90,
@@ -57,6 +59,13 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         width: "100%",
         flexDirection: "row",
+        columnGap: 8,
+    },
+    container: {
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText,
+        paddingVertical: 8,
+        width: "100%",
         columnGap: 8,
     },
     input:{
@@ -68,6 +77,11 @@ const styles = StyleSheet.create({
     },
     inputLabel:{
         fontSize: 16,
-        width: "100%"
+        width: "100%",
+        color: "black"
     },
+    label: {
+        fontSize: 10,
+        color: COLORS.stroke
+    }
 })

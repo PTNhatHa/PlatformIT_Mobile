@@ -3,9 +3,15 @@ import { COLORS } from "../utils/constants"
 import { Tag, TagNoColor } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native";
+import { ButtonIcon } from "./Button";
+import DefaultImg from "../../assets/images/DefaultImg.png"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 
 const initCourse={
     id: 1,
@@ -27,7 +33,7 @@ const initCourse={
 export const CardHorizontalCourse = ({data = initCourse})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course")} key={data.id}>
             <Image source={data.img} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
@@ -67,22 +73,29 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
 }
 
 const initCenter={
-    img: "",
-    title: "Title",
-    listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
-    ],
+    // img: "",
+    // title: "Title",
+    // listTags: [
+    //     { id: 1, value: "Web developer"},
+    //     { id: 2, value: "Backend"},
+    //     { id: 3, value: "Frontend"},
+    // ],
+    idCenter: 1,
+    centerName: "HAHYWU CENTER",
+    description: null,
+    avatarPath: "",
+    studentsCount: 2,
+    coursesCount: 1
 }
 export const CardHorizontalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center")}>
-            <Image source={data.img} style={styles.img}/>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
+            <Image source={data.img || DefaultImg} style={styles.img}/>
             <View>
-                <Text style={styles.title}>{data.title}</Text>
-                {data.listTags.length > 0 && 
+                <Text style={styles.title}>{data.centerName}</Text>
+                <Text style={styles.dataText}>Description: {data.description}</Text>
+                {data.listTags?.length > 0 && 
                     <View style={styles.tags}>
                         <Tag label={data.listTags[0].value}/>
                         {data.listTags.length > 1 && 
@@ -97,19 +110,33 @@ export const CardHorizontalCenter = ({data = initCenter})=>{
 }
 
 const initTeacher={
-    img: "",
-    name: "Name",
-    description: "Description"
+    // img: "",
+    // name: "Name",
+    // description: "Description"
+    "idUser": 6,
+    "name": "Phan Trần Nhật Hạ",
+    "teachingMajor": "Software Developer; FE; UI, UX Designer",
+    "avatarPath": "",
+    "coursesCount": 0
 }
-export const CardHorizontalTeacher = ({data = initTeacher})=>{
+export const CardHorizontalTeacher = ({data = initTeacher, isBtn = false})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")}>
-            <Image source={data.img} style={styles.avata}/>
+        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")} key={data.idUser}>
+            <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
-                <Text style={styles.title}>{data.name}</Text>
-                <Text style={styles.dataText}>{data.description}</Text>
+                <Text style={[styles.title, {textAlign: "center"}]}>{data.name}</Text>
+                <Text style={[styles.dataText, {textAlign: "center", color: COLORS.main}]}>{data.teachingMajor}</Text>
+                {data.coursesCount.length > 0 ?
+                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
+                    : ""
+                }
             </View>
+            {isBtn &&
+            <View>
+                <ButtonIcon title={"Chat"} icon={<Ionicons name="chatbubble-outline" size={16} color={COLORS.main} />}/>
+            </View>
+            }
         </TouchableOpacity>
     )
 }
@@ -192,7 +219,8 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         rowGap: 6,
         width: 160,
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: "white"
     },
     img: {
         width: "100%",
@@ -245,7 +273,8 @@ const styles = StyleSheet.create({
         rowGap: 6,
         width: 150,
         alignItems: "center",
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: "white"
     },
     avata: {
         borderWidth: 1,

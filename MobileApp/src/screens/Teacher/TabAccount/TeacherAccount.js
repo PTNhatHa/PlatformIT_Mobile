@@ -8,7 +8,7 @@ export const TeacherAccount = ({navigation})=>{
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={state.avatar} style={styles.avataImage}/>
+                <Image source={{uri: state.avatar}} style={styles.avataImage}/>
                 <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         borderRadius: 90,
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        resizeMode: 'contain',
+        resizeMode: "cover",
     },
     text:{
         fontSize: 16,
