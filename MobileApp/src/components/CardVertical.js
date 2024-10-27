@@ -12,63 +12,74 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const initCourse={
-    id: 1,
-    img: "",
-    title: "Title",
-    listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
-    ],
-    startCourse: new Date(),
-    endCourse: new Date(),
-    startRegist: new Date(),
-    endRegist: new Date(),
-    isRegist: true,
-    cost: 120,
-    costSale: 100,
-    nameCenter: "Center HAHYWU",
+    "idCourse": 3,
+    "courseTitle": "Banh Bo",
+    "pathImg": null,
+    "courseStartDate": "2024-10-05T08:22:25.752581",
+    "courseEndDate": "2025-10-15T08:22:25.752581",
+    "registStartDate": "2024-10-05T13:29:21.8533333",
+    "registEndDate": "2025-10-05T18:22:25.752581",
+    "price": 10,
+    "tags": [
+      "C#",
+      "Java"
+    ]
 }
 export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
     const navigation = useNavigation()
+    const [showTags, setShowTags] = useState([])
+    useEffect(()=>{
+        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 95
+        let totalWidth = 0
+        let selectTags = []
+        for(let i =0; i < data.tags.length; i++){
+            const tag = data.tags[i]
+            const tagWidth = tag.length * 8 + 16
+            if(totalWidth + tagWidth > cardWidth) break
+            selectTags.push(tag)
+            totalWidth += tagWidth
+        }
+        setShowTags(selectTags)
+    }, [data.tags])
     return(
         <TouchableOpacity 
             style={styles.container} 
             onPress={isTeacher ? ()=> navigation.navigate("Detail My Course") : ()=> navigation.navigate("Detail Course")}
-            key={data.id}    
+            key={data.idCourse}    
         >
-            <Image source={data.img} style={styles.img}/>
+            <Image source={data.pathImg} style={styles.img}/>
             <View style={{ flex: 1}}>
-                <Text style={styles.title}>{data.title}</Text>
-                {data.listTags?.length > 0 && 
+                <Text style={styles.title}>{data.courseTitle}</Text>
+                {data.tags.length > 0 && 
                     <View style={styles.content}>
-                        <Tag label={data.listTags[0].value}/>
-                        {data.listTags.length > 1 && 
-                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        {showTags.map(item=>
+                            <Tag label={item} key={item}/>
+                        )}
+                        {data.tags.length > showTags.length && 
+                            <Text style={styles.tagsText}>+{data.tags.length - showTags.length}</Text>
                         }
-                        
                     </View>
                 }
                 <View style={styles.content}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
-                        {formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}
+                        {formatDateTime(data.courseStartDate)} - {formatDateTime(data.courseEndDate)}
                     </Text>
                 </View>
                 <View style={styles.content}>
-                    {data.startRegist &&
+                    {data.registStartDate &&
                         <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
                     }
-                    {data.startRegist &&
+                    {data.registStartDate &&
                         <Text style={styles.dataText}>
                             {data.isRegist ? "Registing" : 
-                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                                `${formatDateTime(data.registStartDate)} - ${formatDateTime(data.registEndDate)}`}
                         </Text>
                     }
                 </View>
                 <View style={styles.wrapCost}>
-                    <Text style={styles.costSale}>${data.costSale}</Text>
-                    <Text style={styles.cost}>{data.cost}</Text>
+                    <Text style={styles.costSale}>${data.price}</Text>
+                    <Text style={styles.cost}>{data.price}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -122,7 +133,7 @@ export const CardVirticalCenter = ({data = initCenter})=>{
                 {data.listTagCourses?.length > 0 && 
                     <View style={styles.content}>
                         {showTags.map(item=>
-                            <Tag label={item.tagName}/>
+                            <Tag label={item.tagName} key={item.idTag}/>
                         )}
                         {data.listTagCourses.length > showTags.length && 
                             <Text style={styles.tagsText}>+{data.listTagCourses.length - showTags.length}</Text>

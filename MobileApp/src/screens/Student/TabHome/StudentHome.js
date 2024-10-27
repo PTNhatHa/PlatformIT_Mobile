@@ -4,6 +4,7 @@ import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } fro
 import { useEffect, useState } from "react"
 import { getAllCenterCards } from "../../../services/center"
 import { getAllTeacherCards } from "../../../services/user"
+import { getAllCourseCards } from "../../../services/course"
 
 const initCourse=[
     {
@@ -54,59 +55,20 @@ const initCourse=[
     },
 ]
 
-const initCenter=[
-    {
-        id: 1,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    {
-        "idCenter": 1,
-        "centerName": "HAHYWU CENTER",
-        "description": null,
-        "avatarPath": "",
-        "studentsCount": 2,
-        "coursesCount": 1
-    },
-]
-
-const initTeacher=[
-    {
-        id: 1,
-        img: "",
-        name: "Nhatha",
-        description: "Description"
-    },
-    {
-        id: 2,
-        img: "",
-        name: "Taho",
-        description: "Description"
-    },
-    {
-        id: 3,
-        img: "",
-        name: "Hyy",
-        description: "Description"
-    },
-]
-
 export const StudentHome = ({navigation})=>{
     const [loading, setLoading] = useState(true);
+    const [dataCourse, setDataCourse] = useState([])
     const [dataCenter, setDataCenter] = useState([])
     const [dataTeacher, setDataTeacher] = useState([])
 
     const getAllCard = async ()=>{
         try {
+            const responseCourse = await getAllCourseCards()
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
-            setDataCenter(responseCenter || initCenter)
-            setDataTeacher(responseTeacher || initTeacher)
+            setDataCourse(responseCourse)
+            setDataCenter(responseCenter)
+            setDataTeacher(responseTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -139,9 +101,9 @@ export const StudentHome = ({navigation})=>{
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={initCourse}
+                    data={dataCourse}
                     horizontal={true}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.idCourse.toString()}
                     renderItem={({ item }) => <CardHorizontalCourse data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}

@@ -8,6 +8,7 @@ import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter"
 import { getAllCenterCards } from "../services/center";
 import { getAllTeacherCards } from "../services/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAllCourseCards } from "../services/course";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -25,7 +26,7 @@ const ViewAllRender = ({data = [], type})=>{
     useEffect(() => {
         const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem);
         setCurrentData(newData);
-    }, [data, indexPage]);
+    }, [type, indexPage]);
 
     const handleChangeIndex = (isNext)=>{
         let index = 0
@@ -55,7 +56,17 @@ const ViewAllRender = ({data = [], type})=>{
         }
     }
     const renderFlatlist = (renderItem)=>{
-        if(type === "Center"){
+        if(type === "Course"){
+            return(
+                <FlatList
+                    data={currentData}
+                    keyExtractor={(item) => item.idCourse.toString()}
+                    renderItem={renderItem}
+                    style={styles.wrapList}
+                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                />
+            )
+        } else if(type === "Center"){
             return(
                 <FlatList
                     data={currentData}
@@ -65,7 +76,7 @@ const ViewAllRender = ({data = [], type})=>{
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />
             )
-        }if(type === "Teacher"){
+        } else if(type === "Teacher"){
             return(
                 <FlatList
                     data={currentData}
@@ -121,10 +132,11 @@ const ViewAllRender = ({data = [], type})=>{
         </View>
     )
 }
-const renderSceneStudent = ({ route, initCourse, dataCenter, dataTeacher})=>{
+const renderSceneStudent = ({ route, dataCourse, dataCenter, dataTeacher})=>{
+
     switch(route.key){
         case 'first':
-            return <ViewAllRender data={initCourse} type={"Course"}/>
+            return <ViewAllRender data={dataCourse} type={"Course"}/>
         case 'second':
             return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
@@ -133,10 +145,10 @@ const renderSceneStudent = ({ route, initCourse, dataCenter, dataTeacher})=>{
             return null;
     }
 }
-const renderSceneTeacher = ({ route, initCourse, dataCenter, dataTeacher, initAssignment})=>{
+const renderSceneTeacher = ({ route, dataCourse, dataCenter, dataTeacher, initAssignment})=>{
     switch(route.key){
         case 'first':
-            return <ViewAllRender data={initCourse} type={"Course"}/>
+            return <ViewAllRender data={dataCourse} type={"Course"}/>
         case 'second':
             return <ViewAllRender data={dataCenter} type={"Center"}/>
         case 'third':
@@ -159,101 +171,6 @@ const renderTabBar = (props)=>{
         />
     )
 }
-
-const Course=[
-    {
-        id: 1,
-        img: "",
-        title: "Title1",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 2,
-        img: "",
-        title: "Title2",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: false,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 3,
-        img: "",
-        title: "Title3",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 4,
-        img: "",
-        title: "Title4",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 5,
-        img: "",
-        title: "Title5",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: false,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 6,
-        img: "",
-        title: "Title6",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-]
 
 const Assignment = [
     {
@@ -417,10 +334,14 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
     
     const getAllCard = async ()=>{
         try {
+            const responseCourse = await getAllCourseCards()
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
+            setInitCourse(responseCourse)
             setInitCenter(responseCenter)
             setInitTeacher(responseTeacher)
+
+            setDataCourse(responseCourse)
             setDataCenter(responseCenter)
             setDataTeacher(responseTeacher)
         } catch (error) {
@@ -474,14 +395,14 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
             {isTeacher === true ?
                 <TabView
                     navigationState={{index, routes}}
-                    renderScene={({route})=> renderSceneTeacher({ route, initCourse, dataCenter, dataTeacher, initAssignment})}
+                    renderScene={({route})=> renderSceneTeacher({ route, dataCourse, dataCenter, dataTeacher, initAssignment})}
                     onIndexChange={setIndex}
                     renderTabBar={renderTabBar}
                 />
             :
                 <TabView
                     navigationState={{index, routes}}
-                    renderScene={({route})=> renderSceneStudent({ route, initCourse, dataCenter, dataTeacher})}
+                    renderScene={({route})=> renderSceneStudent({ route, dataCourse, dataCenter, dataTeacher})}
                     onIndexChange={setIndex}
                     renderTabBar={renderTabBar}
                 />
