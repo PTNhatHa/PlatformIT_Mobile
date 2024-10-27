@@ -26,7 +26,7 @@ const ViewAllRender = ({data = [], type})=>{
     useEffect(() => {
         const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem);
         setCurrentData(newData);
-    }, [type, indexPage]);
+    }, [data, indexPage]);
 
     const handleChangeIndex = (isNext)=>{
         let index = 0
@@ -256,6 +256,34 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
         changeIndex()
     }, [index])
 
+    // Sort
+    useEffect(()=>{
+        if(dataSortCourse.sortby && dataSortCourse.sortway){
+            let newData = [...dataCourse]
+            newData.sort((a,b) => {
+                const field = dataSortCourse.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if(dataSortCourse.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    if(aValue === null && bValue === null) return 0
+                    return aValue.localeCompare(bValue)
+                }
+                if(dataSortCourse.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    if(aValue === null && bValue === null) return 0
+                    return bValue.localeCompare(aValue);
+                }
+                return 0
+            })
+            setDataCourse(newData)
+        }
+    }, [index, search, dataSortCourse])
+
     useEffect(()=>{
         if(dataSortCenter.sortby && dataSortCenter.sortway){
             let newData = [...dataCenter]
@@ -309,9 +337,19 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
         }
     }, [index, search, dataSortTeacher])
 
+    // Search
     const handleSearch = async (txt, index)=>{
         setSearch(txt)
         let newData = []
+        if(index === 0){
+            newData = initCourse.filter(course => {
+                return Object.values(course).some(item =>
+                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
+                )
+            })
+            setDataCourse(newData)
+            await AsyncStorage.setItem('searchCourse', txt)
+        }
         if(index === 1){
             newData = initCenter.filter(center => {
                 return Object.values(center).some(item =>
