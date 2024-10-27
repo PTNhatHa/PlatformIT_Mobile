@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -88,21 +88,44 @@ const initCenter={
     "description": null,
     "avatarPath": "",
     "studentsCount": 2,
-    "coursesCount": 1
+    "coursesCount": 1,
+    listTagCourses: [
+        {
+          "idTag": 1,
+          "tagName": "C#",
+          "courseCount": 7
+        },
+      ]
 }
 export const CardVirticalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
+    const [showTags, setShowTags] = useState([])
+    useEffect(()=>{
+        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 95 - 10
+        let totalWidth = 0
+        let selectTags = []
+        for(let i =0; i < data.listTagCourses.length; i++){
+            const tag = data.listTagCourses[i]
+            const tagWidth = tag.tagName.length * 8 + 16
+            if(totalWidth + tagWidth > cardWidth) break
+            selectTags.push(tag)
+            totalWidth += tagWidth
+        }
+        setShowTags(selectTags)
+    }, [data.listTagCourses])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
             <Image source={data.avatarPath} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
                 <Text style={styles.dataText}>Description: {data.description}</Text>
-                {data.listTags?.length > 0 && 
+                {data.listTagCourses?.length > 0 && 
                     <View style={styles.content}>
-                        <Tag label={data.listTags[0].value}/>
-                        {data.listTags.length > 1 && 
-                            <Text style={styles.tagsText}>+{data.listTags.length - 1}</Text>
+                        {showTags.map(item=>
+                            <Tag label={item.tagName}/>
+                        )}
+                        {data.listTagCourses.length > showTags.length && 
+                            <Text style={styles.tagsText}>+{data.listTagCourses.length - showTags.length}</Text>
                         }
                     </View>
                 }
@@ -251,7 +274,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         columnGap: 2, 
-        minHeight: 13
+        minHeight: 13,
+        overflow: "hidden"
     },
     dataText: {
         fontSize: 12,
