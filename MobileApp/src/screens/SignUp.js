@@ -17,20 +17,22 @@ export default SignUp = ({navigation}) => {
     const [loading, setLoading] = useState(false);
 
     const [check, setCheck] = useState(false)
-    const [name, setName] = useState("Center wtfnhiuzay")
+    const [name, setName] = useState(null)
     const [errorName, setErrorName] = useState(null)
-    const [email, setEmail] = useState("wtfnhiuzay@snapmail.cc")
+    const [email, setEmail] = useState(null)
     const [errorEmail, setErrorEmail] = useState(null)
-    const [username, setUsername] = useState("wtfnhiuzay")
+    const [username, setUsername] = useState(null)
     const [errorUsername, setErrorUsername] = useState(null)
-    const [password, setPassword] = useState("wtfnhiuzay")
+    const [password, setPassword] = useState(null)
     const [errorPassword, setErrorPassword] = useState(null)
-    const [confirmPassword, setConfirmPassword] = useState("wtfnhiuzay")
+    const [confirmPassword, setConfirmPassword] = useState(null)
     const [errorConfirm, setErrorConfirm] = useState(null)
     const [tin, setTin] = useState("")
     const [errorTin, setErrorTin] = useState(null)
-    const [centerName, setCenterName] = useState("wtfnhiuzay")
+    const [centerName, setCenterName] = useState(null)
     const [errorCenterName, setErrorCenterName] = useState(null)
+    const [centerBio, setCenterBio] = useState(null)
+    const [errorCenterBio, setErrorCenterBio] = useState(null)
 
     const [isVerify, setIsVerify] = useState(false)
     const [otp, setOtp] = useState(null)
@@ -69,6 +71,11 @@ export default SignUp = ({navigation}) => {
         setErrorCenterName(null)
         if(!v) setErrorCenterName("Require!")
     }
+    const handleOnchangeCenterBio = (v)=>{
+        setCenterBio(v)
+        setErrorCenterBio(null)
+        if(!v) setErrorCenterBio("Require!")
+    }
     const handleCofirm = (v)=>{
         setConfirmPassword(v)
         if(password === v){
@@ -104,6 +111,14 @@ export default SignUp = ({navigation}) => {
                 setErrorTin("Require!")
                 checkNull = false
             }
+            if(!centerName){
+                setErrorCenterName("Require!")
+                checkNull = false
+            }
+            if(!centerBio){
+                setErrorCenterBio("Require!")
+                checkNull = false
+            }            
         }
         if(checkNull)
         {
@@ -224,38 +239,38 @@ export default SignUp = ({navigation}) => {
                         <View style={{width: "100%", rowGap: 6}}>
                             <TextInputIcon
                                 value={name}
-                                placeholder={"Name"}
-                                icon={<Feather name="pen-tool" size={24} color="black" style={{ transform: [{ rotate: '-90deg' }] }}/>}
+                                placeholder={"Name*"}
+                                icon={<Feather name="pen-tool" size={24} color={COLORS.stroke} style={{ transform: [{ rotate: '-90deg' }] }}/>}
                                 onchangeText={handleOnchangeName}
                                 error={errorName}
                             />
                             <TextInputIcon
                                 value={email}
-                                placeholder={"Mail"}
-                                icon={<Feather name="mail" size={24} color="black" />}
+                                placeholder={"Mail*"}
+                                icon={<Feather name="mail" size={24} color={COLORS.stroke} />}
                                 onchangeText={handleOnchangeEmail}
                                 keyboardType={"email-address"}
                                 error={errorEmail}
                             />
                             <TextInputIcon
                                 value={username}
-                                placeholder={"Username"}
-                                icon={<Feather name="user" size={24} color="black" />}
+                                placeholder={"Username*"}
+                                icon={<Feather name="user" size={24} color={COLORS.stroke} />}
                                 onchangeText={handleOnchangeUsername}
                                 error={errorUsername}
                             />
                             <TextInputIcon
                                 value={password}
-                                placeholder={"Password"}
-                                icon={<Feather name="lock" size={24} color="black" />}
+                                placeholder={"Password*"}
+                                icon={<Feather name="lock" size={24} color={COLORS.stroke} />}
                                 onchangeText={handleOnchangePassword}
                                 error={errorPassword}
                                 isPassword={true}
                             />
                             <TextInputIcon
                                 value={confirmPassword}
-                                placeholder={"Confirm Password"}
-                                icon={<Feather name="unlock" size={24} color="black" />}
+                                placeholder={"Confirm Password*"}
+                                icon={<Feather name="unlock" size={24} color={COLORS.stroke} />}
                                 onchangeText={handleCofirm}
                                 error={errorConfirm}
                                 isPassword={true}
@@ -270,18 +285,26 @@ export default SignUp = ({navigation}) => {
                                 <View  style={{rowGap: 6}}>
                                     <TextInputIcon
                                         value={tin}
-                                        placeholder={"TIN"}
-                                        icon={<Feather name="credit-card" size={24} color="black" />}
+                                        placeholder={"TIN*"}
+                                        icon={<Feather name="credit-card" size={24} color={COLORS.stroke} />}
                                         onchangeText={handleOnchangeTin}
                                         keyboardType={"numeric"}
                                         error={errorTin}
                                     />
                                     <TextInputIcon
                                         value={centerName}
-                                        placeholder={"Center Name"}
-                                        icon={<Ionicons name="business-outline" size={24} color="black" />}
+                                        placeholder={"Center Name*"}
+                                        icon={<Ionicons name="business-outline" size={24} color={COLORS.stroke} />}
                                         onchangeText={handleOnchangeCenterName}
                                         error={errorCenterName}
+                                    />
+                                    <TextInputIcon
+                                        value={centerBio}
+                                        placeholder={"Introduce your center*"}
+                                        icon={<AntDesign name="edit" size={24} color={COLORS.stroke} />}
+                                        onchangeText={handleOnchangeCenterBio}
+                                        error={errorCenterBio}
+                                        isMultiline={true}
                                     />
                                 </View>
                             }

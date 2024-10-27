@@ -172,13 +172,13 @@ export default SignIn = ({navigation}) => {
                         <TextInputIcon
                             value={username}
                             placeholder={"Username"}
-                            icon={<Feather name="user" size={24} color="black" />}
+                            icon={<Feather name="user" size={24} color={COLORS.stroke} />}
                             onchangeText={setUsername}
                         />
                         <TextInputIcon
                             value={password}
                             placeholder={"Password"}
-                            icon={<Feather name="lock" size={24} color="black" />}
+                            icon={<Feather name="lock" size={24} color={COLORS.stroke} />}
                             onchangeText={setPassword}
                             error={error}
                             isPassword={true}

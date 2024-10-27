@@ -3,7 +3,7 @@ import { COLORS } from "../utils/constants"
 import { useState } from "react"
 
 export const TextInputIcon = ({
-    value, icon, placeholder, onchangeText, error, keyboardType, isPassword
+    value, icon, placeholder, onchangeText, error, keyboardType, isPassword, isMultiline = false
 }) => {
     return(
         <View>
@@ -17,6 +17,7 @@ export const TextInputIcon = ({
                     onChangeText={(v)=>onchangeText(v)}
                     keyboardType={keyboardType || "default"}
                     secureTextEntry={isPassword}
+                    multiline={isMultiline}
                 />
             </View>
             {error && <Text style={styles.error}>{error}</Text>}
@@ -52,14 +53,13 @@ export const TextInputLabel = ({
 
 const styles = StyleSheet.create({
     containerIcon: {
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        borderRadius: 90,
+        borderRadius: 4,
         paddingHorizontal: 16,
         paddingVertical: 8,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
+        backgroundColor: "#F5F5F5"
     },
     container: {
         borderBottomWidth: 1,
