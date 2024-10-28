@@ -114,7 +114,7 @@ export const DetailTeacher =({data=initTeacher})=>{
                 <Text style={styles.infoText}>{data.description}</Text>
                 <View style={styles.inforContent}>
                     <AntDesign name="book" size={16} color="white" />
-                    <Text style={styles.infoText}>{data.courses.length} courses</Text>
+                    {/* <Text style={styles.infoText}>{data?.courses?.length} courses</Text> */}
                 </View>
                 {data.students? 
                     <View style={styles.inforContent}>
@@ -192,7 +192,7 @@ export const DetailTeacher =({data=initTeacher})=>{
                     <Text style={commonStyles.title}>Course</Text>
                     <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
                 </View>
-                {data.courses.map((item)=><CardVirticalCourse data={item} key={item.id}/>)}
+                {/* {data.courses?.map((item)=><CardVirticalCourse data={item} key={item.id}/>)} */}
             </View>
             
         </ScrollView>
