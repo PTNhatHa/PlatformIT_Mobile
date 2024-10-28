@@ -185,11 +185,11 @@ export const DetailCenter =({route})=>{
                         <Text style={styles.infoText}>Address</Text>
                     </View>
                     <View style={styles.inforContent}>
-                        <FontAwesome5 name="birthday-cake" size={16} color="white" />
+                        <FontAwesome5 name="birthday-cake" size={17} color="white" />
                         <Text style={styles.infoText}>Date Established</Text>
                     </View>
                     <View style={styles.inforContent}>
-                        <FontAwesome6 name="handshake-angle" size={16} color="white" />
+                        <FontAwesome6 name="handshake-angle" size={12} color="white" />
                         <Text style={styles.infoText}>Date Creates</Text>
                     </View>
                 </View>
