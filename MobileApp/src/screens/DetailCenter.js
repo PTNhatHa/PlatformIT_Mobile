@@ -196,7 +196,7 @@ export const DetailCenter =({route})=>{
             </View>
 
             <View style={styles.wrapMiniCard}>
-                {/* Teacher */}
+                {/* Total Courses */}
                 <LinearGradient 
                     colors={['#4D768A', '#75A2A2']} 
                     style={styles.miniCard}
@@ -210,7 +210,7 @@ export const DetailCenter =({route})=>{
                     <Text style={styles.titleContentCard}>10000</Text>
                 </LinearGradient>
 
-                {/* Center */}
+                {/* Total Students */}
                 <LinearGradient 
                     colors={['#4D768A', '#75A2A2']} 
                     style={styles.miniCard}

@@ -44,7 +44,10 @@ const styles = StyleSheet.create({
         alignItems: 'center' 
     },
     textValue:{
-        fontSize: 20,
-        color: COLORS.main
+        fontSize: 24,
+        fontWeight: "bold",
+        color: COLORS.main,
+        position: "absolute",
+
     }
 })
