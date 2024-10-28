@@ -194,9 +194,6 @@ export default SignIn = ({navigation}) => {
                     />
                     <Text style={styles.textGray}>------- Students can sign in with -------</Text>
                     <View style={{columnGap: 12, flexDirection: "row"}}>
-                        <TouchableOpacity style={styles.party3}>
-                            <FontAwesome name="facebook" size={16} color="black" />
-                        </TouchableOpacity>
                         <TouchableOpacity style={styles.party3} onPress={()=>promptAsync()}>
                             <FontAwesome name="google-plus" size={16} color="black" />
                         </TouchableOpacity>

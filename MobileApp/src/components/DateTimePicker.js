@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native';
 import { formatDateTime } from '../utils/utils';
 
 export const DateTimePickerComponent = ({
-    label, value = new Date(), setValue
+    label, value , setValue
 })=>{
     const [show, setShow] = useState(false)
     const [isChoose, setIsChoose] = useState(false)
@@ -24,7 +24,7 @@ export const DateTimePickerComponent = ({
                 <View style={styles.wrapField}>
                     <TextInput 
                         style={styles.input}
-                        value={formatDateTime(new Date(value))}
+                        value={value ? formatDateTime(new Date(value)) : null}
                         editable={false}
                     />
                     <TouchableOpacity onPress={()=>setShow(true)}>

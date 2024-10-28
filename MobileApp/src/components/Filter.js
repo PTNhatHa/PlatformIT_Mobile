@@ -29,10 +29,10 @@ export const FilterCourse = ({
 
     // Filter
     const [listTags, setListTags] = useState(dataFilter.tags || [])
-    const [startRegist, setStartRegist] = useState(dataFilter.startRegist || new Date())
-    const [endRegist, setEndRegist] = useState(dataFilter.endRegist || new Date())
-    const [startDuration, setStartDuration] = useState(dataFilter.startDuration || new Date())
-    const [endDuration, setEndDuration] = useState(dataFilter.endDuration || new Date())
+    const [startRegist, setStartRegist] = useState(dataFilter.startRegist || null)
+    const [endRegist, setEndRegist] = useState(dataFilter.endRegist || null)
+    const [startDuration, setStartDuration] = useState(dataFilter.startDuration || null)
+    const [endDuration, setEndDuration] = useState(dataFilter.endDuration || null)
     const [startCost, setStartCost] = useState(dataFilter.startCost || 0)
     const [endCost, setEndCost] = useState(dataFilter.endCost || 0)
     const [selectType, setSelectType] = useState(dataFilter.courseType || "All")
@@ -40,10 +40,10 @@ export const FilterCourse = ({
         setsortby1(dataSort.sortby || 0)
         setsortby2((dataSort.sortway || 0))
         setListTags(dataFilter.tags || [])
-        setStartRegist(dataFilter.startRegist || new Date())
-        setEndRegist(dataFilter.endRegist || new Date())
-        setStartDuration(dataFilter.startDuration || new Date())
-        setEndDuration(dataFilter.endDuration || new Date())
+        setStartRegist(dataFilter.startRegist || null)
+        setEndRegist(dataFilter.endRegist || null)
+        setStartDuration(dataFilter.startDuration || null)
+        setEndDuration(dataFilter.endDuration || null)
         setStartCost(dataFilter.startCost || 0)
         setEndCost(dataFilter.endCost || 0)
         setSelectType(dataFilter.courseType || "All")
@@ -81,11 +81,14 @@ export const FilterCourse = ({
         })
         onPressCancel()
     }
+    const handleClose =()=>{
+        onPressCancel()
+    }
     return(
         <View style={stylesFilter.wrapFilter}>
             <View style={stylesFilter.innerFilter}>
                 {/* Sort */}
-                <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
+                <TouchableOpacity style={stylesFilter.btnClose} onPress={handleClose}>
                     <AntDesign name="close" size={24} color={COLORS.secondMain} />
                 </TouchableOpacity>
                 <View style={stylesFilter.container}>
@@ -470,6 +473,7 @@ const stylesFilter = StyleSheet.create({
     btnClose: {
         position: "absolute",
         right: 16,
-        top: 16
+        top: 16,
+        zIndex: 1
     }
 })
