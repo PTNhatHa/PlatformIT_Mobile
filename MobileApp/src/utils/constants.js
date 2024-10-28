@@ -9,6 +9,7 @@ export const COLORS = {
     yellow: "#FFCC00",
     green: "#34C759",
     red: "#C00F0C",
+    lightGray: "#F5F5F5"
 };
 
 export const commonStyles = StyleSheet.create({

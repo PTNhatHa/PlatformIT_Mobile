@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
-        backgroundColor: "#F5F5F5"
+        backgroundColor: COLORS.lightGray
     },
     container: {
         borderBottomWidth: 1,

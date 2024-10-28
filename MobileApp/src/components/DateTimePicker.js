@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native';
 import { formatDateTime } from '../utils/utils';
 
 export const DateTimePickerComponent = ({
-    label, value = new Date(), setValue, width="100%"
+    label, value = new Date(), setValue
 })=>{
     const [show, setShow] = useState(false)
     const [isChoose, setIsChoose] = useState(false)
@@ -19,7 +19,7 @@ export const DateTimePickerComponent = ({
     }
     return(
         <>
-            <View style={[styles.container, {width: width}]}>
+            <View style={styles.container}>
                 {label ? <Text style={styles.label}>{label}</Text> : ""}
                 <View style={styles.wrapField}>
                     <TextInput 
@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
         paddingVertical: 8,
+        minWidth: 130,
     },
     input:{
         fontSize: 16,
