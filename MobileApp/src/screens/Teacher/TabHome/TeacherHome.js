@@ -5,6 +5,7 @@ import { CardVirticalAssignment } from "../../../components/CardVertical"
 import { useEffect, useState } from "react"
 import { getAllCenterCards } from "../../../services/center"
 import { getAllTeacherCards } from "../../../services/user"
+import { getAllCourseCards } from "../../../services/course"
 
 const initCourse=[
     {
@@ -142,15 +143,18 @@ const initAssignment = [
 ]
 export const TeacherHome = ({navigation})=>{
     const [loading, setLoading] = useState(true);
+    const [dataCourse, setDataCourse] = useState([])
     const [dataCenter, setDataCenter] = useState([])
     const [dataTeacher, setDataTeacher] = useState([])
 
     const getAllCard = async ()=>{
         try {
+            const responseCourse = await getAllCourseCards()
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
-            setDataCenter(responseCenter || initCenter)
-            setDataTeacher(responseTeacher || initTeacher)
+            setDataCourse(responseCourse)
+            setDataCenter(responseCenter)
+            setDataTeacher(responseTeacher)
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -193,15 +197,15 @@ export const TeacherHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Courses</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 0, isTeacher: true})}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 0})}>
                         <Text style={commonStyles.viewAll}>View all courses</Text>
                     </TouchableOpacity>
                 </View>
                 <FlatList
-                    data={initCourse}
+                    data={dataCourse}
                     horizontal={true}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => <CardHorizontalCourse data={item} />}
+                    keyExtractor={(item) => item.idCourse.toString()}
+                    renderItem={({ item }) => <CardHorizontalCourse data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />
@@ -209,7 +213,7 @@ export const TeacherHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Centers</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 1, isTeacher: true})}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 1})}>
                         <Text style={commonStyles.viewAll}>View all centers</Text>
                     </TouchableOpacity>
                 </View>
@@ -217,7 +221,7 @@ export const TeacherHome = ({navigation})=>{
                     data={dataCenter}
                     horizontal={true}
                     keyExtractor={(item) => item.idCenter.toString()}
-                    renderItem={({ item }) => <CardHorizontalCenter data={item} />}
+                    renderItem={({ item }) => <CardHorizontalCenter data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />
@@ -225,7 +229,7 @@ export const TeacherHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Teachers</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 2, isTeacher: true})}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 2})}>
                         <Text style={commonStyles.viewAll}>View all Teachers</Text>
                     </TouchableOpacity>
                 </View>
@@ -233,7 +237,7 @@ export const TeacherHome = ({navigation})=>{
                     data={dataTeacher}
                     horizontal={true}
                     keyExtractor={(item) => item.idUser.toString()}
-                    renderItem={({ item }) => <CardHorizontalTeacher data={item} />}
+                    renderItem={({ item }) => <CardHorizontalTeacher data={item}/>}
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />

@@ -8,15 +8,17 @@ import { ProgressCircle } from './src/components/Progress';
 import { FilterCenter, FilterCourse, FilterTeacher } from './src/components/Filter';
 import { DetailCenter } from './src/screens/DetailCenter';
 import { TeacherDetailAttendance } from './src/screens/Teacher/TabMyCourse/TeacherDetailAttendance';
+import { PersionalInfor } from './src/components/PI';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <DetailCenter/> */}
-          <TeacherDetailAttendance/>
+          {/* <TeacherDetailAttendance/> */}
+          {/* <PersionalInfor/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

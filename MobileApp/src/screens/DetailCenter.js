@@ -233,7 +233,7 @@ export const DetailCenter =({route})=>{
                     end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
                 >
                     <View style={styles.titleCard}>
-                        <Ionicons name="business" size={16} color={COLORS.secondMain} />
+                        <MaterialCommunityIcons name="layers-triple" size={16} color={COLORS.secondMain} />
                         <Text style={styles.titleCardText}>Social/Profile</Text>
                     </View>
                     <View style={styles.contentCardCol}>

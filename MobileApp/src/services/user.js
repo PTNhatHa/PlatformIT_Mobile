@@ -17,6 +17,23 @@ export const getUserInfo = async (idUser)=>{
         }
     })
 }
+
+export const getAvaImg = async (idUser)=>{
+    const url = baseUrl + "/GetAvaImg?id=" + idUser
+    return await axios.get(url)
+    .then(response => {
+        // console.log("==>Response:  ", response.data);
+        return response.data
+    })
+    .catch(error => {
+        // console.log("==>Error:  ", error.response.data);
+        return {
+            error: 400,
+            data: error.response.data
+        }
+    })
+}
+
 export const changePassword = async (currentPW, newPW, idUser)=>{
     // console.log("==>zooo");
     const url = baseUrl + "/ChangePassword"
@@ -154,6 +171,24 @@ export const changeAvatar = async (idUser, linkAva)=>{
     })
     .catch(error => {
         // console.log("==>Error: ", error);
+        return {
+            error: 400,
+            data: error
+        }
+    })
+}
+
+export const removeAvatar = async (idUser)=>{
+    const url = baseUrl + "/RemoveAvatar"
+    return await axios.post(url, {
+        "idUser": idUser,
+        "idCenter": null
+      })
+    .then(response => {
+        return true
+    })
+    .catch(error => {
+        console.log("==>Error: ", error.message);
         return {
             error: 400,
             data: error

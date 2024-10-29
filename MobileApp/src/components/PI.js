@@ -3,14 +3,15 @@ import { TextInputLabel } from "./TextInputField"
 import { useEffect, useState } from "react"
 import { DateTimePickerComponent } from "./DateTimePicker"
 import { ComboBox } from "./ComboBox"
-import { ButtonGreen, ButtonWhite } from "./Button"
-import Img from "../../assets/images/BoyIT.png"
+import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button"
 import Feather from '@expo/vector-icons/Feather';
 import { COLORS, commonStyles } from "../utils/constants"
 import { TouchableOpacity } from "react-native"
 import { SET_INFO, useUser } from "../contexts/UserContext"
-import { changeAvatar, getUserInfo, updateUserBasicPI } from "../services/user"
+import { changeAvatar, getAvaImg, getUserInfo, removeAvatar, updateUserBasicPI } from "../services/user"
 import * as DocumentPicker from 'expo-document-picker';
+import DefaultAva from "../../assets/images/DefaultAva.png"
+import { determineFileType } from "../utils/utils"
 
 const init = {
     "idUser": null,
@@ -47,6 +48,7 @@ export const PersionalInfor = ({info = init})=>{
     const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
     const [isChangeAva, setIsChangeAva] = useState(false)
+
     useEffect(()=>{
         setAvata({
             uri: info.avatar,
@@ -70,16 +72,6 @@ export const PersionalInfor = ({info = init})=>{
                 Alert.alert("Notification", response)
                 dispatch({ type: SET_INFO, payload: { "fullname": name }})
             }
-            if(isChangeAva){
-                const responseAva = await changeAvatar(state.idUser, avata)
-                if(responseAva.error){
-                    Alert.alert("Warning", responseAva.data)
-                } else{
-                    Alert.alert("Notification", responseAva)
-                    const info = await getUserInfo(state.idUser)
-                    dispatch({ type: SET_INFO, payload: { "avatar": info.avatar }})
-                }
-            }
         } catch(e){
             console.log("Error handleUpdateBasicPI", e);
         } finally{
@@ -87,7 +79,6 @@ export const PersionalInfor = ({info = init})=>{
         }
     }
     const pickFile = async()=>{
-        setIsChangeAva(true)
         try{
             let result = await DocumentPicker.getDocumentAsync({
                 type: ['image/*'],
@@ -99,10 +90,56 @@ export const PersionalInfor = ({info = init})=>{
                     name: 'avatar.png',
                     type: result.assets[0].mimeType 
                 })
+                handleChangeAva(result)
             }
         }
         catch(error){
             console.log("==>Error picking file: ", error);
+        }
+    }
+
+    const handleChangeAva = async(result)=>{
+        setIsLoading(true)
+        try{
+            const responseAva = await changeAvatar(state.idUser, {
+                uri: result.assets[0].uri,
+                name: 'avatar.png',
+                type: result.assets[0].mimeType 
+            })
+            if(responseAva.error){
+                Alert.alert("Warning", responseAva.data)
+            } else{
+                Alert.alert("Notification", responseAva)
+                const ava = await getAvaImg(state.idUser)
+                dispatch({ type: SET_INFO, payload: { "avatar": ava }})
+            }
+        } catch(e){
+            console.log("handleChangeAva: ", e);
+        } finally{
+            setIsChangeAva(false)
+            setIsLoading(false)
+        }
+    }
+    const handleRemoveAvatar = ()=>{
+        setIsLoading(true)
+        try {   
+            const response = removeAvatar(state.idUser)
+            if(response.error){
+                Alert.alert("Warning", response.data)
+            } else{
+                Alert.alert("Notification", "Remove avatar successfully!")
+                dispatch({ type: SET_INFO, payload: { "avatar": null }})
+                setAvata({
+                    uri: null,
+                    name: 'avatar.png',
+                    type: 'image/png' 
+                })
+            }
+        } catch (error) {
+            console.log("Error handleRemoveAvatar: ", error);
+        } finally{
+            setIsChangeAva(false)
+            setIsLoading(false)
         }
     }
     return(
@@ -111,8 +148,8 @@ export const PersionalInfor = ({info = init})=>{
                 <Text style={commonStyles.title}>Personal Infomation</Text>
                 <View style={styles.avataWrapper}>
                     <View style={styles.avataInner}>
-                        <Image style={styles.avataImage} source={{uri: avata.uri}}/>
-                        <TouchableOpacity style={styles.avataCamera} onPress={pickFile}>
+                        <Image style={styles.avataImage} source={ determineFileType(avata.uri) === "Image" ? {uri: avata.uri} : DefaultAva}/>
+                        <TouchableOpacity style={styles.avataCamera} onPress={()=>setIsChangeAva(true)}>
                             <Feather name="camera" size={20} color={COLORS.main} />
                         </TouchableOpacity>
                     </View>
@@ -139,6 +176,25 @@ export const PersionalInfor = ({info = init})=>{
                     <View style={styles.wrapLoading}>
                         <ActivityIndicator size="large" color="white" />
                     </View>
+                </Modal>
+            }  
+            {isChangeAva &&
+                <Modal
+                    visible={isChangeAva}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={()=>setIsChangeAva(false)}
+                >
+                    <TouchableOpacity style={styles.wrapLoading} onPress={()=>setIsChangeAva(false)}>
+                        <View style={styles.wrapChangeAva}>
+                            <TouchableOpacity onPress={pickFile}>
+                                <Text style={[commonStyles.title, {textAlign: "center"}]}>Upload file</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleRemoveAvatar}>
+                                <Text style={[commonStyles.title, {textAlign: "center"}]}>Remove avatar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
                 </Modal>
             }  
         </>
@@ -179,8 +235,6 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 90,
-        borderWidth: 1,
-        borderColor: COLORS.main,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: COLORS.lightText
@@ -192,5 +246,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
-    }
+    },
+    wrapChangeAva: {
+        backgroundColor: "white",
+        padding: 16,
+        borderRadius: 8,
+        rowGap: 8
+    },
+
 })

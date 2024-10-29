@@ -2,13 +2,15 @@ import { Image, StyleSheet, Text, View } from "react-native"
 import { TouchableOpacity } from "react-native";
 import { useUser } from "../../../contexts/UserContext";
 import { COLORS } from "../../../utils/constants";
+import DefaultAva from "../../../../assets/images/DefaultAva.png"
+import { determineFileType } from "../../../utils/utils";
 
 export const TeacherAccount = ({navigation})=>{
     const {state, dispatch} = useUser()
     return(
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image source={{uri: state.avatar}} style={styles.avataImage}/>
+                <Image source={determineFileType(state.avatar) === "Image" ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avataImage}/>
                 <Text style={styles.text}>{state.fullname}</Text>
             </View>
             <View>

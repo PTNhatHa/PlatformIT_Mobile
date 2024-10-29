@@ -11,10 +11,10 @@ import { SET_INFO, useUser } from "../contexts/UserContext";
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { validateEmail } from "../utils/utils";
-import { forgotPassword, getUserInfo } from "../services/user";
+import { determineFileType, validateEmail } from "../utils/utils";
+import { forgotPassword, getAvaImg, getUserInfo } from "../services/user";
 import * as Google from 'expo-auth-session/providers/google';
-import DefaultAva from "../../assets/images/DefaultAva.png"
+
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
@@ -76,17 +76,16 @@ export default SignIn = ({navigation}) => {
             } else{
                 await AsyncStorage.setItem('username', username)
                 await AsyncStorage.setItem('password', password)
-                const info = await getUserInfo(response.idUser)
-                let userInfo = response
-                if(info.avatar !== null){
+                const ava = await getAvaImg(response.idUser)
+                if(determineFileType(ava) === "Image"){
                     userInfo = {
                         ...response,
-                        "avatar": info.avatar
+                        "avatar": ava
                     } 
                 }else{
                     userInfo = {
                         ...response,
-                        "avatar": DefaultAva
+                        "avatar": null
                     }
                 }
                 dispatch({ type: SET_INFO, payload: userInfo })
