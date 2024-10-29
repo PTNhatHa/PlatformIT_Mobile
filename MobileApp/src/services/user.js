@@ -99,8 +99,10 @@ export const updateUserBasicPI = async (idUser, fullName, phoneNumber, gender, d
 }
 
 export const addProfileLink = async (idUser, name, link)=>{
-    const url = baseUrl + "/AddProfileLink?IdUser=" + idUser
+    const url = baseUrl + "/AddProfileLink"
     return await axios.post(url, {
+        "idUser": idUser,
+        "idCenter": null,
         "name": name,
         "url": link
       })
@@ -196,31 +198,39 @@ export const removeAvatar = async (idUser)=>{
     })
 }
 
-export const addQualification = async (idUser, QualificationName, Description, QualificationFile)=>{
-    const url = baseUrl + "/AddQualification?IdUser=" + idUser
+export const addQualification = async (idUser, QualificationName, Description, file)=>{
+    const url = baseUrl + "/AddQualification"
     const formData = new FormData()
+    formData.append('IdUser', idUser)
+    formData.append('IdCenter', "")
     formData.append('QualificationName', QualificationName)
     formData.append('Description', Description)
     formData.append('QualificationFile', {
-        uri: QualificationFile.uri || "",
-        name: 'avatar.png',
-        type: QualificationFile.mimeType || "" 
+        uri: file.uri,
+        name: file.name,
+        type: file.type
     }) 
-    console.log(QualificationFile);
+
+    console.log({
+        uri: file.uri,
+        name: file.name,
+        type: file.type
+    });
+
     return await axios.post(url, formData,{
         headers: {
             'Content-Type': 'multipart/form-data',
         },
     })
     .then(response => {
-        // console.log("==>Response: ", response.data);
-        return response.data
+        console.log("==>Response: ", response);
+        return response
     })
     .catch(error => {
-        // console.log("==>Error: ", error);
+        console.log("==>Error: ", error.response?.data || error.message);
         return {
-            error: 400,
-            data: error
+            error: error.response?.status || 400,
+            data: error.response?.data || error.message
         }
     })
 }

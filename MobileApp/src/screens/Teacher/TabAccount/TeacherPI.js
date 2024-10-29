@@ -19,6 +19,7 @@ export const TeacherPI = () => {
     const [loading, setLoading] = useState(true);
     const [indexTab, setIndexTab] = useState(1)
     const [refreshing, setRefreshing] = useState(false)
+
     const fetchData = async () => {
         try {
             const response = await getUserInfo(state.idUser);
@@ -29,6 +30,7 @@ export const TeacherPI = () => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         fetchData();
     }, [state.idUser]);
@@ -86,9 +88,9 @@ export const TeacherPI = () => {
                 }
                 {indexTab === 3 &&
                     <View style={styles.wrap3}>
-                        <SpecialPI initData={data}/>
-                        <SocialLink value={data.links}/>
-                        <Professional value={data.qualificationModels}/>
+                        <SpecialPI initData={data} fetchData={fetchData}/>
+                        <SocialLink value={data.links} fetchData={fetchData}/>
+                        <Professional value={data.qualificationModels} fetchData={fetchData}/>
                     </View>
                 }
             </>

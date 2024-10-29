@@ -8,6 +8,7 @@ import { determineFileType } from "../utils/utils";
 import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
 import { addQualification, deleteQualification } from "../services/user";
 import { useUser } from "../contexts/UserContext";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const initProfessions = [
     {
@@ -21,7 +22,8 @@ const initProfessions = [
 ]
 
 export const Professional = ({
-    value=initProfessions
+    value=initProfessions,
+    fetchData = ()=>{}
 }) => {
     const {state, dispatch} = useUser()
     const [professions, setProfess] = useState(value || [])
@@ -49,8 +51,39 @@ export const Professional = ({
         }]
         setProfess(newProfessions)
     }
-    const handleDelete = (select)=>{
-        const newProfessions = professions.filter((item)=> item.idQualification !== select)
+    const confirmDelete = (item)=>{
+        Alert.alert(
+            "Confirm Delete",
+            "Are you sure you want to delete this qualification?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> handleDelete(item),
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+    }
+    const handleDelete = async(item)=>{
+        if(!item.isNew){
+            try{
+                const response = await deleteQualification(item.idQualification)
+                if(response.error){
+                    Alert.alert("Warning", response.data)
+                }else{
+                    Alert.alert("Noti", "Delete professionals done.")
+                    fetchData()
+                }
+            } catch(e){
+                console.log("Error delete professionals: ", e);
+            }
+        }
+        const newProfessions = professions.filter((current)=> current.idQualification !== item.idQualification)
         setProfess(newProfessions)
     }
     const handleSelectImg = (select)=>{
@@ -105,68 +138,40 @@ export const Professional = ({
             console.log("==>Error opening pdf: ", e);
         }
     }
-    const checkIsNull = (checkData)=>{
-        const isNull = checkData.some(item => {
-            if(item.qualificationName === "" || item.description === "" || item.path === ""){
-                setError("Please fill all.")
-                return true
-            }
-            return false
-        })
-        if(!isNull){
-            setError("")
+    const checkIsNull = (item)=>{
+        if(item.qualificationName === "" || item.description === "" || item.path === ""){
+            setError("Please fill all.")
+            return true
         }
-        return isNull
+        setError("")
+        return false
     }
-    const handleSave = async ()=>{
+    const handleSave = async (item)=>{
+        // Add
+        if(checkIsNull(item)) return
         setLoading(true)
-        try {
-            // Add
-            const dataAdd = professions.filter(item => item.isNew)
-            if(checkIsNull(dataAdd)) return
-            await Promise.all(dataAdd.map( async (item)=>{
-                try{
-                    const response = await addQualification(state.idUser, item.qualificationName, item.description, item.path)
-                    if(response.error){
-                        Alert.alert("Warning", response.data)
-                    }else{
-                        Alert.alert("Noti", "Add professionals done ^3^")
-                    }
-                } catch(e){
-                    console.log("Error add professionals: ", e);
+        try{
+            const response = await addQualification(
+                state.idUser, 
+                item.qualificationName, 
+                item.description, 
+                {
+                    uri: item.path.uri,
+                    name: 'qualification',
+                    type: item.path.mimeType
                 }
-            }))
-            console.log(dataAdd);
-            // Delete
-            const dataDelete = value.filter(item =>{
-                return !professions.some(pro =>{
-                    if(pro.new === true){
-                        return true
-                    }
-                    return(
-                        pro.idQualification === item.idQualification && 
-                        pro.qualificationName === item.qualificationName &&
-                        pro.description === item.description &&
-                        pro.path === item.path
-                    )
-                })
-            })
-            await Promise.all(dataDelete.map( async (item)=>{
-                try{
-                    const response = await deleteQualification(item.idQualification)
-                    if(response.error){
-                        Alert.alert("Warning", response.data)
-                    }else{
-                        Alert.alert("Noti", "Delete professionals done ^3^")
-                    }
-                } catch(e){
-                    console.log("Error delete professionals: ", e);
-                }
-            })) 
-        } catch (error) {
-            console.log("Error handleSave", error);
-        }
-        finally{
+            )
+            if(response.error){
+                console.log("errrrr");
+                Alert.alert("Warning", response.data)
+            }else{
+                console.log("oooooo");
+                Alert.alert("Noti", "Add professionals done")
+                fetchData()
+            }
+        } catch(e){
+            console.log("Error add professionals: ", e);
+        }finally{
             setLoading(false)
         }
     }
@@ -175,7 +180,6 @@ export const Professional = ({
         <>
         <View style={styles.wrapContainer}>
             <Text style={[commonStyles.title]}>Professional Qualifications</Text>
-            <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
             <View style={{rowGap: 10, paddingTop: 10}}>
                 {professions ? 
                 professions.map((item)=>
@@ -203,17 +207,24 @@ export const Professional = ({
                         editable={item.isNew === true}
                     />
                     <View style={styles.wrap}>
-                        <View style={styles.wrapbtn}>
-                            {item.isNew ? 
-                                <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
-                                    <AntDesign name="file1" size={20} color={COLORS.stroke} />
+                        <View>
+                            <View style={styles.wrapbtn}>
+                                {item.isNew ? 
+                                    <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
+                                        <AntDesign name="file1" size={20} color={COLORS.stroke} />
+                                    </TouchableOpacity>
+                                    : ""  
+                                }
+                                <TouchableOpacity style={styles.btn} onPress={()=>confirmDelete(item)}>
+                                    <AntDesign name="delete" size={20} color={COLORS.stroke} />
                                 </TouchableOpacity>
-                                : ""  
+                            </View> 
+                            {item.isNew &&
+                                <TouchableOpacity style={styles.btn} onPress={() => handleSave(item)}>
+                                    <FontAwesome name="check" size={20} color={COLORS.stroke} />
+                                </TouchableOpacity>
                             }
-                            <TouchableOpacity style={styles.btn} onPress={()=>handleDelete(item.idQualification)}>
-                                <AntDesign name="delete" size={20} color={COLORS.stroke} />
-                            </TouchableOpacity>
-                        </View> 
+                        </View>
                         { item.isNew ? 
                                 determineFileType(item.path.uri) === "Image" ?
                                 <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
@@ -248,10 +259,7 @@ export const Professional = ({
                 </View>
                 ): ""}
                 {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
-                <View style={styles.bottom}>
-                    <ButtonWhite title={"Discard Changes"} action={()=>setProfess(value)}/>
-                    <ButtonGreen title={"Save Changes"} action={handleSave}/>
-                </View>
+                <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
             </View>
             <Modal
                 visible={!!selectImg}
@@ -312,7 +320,8 @@ const styles = StyleSheet.create({
     },
     wrapbtn:{
         flexDirection: "row",
-        columnGap: 10
+        columnGap: 4,
+        marginBottom: 4
     },
     btn:{
         padding: 12,
