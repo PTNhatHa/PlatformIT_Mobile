@@ -15,10 +15,9 @@ const initNoti=  {
 export const CardNoti = ({data = initNoti, isScreen = false})=>{
     return(
         <View style={styles.container}>
-            {isScreen && <Image style={styles.img}/>}
+            {isScreen && <Image style={styles.img} source={{ uri: data.senderAvatar}}/>}
             <View style={{flexDirection: "column", flex: 1}}>
-                <Text style={styles.title}>Title</Text>
-                <Text style={styles.dataText}>{data.content}</Text>
+                <Text style={styles.title}>{data.content}</Text>
                 <Text style={styles.dataDate}>{data.relativeTime}</Text>
             </View>
         </View>
@@ -37,10 +36,7 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 16,
-        fontWeight: "bold"
-    },
-    dataText: {
-        fontSize: 12,
+        fontWeight: "bold",
         color: COLORS.stroke
     },
     dataDate: {

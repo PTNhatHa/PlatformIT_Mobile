@@ -32,7 +32,7 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
         const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 95
         let totalWidth = 0
         let selectTags = []
-        for(let i =0; i < data.tags.length; i++){
+        for(let i =0; i < data?.tags?.length; i++){
             const tag = data.tags[i]
             const tagWidth = tag.length * 8 + 16
             if(totalWidth + tagWidth > cardWidth) break
@@ -50,7 +50,7 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
             <Image source={data.pathImg} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.courseTitle}</Text>
-                {data.tags.length > 0 && 
+                {data?.tags?.length > 0 && 
                     <View style={styles.content}>
                         {showTags.map(item=>
                             <Tag label={item} key={item}/>
