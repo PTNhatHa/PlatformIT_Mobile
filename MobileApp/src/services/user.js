@@ -207,7 +207,8 @@ export const addQualification = async (idUser, QualificationName, Description, f
     formData.append('QualificationName', QualificationName)
     formData.append('Description', Description)
     formData.append('QualificationFile', file) 
-
+    console.log(file);
+    
     return await axios.post(url, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',

@@ -27,12 +27,6 @@ export default SignUp = ({navigation}) => {
     const [errorPassword, setErrorPassword] = useState(null)
     const [confirmPassword, setConfirmPassword] = useState(null)
     const [errorConfirm, setErrorConfirm] = useState(null)
-    const [tin, setTin] = useState("")
-    const [errorTin, setErrorTin] = useState(null)
-    const [centerName, setCenterName] = useState(null)
-    const [errorCenterName, setErrorCenterName] = useState(null)
-    const [centerBio, setCenterBio] = useState(null)
-    const [errorCenterBio, setErrorCenterBio] = useState(null)
 
     const [isVerify, setIsVerify] = useState(false)
     const [otp, setOtp] = useState(null)
@@ -60,21 +54,6 @@ export default SignUp = ({navigation}) => {
         setPassword(v)
         setErrorPassword(null)
         if(!v) setErrorPassword("Require!")
-    }
-    const handleOnchangeTin = (v)=>{
-        setTin(v)
-        setErrorTin(null)
-        if(!v) setErrorTin("Require!")
-    }
-    const handleOnchangeCenterName = (v)=>{
-        setCenterName(v)
-        setErrorCenterName(null)
-        if(!v) setErrorCenterName("Require!")
-    }
-    const handleOnchangeCenterBio = (v)=>{
-        setCenterBio(v)
-        setErrorCenterBio(null)
-        if(!v) setErrorCenterBio("Require!")
     }
     const handleCofirm = (v)=>{
         setConfirmPassword(v)
@@ -106,20 +85,7 @@ export default SignUp = ({navigation}) => {
             setErrorConfirm("Require!")
             checkNull = false
         }
-        if(check){
-            if(!tin){
-                setErrorTin("Require!")
-                checkNull = false
-            }
-            if(!centerName){
-                setErrorCenterName("Require!")
-                checkNull = false
-            }
-            if(!centerBio){
-                setErrorCenterBio("Require!")
-                checkNull = false
-            }            
-        }
+
         if(checkNull)
         {
             if(!isVerifyDone){
@@ -186,7 +152,7 @@ export default SignUp = ({navigation}) => {
     const handleSignup = async ()=>{
         setLoading(true)
         try{
-            const response = await signupApi(name, email, username, password, centerName, tin)
+            const response = await signupApi(name, email, username, password)
             setLoading(false)
             if(response.error){
                 setOtp(null)
@@ -275,46 +241,12 @@ export default SignUp = ({navigation}) => {
                                 error={errorConfirm}
                                 isPassword={true}
                             />
-                            <CheckBox
-                                rightTextStyle ={{ color: check ? COLORS.secondMain : COLORS.lightText}}
-                                isChecked={check}
-                                onClick={()=>setCheck(!check)}
-                                rightText="Register as Admin Center"
-                            />
-                            {check &&
-                                <View  style={{rowGap: 6}}>
-                                    <TextInputIcon
-                                        value={tin}
-                                        placeholder={"TIN*"}
-                                        icon={<Feather name="credit-card" size={24} color={COLORS.stroke} />}
-                                        onchangeText={handleOnchangeTin}
-                                        keyboardType={"numeric"}
-                                        error={errorTin}
-                                    />
-                                    <TextInputIcon
-                                        value={centerName}
-                                        placeholder={"Center Name*"}
-                                        icon={<Ionicons name="business-outline" size={24} color={COLORS.stroke} />}
-                                        onchangeText={handleOnchangeCenterName}
-                                        error={errorCenterName}
-                                    />
-                                    <TextInputIcon
-                                        value={centerBio}
-                                        placeholder={"Introduce your center*"}
-                                        icon={<AntDesign name="edit" size={24} color={COLORS.stroke} />}
-                                        onchangeText={handleOnchangeCenterBio}
-                                        error={errorCenterBio}
-                                        isMultiline={true}
-                                    />
-                                </View>
-                            }
                         </View>
                         <ButtonBlu 
                             title={"Sign Up"}
                             fontSize={20}
                             action={()=>handleOnPressSignup()}
                         />
-                        
                     </View>
                 </ScrollView>
                 {/* Verify OTP */}
@@ -382,7 +314,7 @@ const styles = StyleSheet.create({
       },
       wrapSignUp: {
         backgroundColor: "white",
-        minHeight: 550,
+        minHeight: 500,
         width: "100%",
         borderRadius: 8,
         shadowColor: "#000", // Màu của bóng đổ

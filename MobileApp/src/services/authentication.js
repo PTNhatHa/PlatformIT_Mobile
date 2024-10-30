@@ -1,15 +1,15 @@
 import axios from "axios"
 // const baseUrl = "http://192.168.2.3:5000/api/Authen"
 const baseUrl = "http://192.168.1.208:5000/api/Authen"
-export const signupApi = async (name, email, username, password, centerName, tin)=>{
+export const signupApi = async (name, email, username, password)=>{
     const url = baseUrl + "/signup"
     return await axios.post(url, {
         "fullName": name,
         "email": email,
         "username": username,
         "password": password,
-        "centerName": centerName,
-        "tin": tin
+        "centerName": "",
+        "tin": ""
     })
     .then(response => {
         // console.log("==>Response:  ", response.data);

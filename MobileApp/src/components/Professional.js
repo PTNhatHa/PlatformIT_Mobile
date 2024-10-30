@@ -145,16 +145,23 @@ export const Professional = ({
         if(checkIsNull(item)) return
         setLoading(true)
         try{
-            const response = await addQualification(state.idUser, item.qualificationName, item.description, {
-                uri: item.path.uri,
-                name: 'avatar.png',
-                type: item.path.mimeType 
-            })
+            let response 
+            if(determineFileType(item.path.uri) === "Image"){
+                response = await addQualification(state.idUser, item.qualificationName, item.description, {
+                    uri: item.path.uri,
+                    name: 'qualification.png',
+                    type: item.path.mimeType 
+                })
+            } else {
+                response = await addQualification(state.idUser, item.qualificationName, item.description, {
+                    uri: item.path.uri,
+                    name: 'qualification.pdf',
+                    type: item.path.mimeType 
+                })
+            }
             if(response.error){
-                console.log("errrrr");
                 Alert.alert("Warning", response.data)
             }else{
-                console.log("oooooo");
                 Alert.alert("Noti", "Add professionals done")
                 fetchData()
             }
