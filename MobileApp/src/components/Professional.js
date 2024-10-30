@@ -151,16 +151,11 @@ export const Professional = ({
         if(checkIsNull(item)) return
         setLoading(true)
         try{
-            const response = await addQualification(
-                state.idUser, 
-                item.qualificationName, 
-                item.description, 
-                {
-                    uri: item.path.uri,
-                    name: 'qualification',
-                    type: item.path.mimeType
-                }
-            )
+            const response = await addQualification(state.idUser, item.qualificationName, item.description, {
+                uri: item.path.uri,
+                name: 'avatar.png',
+                type: item.path.mimeType 
+            })
             if(response.error){
                 console.log("errrrr");
                 Alert.alert("Warning", response.data)

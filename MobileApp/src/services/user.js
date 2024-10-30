@@ -1,6 +1,7 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5000/api/User"
-// const baseUrl = "http://192.168.1.230:8081/api/User"
+// const baseUrl = "http://192.168.2.3:5000/api/User"
+const baseUrl = "http://192.168.1.208:5000/api/User"
+
 
 export const getUserInfo = async (idUser)=>{
     const url = baseUrl + "/showPI?id=" + idUser
@@ -205,19 +206,9 @@ export const addQualification = async (idUser, QualificationName, Description, f
     formData.append('IdCenter', "")
     formData.append('QualificationName', QualificationName)
     formData.append('Description', Description)
-    formData.append('QualificationFile', {
-        uri: file.uri,
-        name: file.name,
-        type: file.type
-    }) 
+    formData.append('QualificationFile', file) 
 
-    console.log({
-        uri: file.uri,
-        name: file.name,
-        type: file.type
-    });
-
-    return await axios.post(url, formData,{
+    return await axios.post(url, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
