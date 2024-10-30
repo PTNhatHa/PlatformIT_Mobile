@@ -85,13 +85,6 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
 }
 
 const initCenter={
-    // img: "",
-    // title: "Title",
-    // listTags: [
-    //     { id: 1, value: "Web developer"},
-    //     { id: 2, value: "Backend"},
-    //     { id: 3, value: "Frontend"},
-    // ],
     idCenter: 1,
     centerName: "HAHYWU CENTER",
     description: null,

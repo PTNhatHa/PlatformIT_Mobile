@@ -9,6 +9,7 @@ import { getAllCenterCards } from "../services/center";
 import { getAllTeacherCards } from "../services/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllCourseCards } from "../services/course";
+import { formatDateTime } from "../utils/utils";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
@@ -20,11 +21,11 @@ const ViewAllRender = ({data = [], type})=>{
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
     const numberItem = 10
-    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem))
+    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
     const inputRef = useRef(null)
     
     useEffect(() => {
-        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem);
+        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem) || [];
         setCurrentData(newData);
     }, [data, indexPage]);
 
@@ -60,7 +61,7 @@ const ViewAllRender = ({data = [], type})=>{
             return(
                 <FlatList
                     data={currentData}
-                    keyExtractor={(item) => item.idCourse.toString()}
+                    keyExtractor={(item) => item.idCourse}
                     renderItem={renderItem}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
@@ -70,7 +71,7 @@ const ViewAllRender = ({data = [], type})=>{
             return(
                 <FlatList
                     data={currentData}
-                    keyExtractor={(item) => item.idCenter.toString()}
+                    keyExtractor={(item) => item.idCenter}
                     renderItem={renderItem}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
@@ -80,7 +81,7 @@ const ViewAllRender = ({data = [], type})=>{
             return(
                 <FlatList
                     data={currentData}
-                    keyExtractor={(item) => item.idUser.toString()}
+                    keyExtractor={(item) => item.idUser}
                     renderItem={renderItem}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
@@ -214,7 +215,7 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
 
     const [loading, setLoading] = useState(true);
 
-    const [search, setSearch] = useState()
+    const [search, setSearch] = useState(null)
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [routes, setRoutes] = useState([])
@@ -257,16 +258,18 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
     }, [index])
 
     // Filter
-    useEffect(()=>{
+    const handleFilterCourse = (data)=>{
+        let filterData = [...data]
         // tags
-        // if(dataFilterCourse.tags){
-        //     const newData = dataCourse.filter(item => {
-        //         dataFilterCourse.tags.map(tag => {
-                    
-        //         })
-        //     })
-        // }
-        let filterData = [...initCourse]
+        if(dataFilterCourse.tags){
+            dataFilterCourse.tags.forEach(item => {
+                let filterTag = filterData.filter(init => {
+                    return init.tags && init.tags.some(current => current === item.label)
+                })
+                filterData = [...filterTag]
+            })            
+        }
+
         // courseType
         if(dataFilterCourse.courseType === "Limit"){
             filterData = filterData.filter(item =>{
@@ -303,25 +306,39 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
             filterData = filterData.filter(item => item.price <= dataFilterCourse.endCost)
         }
 
-        setDataCourse(filterData)
-    }, [index, search, dataFilterCourse, dataSortCourse])
+        return filterData
+    }
+
+    const handleFilterCenter = (data)=>{
+        let filterData = [...data]
+        // tags
+        if(dataFilterCenter.tags){
+            dataFilterCenter.tags.forEach(item => {
+                let filterTag = filterData.filter(init => {
+                    return init.listTagCourses && init.listTagCourses?.some(current => current.tagName === item.label)
+                })
+                filterData = [...filterTag]
+            })            
+        }
+        return filterData
+    }
 
     // Sort
-    useEffect(()=>{
-        if(dataSortCourse.sortby && dataSortCourse.sortway){
-            let newData = [...dataCourse]
+    const handleSort = (initData, sortData)=>{
+        let newData = [...initData]
+        if(sortData.sortby && sortData.sortway){
             newData.sort((a,b) => {
-                const field = dataSortCourse.sortby
+                const field = sortData.sortby
                 const aValue = a[field]
                 const bValue = b[field]
-                if(dataSortCourse.sortway === 1){
+                if(sortData.sortway === 1){
                     //Asc
                     if(aValue === null) return -1
                     if(bValue === null) return 1
                     if(aValue === null && bValue === null) return 0
                     return aValue.localeCompare(bValue)
                 }
-                if(dataSortCourse.sortway === 2){
+                if(sortData.sortway === 2){
                     //Desc
                     if(aValue === null) return 1
                     if(bValue === null) return -1
@@ -330,95 +347,86 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                 }
                 return 0
             })
-            setDataCourse(newData)
         }
-    }, [index, search, dataFilterCourse, dataSortCourse])
-
-    useEffect(()=>{
-        if(dataSortCenter.sortby && dataSortCenter.sortway){
-            let newData = [...dataCenter]
-            newData.sort((a,b) => {
-                const field = dataSortCenter.sortby
-                const aValue = a[field]
-                const bValue = b[field]
-                if(dataSortCenter.sortway === 1){
-                    //Asc
-                    if(aValue === null) return -1
-                    if(bValue === null) return 1
-                    if(aValue === null && bValue === null) return 0
-                    return aValue.localeCompare(bValue)
-                }
-                if(dataSortCenter.sortway === 2){
-                    //Desc
-                    if(aValue === null) return 1
-                    if(bValue === null) return -1
-                    if(aValue === null && bValue === null) return 0
-                    return bValue.localeCompare(aValue);
-                }
-                return 0
-            })
-            setDataCenter(newData)
-        }
-    }, [index, search, dataSortCenter])
-
-    useEffect(()=>{
-        if(dataSortTeacher.sortby && dataSortTeacher.sortway){
-            let newData = [...dataTeacher]
-            newData.sort((a,b) => {
-                console.log(a, "--", b);
-                const field = dataSortTeacher.sortby
-                const aValue = a[field]
-                const bValue = b[field]
-                if(dataSortTeacher.sortway === 1){
-                    //Asc
-                    if(aValue === null) return -1
-                    if(bValue === null) return 1
-                    return aValue.localeCompare(bValue)
-                }
-                if(dataSortTeacher.sortway === 2){
-                    //Desc
-                    if(aValue === null) return 1
-                    if(bValue === null) return -1
-                    return bValue.localeCompare(aValue);
-                }
-                return 0
-            })
-            setDataTeacher(newData)
-        }
-    }, [index, search, dataSortTeacher])
+        return newData || []
+    }
 
     // Search
-    const handleSearch = async (txt, index)=>{
-        setSearch(txt)
-        let newData = []
-        if(index === 0){
-            newData = initCourse.filter(course => {
-                return Object.values(course).some(item =>
-                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
-                )
-            })
-            setDataCourse(newData)
-            await AsyncStorage.setItem('searchCourse', txt)
-        }
-        if(index === 1){
-            newData = initCenter.filter(center => {
-                return Object.values(center).some(item =>
-                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
-                )
-            })
-            setDataCenter(newData)
-            await AsyncStorage.setItem('searchCenter', txt)
-        }
-        if(index === 2){
-            newData = initTeacher.filter(center => {
-                return Object.values(center).some(item =>
-                    item && item.toString().toLowerCase().includes(txt.toLowerCase())
-                )
-            })
-            setDataTeacher(newData)
-            await AsyncStorage.setItem('searchTeacher', txt)
-        }
+    const handleOnChangeSearch = async (value)=>{
+        setSearch(value)
+        if(index === 0) await AsyncStorage.setItem('searchCourse', value)
+        if(index === 1) await AsyncStorage.setItem('searchCenter', value)
+        if(index === 2) await AsyncStorage.setItem('searchTeacher', value)
     }
+    const handleSearch = (dataSearch)=>{
+        let result = [...dataSearch]
+        // Course
+        if(index === 0){
+            result = dataSearch.filter(data => {
+                return data.courseTitle?.toLowerCase().includes(search.toLowerCase()) ||
+                        formatDateTime(data.courseStartDate).includes(search) || 
+                        formatDateTime(data.courseEndDate).includes(search) || 
+                        formatDateTime(data.registStartDate).includes(search) || 
+                        formatDateTime(data.registEndDate).includes(search) || 
+                        formatDateTime(data.createdDate).includes(search) || 
+                        data.price.toString().includes(search) ||
+                        data.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
+            })            
+        }
+        // Center
+        if(index === 1){
+            result = dataSearch.filter(data => {
+                return data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
+                        data.description?.toLowerCase().includes(search.toLowerCase()) ||
+                        data.tags?.some(tag => tag.tagName.toLowerCase().includes(search.toLowerCase()))
+            })            
+        }
+        // Teacher
+        if(index === 2){
+            result = dataSearch.filter(data => {
+                return data.name?.toLowerCase().includes(search.toLowerCase()) ||
+                        data.teachingMajor?.toLowerCase().includes(search.toLowerCase()) ||
+                        data.coursesCount.toString().toLowerCase().includes(search.toLowerCase())                        
+            })            
+        }
+        return result || []
+    }
+    
+    // Search - Sort - Filter
+    useEffect(()=>{
+        if(index === 0){
+            let result = [...initCourse]
+            if(search){
+                result = handleSearch(result)
+            }
+            result = handleSort(result, dataSortCourse)
+            result = handleFilterCourse(result) || []
+            setDataCourse(result)
+        }
+    }, [search, dataSortCourse, dataFilterCourse])
+
+    useEffect(()=>{
+        if(index === 1){
+            let result = [...initCenter]
+            if(search){
+                result = handleSearch(result)
+            }
+            result = handleSort(result, dataSortCenter)
+            result = handleFilterCenter(result)
+            setDataCenter(result)
+        }
+    }, [search, dataSortCenter, dataFilterCenter])
+
+    useEffect(()=>{
+        if(index === 2){
+            let result = [...initTeacher]
+            if(search){
+                result = handleSearch(result)
+            }
+            result = handleSort(result, dataSortTeacher)
+            setDataTeacher(result)
+        }
+    }, [search, dataSortTeacher])
 
     const getAllCard = async ()=>{
         try {
@@ -474,7 +482,7 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                     value={search}
                     style={styles.input}
                     placeholder={"Search"}
-                    onChangeText={(value)=>handleSearch(value, index)}
+                    onChangeText={(value)=>handleOnChangeSearch(value)}
                 />
                 <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                     <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
