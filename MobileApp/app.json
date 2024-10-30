@@ -20,7 +20,8 @@
       "config": {
         "googleSignIn": {
           "certificateHash": "42:80:33:E7:8C:2D:31:75:0C:98:03:C8:2B:0F:BF:8A:F3:A5:E2:18"  
-        }
+        },
+        "permissions": ["INTERNET"]
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

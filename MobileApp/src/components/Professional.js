@@ -9,6 +9,8 @@ import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
 import { addQualification, deleteQualification } from "../services/user";
 import { useUser } from "../contexts/UserContext";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { WebView } from 'react-native-webview';
+import * as FileSystem from 'expo-file-system';
 
 const initProfessions = [
     {
@@ -130,14 +132,6 @@ export const Professional = ({
             console.log("==>Error picking file: ", error);
         }
     }
-    const openPdf = async(uri)=>{
-        try{
-            await Linking.openURL(uri)
-        }
-        catch(e){
-            console.log("==>Error opening pdf: ", e);
-        }
-    }
     const checkIsNull = (item)=>{
         if(item.qualificationName === "" || item.description === "" || item.path === ""){
             setError("Please fill all.")
@@ -170,7 +164,14 @@ export const Professional = ({
             setLoading(false)
         }
     }
-
+    const openPdf = async(uri)=>{
+        try{
+            await Linking.openURL(uri)
+        }
+        catch(e){
+            console.log("==>Error opening pdf: ", e);
+        }
+    }
     return(
         <>
         <View style={styles.wrapContainer}>
@@ -266,7 +267,17 @@ export const Professional = ({
                     <TouchableOpacity style={styles.close} onPress={()=>setSelectImg("")}>
                         <AntDesign name="close" size={30} color="white" />
                     </TouchableOpacity>
-                    <Image source={{uri: selectImg}} style={styles.selectImg}/>
+                    {/* {determineFileType(selectImg) === "Pdf" ?
+                        <WebView
+                            source={{ uri: selectImg }}
+                            style={styles.wrapPdf}
+                            scalesPageToFit={true} // Đảm bảo tệp PDF có thể được điều chỉnh theo kích thước trang
+                            javaScriptEnabled={true} // Bật JavaScript
+                            startInLoadingState={true} // Hiển thị trạng thái loading trong khi tải tệp
+                        />
+                        : */}
+                        <Image source={{uri: selectImg}} style={styles.selectImg}/>
+                    {/* } */}
                 </View>
             </Modal>
         </View>
@@ -363,5 +374,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+    wrapPdf: {
+        borderWidth: 10,
+        borderColor: "red",
+        flex: 1,
+        backgroundColor: "pink"
     }
 })
