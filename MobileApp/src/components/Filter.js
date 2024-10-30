@@ -39,16 +39,32 @@ export const FilterCourse = ({
     const [endCost, setEndCost] = useState(dataFilter.endCost || 0)
     const [selectType, setSelectType] = useState(dataFilter.courseType || "All")
     const clearAll = ()=>{
-        setsortby1(dataSort.sortby || 0)
-        setsortby2((dataSort.sortway || 0))
-        setListTags(dataFilter.tags || [])
-        setStartRegist(dataFilter.startRegist || null)
-        setEndRegist(dataFilter.endRegist || null)
-        setStartDuration(dataFilter.startDuration || null)
-        setEndDuration(dataFilter.endDuration || null)
-        setStartCost(dataFilter.startCost || 0)
-        setEndCost(dataFilter.endCost || 0)
-        setSelectType(dataFilter.courseType || "All")
+        setsortby1(0)
+        setsortby2(0)
+        setListTags([])
+        setStartRegist(null)
+        setEndRegist(null)
+        setStartDuration(null)
+        setEndDuration(null)
+        setStartCost(0)
+        setEndCost(0)
+        setSelectType("All")
+        setDataSort({
+            sortby: 0,
+            sortway: 0
+        })
+        setDataFilter({
+            tags: [],
+            courseType: "All",
+            startRegist: null,
+            endRegist: null,
+            startDuration: null,
+            endDuration: null,
+            startCost: 0,
+            endCost: 0
+        })
+        onPressCancel()
+
     }
     useEffect(()=>{
         const getAllTag = async ()=>{
@@ -77,14 +93,11 @@ export const FilterCourse = ({
         const newList = listTags.filter(item => item.value !== v)
         setListTags(newList)
     }
-    const handleSort =()=>{
+    const handleSave =()=>{
         setDataSort({
             sortby: sortby1,
             sortway: sortby2
         })
-        onPressCancel()
-    }
-    const handleFilter =()=>{
         setDataFilter({
             tags: listTags,
             courseType: selectType,
@@ -125,10 +138,7 @@ export const FilterCourse = ({
                                 value={sortby2}
                             />
                         </View>
-                    </View>  
-                    <View style={stylesFilter.bottom}>
-                        <ButtonGreen title={"Sort"} action={handleSort}/>
-                    </View>                                                         
+                    </View>                                                      
                 </View>
 
                 {/* Filter */}
@@ -218,7 +228,7 @@ export const FilterCourse = ({
 
                     <View style={stylesFilter.bottom}>
                         <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Filter"} action={handleFilter}/>
+                        <ButtonGreen title={"Filter"} action={handleSave}/>
                     </View>                                                         
                 </View>
 
@@ -251,9 +261,17 @@ export const FilterCenter = ({
     const [listTags, setListTags] = useState(dataFilter.tags || [])
 
     const clearAll = ()=>{
-        setsortby1(dataSort.sortby || 0)
-        setsortby2((dataSort.sortway || 0))
-        setListTags(dataFilter.tags || [])
+        setsortby1(0)
+        setsortby2(0)
+        setListTags([])
+        setDataSort({
+            sortby: 0,
+            sortway: 0
+        })
+        setDataFilter({
+            tags: [],
+        })
+        onPressCancel()
     }
     useEffect(()=>{
         const getAllTag = async ()=>{
@@ -282,14 +300,11 @@ export const FilterCenter = ({
         const newList = listTags.filter(item => item.value !== v)
         setListTags(newList)
     }
-    const handleSort =()=>{
+    const handleSave =()=>{
         setDataSort({
             sortby: sortby1,
             sortway: sortby2
         })
-        onPressCancel()
-    }
-    const handleFilter =()=>{
         setDataFilter({
             tags: listTags,
         })
@@ -320,9 +335,6 @@ export const FilterCenter = ({
                                 value={sortby2}
                             />
                         </View>
-                    </View>  
-                    <View style={stylesFilter.bottom}>
-                        <ButtonGreen title={"Sort"} action={handleSort}/>
                     </View>                                                         
                 </View>
 
@@ -354,7 +366,7 @@ export const FilterCenter = ({
 
                     <View style={stylesFilter.bottom}>
                         <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Filter"} action={handleFilter}/>
+                        <ButtonGreen title={"Filter"} action={handleSave}/>
                     </View>                                                         
                 </View>
 
@@ -381,8 +393,13 @@ export const FilterTeacher = ({
         { label: "Des", value: 2},
     ]
     const clearAll = ()=>{
-        setsortby1(dataSort.sortby || 0)
-        setsortby2((dataSort.sortway || 0))
+        setsortby1(0)
+        setsortby2(0)
+        setDataSort({
+            sortby: 0,
+            sortway: 0
+        })
+        onPressCancel()
     }
 
     const handleSort =()=>{
@@ -420,7 +437,7 @@ export const FilterTeacher = ({
                     </View>  
                     <View style={stylesFilter.bottom}>
                         <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Sort"} action={handleSort}/>
+                        <ButtonGreen title={"Save"} action={handleSort}/>
                     </View>                                                       
                 </View>
             </View>
@@ -445,8 +462,6 @@ const stylesFilter = StyleSheet.create({
     },
     container:{
         rowGap: 16,
-        borderBottomWidth: 1,
-        borderColor: COLORS.lightText,
         padding: 16
     },
     comboBox: {
