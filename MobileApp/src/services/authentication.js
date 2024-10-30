@@ -1,6 +1,6 @@
 import axios from "axios"
-// const baseUrl = "http://192.168.2.3:5000/api/Authen"
-const baseUrl = "http://192.168.1.208:5000/api/Authen"
+const baseUrl = "http://192.168.2.3:5000/api/Authen"
+// const baseUrl = "http://192.168.1.208:5000/api/Authen"
 export const signupApi = async (name, email, username, password)=>{
     const url = baseUrl + "/signup"
     return await axios.post(url, {
@@ -9,6 +9,7 @@ export const signupApi = async (name, email, username, password)=>{
         "username": username,
         "password": password,
         "centerName": "",
+        "description": "",
         "tin": ""
     })
     .then(response => {

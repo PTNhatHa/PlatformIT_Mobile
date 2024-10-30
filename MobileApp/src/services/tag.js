@@ -1,14 +1,14 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5000/api/Course"
+const baseUrl = "http://192.168.2.3:5000/api/Tag"
 // const baseUrl = "http://192.168.1.208:5000/api/Course"
 
-export const getAllCourseCards = async ()=>{
-    return await axios.get(baseUrl + "/GetAllCourseCards")
+export const getAlltag = async ()=>{
+    return await axios.get(baseUrl + "/GetAlltag")
     .then(response => {
         // console.log(response.data);
         return response.data
     })
     .catch(error => {
-        console.log("Error GetAllCourseCards: ", error);
+        console.log("Error GetAlltag: ", error);
     })
 }

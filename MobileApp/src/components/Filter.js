@@ -1,12 +1,13 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import RNPickerSelect from 'react-native-picker-select';
 import { ButtonGreen, ButtonWhite } from "../components/Button";
 import { DateTimePickerComponent } from "../components/DateTimePicker";
 import { RadioBtn } from "../components/RadioBtn";
+import { getAlltag } from "../services/tag";
 
 export const FilterCourse = ({
     dataSort=[], setDataSort=()=>{}, 
@@ -28,6 +29,7 @@ export const FilterCourse = ({
     ]
 
     // Filter
+    const [allTags, setAllTags] = useState([])
     const [listTags, setListTags] = useState(dataFilter.tags || [])
     const [startRegist, setStartRegist] = useState(dataFilter.startRegist || null)
     const [endRegist, setEndRegist] = useState(dataFilter.endRegist || null)
@@ -48,17 +50,31 @@ export const FilterCourse = ({
         setEndCost(dataFilter.endCost || 0)
         setSelectType(dataFilter.courseType || "All")
     }
-    const allTags = [
-        { label: "Tag1", value: 1},
-        { label: "Tag2", value: 2},
-    ]
+    useEffect(()=>{
+        const getAllTag = async ()=>{
+            try{
+                const response = await getAlltag()
+                const data = response.map(item => {
+                    return{
+                        label: item.tagName, 
+                        value: item.idTag
+                    }
+                })
+                setAllTags(data)
+            } catch(e){
+
+            }
+        }
+        getAllTag()
+    }, [])
     const handleChooseTag = (v)=>{
-        if(!listTags.includes(v) && v !== null){
-            setListTags([...listTags, v])
+        const selectTag = allTags.find(item => item.value === v)
+        if(!listTags.some(item => item.value === v) && selectTag){
+            setListTags([...listTags, selectTag])
         }
     }
     const handleDeleteTag = (v)=>{
-        const newList = listTags.filter(item => item !== v)
+        const newList = listTags.filter(item => item.value !== v)
         setListTags(newList)
     }
     const handleSort =()=>{
@@ -130,10 +146,10 @@ export const FilterCourse = ({
                             </View>
                         </View>  
                         <View style={stylesFilter.tags}>
-                            {listTags.map(item => 
-                                <View style={stylesFilter.wrapTag} key={item}>
-                                    <Text style={stylesFilter.textTag}>{item}</Text>
-                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item)}>
+                            {listTags?.map(item => 
+                                <View style={stylesFilter.wrapTag} key={item.value}>
+                                    <Text style={stylesFilter.textTag}>{item.label}</Text>
+                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
                                         <AntDesign name="close" size={18} color={COLORS.main} />
                                     </TouchableOpacity>
                                 </View>
@@ -231,6 +247,7 @@ export const FilterCenter = ({
     ]
 
     // Filter
+    const [allTags, setAllTags] = useState([])
     const [listTags, setListTags] = useState(dataFilter.tags || [])
 
     const clearAll = ()=>{
@@ -238,18 +255,31 @@ export const FilterCenter = ({
         setsortby2((dataSort.sortway || 0))
         setListTags(dataFilter.tags || [])
     }
+    useEffect(()=>{
+        const getAllTag = async ()=>{
+            try{
+                const response = await getAlltag()
+                const data = response.map(item => {
+                    return{
+                        label: item.tagName, 
+                        value: item.idTag
+                    }
+                })
+                setAllTags(data)
+            } catch(e){
 
-    const allTags = [
-        { label: "Tag1", value: 1},
-        { label: "Tag2", value: 2},
-    ]
+            }
+        }
+        getAllTag()
+    }, [])
     const handleChooseTag = (v)=>{
-        if(!listTags.includes(v) && v !== null){
-            setListTags([...listTags, v])
+        const selectTag = allTags.find(item => item.value === v)
+        if(!listTags.some(item => item.value === v) && selectTag){
+            setListTags([...listTags, selectTag])
         }
     }
     const handleDeleteTag = (v)=>{
-        const newList = listTags.filter(item => item !== v)
+        const newList = listTags.filter(item => item.value !== v)
         setListTags(newList)
     }
     const handleSort =()=>{
@@ -312,9 +342,9 @@ export const FilterCenter = ({
                         </View>  
                         <View style={stylesFilter.tags}>
                             {listTags.map(item => 
-                                <View style={stylesFilter.wrapTag} key={item}>
-                                    <Text style={stylesFilter.textTag}>{item}</Text>
-                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item)}>
+                                <View style={stylesFilter.wrapTag} key={item.value}>
+                                    <Text style={stylesFilter.textTag}>{item.label}</Text>
+                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
                                         <AntDesign name="close" size={18} color={COLORS.main} />
                                     </TouchableOpacity>
                                 </View>
@@ -442,7 +472,9 @@ const stylesFilter = StyleSheet.create({
     },
     tags:{
         flexDirection: "row",
-        columnGap: 4
+        columnGap: 4,
+        rowGap: 4,
+        flexWrap: "wrap"
     },
     wrapTag:{
         paddingHorizontal: 8,
