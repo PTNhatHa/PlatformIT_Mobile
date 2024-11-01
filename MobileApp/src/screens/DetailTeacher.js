@@ -1,18 +1,16 @@
 import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
-import { Tag } from "../components/Tag"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
+import { CardHorizontalProfessional } from "../components/CardHorizontal";
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import { useEffect, useState } from "react";
-import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ButtonIconLightGreen } from "../components/Button";
-import { CardVirticalCourse } from "../components/CardVertical";
 import { getDetailTeacher } from "../services/user";
 import { openLink } from "../utils/utils";
 
@@ -73,7 +71,7 @@ export const DetailTeacher =({route})=>{
                             end={{ x: 0, y: 0 }}
                         >
                         <View style={styles.wrapInfoContent}>
-                            <Image source={{uri: data.teacherAvatar}} style={styles.infoImage}/>
+                            <Image source={data.teacherAvatar ? {uri: data.teacherAvatar} : DefaultAva} style={styles.infoImage}/>
                             <Text style={styles.infoTitle}>{data.name ? data.name : "<Unknown>"}</Text>    
                             <View style={[styles.inforContent, {paddingTop: 10}]}>
                                 <AntDesign name="book" size={16} color="white" />
@@ -86,7 +84,9 @@ export const DetailTeacher =({route})=>{
                                 </View>
                                 : ""
                             }
-                            <Text style={[styles.infoText, {paddingTop: 10}]}>{data.teacherDescription}</Text>
+                            {data.teacherDescription &&
+                                <Text style={[styles.infoText, {paddingTop: 10}]}>{data.teacherDescription}</Text>
+                            }
                         </View>
                     </LinearGradient>
                 </View>
@@ -115,43 +115,47 @@ export const DetailTeacher =({route})=>{
                     </TouchableOpacity>
 
                     {/* Social/Profile */}
-                    <View>
-                        <LinearGradient 
-                            colors={['#4D768A', '#75A2A2']} 
-                            style={styles.miniCard}
-                            start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
-                            end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
-                        >
-                            <View style={styles.titleCard}>
-                                <MaterialCommunityIcons name="layers-triple" size={16} color={COLORS.secondMain} />
-                                <Text style={styles.titleCardText}>Social/Profile</Text>
-                            </View>
-                            <View style={styles.contentCardCol}>
-                                {data.links?.map(item => 
-                                    <TouchableOpacity style={styles.wrapSocial} key={item.idProfileLink} onPress={()=>openLink(item.url)}>
-                                        <Text style={styles.infoText}>{item.name}</Text>
-                                        <MaterialIcons name="open-in-new" size={16} color="white" />
-                                    </TouchableOpacity>
-                                )}
-                            </View>
-                        </LinearGradient>
-                    </View>
+                    {data.links?.length > 0 &&
+                        <View>
+                            <LinearGradient 
+                                colors={['#4D768A', '#75A2A2']} 
+                                style={styles.miniCard}
+                                start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
+                                end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
+                            >
+                                <View style={styles.titleCard}>
+                                    <MaterialCommunityIcons name="layers-triple" size={16} color={COLORS.secondMain} />
+                                    <Text style={styles.titleCardText}>Social/Profile</Text>
+                                </View>
+                                <View style={styles.contentCardCol}>
+                                    {data.links?.map(item => 
+                                        <TouchableOpacity style={styles.wrapSocial} key={item.idProfileLink} onPress={()=>openLink(item.url)}>
+                                            <Text style={styles.infoText}>{item.name}</Text>
+                                            <MaterialIcons name="open-in-new" size={16} color="white" />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            </LinearGradient>
+                        </View>
+                    }
                 </View>
 
                 {/* Professional Qualifications */}
-                <View style={styles.wrapperPro}>
-                    <View style={styles.titleCard}>
-                        <MaterialCommunityIcons name="professional-hexagon" size={16} color={COLORS.secondMain} />
-                        <Text style={styles.titleCardText}>Professional Qualifications</Text>
+                {data.qualificationModels?.length > 0 &&
+                    <View style={styles.wrapperPro}>
+                        <View style={styles.titleCard}>
+                            <MaterialCommunityIcons name="professional-hexagon" size={16} color={COLORS.secondMain} />
+                            <Text style={styles.titleCardText}>Professional Qualifications</Text>
+                        </View>
+                        <FlatList
+                            data={data.qualificationModels}
+                            renderItem={({item}) => <CardHorizontalProfessional data={item}/>}
+                            horizontal={true}
+                            keyExtractor={item => item.idQualification}
+                            showsHorizontalScrollIndicator={false}
+                            />
                     </View>
-                    <FlatList
-                        data={data.qualificationModels}
-                        renderItem={({item}) => <CardHorizontalProfessional data={item}/>}
-                        horizontal={true}
-                        keyExtractor={item => item.idQualification}
-                        showsHorizontalScrollIndicator={false}
-                    />
-                </View>
+                }
 
                 {/* Top Courses */}
                 <View style={styles.wrapper}>
@@ -174,7 +178,8 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{
         // padding: 16,
-        backgroundColor: "#FAFAFA"
+        backgroundColor: "#FAFAFA",
+        minHeight: "100%"
     },
     wrapper: {
         margin: 16,

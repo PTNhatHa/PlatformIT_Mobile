@@ -162,10 +162,12 @@ export const CardVirticalTeacher = ({data = initTeacher})=>{
             <Image source={data.avatarPath? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.name ? data.name : "<Unknown>"}</Text>
-                <View style={styles.content}>
-                    <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />
-                    <Text style={styles.dataText}>{data.teachingMajor}</Text>
-                </View>
+                {data.teachingMajor &&
+                    <View style={styles.content}>
+                        <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>{data.teachingMajor}</Text>
+                    </View>
+                }
                 {data.coursesCount > 0 ?
                     <View style={styles.content}>
                         <AntDesign name="book" size={10} color={COLORS.stroke} />
