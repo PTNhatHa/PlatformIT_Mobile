@@ -120,7 +120,9 @@ export const CardHorizontalCenter = ({data = initCenter})=>{
             <Image source={data.img || DefaultImg} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
-                <Text style={styles.dataText}>Description: {data.description}</Text>
+                {data.description &&
+                    <Text style={styles.dataText}>Description: {data.description}</Text>
+                }
                 {data.listTagCourses?.length > 0 && 
                     <View style={styles.tags}>
                         {showTags.map(item=>

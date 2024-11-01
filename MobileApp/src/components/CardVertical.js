@@ -63,20 +63,22 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
                 <View style={styles.content}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
-                        {formatDateTime(data.courseStartDate)} - {formatDateTime(data.courseEndDate)}
+                        {data.courseStartDate ? 
+                            formatDateTime(data.courseStartDate) + " - " + formatDateTime(data.courseEndDate)
+                        :
+                            "Created on: " + formatDateTime(data.createdDate)
+                        }
                     </Text>
                 </View>
-                <View style={styles.content}>
-                    {data.registStartDate &&
+                {data.registStartDate &&
+                    <View style={styles.content}>
                         <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                    }
-                    {data.registStartDate &&
                         <Text style={styles.dataText}>
                             {data.isRegist ? "Registing" : 
                                 `${formatDateTime(data.registStartDate)} - ${formatDateTime(data.registEndDate)}`}
                         </Text>
-                    }
-                </View>
+                    </View>
+                }
                 <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.price}</Text>
                     <Text style={styles.cost}>{data.price}</Text>
@@ -129,7 +131,9 @@ export const CardVirticalCenter = ({data = initCenter})=>{
             <Image source={data.avatarPath} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
-                <Text style={styles.dataText}>Description: {data.description}</Text>
+                {data.description &&
+                    <Text style={styles.dataText}>Description: {data.description}</Text>
+                }
                 {data.listTagCourses?.length > 0 && 
                     <View style={styles.content}>
                         {showTags.map(item=>
