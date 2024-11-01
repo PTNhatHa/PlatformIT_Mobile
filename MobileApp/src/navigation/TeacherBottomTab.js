@@ -17,6 +17,9 @@ import { TeacherAllCourse } from "../screens/Teacher/TabMyCourse/TeacherAllCours
 import { TeacherDetailCourse } from "../screens/Teacher/TabMyCourse/TeacherDetailCourse";
 import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherDetailAttendance";
 import { NotificationScreen } from "../screens/Notification";
+import { useEffect, useState } from "react";
+import { useUser } from "../contexts/UserContext";
+import { getAllNotificationOfUser } from "../services/user";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -75,22 +78,6 @@ const StackMyCourseScreen = ()=>{
     )
 }
 
-const StackNotiScreen = ()=>{
-    const StackAccount = createNativeStackNavigator()
-    return(
-        <StackAccount.Navigator
-            screenOptions={{
-                headerTintColor: COLORS.main
-            }}
-        >
-            <StackAccount.Screen
-                name="Notification"
-                component={NotificationScreen}
-            />
-        </StackAccount.Navigator>
-    )
-}
-
 const StackAccountScreen = ()=>{
     const StackAccount = createNativeStackNavigator()
     return(
@@ -117,6 +104,25 @@ const StackAccountScreen = ()=>{
 
 export const TeacherBottomTab = ()=>{
     const Tab = createBottomTabNavigator()
+    const {state} = useUser()
+    const [allNoti, setAllNoti]= useState([])
+    const [unReadNoti, setUnReadNoti]= useState(0)
+    useEffect(()=>{
+        const getNoti = async()=>{
+            const response = await getAllNotificationOfUser(state.idUser)
+            let notiUnRead = 0
+            if(response){
+                response.forEach(item => {
+                    if(item.isRead === 0){
+                        notiUnRead +=1
+                    }
+                });
+                setAllNoti(response)
+            }
+            setUnReadNoti(notiUnRead)
+        }
+        getNoti()
+    }, [])
     return(
         <Tab.Navigator
             screenOptions={({route})=>({
@@ -148,7 +154,14 @@ export const TeacherBottomTab = ()=>{
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }} />
             <Tab.Screen name="My Course" component={StackMyCourseScreen} />
             <Tab.Screen name="My Lecture" component={Home} />
-            <Tab.Screen name="Noti" component={StackNotiScreen} />
+            <Tab.Screen name="Noti" 
+                options={unReadNoti > 0 && { 
+                    tabBarBadge: unReadNoti,
+                    tabBarBadgeStyle: { backgroundColor: COLORS.main, color: 'white' }
+                }}
+            >
+                {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} />}
+            </Tab.Screen>
             <Tab.Screen name="Chat" component={Home} />
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
         </Tab.Navigator>
