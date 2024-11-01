@@ -1,3 +1,5 @@
+import { Linking } from "react-native";
+
 export const formatDateTime = (date) => {
     if(date === null) return ""
     // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
@@ -29,5 +31,13 @@ export const determineFileType = (uri)=>{
         } else{
             return "Unknown"
         }
+    }
+}
+export const openLink = async(uri)=>{
+    try{
+        await Linking.openURL(uri)
+    }
+    catch(e){
+        console.log("==>Error opening link: ", e);
     }
 }

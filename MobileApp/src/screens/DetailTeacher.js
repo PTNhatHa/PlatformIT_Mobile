@@ -14,6 +14,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { ButtonIconLightGreen } from "../components/Button";
 import { CardVirticalCourse } from "../components/CardVertical";
 import { getDetailTeacher } from "../services/user";
+import { openLink } from "../utils/utils";
 
 const initTeacher={
     "name": "Phan Trần Nhật Hạ",
@@ -92,8 +93,8 @@ export const DetailTeacher =({route})=>{
                     </LinearGradient>
                 </View>
 
-                {/* Center */}
                 <View style={styles.wrapper}>
+                {/* Center */}
                     <TouchableOpacity>
                         <LinearGradient 
                             colors={['#4D768A', '#75A2A2']} 
@@ -114,6 +115,8 @@ export const DetailTeacher =({route})=>{
                             </View>
                         </LinearGradient>
                     </TouchableOpacity>
+
+                    {/* Social/Profile */}
                     <View>
                         <LinearGradient 
                             colors={['#4D768A', '#75A2A2']} 
@@ -126,12 +129,12 @@ export const DetailTeacher =({route})=>{
                                 <Text style={styles.titleCardText}>Social/Profile</Text>
                             </View>
                             <View style={styles.contentCardCol}>
-                            {data.links?.map(item => 
-                                <TouchableOpacity style={styles.wrapSocial} key={item.idProfileLink}>
-                                    <Text style={styles.infoText}>{item.name}</Text>
-                                    <MaterialIcons name="open-in-new" size={16} color="white" />
-                                </TouchableOpacity>
-                            )}
+                                {data.links?.map(item => 
+                                    <TouchableOpacity style={styles.wrapSocial} key={item.idProfileLink} onPress={()=>openLink(item.url)}>
+                                        <Text style={styles.infoText}>{item.name}</Text>
+                                        <MaterialIcons name="open-in-new" size={16} color="white" />
+                                    </TouchableOpacity>
+                                )}
                             </View>
                         </LinearGradient>
                     </View>

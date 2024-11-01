@@ -230,7 +230,6 @@ const initProfessional={
 import { WebView } from 'react-native-webview';
 export const CardHorizontalProfessional = ({data = initProfessional})=>{
     const [selectImg, setSelectImg] = useState("")
-
     return(
         <>
             <TouchableOpacity style={styles.container} key={data.idQualification} onPress={()=>setSelectImg(data.path)}>
