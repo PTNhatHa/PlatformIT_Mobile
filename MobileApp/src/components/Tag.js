@@ -25,6 +25,14 @@ export const TagYellow = ({label})=>{
     )
 }
 
+export const TagRed = ({label})=>{
+    return(
+        <View style={[styles.container, {backgroundColor: 'rgba(192, 15, 12, 0.3)'}]}>
+            <Text style={[styles.text, {color: COLORS.red}]}>{label}</Text>
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container:{
         paddingHorizontal: 8,

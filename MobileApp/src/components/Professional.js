@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, BackHandler, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { Tag, TagYellow } from "./Tag";
+import { Tag, TagRed, TagYellow } from "./Tag";
 import * as DocumentPicker from 'expo-document-picker';
 import { determineFileType } from "../utils/utils";
 import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "./Button";
@@ -180,11 +180,14 @@ export const Professional = ({
                     {professions ? 
                     professions.map((item)=>
                     <View style={styles.container} key={item.idQualification}>
+                        {/* 1 approved, 2 pending, 0 rejected */}
                         {item.status === 2 ? 
                             <TagYellow label={"Pending"}/>
                             :
-                            !item.isNew ? 
-                            <Tag label={"Approved"}/> : ""
+                            item.status === 1 ?
+                            <Tag label={"Approved"}/> 
+                            :
+                            <TagRed label={"Reject. Reason: " + item.reason}/>
                         }
                         <TextInput 
                             style={[styles.input]}

@@ -73,22 +73,20 @@ export const DetailTeacher =({route})=>{
                             end={{ x: 0, y: 0 }}
                         >
                         <View style={styles.wrapInfoContent}>
-                        <Image source={{uri: data.avatarPath}} style={styles.infoImage}/>
-                        <Text style={styles.infoTitle}>{data.name ? data.name : "<Unknown>"}</Text>    
-                        {/* <Text style={styles.infoText}>{data.description}</Text> */}
-                        {data.courses?.length > 0 &&
-                            <View style={styles.inforContent}>
+                            <Image source={{uri: data.teacherAvatar}} style={styles.infoImage}/>
+                            <Text style={styles.infoTitle}>{data.name ? data.name : "<Unknown>"}</Text>    
+                            <View style={[styles.inforContent, {paddingTop: 10}]}>
                                 <AntDesign name="book" size={16} color="white" />
-                                <Text style={styles.infoText}>{data.courses.length} courses</Text>
+                                <Text style={styles.infoText}>{data.coursesCount} {data.coursesCount > 1 ? "courses" : "course"}</Text>
                             </View>
-                        }
-                        {data.teachingMajor? 
-                            <View style={styles.inforContent}>
-                                <SimpleLineIcons name="graduation" size={16} color="white" />
-                                <Text style={styles.infoText}>{data.teachingMajor}</Text>
-                            </View>
-                            : ""
-                        }
+                            {data.teachingMajor? 
+                                <View style={styles.inforContent}>
+                                    <SimpleLineIcons name="graduation" size={16} color="white" />
+                                    <Text style={styles.infoText}>{data.teachingMajor}</Text>
+                                </View>
+                                : ""
+                            }
+                            <Text style={[styles.infoText, {paddingTop: 10}]}>{data.teacherDescription}</Text>
                         </View>
                     </LinearGradient>
                 </View>
@@ -107,10 +105,10 @@ export const DetailTeacher =({route})=>{
                                 <Text style={styles.titleCardText}>Center</Text>
                             </View>
                             <View style={styles.contentCard}>
-                                <Image source={""} style={styles.avata}/>
+                                <Image source={{uri: data.centerAvatar}} style={styles.avata}/>
                                 <View>
                                     <Text style={styles.titleContentCard}>{data.centerName}</Text>
-                                    <Text style={{color: "white"}}>description</Text>
+                                    <Text style={{color: "white"}}>{data.centerDescription}</Text>
                                 </View>
                             </View>
                         </LinearGradient>
@@ -198,7 +196,8 @@ const styles = StyleSheet.create({
     infoTitle:{
         fontSize: 24,
         fontWeight: "bold",
-        color: "white"
+        color: "white",
+        textAlign: "center"
     },
     infoText: {
         fontSize: 14,
@@ -221,28 +220,17 @@ const styles = StyleSheet.create({
 
     wrapInfo: {
         ...commonStyles.shadow,
-        height: width*2/3,
     },
     infoImg:{
         width: '100%',
-        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
     },
     wrapInfoContent: {
-        position: "absolute",
         width: '100%',
-        height: '100%',
         padding: 16,
         backgroundColor: 'rgba(0, 0, 0, 0.2)',
         justifyContent: "flex-end",
-    },
-    btnUpDown:{
-        position: "absolute",
-        alignItems: "center",
-        bottom: 10,
-        left: 0,
-        right: 0
     },
     miniCard:{
         borderRadius: 8,

@@ -249,7 +249,7 @@ export const TeacherHome = ({navigation})=>{
 const styles = StyleSheet.create({
     container:{
         paddingHorizontal: 16,
-        backgroundColor: "white",
+        backgroundColor: "#FAFAFA",
     },
     wrapper:{
         paddingVertical: 16,
