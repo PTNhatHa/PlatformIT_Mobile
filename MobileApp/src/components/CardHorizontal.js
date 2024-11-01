@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import { Tag, TagNoColor } from "./Tag"
 import Feather from '@expo/vector-icons/Feather';
@@ -6,7 +6,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { formatDateTime } from "../utils/utils";
+import { determineFileType, formatDateTime } from "../utils/utils";
 import { useState, useEffect } from "react"
 import { useNavigation } from "@react-navigation/native";
 import { ButtonIcon } from "./Button";
@@ -226,21 +226,56 @@ const initProfessional={
     title: "Title",
     description: "description"
 }
+
+import { WebView } from 'react-native-webview';
 export const CardHorizontalProfessional = ({data = initProfessional})=>{
+    const [selectImg, setSelectImg] = useState("")
+
     return(
-        <TouchableOpacity style={styles.container} key={data.idQualification}>
-            <Image source={{uri: data.path}} style={styles.img}/>
-            <View>
-                <Text style={styles.title}>{data.qualificationName}</Text>
-                <Text style={styles.dataText}>{data.description}</Text>
-            </View>
-        </TouchableOpacity>
+        <>
+            <TouchableOpacity style={styles.container} key={data.idQualification} onPress={()=>setSelectImg(data.path)}>
+                {determineFileType(data.path) === "Image" ? 
+                    <Image source={{uri: data.path}} style={styles.img}/>
+                    :
+                    <View style={styles.img}>
+                        <Text style={styles.pdf}>Open PDF</Text>
+                    </View>
+                }
+                <View>
+                    <Text style={styles.title}>{data.qualificationName}</Text>
+                    <Text style={styles.dataText}>{data.description}</Text>
+                </View>
+            </TouchableOpacity>
+            <Modal
+                visible={!!selectImg}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={()=>setSelectImg("")}
+            >
+                <View style={styles.selectImgWrapper}>
+                    <TouchableOpacity style={styles.close} onPress={()=>setSelectImg("")}>
+                        <AntDesign name="close" size={30} color="white" />
+                    </TouchableOpacity>
+                    {determineFileType(selectImg) === "Pdf" ?
+                        <WebView
+                            source={{ uri: `https://docs.google.com/gview?embedded=true&url=${selectImg}` }}
+                            style={{ flex: 1 }}
+                            cacheMode="LOAD_NO_CACHE"
+                        />
+                        :
+                        <Image source={{uri: selectImg}} style={styles.selectImg}/>
+                    }
+                </View>
+            </Modal>
+        </>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         padding: 12,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
         borderRadius: 4,
         rowGap: 6,
         width: 160,
@@ -253,7 +288,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 4,
-        backgroundColor: COLORS.lightText
+        backgroundColor: COLORS.lightText,
+        justifyContent: "center",
+        alignItems: "center"
     },
     title:{
         fontSize: 16,
@@ -313,5 +350,30 @@ const styles = StyleSheet.create({
         height: 16,
         width: 16,
         borderRadius: 90,
-    }
+    },
+    wrapPdf: {
+        borderWidth: 10,
+        borderColor: "red",
+        flex: 1,
+        backgroundColor: "pink"
+    },
+    selectImgWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16
+    },
+    close:{
+        alignSelf: "flex-end"
+    },
+    selectImg: {
+        flex: 1,
+        resizeMode: "contain",
+    },
+    pdf:{
+        color: COLORS.main,
+        fontStyle: "italic",
+        fontWeight: "bold"
+    },
 })

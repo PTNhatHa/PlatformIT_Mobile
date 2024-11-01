@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, BackHandler, FlatList, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Tag, TagYellow } from "./Tag";
@@ -171,98 +171,96 @@ export const Professional = ({
             setLoading(false)
         }
     }
-    const openPdf = async(uri)=>{
-        try{
-            await Linking.openURL(uri)
-        }
-        catch(e){
-            console.log("==>Error opening pdf: ", e);
-        }
-    }
+
     return(
         <>
-        <View style={styles.wrapContainer}>
-            <Text style={[commonStyles.title]}>Professional Qualifications</Text>
-            <View style={{rowGap: 10, paddingTop: 10}}>
-                {professions ? 
-                professions.map((item)=>
-                <View style={styles.container} key={item.idQualification}>
-                    {item.status === 2 ? 
-                        <TagYellow label={"Pending"}/>
-                        :
-                        !item.isNew ? 
-                        <Tag label={"Approved"}/> : ""
-                    }
-                    <TextInput 
-                        style={[styles.input]}
-                        value={item.qualificationName}
-                        placeholder={"*Title"}
-                        placeholderTextColor={COLORS.red}
-                        onChangeText={(v)=>handleChangeData(item.idQualification, v, "qualificationName")}
-                        editable={item.isNew === true}
-                    />
-                    <TextInput 
-                        style={[styles.input]}
-                        value={item.description}
-                        placeholder={"*Desciption"}
-                        placeholderTextColor={COLORS.red}
-                        onChangeText={(v)=>handleChangeData(item.idQualification, v, "description")}
-                        editable={item.isNew === true}
-                    />
-                    <View style={styles.wrap}>
-                        <View>
-                            <View style={styles.wrapbtn}>
-                                {item.isNew ? 
-                                    <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
-                                        <AntDesign name="file1" size={20} color={COLORS.stroke} />
-                                    </TouchableOpacity>
-                                    : ""  
-                                }
-                                <TouchableOpacity style={styles.btn} onPress={()=>confirmDelete(item)}>
-                                    <AntDesign name="delete" size={20} color={COLORS.stroke} />
-                                </TouchableOpacity>
-                            </View> 
-                            {item.isNew &&
-                                <TouchableOpacity style={styles.btn} onPress={() => handleSave(item)}>
-                                    <FontAwesome name="check" size={20} color={COLORS.stroke} />
-                                </TouchableOpacity>
-                            }
-                        </View>
-                        { item.isNew ? 
-                                determineFileType(item.path.uri) === "Image" ?
-                                <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
-                                    <Image 
-                                        source={{uri: item.path.uri}}
-                                        style={styles.image}
-                                    />
-                                </TouchableOpacity> 
-                                : 
-                                determineFileType(item.path.uri) === "Pdf" ?
-                                <TouchableOpacity onPress={()=>openPdf(item.path.uri)}>
-                                    <Text style={styles.pdf}>Open pdf</Text>
-                                </TouchableOpacity>
-                                :""
-                            : 
-                                determineFileType(item.path) === "Image" ?
-                                <TouchableOpacity onPress={()=>handleSelectImg(item.path)}>
-                                    <Image 
-                                        source={{uri: item.path}}
-                                        style={styles.image}
-                                    />
-                                </TouchableOpacity> 
-                                : 
-                                determineFileType(item.path) === "Pdf" ?
-                                <TouchableOpacity onPress={()=>openPdf(item.path)}>
-                                    <Text style={styles.pdf}>Open pdf</Text>
-                                </TouchableOpacity>
-                                :"" 
+            <View style={styles.wrapContainer}>
+                <Text style={[commonStyles.title]}>Professional Qualifications</Text>
+                <View style={{rowGap: 10, paddingTop: 10}}>
+                    {professions ? 
+                    professions.map((item)=>
+                    <View style={styles.container} key={item.idQualification}>
+                        {item.status === 2 ? 
+                            <TagYellow label={"Pending"}/>
+                            :
+                            !item.isNew ? 
+                            <Tag label={"Approved"}/> : ""
                         }
-                         
+                        <TextInput 
+                            style={[styles.input]}
+                            value={item.qualificationName}
+                            placeholder={"*Title"}
+                            placeholderTextColor={COLORS.red}
+                            onChangeText={(v)=>handleChangeData(item.idQualification, v, "qualificationName")}
+                            editable={item.isNew === true}
+                        />
+                        <TextInput 
+                            style={[styles.input]}
+                            value={item.description}
+                            placeholder={"*Desciption"}
+                            placeholderTextColor={COLORS.red}
+                            onChangeText={(v)=>handleChangeData(item.idQualification, v, "description")}
+                            editable={item.isNew === true}
+                        />
+                        <View style={styles.wrap}>
+                            <View>
+                                <View style={styles.wrapbtn}>
+                                    {item.isNew ? 
+                                        <TouchableOpacity style={styles.btn} onPress={() => pickFile(item.idQualification)}>
+                                            <AntDesign name="file1" size={20} color={COLORS.stroke} />
+                                        </TouchableOpacity>
+                                        : ""  
+                                    }
+                                    <TouchableOpacity style={styles.btn} onPress={()=>confirmDelete(item)}>
+                                        <AntDesign name="delete" size={20} color={COLORS.stroke} />
+                                    </TouchableOpacity>
+                                </View> 
+                                {item.isNew &&
+                                    <TouchableOpacity style={styles.btn} onPress={() => handleSave(item)}>
+                                        <FontAwesome name="check" size={20} color={COLORS.stroke} />
+                                    </TouchableOpacity>
+                                }
+                            </View>
+                            { item.isNew ? 
+                                    determineFileType(item.path.uri) === "Image" ?
+                                    <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
+                                        <Image 
+                                            source={{uri: item.path.uri}}
+                                            style={styles.image}
+                                        />
+                                    </TouchableOpacity> 
+                                    : 
+                                    determineFileType(item.path.uri) === "Pdf" ?
+                                    <TouchableOpacity onPress={()=>handleSelectImg(item.path.uri)}>
+                                        <View style={styles.image}>
+                                            <Text style={styles.pdf}>Open pdf</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    :""
+                                : 
+                                    determineFileType(item.path) === "Image" ?
+                                    <TouchableOpacity onPress={()=>handleSelectImg(item.path)}>
+                                        <Image 
+                                            source={{uri: item.path}}
+                                            style={styles.image}
+                                        />
+                                    </TouchableOpacity> 
+                                    : 
+                                    determineFileType(item.path) === "Pdf" ?
+                                    <TouchableOpacity onPress={()=>handleSelectImg(item.path)}>
+                                        <View style={styles.image}>
+                                            <Text style={styles.pdf}>Open pdf</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    :"" 
+                            }
+                            
+                        </View>
                     </View>
+                    ): ""}
+                    {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
+                    <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
                 </View>
-                ): ""}
-                {error && <Text style={{ color: COLORS.red }}>{error}</Text>}
-                <ButtonIconLightGreen title={"Add"} icon={<AntDesign name="plus" size={14} color={COLORS.main} />} action={()=>handleAddNew()}/>
             </View>
             <Modal
                 visible={!!selectImg}
@@ -274,34 +272,34 @@ export const Professional = ({
                     <TouchableOpacity style={styles.close} onPress={()=>setSelectImg("")}>
                         <AntDesign name="close" size={30} color="white" />
                     </TouchableOpacity>
-                    {/* {determineFileType(selectImg) === "Pdf" ?
-                        <WebView
-                            source={{ uri: selectImg }}
-                            style={styles.wrapPdf}
-                            scalesPageToFit={true} // Đảm bảo tệp PDF có thể được điều chỉnh theo kích thước trang
-                            javaScriptEnabled={true} // Bật JavaScript
-                            startInLoadingState={true} // Hiển thị trạng thái loading trong khi tải tệp
-                        />
-                        : */}
+                    {determineFileType(selectImg) === "Pdf" ?
+                        <View style={{ flex: 1 }}>
+                            <WebView
+                                source={{ uri: `https://docs.google.com/gview?embedded=true&url=${selectImg}` }}
+                                style={{ flex: 1 }}
+                                cacheMode="LOAD_NO_CACHE"
+                            />
+                        </View>
+                        :
                         <Image source={{uri: selectImg}} style={styles.selectImg}/>
-                    {/* } */}
+                    }
                 </View>
             </Modal>
-        </View>
-        {loading &&
-            <Modal
-                visible={loading}
-                transparent={true}
-                animationType="fade"
-            >
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
-            </Modal>
-        }  
+            {loading &&
+                <Modal
+                    visible={loading}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <View style={styles.wrapLoading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                </Modal>
+            }  
         </>
     )
 }
+
 const styles = StyleSheet.create({
     wrapContainer: {
         ...commonStyles.shadow,
@@ -350,6 +348,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 8,
+        justifyContent: "center",
+        alignItems: "center"
     },
     selectImgWrapper: {
         position: "absolute",
