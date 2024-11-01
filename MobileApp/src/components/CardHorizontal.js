@@ -149,13 +149,13 @@ const initTeacher={
 export const CardHorizontalTeacher = ({data = initTeacher, isBtn = false})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher")} key={data.idUser}>
-            <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
+        <TouchableOpacity style={styles.containerTecher} onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idUser })} key={data.idUser}>
+            <Image source={data.avatarPath? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View style={{alignItems: "center"}}>
-                <Text style={[styles.title, {textAlign: "center"}]}>{data.name}</Text>
+                <Text style={[styles.title, {textAlign: "center"}]}>{data.name ? data.name : "<Unknown>"}</Text>
                 <Text style={[styles.dataText, {textAlign: "center", color: COLORS.main}]}>{data.teachingMajor}</Text>
-                {data.coursesCount.length > 0 ?
-                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
+                {data.coursesCount > 0 ?
+                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount === 1 ? "Course": "Courses"}</Text>
                     : ""
                 }
             </View>
@@ -228,10 +228,10 @@ const initProfessional={
 }
 export const CardHorizontalProfessional = ({data = initProfessional})=>{
     return(
-        <TouchableOpacity style={styles.container}>
-            <Image source={data.img} style={styles.img}/>
+        <TouchableOpacity style={styles.container} key={data.idQualification}>
+            <Image source={{uri: data.path}} style={styles.img}/>
             <View>
-                <Text style={styles.title}>{data.title}</Text>
+                <Text style={styles.title}>{data.qualificationName}</Text>
                 <Text style={styles.dataText}>{data.description}</Text>
             </View>
         </TouchableOpacity>
@@ -241,13 +241,11 @@ export const CardHorizontalProfessional = ({data = initProfessional})=>{
 const styles = StyleSheet.create({
     container: {
         padding: 12,
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
-        borderRadius: 8,
+        borderRadius: 4,
         rowGap: 6,
         width: 160,
         marginRight: 10,
-        backgroundColor: "white"
+        backgroundColor: "white",
     },
     img: {
         width: "100%",

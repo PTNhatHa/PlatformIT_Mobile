@@ -462,7 +462,6 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                 { key: 'Fourth', title: 'Assign' },
               ])
         }
-
         getAllCard()
     }, [])
         

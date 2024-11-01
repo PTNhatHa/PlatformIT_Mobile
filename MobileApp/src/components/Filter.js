@@ -228,7 +228,7 @@ export const FilterCourse = ({
 
                     <View style={stylesFilter.bottom}>
                         <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Filter"} action={handleSave}/>
+                        <ButtonGreen title={"Save"} action={handleSave}/>
                     </View>                                                         
                 </View>
 
@@ -366,7 +366,7 @@ export const FilterCenter = ({
 
                     <View style={stylesFilter.bottom}>
                         <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Filter"} action={handleSave}/>
+                        <ButtonGreen title={"Save"} action={handleSave}/>
                     </View>                                                         
                 </View>
 

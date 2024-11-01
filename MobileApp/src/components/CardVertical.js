@@ -158,21 +158,21 @@ const initTeacher={
 export const CardVirticalTeacher = ({data = initTeacher})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher")} key={data.idUser}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idUser })} key={data.idUser}>
             <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
             <View>
-                <Text style={styles.title}>{data.name}</Text>
+                <Text style={styles.title}>{data.name ? data.name : "<Unknown>"}</Text>
                 <View style={styles.content}>
                     <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>{data.teachingMajor}</Text>
                 </View>
-                {/* {data.coursesCount?.length > 0 ?
+                {data.coursesCount > 0 ?
                     <View style={styles.content}>
                         <AntDesign name="book" size={10} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount.length === 1 ? "Course": "Courses"}</Text>
+                        <Text style={styles.dataText}>{data.coursesCount} {data.coursesCount === 1 ? "Course": "Courses"}</Text>
                     </View>
                     : ""
-                } */}
+                }
             </View>
         </TouchableOpacity>
     )

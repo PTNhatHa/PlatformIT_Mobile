@@ -7,195 +7,166 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ButtonIconLightGreen } from "../components/Button";
 import { CardVirticalCourse } from "../components/CardVertical";
+import { getDetailTeacher } from "../services/user";
 
 const initTeacher={
-    idUser: 1,
-    img: DefaultImg,
-    nameTeacher: "Name Teacher",
-    major: "Chuyên ngành 1",
-    description: "description",
-    students: 500,
-    center: {
-        id:1,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-    },
-    courses: [
-        {
-            id: 1,
-            img: "",
-            title: "Title",
-            listTags: [
-                { id: 1, value: "Web developer"},
-                { id: 2, value: "Backend"},
-                { id: 3, value: "Frontend"},
-            ],
-            startCourse: new Date(),
-            endCourse: new Date(),
-            startRegist: new Date(),
-            endRegist: new Date(),
-            isRegist: true,
-            cost: 120,
-            costSale: 100
-        },
-        {
-            id: 2,
-            img: "",
-            title: "Title",
-            listTags: [
-                { id: 2, value: "Backend"},
-                { id: 3, value: "Frontend"},
-            ],
-            startCourse: new Date(),
-            endCourse: new Date(),
-            startRegist: new Date(),
-            endRegist: new Date(),
-            isRegist: false,
-            cost: 120,
-            costSale: 100
-        },
-        {
-            id: 3,
-            img: "",
-            title: "Title",
-            listTags: [
-                { id: 3, value: "Frontend"},
-            ],
-            startCourse: new Date(),
-            endCourse: new Date(),
-            isRegist: true,
-            cost: 120,
-            costSale: 100
-        },
+    "name": "Phan Trần Nhật Hạ",
+    "teachingMajor": "Software Developer; FE; UI, UX Designer",
+    "avatarPath": "https://storage.googleapis.com/plait-1bf02.appspot.com/avatar_029c7a58-ca40-4ea7-b82b-479f0ba8a99e.png",
+    "coursesCount": 0,
+    "centerName": "HAHYWU CENTER",
+    "links": [
+      {
+        "idProfileLink": 38,
+        "name": "Facebook",
+        "url": "https://www.facebook.com/phan.ha.754703"
+      },
     ],
-    professional: [
-        {
-            id: 1,
-            img: "",
-            title: "Title",
-            description: "description"
-        },
-        {
-            id: 2,
-            img: "",
-            title: "Title2",
-            description: "description2"
-        },
+    "qualificationModels": [
+      {
+        "idQualification": 10,
+        "path": "https://storage.googleapis.com/plait-1bf02.appspot.com/aws_certification_8f3d2c16-4181-4268-a3f1-50756432aaca.png",
+        "qualificationName": "AWS Certification",
+        "description": " An AWS certification equips me with cloud computing expertise, enhancing my teaching and better preparing students for modern technology.",
+        "reason": null,
+        "status": null
+      },
     ],
-    socials: [
-        { id: 1, title: "Github", link: "aaaaaaa"},
-        { id: 2, title: "Facebook", link: "bbbbbb"},
-    ]
-}
-export const DetailTeacher =({data=initTeacher})=>{
-    const [showInfo, setShowInfo] = useState(true)
+    "courses": []
+  }
+export const DetailTeacher =({route})=>{
+    const idTeacher = route.params?.idTeacher || false
+    const [isLoading, setIsLoading] = useState(false)
+    const [data, setData] = useState([])
+
+    const getTeacher = async()=>{
+        try {
+            const response = await getDetailTeacher(idTeacher)
+            if(response){
+                setData(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
+    useEffect(()=>{
+        getTeacher()
+    }, [idTeacher])
+
     return(
-        <ScrollView contentContainerStyle={styles.container} key={data.idUser}>
-            {/* Teacher info */}
-            <View style={styles.wrapInfo}>
-                <ImageBackground
-                    source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
-                    style={styles.infoImg}
-                />
-                <View style={styles.wrapInfoContent}>
-                {showInfo && <Image source={data.img} style={styles.infoImage}/>}
-                <Text style={styles.infoTitle}>{data.nameTeacher}</Text>    
-                <Text style={styles.infoText}>{data.description}</Text>
-                <View style={styles.inforContent}>
-                    <AntDesign name="book" size={16} color="white" />
-                    {/* <Text style={styles.infoText}>{data?.courses?.length} courses</Text> */}
-                </View>
-                {data.students? 
-                    <View style={styles.inforContent}>
-                        <SimpleLineIcons name="graduation" size={16} color="white" />
-                        <Text style={styles.infoText}>{data.major}</Text>
-                    </View>
-                    : ""
-                }
-                </View>
-            </View>
-
-            {/* Center */}
-            <View style={styles.wrapper}>
-                <TouchableOpacity>
+        <>
+            <ScrollView contentContainerStyle={styles.container} key={data.idUser}>
+                {/* Teacher info */}
+                <View style={styles.wrapInfo}>
                     <LinearGradient 
-                        colors={['#4D768A', '#75A2A2']} 
-                        style={styles.miniCard}
-                        start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
-                        end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
-                    >
-                        <View style={styles.titleCard}>
-                            <Ionicons name="business" size={16} color={COLORS.secondMain} />
-                            <Text style={styles.titleCardText}>Center</Text>
-                        </View>
-                        <View style={styles.contentCard}>
-                            <Image source={""} style={styles.avata}/>
-                            <View>
-                                <Text style={styles.titleContentCard}>Name</Text>
-                                <Text style={styles.dataText}>description</Text>
+                            colors={['#4D768A', '#75A2A2']} 
+                            style={styles.infoImg}
+                            start={{ x: 0, y: 1 }}
+                            end={{ x: 0, y: 0 }}
+                        >
+                        <View style={styles.wrapInfoContent}>
+                        <Image source={{uri: data.avatarPath}} style={styles.infoImage}/>
+                        <Text style={styles.infoTitle}>{data.name ? data.name : "<Unknown>"}</Text>    
+                        {/* <Text style={styles.infoText}>{data.description}</Text> */}
+                        {data.courses?.length > 0 &&
+                            <View style={styles.inforContent}>
+                                <AntDesign name="book" size={16} color="white" />
+                                {/* <Text style={styles.infoText}>{data.courses.length} courses</Text> */}
                             </View>
-                        </View>
-                    </LinearGradient>
-                </TouchableOpacity>
-                <View>
-                    <LinearGradient 
-                        colors={['#4D768A', '#75A2A2']} 
-                        style={styles.miniCard}
-                        start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
-                        end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
-                    >
-                        <View style={styles.titleCard}>
-                            <MaterialCommunityIcons name="layers-triple" size={16} color={COLORS.secondMain} />
-                            <Text style={styles.titleCardText}>Social/Profile</Text>
-                        </View>
-                        <View style={styles.contentCardCol}>
-                        {data.socials.map(item => 
-                            <TouchableOpacity style={styles.wrapSocial} key={item.id}>
-                                <Text style={styles.infoText}>{item.title}</Text>
-                                <MaterialIcons name="open-in-new" size={16} color="white" />
-                            </TouchableOpacity>
-                        )}
+                        }
+                        {data.teachingMajor? 
+                            <View style={styles.inforContent}>
+                                <SimpleLineIcons name="graduation" size={16} color="white" />
+                                <Text style={styles.infoText}>{data.teachingMajor}</Text>
+                            </View>
+                            : ""
+                        }
                         </View>
                     </LinearGradient>
                 </View>
-            </View>
 
-            {/* Professional Qualifications */}
-            <View style={styles.wrapperPro}>
-                <View style={styles.titleCard}>
-                    <MaterialCommunityIcons name="professional-hexagon" size={16} color={COLORS.secondMain} />
-                    <Text style={styles.titleCardText}>Professional Qualifications</Text>
+                {/* Center */}
+                <View style={styles.wrapper}>
+                    <TouchableOpacity>
+                        <LinearGradient 
+                            colors={['#4D768A', '#75A2A2']} 
+                            style={styles.miniCard}
+                            start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
+                            end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
+                        >
+                            <View style={styles.titleCard}>
+                                <Ionicons name="business" size={16} color={COLORS.secondMain} />
+                                <Text style={styles.titleCardText}>Center</Text>
+                            </View>
+                            <View style={styles.contentCard}>
+                                <Image source={""} style={styles.avata}/>
+                                <View>
+                                    <Text style={styles.titleContentCard}>{data.centerName}</Text>
+                                    <Text style={{color: "white"}}>description</Text>
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                    <View>
+                        <LinearGradient 
+                            colors={['#4D768A', '#75A2A2']} 
+                            style={styles.miniCard}
+                            start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
+                            end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
+                        >
+                            <View style={styles.titleCard}>
+                                <MaterialCommunityIcons name="layers-triple" size={16} color={COLORS.secondMain} />
+                                <Text style={styles.titleCardText}>Social/Profile</Text>
+                            </View>
+                            <View style={styles.contentCardCol}>
+                            {data.links?.map(item => 
+                                <TouchableOpacity style={styles.wrapSocial} key={item.idProfileLink}>
+                                    <Text style={styles.infoText}>{item.name}</Text>
+                                    <MaterialIcons name="open-in-new" size={16} color="white" />
+                                </TouchableOpacity>
+                            )}
+                            </View>
+                        </LinearGradient>
+                    </View>
                 </View>
-                <FlatList
-                    data={data.professional}
-                    renderItem={({item}) => <CardHorizontalProfessional data={item}/>}
-                    horizontal={true}
-                    keyExtractor={item => item.id}
-                    showsHorizontalScrollIndicator={false}
-                />
-            </View>
 
-            {/* Top Courses */}
-            <View style={styles.wrapper}>
-                <View style={styles.bottom}>
-                    <Text style={commonStyles.title}>Course</Text>
-                    <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
+                {/* Professional Qualifications */}
+                <View style={styles.wrapperPro}>
+                    <View style={styles.titleCard}>
+                        <MaterialCommunityIcons name="professional-hexagon" size={16} color={COLORS.secondMain} />
+                        <Text style={styles.titleCardText}>Professional Qualifications</Text>
+                    </View>
+                    <FlatList
+                        data={data.qualificationModels}
+                        renderItem={({item}) => <CardHorizontalProfessional data={item}/>}
+                        horizontal={true}
+                        keyExtractor={item => item.idQualification}
+                        showsHorizontalScrollIndicator={false}
+                    />
                 </View>
-                {/* {data.courses?.map((item)=><CardVirticalCourse data={item} key={item.id}/>)} */}
-            </View>
-            
-        </ScrollView>
+
+                {/* Top Courses */}
+                <View style={styles.wrapper}>
+                    <View style={styles.bottom}>
+                        <Text style={commonStyles.title}>Course</Text>
+                        <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
+                    </View>
+                    {/* {data.courses?.map((item)=><CardVirticalCourse data={item} key={item.id}/>)} */}
+                </View>
+            </ScrollView>
+            {isLoading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }   
+        </>
     )
 }
 const { width, height } = Dimensions.get('window');
@@ -211,8 +182,6 @@ const styles = StyleSheet.create({
     },
     infoImage: {
         resizeMode: "cover",
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
         borderRadius: 90,
         width: 140,
         height: 140,
@@ -262,7 +231,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         padding: 16,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
         justifyContent: "flex-end",
     },
     btnUpDown:{
@@ -306,7 +275,8 @@ const styles = StyleSheet.create({
     },
     titleContentCard:{
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: "white"
     },
     contentCardCol: {
         rowGap: 4
@@ -322,5 +292,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })

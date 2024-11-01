@@ -265,3 +265,15 @@ export const getAllNotificationOfUser = async (idUser)=>{
         console.log("Error getAllNotificationOfUser: ", error);
     })
 }
+
+export const getDetailTeacher = async (idUser)=>{
+    const url = baseUrl + "/GetDetailTeacher?idTeacher=" + idUser
+    return await axios.get(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getDetailTeacher: ", error);
+    })
+}
