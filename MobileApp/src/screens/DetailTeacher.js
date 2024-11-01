@@ -78,7 +78,7 @@ export const DetailTeacher =({route})=>{
                         {data.courses?.length > 0 &&
                             <View style={styles.inforContent}>
                                 <AntDesign name="book" size={16} color="white" />
-                                {/* <Text style={styles.infoText}>{data.courses.length} courses</Text> */}
+                                <Text style={styles.infoText}>{data.courses.length} courses</Text>
                             </View>
                         }
                         {data.teachingMajor? 

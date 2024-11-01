@@ -159,7 +159,7 @@ export const CardVirticalTeacher = ({data = initTeacher})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idUser })} key={data.idUser}>
-            <Image source={data.avatarPath || DefaultAva} style={styles.avata}/>
+            <Image source={data.avatarPath? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.name ? data.name : "<Unknown>"}</Text>
                 <View style={styles.content}>
