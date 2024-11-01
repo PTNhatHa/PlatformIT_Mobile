@@ -541,8 +541,6 @@ const styles = StyleSheet.create({
     },
     wrapperSearch: {
         ...commonStyles.shadow,
-        shadowRadius: 5,
-
         backgroundColor: "white",
         borderRadius: 90,
         paddingHorizontal: 16,

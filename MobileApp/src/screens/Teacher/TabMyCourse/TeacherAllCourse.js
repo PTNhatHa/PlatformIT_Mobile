@@ -1,7 +1,7 @@
 import { Dimensions, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect, useRef } from "react";
-import { COLORS, initialCourse } from "../../../utils/constants";
+import { COLORS, commonStyles, initialCourse } from "../../../utils/constants";
 import { CardCourseStudent, CardVirticalCourse } from "../../../components/CardVertical";
 const initCourse=[{
     "idCourse": 3,
@@ -116,19 +116,20 @@ const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container:{
         padding: 16,
-        backgroundColor: "white",
+        backgroundColor: "#FAFAFA",
         flex: 1
     },
     wrapperSearch: {
-        borderWidth: 1,
-        borderColor: COLORS.lightText,
+        ...commonStyles.shadow,
+        backgroundColor: "white",
         borderRadius: 90,
         paddingHorizontal: 16,
         paddingVertical: 8,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: 10
     },
     input:{
         fontSize: 16,
@@ -141,7 +142,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         columnGap: 20,
-        backgroundColor: "white",
         padding: 10
     },
     wrapPageNumber:{
@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
     pageNumber:{
         height: 32,
         width: 100,
-        backgroundColor: "white",
         alignSelf: "flex-start",
         borderRadius: 4,
         justifyContent: "center",
