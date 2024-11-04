@@ -196,7 +196,9 @@ export const DetailCourse =({route})=>{
                             )}                    
                         </View>
                     }
-                    <Text style={styles.infoText}>{data.introduction}</Text>
+                    {data.introduction && 
+                        <Text style={styles.infoText}>{data.introduction}</Text>
+                    }
                     <View style={styles.inforContent}>
                         <Feather name="clock" size={16} color="white" />
                         <Text style={styles.infoText}>

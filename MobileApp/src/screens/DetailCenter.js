@@ -166,7 +166,9 @@ export const DetailCenter =({route})=>{
                             </View>
                         }
                     </View>
-                    <Text style={styles.infoText}>{data.description}</Text>
+                    {data.description &&
+                        <Text style={styles.infoText}>{data.description}</Text>
+                    }
 
                     {data.centerEmail &&
                         <View style={styles.inforContent}>
@@ -230,7 +232,7 @@ export const DetailCenter =({route})=>{
             </View>
 
             {/* Social/Profile */}
-            {data.profileLinks &&
+            {data.profileLinks.length > 0 &&
                 <View style={styles.wrapperSocial}>
                     <LinearGradient 
                         colors={['#4D768A', '#75A2A2']} 
@@ -255,7 +257,7 @@ export const DetailCenter =({route})=>{
             }
 
             {/* Professional Qualifications */}
-            {data.qualifications &&
+            {data.qualifications.length > 0 &&
                 <View style={styles.wrapper}>
                     <View style={styles.titleCard}>
                         <MaterialCommunityIcons name="professional-hexagon" size={16} color={COLORS.secondMain} />
