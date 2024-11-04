@@ -165,7 +165,7 @@ export const CardVirticalTeacher = ({data = initTeacher})=>{
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idUser })} key={data.idUser}>
             <Image source={data.avatarPath? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View>
-                <Text style={styles.title}>{data.name ? data.name : "<Unknown>"}</Text>
+                <Text style={styles.title}>{data.name || data.fullName || "<Unknown>"}</Text>
                 {data.teachingMajor &&
                     <View style={styles.content}>
                         <SimpleLineIcons name="graduation" size={10} color={COLORS.stroke} />

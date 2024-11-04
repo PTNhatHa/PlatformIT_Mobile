@@ -24,3 +24,14 @@ export const getAllTeacherByIdCenter = async (idCenter)=>{
         console.log("Error getAllCenterCards: ", error);
     })
 }
+
+export const getCenterDetail = async (idCenter)=>{
+    return await axios.get(baseUrl + "/GetCenterDetail?idCenter=" + idCenter)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getCenterDetail: ", error);
+    })
+}
