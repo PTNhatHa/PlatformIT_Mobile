@@ -1,4 +1,5 @@
-import { Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
 import { Tag } from "../components/Tag"
@@ -13,10 +14,12 @@ import { CardHorizontalTeacher } from "../components/CardHorizontal";
 import { CardReview } from "../components/CardReview";
 import { ButtonIcon } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
+import { getCourseDetail } from "../services/course";
+import { useNavigation } from "@react-navigation/native"
 
 const initCourse={
     idCourse: 1,
@@ -122,17 +125,38 @@ const initCourse={
     },
 }
 
-export const DetailCourse = ({data = initCourse})=>{
+export const DetailCourse =({route})=>{
+    const navigation = useNavigation()
+    const idCourse = route.params?.idCourse || 0
+    const [data, setData] = useState([])
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
-    const [showInfo, setShowInfo] = useState(true)
-    const [showAllTest, setShowAllTest] = useState(false)
+    const [loading, setLoading] = useState(true);
+
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
             section: item.section,
             isShow: true
         }
     )) || [])
+
+    const getCourse = async()=>{
+        try {
+            const response = await getCourseDetail(idCourse)
+            if(response){
+                setData(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getCourse()
+    }, [idCourse])
+
     const handleShowSection = (idSection)=>{
         const newShow = showSections.map(item => {
             if(item.section === idSection){
@@ -146,71 +170,76 @@ export const DetailCourse = ({data = initCourse})=>{
         setShowSections(newShow)
     }
     
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <ScrollView contentContainerStyle={styles.container} key={data.idCourse}>
             {/* Course info */}
             <View style={styles.wrapInfo}>
                 <ImageBackground
-                    source={{ uri: "https://i.pinimg.com/enabled_lo/564x/63/af/bc/63afbc98994e96ae6cd3fd9b75ea2a33.jpg"}}
+                    source={{ uri: data.pathImg}}
                     style={styles.infoImg}
                 />
                 <View style={styles.wrapInfoContent}>
-                    <>
-                        <Text style={styles.infoTitle}>{data.title}</Text>
-                        {showInfo &&
-                            <>
-                                {data.listTags.length > 0 && 
-                                    <View style={styles.inforContent}>
-                                        {data.listTags.map(item => 
-                                            <Tag label={item.value}/>  
-                                        )}                    
-                                    </View>
-                                }
-                                <Text style={styles.infoText}>{data.intro}</Text>
-                                <View style={styles.inforContent}>
-                                    <Feather name="clock" size={16} color="white" />
-                                    <Text style={styles.infoText}>{formatDateTime(data.startCourse)} - {formatDateTime(data.endCourse)}</Text>
-                                </View>
-                                <View style={styles.inforContent}>
-                                {data.startRegist &&
-                                        <FontAwesome6 name="pen-to-square" size={16} color="white" />
-                                    }
-                                    {data.startRegist &&
-                                        <Text style={styles.infoText}>
-                                            {data.isRegist ? "Registing" : 
-                                                `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
-                                        </Text>
-                                    }
-                                </View>
-                                <View style={styles.inforContent}>
-                                    <Ionicons name="business-outline" size={16} color="white" />
-                                    <Text style={styles.infoText}>{data.nameCenter}</Text>
-                                </View>
-                                {data.students? 
-                                    <View style={styles.inforContent}>
-                                        <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
-                                        <Text style={styles.infoText}>{data.students} students</Text>
-                                    </View>
-                                    : ""
-                                }
-                                <View style={styles.inforContent}>
-                                    <Text style={styles.costSale}>${data.costSale}</Text>
-                                    <Text style={styles.cost}>{data.cost}</Text>
-                                </View>
-                                {state.idRole === 3 &&
-                                    <TouchableOpacity style={styles.infoBtn}>
-                                        <Text style={styles.infoBtnText}>Pay for this course</Text>
-                                    </TouchableOpacity>
-                                }
-                            </>
+                    <Text style={styles.infoTitle}>{data.courseTitle}</Text>
+                    {data.tags?.length > 0 && 
+                        <View style={styles.inforContent}>
+                            {data.tags.map(item => 
+                                <Tag label={item} key={item}/>  
+                            )}                    
+                        </View>
+                    }
+                    <Text style={styles.infoText}>{data.introduction}</Text>
+                    <View style={styles.inforContent}>
+                        <Feather name="clock" size={16} color="white" />
+                        <Text style={styles.infoText}>
+                            { data.startCourse ?                                                       
+                                formatDateTime(data.startCourse) - formatDateTime(data.endCourse)
+                                :
+                                "Create on: " + formatDateTime(data.createdDate)
+                            }
+                        </Text>
+                    </View>
+                    <View style={styles.inforContent}>
+                    {data.startRegist &&
+                            <FontAwesome6 name="pen-to-square" size={16} color="white" />
                         }
-                    </>
+                        {data.startRegist &&
+                            <Text style={styles.infoText}>
+                                {data.isRegist ? "Registing" : 
+                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                            </Text>
+                        }
+                    </View>
+                    {data.students? 
+                        <View style={styles.inforContent}>
+                            <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
+                            <Text style={styles.infoText}>{data.studentCount} students</Text>
+                        </View>
+                        : ""
+                    }
+                    <View style={styles.inforContent}>
+                        <Text style={styles.costSale}>${data.price}</Text>
+                        <Text style={styles.cost}>{data.price}</Text>
+                    </View>
+                    {state.idRole === 3 &&
+                        <TouchableOpacity style={styles.infoBtn}>
+                            <Text style={styles.infoBtnText}>Pay for this course</Text>
+                        </TouchableOpacity>
+                    }
                 </View>
             </View>
 
             <View style={styles.wrapMiniCard}>
                 {/* Teacher */}
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idTeacher })}>
                     <LinearGradient 
                         colors={['#4D768A', '#75A2A2']} 
                         style={styles.miniCard}
@@ -222,17 +251,17 @@ export const DetailCourse = ({data = initCourse})=>{
                             <Text style={styles.titleCardText}>Teacher</Text>
                         </View>
                         <View style={styles.contentCard}>
-                            <Image source={""} style={styles.avata}/>
+                            <Image source={data.teacherAvatarPath ? {uri: data.teacherAvatarPath} : DefaultAva} style={styles.avata}/>
                             <View>
-                                <Text style={styles.titleContentCard}>Name</Text>
-                                <Text style={styles.dataText}>description</Text>
+                                <Text style={styles.titleContentCard}>{data.teacherName}</Text>
+                                <Text style={styles.dataText}>{data.teacherDescription}</Text>
                             </View>
                         </View>
                     </LinearGradient>
                 </TouchableOpacity>
 
                 {/* Center */}
-                <TouchableOpacity>
+                <TouchableOpacity  onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
                     <LinearGradient 
                         colors={['#4D768A', '#75A2A2']} 
                         style={styles.miniCard}
@@ -244,10 +273,10 @@ export const DetailCourse = ({data = initCourse})=>{
                             <Text style={styles.titleCardText}>Center</Text>
                         </View>
                         <View style={styles.contentCard}>
-                            <Image source={""} style={styles.avata}/>
+                            <Image source={data.centerAvatarPath ? {uri: data.centerAvatarPath} : DefaultImg} style={styles.avata}/>
                             <View>
-                                <Text style={styles.titleContentCard}>Name</Text>
-                                <Text style={styles.dataText}>description</Text>
+                                <Text style={styles.titleContentCard}>{data.centerName}</Text>
+                                <Text style={styles.dataText}>{data.centerDescription}</Text>
                             </View>
                         </View>
                     </LinearGradient>
@@ -258,10 +287,10 @@ export const DetailCourse = ({data = initCourse})=>{
             <View style={styles.wrapper}>
                 <View style={styles.titleCard}>
                     <AntDesign name="star" size={16} color={COLORS.yellow}/>
-                    <Text style={styles.titleCardText}>4.8/5 Rating</Text>
+                    <Text style={styles.titleCardText}>{data.totalRatePoint} Rating</Text>
                 </View>
                 <FlatList
-                    data={data.reviews}
+                    data={data.rateModels}
                     keyExtractor={item => item.id}
                     renderItem={({item})=>
                         <CardReview data={item}/>
@@ -283,7 +312,8 @@ export const DetailCourse = ({data = initCourse})=>{
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
-                        {data.content.map((item)=>{
+                        {/* {data.sectionsWithCourses?.length > 0 &&
+                        data.sectionsWithCourses?.map((item)=>{
                             let checkIsShow = showSections.find(section => section.section === item.section).isShow
                             return(
                                 <View key={item.section} style={styles.wrapSectionLecture}>
@@ -307,19 +337,20 @@ export const DetailCourse = ({data = initCourse})=>{
                                     </View>
                                 </View>
                             )}
-                        )}
+                        )} */}
                     </>
                 :   
                     <View>
                         {/* Course assignments */}
-                        <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
-                            {data.test.map(item => 
+                        {/* <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
+                            {data.tests.length > 0 &&
+                            data.tests?.map(item => 
                                 <CardAssignmentStudent data={item} key={item.id}/>
                             )}
                         </View>
                         <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
                             <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 }
             </View>         
@@ -429,14 +460,12 @@ const styles = StyleSheet.create({
     },
     wrapMiniCard:{
         padding: 16,
-        flexDirection: "row",
-        justifyContent: "space-between"
+        rowGap: 8
     },
     miniCard:{
         borderRadius: 8,
         padding: 12,
         rowGap: 10,
-        width: 170
     },
     avata: {
         borderWidth: 1,
@@ -467,7 +496,9 @@ const styles = StyleSheet.create({
     },
     titleContentCard:{
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        flexWrap: "wrap",
+        color: "white",
     },
     wrapperBottom: {
         padding: 16,
@@ -495,6 +526,17 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         borderBottomWidth: 2,
         borderBottomColor: COLORS.main
+    },
+    dataText:{
+        color: "white",
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     },
 })
 

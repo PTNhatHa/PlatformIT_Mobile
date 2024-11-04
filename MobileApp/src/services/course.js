@@ -12,3 +12,14 @@ export const getAllCourseCards = async ()=>{
         console.log("Error GetAllCourseCards: ", error);
     })
 }
+
+export const getCourseDetail = async (idCourse)=>{
+    return await axios.get(baseUrl + "/GetCourseDetail?idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getCourseDetail: ", error);
+    })
+}

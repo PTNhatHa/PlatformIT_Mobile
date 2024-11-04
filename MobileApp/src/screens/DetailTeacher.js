@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions } from "react-native"
+import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions, ActivityIndicator } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import DefaultAva from "../../assets/images/DefaultAva.png"
@@ -13,6 +13,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { ButtonIconLightGreen } from "../components/Button";
 import { getDetailTeacher } from "../services/user";
 import { openLink } from "../utils/utils";
+import { useNavigation } from "@react-navigation/native";
 
 const initTeacher={
     "name": "Phan Trần Nhật Hạ",
@@ -41,9 +42,9 @@ const initTeacher={
   }
 export const DetailTeacher =({route})=>{
     const idTeacher = route.params?.idTeacher || false
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [data, setData] = useState([])
-
+    const navigation = useNavigation()
     const getTeacher = async()=>{
         try {
             const response = await getDetailTeacher(idTeacher)
@@ -52,12 +53,23 @@ export const DetailTeacher =({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
+        } finally {
+            setIsLoading(false)
         }
     }
 
     useEffect(()=>{
         getTeacher()
     }, [idTeacher])
+
+    if (isLoading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
 
     return(
         <>
@@ -93,7 +105,7 @@ export const DetailTeacher =({route})=>{
 
                 <View style={styles.wrapper}>
                 {/* Center */}
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
                         <LinearGradient 
                             colors={['#4D768A', '#75A2A2']} 
                             style={styles.miniCard}

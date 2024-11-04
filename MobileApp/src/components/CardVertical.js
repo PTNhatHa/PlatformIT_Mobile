@@ -44,7 +44,7 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
     return(
         <TouchableOpacity 
             style={styles.container} 
-            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course") : ()=> navigation.navigate("Detail Course")}
+            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
             key={data.idCourse}    
         >
             <Image source={data.pathImg} style={styles.img}/>

@@ -1,24 +1,20 @@
-import { Image, StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions, ActivityIndicator } from "react-native"
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList, ImageBackground, Dimensions, ActivityIndicator } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { Tag } from "../components/Tag"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import { CardHorizontalCourse, CardHorizontalProfessional, CardHorizontalTeacher } from "../components/CardHorizontal";
+import { CardHorizontalProfessional } from "../components/CardHorizontal";
 import { useEffect, useState } from "react";
-import Entypo from '@expo/vector-icons/Entypo';
-import Feather from '@expo/vector-icons/Feather';
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 import { ButtonIconLightGreen } from "../components/Button";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { getAllTeacherByIdCenter, getCenterDetail } from "../services/center";
+import { getCenterDetail } from "../services/center";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { formatDateTime, openLink } from "../utils/utils";
-import { ViewAllRender } from "./ViewAll";
 
 const initCenter={
     id: 1,
