@@ -386,9 +386,9 @@ export const DetailCourse =({route})=>{
                             <ButtonIconLightGreen title={"Add new noti"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
                         }
                         <View style={styles.wrapShow}>
-                            {data.noti?.map(item => 
-                                <CardNoti data={item} key={item.id}/>
-                            )}
+                            {/* {data.noti?.map(item =>  */}
+                                <CardNoti role={role}/>
+                            {/* )} */}
                         </View>
                     </>
                 : selectBtn === 3 ?

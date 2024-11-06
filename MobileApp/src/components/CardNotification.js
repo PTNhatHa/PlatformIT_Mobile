@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native"
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import { formatDateTime } from "../utils/utils";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const initNoti=  {
     "idNotification": 1,
@@ -12,7 +13,7 @@ const initNoti=  {
     "idCourse": null,
     "relativeTime": "2 days ago"
   }
-export const CardNoti = ({data = initNoti, isScreen = false})=>{
+export const CardNoti = ({data = initNoti, isScreen = false, role = 0})=>{
     return(
         <View style={styles.container}>
             {isScreen && <Image style={styles.img} source={{ uri: data.senderAvatar}}/>}
@@ -20,6 +21,11 @@ export const CardNoti = ({data = initNoti, isScreen = false})=>{
                 <Text style={styles.title}>{data.content}</Text>
                 <Text style={styles.dataDate}>{data.relativeTime}</Text>
             </View>
+            {role === 1 &&
+                <TouchableOpacity>
+                    <FontAwesome6 name="delete-left" size={24} color={COLORS.red} />
+                </TouchableOpacity>
+            }
         </View>
     )
 }
