@@ -41,7 +41,7 @@ export const TextInputLabel = ({
                     placeholder={placeholder}
                     onChangeText={(v)=>handleOnchangeText(v)}
                     keyboardType={keyboardType || "default"}
-                    multiline={label === "Bio"}
+                    multiline={label === "Bio" || label === "Body"}
                     editable={label !== "Affiliated Center" && label !== "Email" && isEditable}
                     secureTextEntry={isPassword}
                 />

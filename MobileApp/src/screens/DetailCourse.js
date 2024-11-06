@@ -12,7 +12,7 @@ import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
 import { CardHorizontalTeacher } from "../components/CardHorizontal";
 import { CardReview } from "../components/CardReview";
-import { ButtonIcon, ButtonIconLightGreen } from "../components/Button";
+import { ButtonGreen, ButtonIcon, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
 import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
@@ -23,6 +23,8 @@ import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
 import { CardStudentAttendance } from "../components/CardStudent"
+import { Modal } from "react-native"
+import { TextInputLabel } from "../components/TextInputField"
 
 const initCourse={
     idCourse: 1,
@@ -137,6 +139,10 @@ export const DetailCourse =({route})=>{
     const [selectBtn, setSelectBtn] = useState(0)
     const [loading, setLoading] = useState(true);
 
+    const [isAddNoti, setIsAddNoti] = useState(false);
+    const [notiTitle, setNotiTitle] = useState("");
+    const [notiBody, setNotiBody] = useState("");
+
     const [showSections, setShowSections] = useState([])
 
     const getCourse = async()=>{
@@ -187,6 +193,7 @@ export const DetailCourse =({route})=>{
     }
 
     return(
+        <>
         <ScrollView contentContainerStyle={styles.container} key={data.idCourse}>
             {/* Course info */}
             <View style={styles.wrapInfo}>
@@ -383,7 +390,13 @@ export const DetailCourse =({route})=>{
                 : selectBtn === 2 ?
                     <>
                         {role === 1 &&
-                            <ButtonIconLightGreen title={"Add new noti"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                            <ButtonIconLightGreen 
+                                title={"Add new noti"} 
+                                icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                                action={()=>{
+                                    setIsAddNoti(true)
+                                }}
+                            />
                         }
                         <View style={styles.wrapShow}>
                             {/* {data.noti?.map(item =>  */}
@@ -398,8 +411,31 @@ export const DetailCourse =({route})=>{
                     {/* )} */}
                 </View>
                 : ""}
-            </View>         
+            </View>     
         </ScrollView>
+        <Modal
+            visible={isAddNoti}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={()=>setIsAddNoti(false)}
+        >
+            <View style={styles.selectImgWrapper}>
+                <View style={styles.addNoti}>
+                    <TouchableOpacity style={styles.close} onPress={()=>{
+                        setIsAddNoti(false)
+                        setNotiTitle("")
+                        setNotiBody("")
+                    }}>
+                        <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
+                    <TextInputLabel label={"Title"} value={notiTitle} placeholder={"Title"} onchangeText={setNotiTitle}/>
+                    <TextInputLabel label={"Body"} value={notiBody} placeholder={"Body"} onchangeText={setNotiBody}/>
+                    <ButtonGreen title={"Save"}/>
+                </View>
+            </View>
+        </Modal>
+        </>
     )
 }
 
@@ -596,6 +632,27 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: COLORS.main,
         fontWeight: "bold"
+    },
+    selectImgWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    close:{
+        alignSelf: "flex-end"
+    },
+    addNoti: {
+        backgroundColor: "white",
+        width: "100%",
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
+        rowGap: 12,
     }
 })
 
