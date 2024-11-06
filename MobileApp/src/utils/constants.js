@@ -144,3 +144,7 @@ export const initialCourse=[
         nameCenter: "Center HAHYWU",
     },
 ]
+
+export const typeAssignment = {
+    1: "Code"
+}

@@ -1,9 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../utils/constants"
+import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 import { useState } from "react";
 import { TagNoColor } from "./Tag";
+import Foundation from '@expo/vector-icons/Foundation';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const initAssignment =     {
     "idAssignment": 0,
@@ -18,28 +20,32 @@ export const CardAssignment = ({data = initAssignment, role = 0})=>{
         <TouchableOpacity style={styles.container} key={data.idAssignment}>
             <View style={{flex: 1}}>
                 <Text style={styles.title}>{data.assignmentTitle}</Text>
-                <Text style={styles.dataText}>{data.assignmentIntroduction}</Text>
-                {data.dueDate ? 
+                {/* <Text style={styles.dataText}>{data.assignmentIntroduction}</Text> */}
+                <View style={styles.content}>
+                    <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                    <Text style={styles.dataText}>{typeAssignment[data.assignmentType]}</Text>
+                </View>
+                {data.duration &&
                     <View style={styles.content}>
-                        <Feather name="calendar" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>Due date: {formatDateTime(data.dueDate)}</Text>
+                        <Feather name="clock" size={11} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>{data.duration} min</Text>
                     </View>
-                    :
-                    ""
                 }
-                {data.duration ? 
+                {data.maxScore &&
                     <View style={styles.content}>
-                        <Feather name="clock" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>Duration: {data.duration} min</Text>
+                        <FontAwesome6 name="square-check" size={12} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>{data.maxScore} score</Text>
                     </View>
-                    :
-                    ""
                 }
-                {role === 1 &&
+                {data.dueDate &&
                     <View style={[styles.content, {alignSelf: "flex-end"}]}>
-                        <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
-                        {/* <TagNoColor label={"Test"}/> */}
-                        <TagNoColor label={"Publish"}/>
+                        {/* {role === 1 &&
+                            <>
+                                <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
+                                <TagNoColor label={"Publish"}/>
+                            </>
+                        } */}
+                        <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
                     </View>
                 }
             </View>

@@ -1,6 +1,6 @@
 import axios from "axios"
-// const baseUrl = "http://192.168.2.3:5000/api/Center"
-const baseUrl = "http://192.168.1.209:5000/api/Center"
+const baseUrl = "http://192.168.2.3:5000/api/Center"
+// const baseUrl = "http://192.168.1.209:5000/api/Center"
 
 
 export const getAllCenterCards = async ()=>{

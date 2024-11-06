@@ -221,34 +221,32 @@ export const DetailCourse =({route})=>{
                     <View style={styles.inforContent}>
                         <Feather name="clock" size={16} color="white" />
                         <Text style={styles.infoText}>
-                            { data.startCourse ?                                                       
-                                formatDateTime(data.startCourse) - formatDateTime(data.endCourse)
+                            { data.courseStartDate ?                                                       
+                                formatDateTime(data.courseStartDate) - formatDateTime(data.courseEndDate)
                                 :
                                 "Create on: " + formatDateTime(data.createdDate)
                             }
                         </Text>
                     </View>
                     <View style={styles.inforContent}>
-                    {data.startRegist &&
+                    {data.registStartDate &&
                             <FontAwesome6 name="pen-to-square" size={16} color="white" />
                         }
-                        {data.startRegist &&
+                        {data.registStartDate &&
                             <Text style={styles.infoText}>
-                                {data.isRegist ? "Registing" : 
-                                    `${formatDateTime(data.startCourse)} - ${formatDateTime(data.endCourse)}`}
+                                {formatDateTime(data.registStartDate)} - {formatDateTime(data.registEndDate)}
                             </Text>
                         }
                     </View>
-                    {data.students? 
+                    {data.studentCount > 0 &&
                         <View style={styles.inforContent}>
                             <MaterialCommunityIcons name="account-group-outline" size={16} color="white" />
                             <Text style={styles.infoText}>{data.studentCount} students</Text>
                         </View>
-                        : ""
                     }
                     <View style={styles.inforContent}>
                         <Text style={styles.costSale}>${data.price}</Text>
-                        <Text style={styles.cost}>{data.price}</Text>
+                        {/* <Text style={styles.cost}>{data.price}</Text> */}
                     </View>
                     {state.idRole === 3 && role === 0 &&
                         <TouchableOpacity style={styles.infoBtn}>
@@ -371,10 +369,11 @@ export const DetailCourse =({route})=>{
                                 <View key={item.idSection} style={styles.wrapSectionLecture}>
                                     <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
                                         <Text style={[styles.section, {flex: 1}]}>
-                                            Section {item.idSection} 
+                                            {item.sectionName} 
                                         </Text>
                                         <Text style={styles.section}>
-                                            {item.lectureCount > 1 ? "lectures" : "lecture"}
+                                            {item.lectureCount}
+                                            {item.lectureCount > 1 ? " lectures" : " lecture"}
                                         </Text>
                                         { checkIsShow ?
                                             <Entypo name="chevron-up" size={20} color="black" />

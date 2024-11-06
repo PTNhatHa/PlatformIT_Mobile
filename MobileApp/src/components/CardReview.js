@@ -39,7 +39,7 @@ export const CardReview = ({data = initReview})=>{
                 <Image source={data.raterAvatarPath || DefaultAva} style={styles.avata}/>
                 <View>
                     <Text style={styles.name}>{data.raterName}</Text>
-                    <Text style={styles.reviewBoby}>6/11/2024</Text>
+                    <Text style={styles.reviewBoby}>{formatDateTime(data.createdDate)}</Text>
                 </View>
             </View>
         </TouchableOpacity>
