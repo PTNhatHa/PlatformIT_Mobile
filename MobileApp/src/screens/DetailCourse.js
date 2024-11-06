@@ -265,26 +265,28 @@ export const DetailCourse =({route})=>{
 
             <View style={styles.wrapMiniCard}>
                 {/* Teacher */}
-                <TouchableOpacity onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idTeacher })}>
-                    <LinearGradient 
-                        colors={['#4D768A', '#75A2A2']} 
-                        style={styles.miniCard}
-                        start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
-                        end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
-                    >
-                        <View style={styles.titleCard}>
-                            <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
-                            <Text style={styles.titleCardText}>Teacher</Text>
-                        </View>
-                        <View style={styles.contentCard}>
-                            <Image source={data.teacherAvatarPath ? {uri: data.teacherAvatarPath} : DefaultAva} style={styles.avata}/>
-                            <View>
-                                <Text style={styles.titleContentCard}>{data.teacherName}</Text>
-                                <Text style={styles.dataText}>{data.teacherDescription}</Text>
+                {role !== 1 &&
+                    <TouchableOpacity onPress={()=> navigation.navigate("Detail Teacher", { idTeacher: data.idTeacher })}>
+                        <LinearGradient 
+                            colors={['#4D768A', '#75A2A2']} 
+                            style={styles.miniCard}
+                            start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
+                            end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
+                        >
+                            <View style={styles.titleCard}>
+                                <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
+                                <Text style={styles.titleCardText}>Teacher</Text>
                             </View>
-                        </View>
-                    </LinearGradient>
-                </TouchableOpacity>
+                            <View style={styles.contentCard}>
+                                <Image source={data.teacherAvatarPath ? {uri: data.teacherAvatarPath} : DefaultAva} style={styles.avata}/>
+                                <View>
+                                    <Text style={styles.titleContentCard}>{data.teacherName}</Text>
+                                    <Text style={styles.dataText}>{data.teacherDescription}</Text>
+                                </View>
+                            </View>
+                        </LinearGradient>
+                    </TouchableOpacity>
+                }
 
                 {/* Center */}
                 <TouchableOpacity  onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
