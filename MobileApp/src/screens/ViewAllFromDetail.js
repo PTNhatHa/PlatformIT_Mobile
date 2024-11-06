@@ -283,7 +283,6 @@ export const ViewAllFromDetail = ({route})=>{
     )
 }
 
-
 const styles = StyleSheet.create({
     container:{
         padding: 16,

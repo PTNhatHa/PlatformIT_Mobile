@@ -67,7 +67,7 @@ export const StudentAllCourse = ()=>{
             {/* Course */}
             <FlatList
                 data={currentData}
-                renderItem={({item}) => <CardCourseStudent data={item}/>}
+                renderItem={({item}) => <CardCourseStudent data={item} role={2}/>}
                 style={styles.wrapList}
             />
 

@@ -66,7 +66,7 @@ const StackMyCourseScreen = ()=>{
             />
             <StackMyCourse.Screen
                 name="DetailCourse"
-                component={StudentDetailCourse}
+                component={DetailCourse}
             />
         </StackMyCourse.Navigator>
     )

@@ -10,11 +10,12 @@ import { getAllTeacherCards } from "../services/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllCourseCards } from "../services/course";
 import { formatDateTime } from "../utils/utils";
+import { CardAssignment } from "../components/CardAssignment";
 
 const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
 const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
 const renderTeacher = ({item})=> <CardVirticalTeacher data={item}/>
-const renderAssignment = ({item})=> <CardVirticalAssignmentTeacher data={item}/>
+const renderAssignment = ({item})=> <CardAssignment data={item} role={1}/>
 
 const ViewAllRender = ({data = [], type})=>{
     // console.log(data);
@@ -91,7 +92,7 @@ const ViewAllRender = ({data = [], type})=>{
             return(
                 <FlatList
                     data={currentData}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item.idAssignment.toString()}
                     renderItem={renderItem}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
@@ -175,39 +176,13 @@ const renderTabBar = (props)=>{
 
 const Assignment = [
     {
-        id: 1,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: true,
-        submitted: 0.8
-    },
-    {
-        id: 2,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: false,
-        submitted: 0
-    },
-    {
-        id: 3,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: null,
-        type: "Exercise",
-        isPublish: true,
-        submitted: 0.9
-    },
-  ]
+        "idAssignment": 0,
+        "assignmentTitle": "Sample",
+        "assignmentIntroduction": "Sample",
+        "dueDate": "2024-11-06T18:05:42.5588662+07:00",
+        "isSubmitted": null
+      },
+]
 
 export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
     const initialTab = route.params?.initTab || 0

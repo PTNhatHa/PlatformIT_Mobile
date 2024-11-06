@@ -192,7 +192,6 @@ export const CardHorizontalAssignmentTeacher = ({data = initAssignment})=>{
     }, [data.isPublish, data.submitted])
     return(
         <TouchableOpacity style={styles.container}>
-            <Image source={data.img} style={styles.img}/>
             <View style={{flex: 1}}>
                 <Text style={styles.title}>{data.title}</Text>
                 <Text style={styles.dataText}>Course: {data.nameCourse}</Text>

@@ -180,7 +180,6 @@ export const TeacherDetailCourse = ({data = initCourse})=>{
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
     const [showInfo, setShowInfo] = useState(true)
-    const [showAllTest, setShowAllTest] = useState(false)
     const [showSections, setShowSections] = useState(data?.content?.map(item => (
         {
             section: item.section,

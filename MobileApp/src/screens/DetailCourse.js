@@ -12,14 +12,16 @@ import { formatDateTime } from "../utils/utils";
 import { useUser } from "../contexts/UserContext";
 import { CardHorizontalTeacher } from "../components/CardHorizontal";
 import { CardReview } from "../components/CardReview";
-import { ButtonIcon } from "../components/Button";
+import { ButtonIcon, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
 import { useEffect, useState } from "react";
-import { CardAssignmentStudent } from "../components/CardAssignment";
+import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 import { getCourseDetail } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
+import { CardNoti } from "../components/CardNotification"
+import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
 
 const initCourse={
     idCourse: 1,
@@ -128,6 +130,7 @@ const initCourse={
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
     const idCourse = route.params?.idCourse || 0
+    const role = route.params?.role || 0 //0: guest, 1: teacher, 2: student
     const [data, setData] = useState([])
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -158,7 +161,6 @@ export const DetailCourse =({route})=>{
 
     useEffect(()=>{
         getCourse()
-        console.log(showSections);
     }, [idCourse])
 
     const handleShowSection = (idSection)=>{
@@ -314,10 +316,23 @@ export const DetailCourse =({route})=>{
                     <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
                         <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
                     </TouchableOpacity>
+                    {role !== 0 &&
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
+                            <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Noti</Text>
+                        </TouchableOpacity>
+                    }
+                    {role === 1 &&
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(3)}>
+                            <Text style={selectBtn === 3 ? styles.selectBtn : styles.normalBtn}>Attendance</Text>
+                        </TouchableOpacity>
+                    }
                 </View>
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
+                        {role === 1 &&
+                            <ButtonIconLightGreen title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                        }
                         {data.sectionsWithCourses?.length > 0 &&
                         data.sectionsWithCourses?.map((item)=>{
                             let checkIsShow = showSections.find(section => section.idSection === item.idSection).isShow
@@ -340,22 +355,48 @@ export const DetailCourse =({route})=>{
                                         {item.lectures.map(lec => 
                                             <CardLecture data={lec} key={lec.idLecture}/>
                                         )}
+                                        {role === 1 &&
+                                        <TouchableOpacity style={styles.addLec}>
+                                            <Entypo name="plus" size={14} color={COLORS.main} />
+                                            <Text style={styles.addLecText}>Add new lecture</Text>
+                                        </TouchableOpacity>
+                                        }
                                     </View>
                                 </View>
                             )}
                         )}
                     </>
-                :   
-                    <View>
+                : selectBtn === 1 ?
+                    <>
                         {/* Course assignments */}
+                        {role === 1 &&
+                            <ButtonIconLightGreen title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                        }
                         <View style={[styles.wrapShow, {height: 390}]}>
                             {data.tests.length > 0 &&
                             data.tests?.map(test => 
-                                <CardAssignmentStudent data={test} key={test.idAssignment}/>
+                                <CardAssignment data={test} key={test.idAssignment} role={role}/>
                             )}
                         </View>
-                    </View>
-                }
+                    </>
+                : selectBtn === 2 ?
+                    <>
+                        {role === 1 &&
+                            <ButtonIconLightGreen title={"Add new noti"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                        }
+                        <View style={styles.wrapShow}>
+                            {data.noti?.map(item => 
+                                <CardNoti data={item} key={item.id}/>
+                            )}
+                        </View>
+                    </>
+                : selectBtn === 3 ?
+                <View style={styles.wrapShow}>
+                    {data.attendance?.map(item => 
+                        <CardStudentAttendance data={item} key={item.id}/>
+                    )}
+                </View>
+                : ""}
             </View>         
         </ScrollView>
     )
@@ -543,5 +584,17 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
     },
+    addLec: {
+        padding: 12,
+        backgroundColor: "white",
+        flexDirection: "row",
+        alignItems: "center",
+        columnGap: 4
+    },
+    addLecText:{
+        fontSize: 14,
+        color: COLORS.main,
+        fontWeight: "bold"
+    }
 })
 

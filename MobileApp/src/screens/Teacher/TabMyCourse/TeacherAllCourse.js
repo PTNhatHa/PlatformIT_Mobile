@@ -80,7 +80,7 @@ export const TeacherAllCourse = ()=>{
             {/* Course */}
             <FlatList
                 data={currentData}
-                renderItem={({item}) => <CardVirticalCourse data={item} isTeacher={true}/>}
+                renderItem={({item}) => <CardVirticalCourse data={item} isTeacher={true} role={1}/>}
                 style={styles.wrapList}
             />
 

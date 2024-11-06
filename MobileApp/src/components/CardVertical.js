@@ -25,7 +25,7 @@ const initCourse={
       "Java"
     ]
 }
-export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
+export const CardVirticalCourse = ({data = initCourse, isTeacher = false, role = 0})=>{
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
@@ -44,7 +44,7 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false})=>{
     return(
         <TouchableOpacity 
             style={styles.container} 
-            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
+            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
             key={data.idCourse}    
         >
             <Image source={data.pathImg} style={styles.img}/>
@@ -179,55 +179,6 @@ export const CardVirticalTeacher = ({data = initTeacher})=>{
                     </View>
                     : ""
                 }
-            </View>
-        </TouchableOpacity>
-    )
-}
-
-
-const initAssignment = {
-    id: 1,
-    title: "Title",
-    img: "",
-    nameCourse: "OOP",
-    due: new Date(),
-    duration: 45,
-    type: "Test",
-    isPublish: true,
-    submitted: 0.8
-}
-export const CardVirticalAssignmentTeacher = ({data = initAssignment, navigation})=>{
-    const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
-    useEffect(()=>{
-        if(data.submitted > 0.8){
-            setCircleColor(COLORS.green)
-        } else{
-            setCircleColor(!data.isPublish? COLORS.lightText: COLORS.yellow)
-        }
-    }, [data.isPublish, data.submitted])
-    return(
-        <TouchableOpacity style={styles.container}>
-            <Image source={data.img} style={styles.img}/>
-            <View style={{flex: 1}}>
-                <Text style={styles.title}>{data.title}</Text>
-                <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
-                {data.due ? 
-                    <View style={styles.content}>
-                        <Feather name="calendar" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>Due date: {formatDateTime(data.due)}</Text>
-                    </View>
-                    :
-                    ""
-                }
-                <View style={styles.content}>
-                    <Feather name="clock" size={12} color={COLORS.stroke} />
-                    <Text style={styles.dataText}>Duration: {data.duration} min</Text>
-                </View>
-                <View style={[styles.content, {alignSelf: "flex-end"}]}>
-                    <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
-                    <TagNoColor label={data.type}/>
-                    <TagNoColor label={data.isPublish ? "Publish": "Unpublish"}/>
-                </View>
             </View>
         </TouchableOpacity>
     )

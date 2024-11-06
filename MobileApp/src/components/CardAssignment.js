@@ -2,20 +2,18 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
+import { useState } from "react";
+import { TagNoColor } from "./Tag";
 
-const initAssignment = {
-    id: 1,
-    title: "Title",
-    introduction: "introduction",
-    img: "",
-    nameCourse: "OOP",
-    due: new Date(),
-    duration: 45,
-    type: "Test",
-    isPublish: true,
-    submitted: 0.8
-}
-export const CardAssignmentStudent = ({data = initAssignment})=>{
+const initAssignment =     {
+    "idAssignment": 0,
+    "assignmentTitle": "Sample",
+    "assignmentIntroduction": "Sample",
+    "dueDate": "2024-11-06T18:05:42.5588662+07:00",
+    "isSubmitted": null
+  }
+export const CardAssignment = ({data = initAssignment, role = 0})=>{
+    const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
     return(
         <TouchableOpacity style={styles.container} key={data.idAssignment}>
             <View style={{flex: 1}}>
@@ -29,14 +27,21 @@ export const CardAssignmentStudent = ({data = initAssignment})=>{
                     :
                     ""
                 }
-                {/* {data.duration ? 
+                {data.duration ? 
                     <View style={styles.content}>
                         <Feather name="clock" size={12} color={COLORS.stroke} />
                         <Text style={styles.dataText}>Duration: {data.duration} min</Text>
                     </View>
                     :
                     ""
-                } */}
+                }
+                {role === 1 &&
+                    <View style={[styles.content, {alignSelf: "flex-end"}]}>
+                        <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
+                        <TagNoColor label={"Test"}/>
+                        <TagNoColor label={"Publish"}/>
+                    </View>
+                }
             </View>
         </TouchableOpacity>
     )

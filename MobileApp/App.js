@@ -10,6 +10,7 @@ import { DetailCenter } from './src/screens/DetailCenter';
 import { TeacherDetailAttendance } from './src/screens/Teacher/TabMyCourse/TeacherDetailAttendance';
 import { PersionalInfor } from './src/components/PI';
 import { SocialLink } from './src/components/SocialLink';
+import { TeacherDetailCourse } from './src/screens/Teacher/TabMyCourse/TeacherDetailCourse';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           {/* <TeacherDetailAttendance/> */}
           {/* <PersionalInfor/> */}
           {/* <SocialLink/> */}
+          {/* <TeacherDetailCourse/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
