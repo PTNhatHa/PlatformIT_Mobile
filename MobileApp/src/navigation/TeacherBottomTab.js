@@ -14,7 +14,6 @@ import { DetailCourse } from "../screens/DetailCourse";
 import { DetailCenter } from "../screens/DetailCenter";
 import { DetailTeacher } from "../screens/DetailTeacher";
 import { TeacherAllCourse } from "../screens/Teacher/TabMyCourse/TeacherAllCourse";
-import { TeacherDetailCourse } from "../screens/Teacher/TabMyCourse/TeacherDetailCourse";
 import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherDetailAttendance";
 import { NotificationScreen } from "../screens/Notification";
 import { useEffect, useState } from "react";
