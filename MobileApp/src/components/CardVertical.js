@@ -29,7 +29,7 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
-        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 95
+        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 105
         let totalWidth = 0
         let selectTags = []
         for(let i =0; i < data?.tags?.length; i++){
@@ -60,6 +60,10 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
                         }
                     </View>
                 }
+                <View style={styles.content}>
+                    <AntDesign name="star" size={10} color={COLORS.yellow}/>
+                    <Text style={styles.dataText}>{data.rate}</Text>
+                </View>
                 <View style={styles.content}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
@@ -118,7 +122,7 @@ export const CardVirticalCenter = ({data = initCenter})=>{
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
-        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 95 - 10
+        const cardWidth = Dimensions.get("window").width - 16*2 - 12*2 - 105 - 10
         let totalWidth = 0
         let selectTags = []
         for(let i =0; i < data.listTagCourses.length; i++){
@@ -231,8 +235,8 @@ const styles = StyleSheet.create({
         backgroundColor: "white"
     },
     img: {
-        width: 95,
-        height: 95,
+        width: 105,
+        height: 105,
         borderWidth: 1,
         borderColor: COLORS.lightText,
         borderRadius: 4,

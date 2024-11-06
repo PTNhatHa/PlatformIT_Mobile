@@ -59,22 +59,30 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
                     </View>
                 }
                 <View style={styles.tags}>
+                    <AntDesign name="star" size={10} color={COLORS.yellow}/>
+                    <Text style={styles.dataText}>{data.rate}</Text>
+                </View>
+                <View style={styles.tags}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
                         {formatDateTime(data.courseStartDate)} - {formatDateTime(data.courseEndDate)}
                     </Text>
                 </View>
-                    <View style={styles.tags}>
-                        {data.registStartDate &&
-                            <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                        }
-                        {data.registStartDate &&
-                            <Text style={styles.dataText}>
-                                {data.isRegist ? "Registing" : 
-                                    `${formatDateTime(data.registStartDate)} - ${formatDateTime(data.registEndDate)}`}
-                            </Text>
-                        }
-                    </View>
+                <View style={styles.tags}>
+                    {data.registStartDate &&
+                        <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
+                    }
+                    {data.registStartDate &&
+                        <Text style={styles.dataText}>
+                            {data.isRegist ? "Registing" : 
+                                `${formatDateTime(data.registStartDate)} - ${formatDateTime(data.registEndDate)}`}
+                        </Text>
+                    }
+                </View>
+                <View style={styles.tags}>
+                    <Ionicons name="business-outline" size={10} color={COLORS.secondMain} />
+                    <Text style={styles.dataText}>{data.centerName}</Text>
+                </View>
                 <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.price}</Text>
                     <Text style={styles.cost}>{data.price}</Text>
