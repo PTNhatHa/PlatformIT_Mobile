@@ -22,6 +22,7 @@ import { getCourseDetail } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
+import { CardStudentAttendance } from "../components/CardStudent"
 
 const initCourse={
     idCourse: 1,
@@ -392,9 +393,9 @@ export const DetailCourse =({route})=>{
                     </>
                 : selectBtn === 3 ?
                 <View style={styles.wrapShow}>
-                    {data.attendance?.map(item => 
-                        <CardStudentAttendance data={item} key={item.id}/>
-                    )}
+                    {/* {data.attendance?.map(item =>  */}
+                        <CardStudentAttendance/>
+                    {/* )} */}
                 </View>
                 : ""}
             </View>         

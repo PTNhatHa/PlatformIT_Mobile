@@ -9,11 +9,6 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <DetailCenter/> */}
-          {/* <TeacherDetailAttendance/> */}
-          {/* <PersionalInfor/> */}
-          {/* <SocialLink/> */}
-          {/* <TeacherDetailCourse/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

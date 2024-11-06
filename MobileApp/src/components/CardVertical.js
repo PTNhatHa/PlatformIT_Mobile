@@ -25,7 +25,7 @@ const initCourse={
       "Java"
     ]
 }
-export const CardVirticalCourse = ({data = initCourse, isTeacher = false, role = 0})=>{
+export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
@@ -44,7 +44,7 @@ export const CardVirticalCourse = ({data = initCourse, isTeacher = false, role =
     return(
         <TouchableOpacity 
             style={styles.container} 
-            onPress={isTeacher ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
+            onPress={role !== 0 ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
             key={data.idCourse}    
         >
             <Image source={data.pathImg} style={styles.img}/>

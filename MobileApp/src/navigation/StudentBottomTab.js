@@ -16,7 +16,7 @@ import { DetailTeacher } from "../screens/DetailTeacher";
 import { StudentAllCourse } from "../screens/Student/TabMyCourse/StudentAllCourse";
 import { NotificationScreen } from "../screens/Notification";
 import { useUser } from "../contexts/UserContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAllNotificationOfUser } from "../services/user";
 
 const StackHomeScreen = ()=>{
@@ -64,7 +64,7 @@ const StackMyCourseScreen = ()=>{
                 component={StudentAllCourse}
             />
             <StackMyCourse.Screen
-                name="DetailCourse"
+                name="Detail My Course"
                 component={DetailCourse}
             />
         </StackMyCourse.Navigator>

@@ -185,7 +185,6 @@ const styles = StyleSheet.create({
         padding: 16,
         rowGap: 20,
         backgroundColor: "#FAFAFA",
-        height: "100%"
     },
     tabBar: {
         flexDirection: "row",

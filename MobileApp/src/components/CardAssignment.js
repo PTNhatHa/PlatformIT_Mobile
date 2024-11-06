@@ -38,7 +38,7 @@ export const CardAssignment = ({data = initAssignment, role = 0})=>{
                 {role === 1 &&
                     <View style={[styles.content, {alignSelf: "flex-end"}]}>
                         <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
-                        <TagNoColor label={"Test"}/>
+                        {/* <TagNoColor label={"Test"}/> */}
                         <TagNoColor label={"Publish"}/>
                     </View>
                 }
