@@ -6,7 +6,7 @@ import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter"
 import { formatDateTime } from "../utils/utils";
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 
-export const ViewAllFromDetail = ({route, myCourse = []})=>{
+export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
     const initData = route?.params?.initData || myCourse
     const index = route?.params?.index || 1
     const namePage = route?.params?.namePage || ""
@@ -218,7 +218,7 @@ export const ViewAllFromDetail = ({route, myCourse = []})=>{
                 <FlatList
                     data={currentData}
                     keyExtractor={(item) => item.idCourse}
-                    renderItem={({item}) => <CardVirticalCourse data={item}/>}
+                    renderItem={({item}) => <CardVirticalCourse data={item} role={role}/>}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />

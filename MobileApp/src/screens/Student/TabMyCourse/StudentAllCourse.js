@@ -7,7 +7,7 @@ import { ViewAllFromDetail } from "../../ViewAllFromDetail";
 
 const initCourse=[{
     "idCourse": 3,
-    "courseTitle": "Banh Bo",
+    "courseTitle": "Net Core",
     "pathImg": null,
     "courseStartDate": "2024-10-05T08:22:25.752581",
     "courseEndDate": "2025-10-15T08:22:25.752581",
@@ -24,6 +24,6 @@ const initCourse=[{
 export const StudentAllCourse = ()=>{
     const [data, setData] = useState(initCourse)
     return(
-        <ViewAllFromDetail myCourse={data}/>
+        <ViewAllFromDetail myCourse={data} role={2}/>
     )
 }
