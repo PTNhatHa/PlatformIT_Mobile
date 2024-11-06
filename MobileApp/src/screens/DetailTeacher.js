@@ -181,7 +181,7 @@ export const DetailTeacher =({route})=>{
                         />
                     </View>
                     {data.courses.length > 0 &&
-                        data.courses?.map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)
+                        data.courses.slice(0, 5).map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)
                     }
                     <Text style={styles.more}>...</Text>
                 </View>

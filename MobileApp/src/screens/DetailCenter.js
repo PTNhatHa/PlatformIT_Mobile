@@ -95,12 +95,12 @@ export const DetailCenter =({route})=>{
                     {data.establishedDate && 
                         <View style={styles.inforContent}>
                             <FontAwesome5 name="birthday-cake" size={17} color="white" />
-                            <Text style={styles.infoText}>{data.establishedDate}</Text>
+                            <Text style={styles.infoText}>Established date: {data.establishedDate}</Text>
                         </View>
                     }
                     <View style={styles.inforContent}>
                         <FontAwesome6 name="handshake-angle" size={12} color="white" />
-                        <Text style={styles.infoText}>{formatDateTime(data.submissionDate)}</Text>
+                        <Text style={styles.infoText}>Join date: {formatDateTime(data.submissionDate)}</Text>
                     </View>
                 </View>
             </View>

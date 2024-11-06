@@ -222,7 +222,7 @@ export const DetailCourse =({route})=>{
                         <Feather name="clock" size={16} color="white" />
                         <Text style={styles.infoText}>
                             { data.courseStartDate ?                                                       
-                                formatDateTime(data.courseStartDate) - formatDateTime(data.courseEndDate)
+                                `Course duration: ${formatDateTime(data.courseStartDate)} - ${formatDateTime(data.courseEndDate)}`
                                 :
                                 "Create on: " + formatDateTime(data.createdDate)
                             }
@@ -234,7 +234,7 @@ export const DetailCourse =({route})=>{
                         }
                         {data.registStartDate &&
                             <Text style={styles.infoText}>
-                                {formatDateTime(data.registStartDate)} - {formatDateTime(data.registEndDate)}
+                                Regist date: {formatDateTime(data.registStartDate)} - {formatDateTime(data.registEndDate)}
                             </Text>
                         }
                     </View>
