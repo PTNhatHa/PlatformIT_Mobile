@@ -231,6 +231,47 @@ export const DetailCenter =({route})=>{
                 </LinearGradient>
             </View>
 
+            {/* Working hour */}
+            <View style={[styles.wrapperSocial, {marginBottom: 16}]}>
+                <LinearGradient 
+                    colors={['#4D768A', '#75A2A2']} 
+                    style={[styles.miniCard, { width: "auto"}]}
+                    start={{ x: 1, y: 0 }} // Bắt đầu từ bên trái
+                    end={{ x: 0, y: 0 }} // Kết thúc ở bên phải
+                >
+                    <View style={styles.titleCard}>
+                        <Ionicons name="hourglass-outline" size={16} color={COLORS.secondMain} />
+                        <Text style={styles.titleCardText}>Working hour</Text>
+                    </View>
+                    <View style={styles.wrapAllHour}>
+                    <FlatList
+                        data={data.workingHourModel}
+                        renderItem={({item}) => 
+                            <View style={styles.wrapHour}>
+                                <Text style={styles.textDay}>{item.day}</Text>
+                                {item.isOpen ?
+                                <>
+                                    <Text style={styles.textHour}>{item.startTime}</Text>
+                                    <Text style={styles.textHour}>-</Text>
+                                    <Text style={styles.textHour}>{item.closeTime}</Text>
+                                </> 
+                                :
+                                <>
+                                    <Text style={styles.textHour}></Text>
+                                    <Text style={styles.textHour}>Close</Text>
+                                    <Text style={styles.textHour}></Text>
+                                </>
+                                }
+                            </View>
+                        }
+                        horizontal={true}
+                        keyExtractor={item => item.day}
+                        showsHorizontalScrollIndicator={false}
+                    />
+                    </View>
+                </LinearGradient>
+            </View>
+
             {/* Social/Profile */}
             {data.profileLinks.length > 0 &&
                 <View style={styles.wrapperSocial}>
@@ -440,5 +481,28 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
         fontWeight: "bold"
+    },
+    wrapAllHour: {
+        flexDirection: "row"
+    },
+    wrapHour: {
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    textDay:{
+        color: "white",
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        borderBottomWidth: 1,
+        borderColor: "white",
+        fontSize: 12,
+        textAlign: "center",
+        marginBottom: 10
+    },
+    textHour: {
+        color: "white",
+        fontSize: 12,
+        textAlign: "center"
     }
 })
