@@ -79,17 +79,17 @@ export const ViewAllFromDetail = ({route})=>{
                         // startRegist - endRegist
                         // Ngày bắt đầu khóa học phải nằm sau hặc bằng startRegist
                         // Ngày kết thúc khóa học phải trước sau hặc bằng startRegist
-                        if(dataFilterCourse.startRegist && new Date(item.registStartDate) < new Date(dataFilterCourse.startRegist)){
+                        if(dataFilter.startRegist && new Date(item.registStartDate) < new Date(dataFilterCourse.startRegist)){
                             return false
                         }
-                        if(dataFilterCourse.endRegist && new Date(item.registEndDate) > new Date(dataFilterCourse.endRegist)){
+                        if(dataFilter.endRegist && new Date(item.registEndDate) > new Date(dataFilterCourse.endRegist)){
                             return false
                         }
                         // startDuration - endDuration
-                        if(dataFilterCourse.startDuration && new Date(item.courseStartDate) < new Date(dataFilterCourse.startDuration)){
+                        if(dataFilter.startDuration && new Date(item.courseStartDate) < new Date(dataFilterCourse.startDuration)){
                             return false
                         }
-                        if(dataFilterCourse.endDuration && new Date(item.courseEndDate) > new Date(dataFilterCourse.endDuration)){
+                        if(dataFilter.endDuration && new Date(item.courseEndDate) > new Date(dataFilterCourse.endDuration)){
                             return false
                         }
                         return true
@@ -168,17 +168,7 @@ export const ViewAllFromDetail = ({route})=>{
                         data.price.toString().includes(search) ||
                         data.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
             })            
-        }
-        // Center
-        if(index === 2){
-            result = dataSearch.filter(data => {
-                return data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.description?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.tags?.some(tag => tag.tagName.toLowerCase().includes(search.toLowerCase()))
-            })            
-        }
-        // Teacher
-        if(index === 3){
+        } else{
             result = dataSearch.filter(data => {
                 return data.fullName?.toLowerCase().includes(search.toLowerCase()) ||
                         data.teachingMajor?.toLowerCase().includes(search.toLowerCase()) ||
@@ -230,7 +220,7 @@ export const ViewAllFromDetail = ({route})=>{
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />
-            : index === 3 ?
+            : 
                 <FlatList
                     data={currentData}
                     keyExtractor={(item) => item.idUser}
@@ -238,7 +228,6 @@ export const ViewAllFromDetail = ({route})=>{
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />
-            : ""
             }
             <Modal
                 visible={isOpenModal}

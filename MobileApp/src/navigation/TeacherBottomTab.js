@@ -55,7 +55,7 @@ const StackHomeScreen = ()=>{
                 component={ViewAllFromDetail}
             />
             <StackHome.Screen
-                name="Courses of Teacher"
+                name="Courses of teacher"
                 component={ViewAllFromDetail}
             />
             <StackHome.Screen

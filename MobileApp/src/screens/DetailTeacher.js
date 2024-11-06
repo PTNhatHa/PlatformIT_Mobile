@@ -174,7 +174,11 @@ export const DetailTeacher =({route})=>{
                 <View style={styles.wrapper}>
                     <View style={styles.bottom}>
                         <Text style={commonStyles.title}>Course</Text>
-                        <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
+                        <ButtonIconLightGreen 
+                            title={"See all"} 
+                            icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}
+                            action={()=> navigation.navigate("Courses of teacher", {initData: data.courses, index: 1, namePage: data.name ? data.name : "<Unknown>"})}
+                        />
                     </View>
                     {data.courses.length > 0 &&
                         data.courses?.map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)
