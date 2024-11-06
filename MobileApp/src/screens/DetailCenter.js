@@ -15,6 +15,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { formatDateTime, openLink } from "../utils/utils";
+import { useNavigation } from "@react-navigation/native";
 
 const initCenter={
     id: 1,
@@ -115,6 +116,7 @@ const initCenter={
     ]
 }
 export const DetailCenter =({route})=>{
+    const navigation = useNavigation()
     const idCenter = route.params?.idCenter || 0
     const [selectBtn, setSelectBtn] = useState(0)
     const [data, setData] = useState([])
@@ -325,13 +327,21 @@ export const DetailCenter =({route})=>{
                 </View>
                 {selectBtn === 0 ?
                         <>
-                            <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
+                            <ButtonIconLightGreen 
+                                title={"See all"} 
+                                icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}
+                                action={()=> navigation.navigate("Courses of center", {initData: data.courseCards, index: 1, namePage: data.centerName})}
+                            />
                             {data.courseCards.slice(0, 5).map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)}
                             <Text style={styles.more}>...</Text>
                         </>
                     :   
                         <>
-                            <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
+                            <ButtonIconLightGreen 
+                                title={"See all"} 
+                                icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}
+                                action={()=> navigation.navigate("Teachers of center", {initData: data.teacherCards, index: 3, namePage: data.centerName})}
+                            />
                             {data.teacherCards.slice(0, 5).map((item)=><CardVirticalTeacher data={item} key={item.idUser}/>)}
                             <Text style={styles.more}>...</Text>
                         </>

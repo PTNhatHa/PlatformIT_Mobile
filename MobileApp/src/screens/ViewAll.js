@@ -533,6 +533,7 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
         </View>
     )
 }
+
 const styles = StyleSheet.create({
     container:{
         padding: 16,

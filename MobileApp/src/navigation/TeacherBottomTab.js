@@ -20,6 +20,7 @@ import { NotificationScreen } from "../screens/Notification";
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { getAllNotificationOfUser } from "../services/user";
+import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -48,6 +49,18 @@ const StackHomeScreen = ()=>{
             <StackHome.Screen
                 name="Detail Teacher"
                 component={DetailTeacher}
+            />
+            <StackHome.Screen
+                name="Courses of center"
+                component={ViewAllFromDetail}
+            />
+            <StackHome.Screen
+                name="Courses of Teacher"
+                component={ViewAllFromDetail}
+            />
+            <StackHome.Screen
+                name="Teachers of center"
+                component={ViewAllFromDetail}
             />
         </StackHome.Navigator>
     )
