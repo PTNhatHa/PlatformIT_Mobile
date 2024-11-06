@@ -26,6 +26,7 @@ import { CardStudentAttendance } from "../components/CardStudent"
 import { Modal } from "react-native"
 import { TextInputLabel } from "../components/TextInputField"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const initCourse={
     idCourse: 1,
@@ -305,9 +306,17 @@ export const DetailCourse =({route})=>{
             
             {/* Course review */}
             <View style={styles.wrapper}>
-                <View style={styles.titleCard}>
-                    <AntDesign name="star" size={16} color={COLORS.yellow}/>
-                    <Text style={styles.titleCardText}>{data.totalRatePoint} Rating</Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between"}}>
+                    <View style={styles.titleCard}>
+                        <AntDesign name="star" size={16} color={COLORS.yellow}/>
+                        <Text style={styles.titleCardText}>{data.totalRatePoint} Rating</Text>
+                    </View>
+                    {role === 2 &&
+                        <View style={styles.titleCard}>
+                            <FontAwesome5 name="edit" size={16} color={COLORS.secondMain}/>
+                            <Text style={styles.titleCardText}>Write a review</Text>
+                        </View>
+                    }
                 </View>
                 <FlatList
                     data={data.rateModels}
