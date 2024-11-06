@@ -14,6 +14,7 @@ import { ButtonIconLightGreen } from "../components/Button";
 import { getDetailTeacher } from "../services/user";
 import { openLink } from "../utils/utils";
 import { useNavigation } from "@react-navigation/native";
+import { CardVirticalCourse } from "../components/CardVertical";
 
 const initTeacher={
     "name": "Phan Trần Nhật Hạ",
@@ -175,7 +176,10 @@ export const DetailTeacher =({route})=>{
                         <Text style={commonStyles.title}>Course</Text>
                         <ButtonIconLightGreen title={"See all"} icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}/>
                     </View>
-                    {/* {data.courses?.map((item)=><CardVirticalCourse data={item} key={item.id}/>)} */}
+                    {data.courses.length > 0 &&
+                        data.courses?.map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)
+                    }
+                    <Text style={styles.more}>...</Text>
                 </View>
             </ScrollView>
             {isLoading &&
@@ -308,5 +312,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+    more: {
+        textAlign: "center",
+        fontSize: 16,
+        fontWeight: "bold"
     }
 })

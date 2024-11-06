@@ -17,27 +17,26 @@ const initAssignment = {
 }
 export const CardAssignmentStudent = ({data = initAssignment})=>{
     return(
-        <TouchableOpacity style={styles.container}>
-            <Image source={data.img} style={styles.img}/>
+        <TouchableOpacity style={styles.container} key={data.idAssignment}>
             <View style={{flex: 1}}>
-                <Text style={styles.title}>{data.title}</Text>
-                <Text style={styles.dataText}>{data.introduction}</Text>
-                {data.due ? 
+                <Text style={styles.title}>{data.assignmentTitle}</Text>
+                <Text style={styles.dataText}>{data.assignmentIntroduction}</Text>
+                {data.dueDate ? 
                     <View style={styles.content}>
                         <Feather name="calendar" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>Due date: {formatDateTime(data.due)}</Text>
+                        <Text style={styles.dataText}>Due date: {formatDateTime(data.dueDate)}</Text>
                     </View>
                     :
                     ""
                 }
-                {data.duration ? 
+                {/* {data.duration ? 
                     <View style={styles.content}>
                         <Feather name="clock" size={12} color={COLORS.stroke} />
                         <Text style={styles.dataText}>Duration: {data.duration} min</Text>
                     </View>
                     :
                     ""
-                }
+                } */}
             </View>
         </TouchableOpacity>
     )

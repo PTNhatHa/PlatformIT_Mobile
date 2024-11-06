@@ -133,18 +133,21 @@ export const DetailCourse =({route})=>{
     const [selectBtn, setSelectBtn] = useState(0)
     const [loading, setLoading] = useState(true);
 
-    const [showSections, setShowSections] = useState(data?.content?.map(item => (
-        {
-            section: item.section,
-            isShow: true
-        }
-    )) || [])
+    const [showSections, setShowSections] = useState([])
 
     const getCourse = async()=>{
         try {
             const response = await getCourseDetail(idCourse)
             if(response){
                 setData(response)
+                if(response.sectionsWithCourses.length > 0){
+                    setShowSections(response.sectionsWithCourses.map(item => (
+                        {
+                            idSection: item.idSection,
+                            isShow: true
+                        }
+                    )))
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -155,11 +158,12 @@ export const DetailCourse =({route})=>{
 
     useEffect(()=>{
         getCourse()
+        console.log(showSections);
     }, [idCourse])
 
     const handleShowSection = (idSection)=>{
         const newShow = showSections.map(item => {
-            if(item.section === idSection){
+            if(item.idSection === idSection){
                 return{
                     ...item,
                     isShow: !item.isShow
@@ -293,7 +297,7 @@ export const DetailCourse =({route})=>{
                 </View>
                 <FlatList
                     data={data.rateModels}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.idRating}
                     renderItem={({item})=>
                         <CardReview data={item}/>
                     }
@@ -314,17 +318,17 @@ export const DetailCourse =({route})=>{
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
-                        {/* {data.sectionsWithCourses?.length > 0 &&
+                        {data.sectionsWithCourses?.length > 0 &&
                         data.sectionsWithCourses?.map((item)=>{
-                            let checkIsShow = showSections.find(section => section.section === item.section).isShow
+                            let checkIsShow = showSections.find(section => section.idSection === item.idSection).isShow
                             return(
-                                <View key={item.section} style={styles.wrapSectionLecture}>
-                                    <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.section)}>
+                                <View key={item.idSection} style={styles.wrapSectionLecture}>
+                                    <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
                                         <Text style={[styles.section, {flex: 1}]}>
-                                            Section {item.section} 
+                                            Section {item.idSection} 
                                         </Text>
                                         <Text style={styles.section}>
-                                            {item.lecture.length} {item.lecture.length > 1 ? "lectures" : "lecture"}
+                                            {item.lectureCount > 1 ? "lectures" : "lecture"}
                                         </Text>
                                         { checkIsShow ?
                                             <Entypo name="chevron-up" size={20} color="black" />
@@ -333,26 +337,23 @@ export const DetailCourse =({route})=>{
                                         }
                                     </TouchableOpacity>
                                     <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                                        {item.lecture.map(item => 
-                                            <CardLecture data={item}/>
+                                        {item.lectures.map(lec => 
+                                            <CardLecture data={lec} key={lec.idLecture}/>
                                         )}
                                     </View>
                                 </View>
                             )}
-                        )} */}
+                        )}
                     </>
                 :   
                     <View>
                         {/* Course assignments */}
-                        {/* <View style={[styles.wrapShow, {height: showAllTest? "auto" : 390}]}>
+                        <View style={[styles.wrapShow, {height: 390}]}>
                             {data.tests.length > 0 &&
-                            data.tests?.map(item => 
-                                <CardAssignmentStudent data={item} key={item.id}/>
+                            data.tests?.map(test => 
+                                <CardAssignmentStudent data={test} key={test.idAssignment}/>
                             )}
                         </View>
-                        <TouchableOpacity style={styles.showAll} onPress={()=> setShowAllTest(!showAllTest)}>
-                            <Text style={commonStyles.viewAll}>{showAllTest ? "Show Less" : "Show All"}</Text>
-                        </TouchableOpacity> */}
                     </View>
                 }
             </View>         
@@ -531,6 +532,8 @@ const styles = StyleSheet.create({
     },
     dataText:{
         color: "white",
+        flexWrap: "wrap",
+        width: 300,
     },
     wrapLoading:{
         position: "absolute", 

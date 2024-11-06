@@ -2,20 +2,22 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import { COLORS } from "../utils/constants"
 
 const initLecture = {
-    title: "Title",
-    introduction: "introduction",
-    exercise: 3
-}
+    "idLecture": 0,
+    "lectureTitle": "Sample",
+    "lectureIntroduction": "Sample",
+    "exerciseCount": 1,
+    "createdDate": "2024-11-06T13:58:50.7138603+07:00"
+  }
 export const CardLecture = ({data = initLecture})=>{
     return(
-        <TouchableOpacity style={styles.container}>
-            <Text style={styles.title}>{data.title}</Text>
-            <Text style={styles.body}>{data.introduction}</Text>
-            {data.exercise === 1 ?
-                <Text style={styles.exercise}>{data.exercise} exercise</Text>
+        <TouchableOpacity style={styles.container} key={data.idLecture}>
+            <Text style={styles.title}>{data.lectureTitle}</Text>
+            <Text style={styles.body}>{data.lectureIntroduction}</Text>
+            {data.exerciseCount === 1 ?
+                <Text style={styles.exercise}>{data.exerciseCount} exercise</Text>
                 :
-                data.exercise > 1 ? 
-                <Text style={styles.exercise}>{data.exercise} exercises</Text>
+                data.exerciseCount > 1 ? 
+                <Text style={styles.exercise}>{data.exerciseCount} exercises</Text>
                 :
                 ""
             }

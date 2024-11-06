@@ -1,6 +1,6 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5000/api/Tag"
-// const baseUrl = "http://192.168.1.208:5000/api/Course"
+// const baseUrl = "http://192.168.2.3:5000/api/Tag"
+const baseUrl = "http://192.168.1.209:5000/api/Course"
 
 export const getAlltag = async ()=>{
     return await axios.get(baseUrl + "/GetAlltag")

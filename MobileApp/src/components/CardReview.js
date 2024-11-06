@@ -2,22 +2,20 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
+import DefaultAva from "../../assets/images/DefaultAva.png"
 
 const initReview={
-    star: 4,
-    title: "Title",
-    reviewBoby: "ReviewBoby",
-    Reviewer: {
-        img: "",
-        name: "Name reviewer"
-    },
-    date: new Date()
-}
+    "idRating": 0,
+    "raterAvatarPath": "",
+    "raterName": "Sample",
+    "rateContent": "Sample",
+    "ratePoint": 4
+  }
 export const CardReview = ({data = initReview})=>{
     const renderStars = ()=>{
         let star = []
         for(let i=0; i < 5; i++){
-            if(i < data.star)
+            if(i < data.ratePoint)
             {
                 star.push(
                     <AntDesign name="star" size={16} color={COLORS.yellow} key={i}/>
@@ -32,19 +30,16 @@ export const CardReview = ({data = initReview})=>{
         return star
     }
     return(
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity style={styles.container} key={data.idRating}>
             <View style={styles.star}>
                 {renderStars()}
             </View>
-            <View>
-                <Text style={styles.title}>{data.title}</Text>
-                <Text style={styles.reviewBoby}>{data.reviewBoby}</Text>
-            </View>
+            <Text style={styles.reviewBoby}>{data.rateContent}</Text>
             <View style={styles.wrapReviewer}>
-                <Image source={data.Reviewer.img} style={styles.avata}/>
+                <Image source={data.raterAvatarPath || DefaultAva} style={styles.avata}/>
                 <View>
-                    <Text style={styles.name}>{data.Reviewer.name}</Text>
-                    <Text style={styles.reviewBoby}>{formatDateTime(data.date)}</Text>
+                    <Text style={styles.name}>{data.raterName}</Text>
+                    <Text style={styles.reviewBoby}>6/11/2024</Text>
                 </View>
             </View>
         </TouchableOpacity>
