@@ -25,6 +25,7 @@ import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
 import { CardStudentAttendance } from "../components/CardStudent"
 import { Modal } from "react-native"
 import { TextInputLabel } from "../components/TextInputField"
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const initCourse={
     idCourse: 1,
@@ -142,6 +143,9 @@ export const DetailCourse =({route})=>{
     const [isAddNoti, setIsAddNoti] = useState(false);
     const [notiTitle, setNotiTitle] = useState("");
     const [notiBody, setNotiBody] = useState("");
+
+    const [isAddSection, setIsAddSection] = useState(false);
+    const [newSection, setNewSection] = useState("");
 
     const [showSections, setShowSections] = useState([])
 
@@ -339,7 +343,10 @@ export const DetailCourse =({route})=>{
                     <>
                         {/* Course contents */}
                         {role === 1 &&
-                            <ButtonIconLightGreen title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                            <ButtonIconLightGreen 
+                                title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                                action={()=>setIsAddSection(true)}    
+                            />
                         }
                         {data.sectionsWithCourses?.length > 0 &&
                         data.sectionsWithCourses?.map((item)=>{
@@ -364,10 +371,16 @@ export const DetailCourse =({route})=>{
                                             <CardLecture data={lec} key={lec.idLecture}/>
                                         )}
                                         {role === 1 &&
-                                        <TouchableOpacity style={styles.addLec}>
-                                            <Entypo name="plus" size={14} color={COLORS.main} />
-                                            <Text style={styles.addLecText}>Add new lecture</Text>
-                                        </TouchableOpacity>
+                                            <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
+                                                <TouchableOpacity style={styles.addLec}>
+                                                    <Entypo name="plus" size={14} color={COLORS.main} />
+                                                    <Text style={styles.addLecText}>Add new lecture</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.addLec}>
+                                                    <Text style={[styles.addLecText, {color: COLORS.red}]}>Delete this section</Text>
+                                                    <MaterialIcons name="delete" size={14} color={COLORS.red} />
+                                                </TouchableOpacity>
+                                            </View>
                                         }
                                     </View>
                                 </View>
@@ -413,6 +426,8 @@ export const DetailCourse =({route})=>{
                 : ""}
             </View>     
         </ScrollView>
+
+        {/* Add Notification */}
         <Modal
             visible={isAddNoti}
             transparent={true}
@@ -431,6 +446,28 @@ export const DetailCourse =({route})=>{
                     <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
                     <TextInputLabel label={"Title"} value={notiTitle} placeholder={"Title"} onchangeText={setNotiTitle}/>
                     <TextInputLabel label={"Content"} value={notiBody} placeholder={"Content"} onchangeText={setNotiBody}/>
+                    <ButtonGreen title={"Save"}/>
+                </View>
+            </View>
+        </Modal>
+
+        {/* Add Section */}
+        <Modal
+            visible={isAddSection}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={()=>setIsAddSection(false)}
+        >
+            <View style={styles.selectImgWrapper}>
+                <View style={styles.addNoti}>
+                    <TouchableOpacity style={styles.close} onPress={()=>{
+                        setIsAddSection(false)
+                        setNewSection("")
+                    }}>
+                        <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
+                    <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
                     <ButtonGreen title={"Save"}/>
                 </View>
             </View>
