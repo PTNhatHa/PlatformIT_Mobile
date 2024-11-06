@@ -430,7 +430,7 @@ export const DetailCourse =({route})=>{
                     </TouchableOpacity>
                     <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
                     <TextInputLabel label={"Title"} value={notiTitle} placeholder={"Title"} onchangeText={setNotiTitle}/>
-                    <TextInputLabel label={"Body"} value={notiBody} placeholder={"Body"} onchangeText={setNotiBody}/>
+                    <TextInputLabel label={"Content"} value={notiBody} placeholder={"Content"} onchangeText={setNotiBody}/>
                     <ButtonGreen title={"Save"}/>
                 </View>
             </View>
