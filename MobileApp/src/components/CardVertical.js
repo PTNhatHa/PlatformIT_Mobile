@@ -79,6 +79,10 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
                         </Text>
                     </View>
                 }
+                <View style={styles.content}>
+                    <Ionicons name="business-outline" size={10} color={COLORS.secondMain} />
+                    <Text style={styles.dataText}>{data.centerName}</Text>
+                </View>
                 <View style={styles.wrapCost}>
                     <Text style={styles.costSale}>${data.price}</Text>
                     <Text style={styles.cost}>{data.price}</Text>

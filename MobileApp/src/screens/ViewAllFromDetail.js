@@ -6,10 +6,10 @@ import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter"
 import { formatDateTime } from "../utils/utils";
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 
-export const ViewAllFromDetail = ({route})=>{
-    const initData = route.params?.initData || []
-    const index = route.params?.index || false
-    const namePage = route.params?.namePage || ""
+export const ViewAllFromDetail = ({route, myCourse = []})=>{
+    const initData = route?.params?.initData || myCourse
+    const index = route?.params?.index || 1
+    const namePage = route?.params?.namePage || ""
     const [data, setData] = useState(initData)
     const [loading, setLoading] = useState(false);
 
@@ -200,7 +200,9 @@ export const ViewAllFromDetail = ({route})=>{
 
     return(
         <View style={styles.container}>
-            <Text style={[commonStyles.title, {textAlign: "center"}]}>{namePage}</Text>
+            {myCourse.length === 0 &&
+                <Text style={[commonStyles.title, {textAlign: "center"}]}>{namePage}</Text>
+            }
             <View style={styles.wrapperSearch}>
                 <TextInput
                     value={search}
