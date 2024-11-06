@@ -250,9 +250,14 @@ export const DetailCourse =({route})=>{
                         <Text style={styles.costSale}>${data.price}</Text>
                         <Text style={styles.cost}>{data.price}</Text>
                     </View>
-                    {state.idRole === 3 &&
+                    {state.idRole === 3 && role === 0 &&
                         <TouchableOpacity style={styles.infoBtn}>
                             <Text style={styles.infoBtnText}>Pay for this course</Text>
+                        </TouchableOpacity>
+                    }
+                    {role === 2 &&
+                        <TouchableOpacity style={styles.infoBtn}>
+                            <Text style={styles.infoBtnText}>View payment history</Text>
                         </TouchableOpacity>
                     }
                 </View>
