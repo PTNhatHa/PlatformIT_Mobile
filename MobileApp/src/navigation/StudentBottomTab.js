@@ -18,6 +18,7 @@ import { NotificationScreen } from "../screens/Notification";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
 import { getAllNotificationOfUser } from "../services/user";
+import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -47,6 +48,18 @@ const StackHomeScreen = ()=>{
                 name="Detail Teacher"
                 component={DetailTeacher}
             />
+            <StackHome.Screen
+                name="Courses of center"
+                component={ViewAllFromDetail}
+            />
+            <StackHome.Screen
+                name="Courses of teacher"
+                component={ViewAllFromDetail}
+            />
+            <StackHome.Screen
+                name="Teachers of center"
+                component={ViewAllFromDetail}
+            />
         </StackHome.Navigator>
     )
 }
@@ -66,6 +79,31 @@ const StackMyCourseScreen = ()=>{
             <StackMyCourse.Screen
                 name="Detail My Course"
                 component={DetailCourse}
+            />
+
+            <StackMyCourse.Screen
+                name="Detail Course"
+                component={DetailCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail Center"
+                component={DetailCenter}
+            />
+            <StackMyCourse.Screen
+                name="Detail Teacher"
+                component={DetailTeacher}
+            />
+            <StackMyCourse.Screen
+                name="Courses of center"
+                component={ViewAllFromDetail}
+            />
+            <StackMyCourse.Screen
+                name="Courses of teacher"
+                component={ViewAllFromDetail}
+            />
+            <StackMyCourse.Screen
+                name="Teachers of center"
+                component={ViewAllFromDetail}
             />
         </StackMyCourse.Navigator>
     )

@@ -86,6 +86,30 @@ const StackMyCourseScreen = ()=>{
                 component={TeacherDetailAttendance}
             />
 
+            <StackMyCourse.Screen
+                name="Detail Course"
+                component={DetailCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail Center"
+                component={DetailCenter}
+            />
+            <StackMyCourse.Screen
+                name="Detail Teacher"
+                component={DetailTeacher}
+            />
+            <StackMyCourse.Screen
+                name="Courses of center"
+                component={ViewAllFromDetail}
+            />
+            <StackMyCourse.Screen
+                name="Courses of teacher"
+                component={ViewAllFromDetail}
+            />
+            <StackMyCourse.Screen
+                name="Teachers of center"
+                component={ViewAllFromDetail}
+            />
         </StackMyCourse.Navigator>
     )
 }
