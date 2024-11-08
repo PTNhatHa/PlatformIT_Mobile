@@ -61,14 +61,17 @@ export const DetailCenter =({route})=>{
                 />
                 <View style={styles.wrapInfoContent}>
                     <Text style={styles.infoTitle}>{data.centerName}</Text>
-                    <View style={{ rowGap: 2}}>
-                        {data.listTagCourses?.length > 0 && 
-                            <View style={styles.inforContent}>
-                                {data.listTagCourses?.map(item => 
-                                    <Tag key={item.idTag} label={item.tagName}/>  
-                                )}                    
-                            </View>
-                        }
+                    <View>
+                        <FlatList
+                            data={data.listTagCourses}
+                            renderItem={({item}) => 
+                                <Tag key={item.idTag} label={item.tagName}/>  
+                            }
+                            horizontal={true}
+                            keyExtractor={item => item.idTag}
+                            showsHorizontalScrollIndicator={false}
+                            ItemSeparatorComponent={() => <View style={{ width: 4 }} />}
+                        />
                     </View>
                     {data.description &&
                         <Text style={styles.infoText}>{data.description}</Text>
