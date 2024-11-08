@@ -277,3 +277,28 @@ export const getDetailTeacher = async (idUser)=>{
         console.log("Error getDetailTeacher: ", error);
     })
 }
+
+export const changeReadStatus = async (idNoti, idUser)=>{
+    const url = baseUrl + "/ChangeReadStatus?idNotification=" + idNoti + "&idUpdatedBy=" + idUser
+    // console.log(url);
+    return await axios.post(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error changeReadStatus: ", error);
+    })
+}
+
+export const readAllNotification = async (idUser)=>{
+    const url = baseUrl + "/ReadAllNotification?idUpdatedBy=" + idUser
+    return await axios.post(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error readAllNotification: ", error);
+    })
+}

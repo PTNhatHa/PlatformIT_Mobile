@@ -45,7 +45,7 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
     }, [data.tags])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} key={data.idCourse}>
-            <Image source={data.pathImg} style={styles.img}/>
+            <Image source={data.pathImg || DefaultImg} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.courseTitle}</Text>
                 {data.tags.length > 0 && 

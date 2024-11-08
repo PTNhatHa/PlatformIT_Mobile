@@ -10,7 +10,7 @@ import { useState, useEffect } from "react"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import DefaultImg from "../../assets/images/DefaultImg.png"
 const initCourse={
     "idCourse": 3,
     "courseTitle": "Banh Bo",
@@ -47,7 +47,7 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
             onPress={role !== 0 ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
             key={data.idCourse}    
         >
-            <Image source={data.pathImg} style={styles.img}/>
+            <Image source={data.pathImg || DefaultImg} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.courseTitle}</Text>
                 {data?.tags?.length > 0 && 
@@ -136,7 +136,7 @@ export const CardVirticalCenter = ({data = initCenter})=>{
     }, [data.listTagCourses])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
-            <Image source={data.avatarPath} style={styles.img}/>
+            <Image source={data.avatarPath || DefaultImg} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
                 {data.description &&

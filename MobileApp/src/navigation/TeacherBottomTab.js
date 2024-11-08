@@ -143,22 +143,25 @@ export const TeacherBottomTab = ()=>{
     const {state} = useUser()
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
-    useEffect(()=>{
-        const getNoti = async()=>{
-            const response = await getAllNotificationOfUser(state.idUser)
-            let notiUnRead = 0
-            if(response){
-                response.forEach(item => {
-                    if(item.isRead === 0){
-                        notiUnRead +=1
-                    }
-                });
-                setAllNoti(response)
-            }
-            setUnReadNoti(notiUnRead)
+
+    const getNoti = async()=>{
+        const response = await getAllNotificationOfUser(state.idUser)
+        let notiUnRead = 0
+        if(response){
+            response.forEach(item => {
+                if(item.isRead === 0){
+                    notiUnRead +=1
+                }
+            });
+            setAllNoti(response)
         }
+        setUnReadNoti(notiUnRead)
+    }
+
+    useEffect(()=>{
         getNoti()
     }, [])
+
     return(
         <Tab.Navigator
             screenOptions={({route})=>({
@@ -196,7 +199,7 @@ export const TeacherBottomTab = ()=>{
                     tabBarBadgeStyle: { backgroundColor: COLORS.main, color: 'white' }
                 }}
             >
-                {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} />}
+                {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
             <Tab.Screen name="Chat" component={Home} />
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
