@@ -6,6 +6,7 @@ import { CardNoti } from "../components/CardNotification";
 import { COLORS, commonStyles } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import DefaultImg from "../../assets/images/DefaultImg.png"
 
 // {
 //     "idNotification": 6,
@@ -93,7 +94,7 @@ export const NotificationScreen = (props)=>{
                 data={noti}
                 renderItem={({item}) => 
                     <TouchableOpacity style={[styles.container, item.isRead === 0 && {backgroundColor: "white",}]} onPress={()=>handleReadNoti(item.idNotification)}>
-                        <Image style={styles.img} source={{ uri: item.senderAvatar}}/>
+                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : DefaultImg}/>
                         <View style={{flexDirection: "column", flex: 1}}>
                             <Text style={styles.title}>{item.content}</Text>
                             <Text style={styles.dataDate}>{item.relativeTime}</Text>
