@@ -27,6 +27,7 @@ import { Modal } from "react-native"
 import { TextInputLabel } from "../components/TextInputField"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import { ModalCourseContent } from "../components/ModalCourseContent"
 
 const initCourse={
     idCourse: 1,
@@ -175,18 +176,6 @@ export const DetailCourse =({route})=>{
         getCourse()
     }, [idCourse])
 
-    const handleShowSection = (idSection)=>{
-        const newShow = showSections.map(item => {
-            if(item.idSection === idSection){
-                return{
-                    ...item,
-                    isShow: !item.isShow
-                }
-            }
-            return item
-        })
-        setShowSections(newShow)
-    }
     
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -356,51 +345,7 @@ export const DetailCourse =({route})=>{
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
-                        {role === 1 &&
-                            <ButtonIconLightGreen 
-                                title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
-                                action={()=>setIsAddSection(true)}    
-                            />
-                        }
-                        {data.sectionsWithCourses?.length > 0 &&
-                        data.sectionsWithCourses?.map((item)=>{
-                            let checkIsShow = showSections.find(section => section.idSection === item.idSection).isShow
-                            return(
-                                <View key={item.idSection} style={styles.wrapSectionLecture}>
-                                    <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
-                                        <Text style={[styles.section, {flex: 1}]}>
-                                            {item.sectionName} 
-                                        </Text>
-                                        <Text style={styles.section}>
-                                            {item.lectureCount}
-                                            {item.lectureCount > 1 ? " lectures" : " lecture"}
-                                        </Text>
-                                        { checkIsShow ?
-                                            <Entypo name="chevron-up" size={20} color="black" />
-                                            :
-                                            <Entypo name="chevron-down" size={20} color="black" />
-                                        }
-                                    </TouchableOpacity>
-                                    <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                                        {item.lectures.map(lec => 
-                                            <CardLecture data={lec} key={lec.idLecture}/>
-                                        )}
-                                        {role === 1 &&
-                                            <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
-                                                <TouchableOpacity style={styles.addLec}>
-                                                    <Entypo name="plus" size={14} color={COLORS.main} />
-                                                    <Text style={styles.addLecText}>Add new lecture</Text>
-                                                </TouchableOpacity>
-                                                <TouchableOpacity style={styles.addLec}>
-                                                    <Text style={[styles.addLecText, {color: COLORS.red}]}>Delete this section</Text>
-                                                    <MaterialIcons name="delete" size={14} color={COLORS.red} />
-                                                </TouchableOpacity>
-                                            </View>
-                                        }
-                                    </View>
-                                </View>
-                            )}
-                        )}
+                        <ModalCourseContent role={role} content={data.sectionsWithCourses}/>
                     </>
                 : selectBtn === 1 ?
                     <>
@@ -461,28 +406,6 @@ export const DetailCourse =({route})=>{
                     <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
                     <TextInputLabel label={"Title"} value={notiTitle} placeholder={"Title"} onchangeText={setNotiTitle}/>
                     <TextInputLabel label={"Content"} value={notiBody} placeholder={"Content"} onchangeText={setNotiBody}/>
-                    <ButtonGreen title={"Save"}/>
-                </View>
-            </View>
-        </Modal>
-
-        {/* Add Section */}
-        <Modal
-            visible={isAddSection}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={()=>setIsAddSection(false)}
-        >
-            <View style={styles.selectImgWrapper}>
-                <View style={styles.addNoti}>
-                    <TouchableOpacity style={styles.close} onPress={()=>{
-                        setIsAddSection(false)
-                        setNewSection("")
-                    }}>
-                        <AntDesign name="close" size={30} color={COLORS.secondMain} />
-                    </TouchableOpacity>
-                    <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
-                    <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
                     <ButtonGreen title={"Save"}/>
                 </View>
             </View>
