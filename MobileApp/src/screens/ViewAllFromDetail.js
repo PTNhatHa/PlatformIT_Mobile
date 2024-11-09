@@ -165,14 +165,14 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                         formatDateTime(data.registStartDate).includes(search) || 
                         formatDateTime(data.registEndDate).includes(search) || 
                         formatDateTime(data.createdDate).includes(search) || 
-                        data.price.toString().includes(search) ||
+                        data.price?.toString().includes(search) ||
                         data.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
             })            
         } else{
             result = dataSearch.filter(data => {
                 return data.fullName?.toLowerCase().includes(search.toLowerCase()) ||
                         data.teachingMajor?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.courseCount.toString().toLowerCase().includes(search.toLowerCase())                        
+                        data.courseCount?.toString().toLowerCase().includes(search.toLowerCase())                        
             })            
         }
         return result || []

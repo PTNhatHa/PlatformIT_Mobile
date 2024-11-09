@@ -187,7 +187,9 @@ export const Professional = ({
                             item.status === 1 ?
                             <Tag label={"Approved"}/> 
                             :
+                            item.status === 0 ?
                             <TagRed label={"Reject. Reason: " + item.reason}/>
+                            :""
                         }
                         <TextInput 
                             style={[styles.input]}

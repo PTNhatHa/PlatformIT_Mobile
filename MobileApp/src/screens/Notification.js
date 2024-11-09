@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { changeReadStatus, getAllNotificationOfUser, readAllNotification } from "../services/user";
 import { useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
 import { COLORS, commonStyles } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultImg from "../../assets/images/DefaultImg.png"
+import { changeReadStatus, readAllNotification } from "../services/notification";
 
 // {
 //     "idNotification": 6,

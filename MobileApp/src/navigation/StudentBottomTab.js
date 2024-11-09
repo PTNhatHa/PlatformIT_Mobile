@@ -17,8 +17,8 @@ import { StudentAllCourse } from "../screens/Student/TabMyCourse/StudentAllCours
 import { NotificationScreen } from "../screens/Notification";
 import { useUser } from "../contexts/UserContext";
 import { useEffect, useState } from "react";
-import { getAllNotificationOfUser } from "../services/user";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
+import { getAllNotificationOfUser } from "../services/notification";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()

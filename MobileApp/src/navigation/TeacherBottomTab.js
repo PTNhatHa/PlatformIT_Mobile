@@ -18,8 +18,8 @@ import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherD
 import { NotificationScreen } from "../screens/Notification";
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
-import { getAllNotificationOfUser } from "../services/user";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
+import { getAllNotificationOfUser } from "../services/notification";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()

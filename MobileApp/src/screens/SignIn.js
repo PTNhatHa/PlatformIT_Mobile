@@ -13,11 +13,33 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { determineFileType, validateEmail } from "../utils/utils";
 import { forgotPassword, getAvaImg, getUserInfo } from "../services/user";
+
 import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+WebBrowser.maybeCompleteAuthSession();
 
 const { width, height } = Dimensions.get('window');
 
 export default SignIn = ({navigation}) => {
+    const [accessToken, setAccessToken] = useState(null)
+    const [user, setUser] = useState(null)
+
+    // Login-google
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+        clientId: "605777517558-ojtuhupen9p211juela7o4k8gb4sf378.apps.googleusercontent.com",
+        androidClientId: "605777517558-m6s2vvj805r7qfcgju63bhlpqi3vid6g.apps.googleusercontent.com",
+        redirectUri: "https://auth.expo.io/@phanha182/MobileApp",
+    });
+
+    // useEffect(()=>{
+    //     console.log(response);
+    //     if(response?.type === "success"){
+    //         setAccessToken(response.authentication.accessToken)
+    //         console.log(accessToken);
+    //     }
+    // }, [response])
+
+
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const [username, setUsername] = useState("")
@@ -107,37 +129,6 @@ export default SignIn = ({navigation}) => {
             setLoading(false);
         }
     }
-
-    // Login-google
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        androidClientId: '847422297229-67dueiivmi291jo5iqluvbtersfi7ale.apps.googleusercontent.com',
-        redirectUri: 'https://auth.expo.io/@phanha182/MobileApp',
-    });
-    
-    useEffect(() => {
-        if (response?.type === 'success') {
-            const { authentication } = response;
-            console.log(authentication.accessToken);
-            // // Gửi access token tới backend
-            // fetch('http://your-backend-url/api/authen/google-login', {
-            //     method: 'POST',
-            //     headers: {
-            //     'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify({
-            //     token: authentication.accessToken,
-            //     }),
-            // })
-            // .then(response => response.json())
-            // .then(data => {
-            //     // Xử lý logic sau khi đăng nhập thành công
-            //     console.log(data);
-            // })
-            // .catch(error => {
-            //     console.error('Error:', error);
-            // });
-        }
-    }, [response]);
 
     return(
         <>

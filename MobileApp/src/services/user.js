@@ -1,6 +1,6 @@
 import axios from "axios"
-const baseUrl = "http://192.168.2.3:5000/api/User"
-// const baseUrl = "http://192.168.1.209:5000/api/User"
+// const baseUrl = "http://10.10.27.112:5000/api/User"
+const baseUrl = "http://192.168.1.209:5000/api/User"
 
 
 export const getUserInfo = async (idUser)=>{
@@ -207,7 +207,6 @@ export const addQualification = async (idUser, QualificationName, Description, f
     formData.append('QualificationName', QualificationName)
     formData.append('Description', Description)
     formData.append('QualificationFile', file) 
-    console.log(file);
     
     return await axios.post(url, formData, {
         headers: {
@@ -215,7 +214,7 @@ export const addQualification = async (idUser, QualificationName, Description, f
         },
     })
     .then(response => {
-        console.log("==>Response: ", response);
+        // console.log("==>Response: ", response);
         return response
     })
     .catch(error => {
@@ -254,18 +253,6 @@ export const getAllTeacherCards = async ()=>{
     })
 }
 
-export const getAllNotificationOfUser = async (idUser)=>{
-    const url = baseUrl + "/GetAllNotificationOfUser?IdUser=" + idUser
-    return await axios.get(url)
-    .then(response => {
-        // console.log(response.data);
-        return response.data
-    })
-    .catch(error => {
-        console.log("Error getAllNotificationOfUser: ", error);
-    })
-}
-
 export const getDetailTeacher = async (idUser)=>{
     const url = baseUrl + "/GetDetailTeacher?idTeacher=" + idUser
     return await axios.get(url)
@@ -275,30 +262,5 @@ export const getDetailTeacher = async (idUser)=>{
     })
     .catch(error => {
         console.log("Error getDetailTeacher: ", error);
-    })
-}
-
-export const changeReadStatus = async (idNoti, idUser)=>{
-    const url = baseUrl + "/ChangeReadStatus?idNotification=" + idNoti + "&idUpdatedBy=" + idUser
-    // console.log(url);
-    return await axios.post(url)
-    .then(response => {
-        // console.log(response.data);
-        return response.data
-    })
-    .catch(error => {
-        console.log("Error changeReadStatus: ", error);
-    })
-}
-
-export const readAllNotification = async (idUser)=>{
-    const url = baseUrl + "/ReadAllNotification?idUpdatedBy=" + idUser
-    return await axios.post(url)
-    .then(response => {
-        // console.log(response.data);
-        return response.data
-    })
-    .catch(error => {
-        console.log("Error readAllNotification: ", error);
     })
 }

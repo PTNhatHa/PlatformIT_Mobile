@@ -92,7 +92,7 @@ const ViewAllRender = ({data = [], type})=>{
             return(
                 <FlatList
                     data={currentData}
-                    keyExtractor={(item) => item.idAssignment.toString()}
+                    keyExtractor={(item) => item.idAssignment}
                     renderItem={renderItem}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
@@ -344,7 +344,7 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                         formatDateTime(data.registStartDate).includes(search) || 
                         formatDateTime(data.registEndDate).includes(search) || 
                         formatDateTime(data.createdDate).includes(search) || 
-                        data.price.toString().includes(search) ||
+                        data.price?.toString().includes(search) ||
                         data.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
             })            
         }
@@ -361,7 +361,7 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
             result = dataSearch.filter(data => {
                 return data.name?.toLowerCase().includes(search.toLowerCase()) ||
                         data.teachingMajor?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.coursesCount.toString().toLowerCase().includes(search.toLowerCase())                        
+                        data.coursesCount?.toString().toLowerCase().includes(search.toLowerCase())                        
             })            
         }
         return result || []
