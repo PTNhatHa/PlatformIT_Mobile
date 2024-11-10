@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { useEffect, useState } from "react";
@@ -31,6 +31,10 @@ export const FilterCourse = ({
 
     // Filter
     const [allTags, setAllTags] = useState([])
+    const [currentTags, setCurrentTags] = useState([])
+    const [showTag, setShowTag] = useState(false)
+    const [searchTag, setSearchTag] = useState(null)
+
     const [listTags, setListTags] = useState(dataFilter.tags || [])
     const [startRegist, setStartRegist] = useState(dataFilter.startRegist || null)
     const [endRegist, setEndRegist] = useState(dataFilter.endRegist || null)
@@ -78,6 +82,7 @@ export const FilterCourse = ({
                     }
                 })
                 setAllTags(data)
+                setCurrentTags(data)
             } catch(e){
 
             }
@@ -114,127 +119,156 @@ export const FilterCourse = ({
     const handleClose =()=>{
         onPressCancel()
     }
+    const handleSearchTag = (v)=>{
+        setSearchTag(v)
+        setShowTag(true)
+        if(!v){
+            setShowTag(false)
+        }
+        const newTags = allTags.filter(item => item.label.toLowerCase().includes(v.toLowerCase()))
+        setCurrentTags(newTags)
+    }
     return(
-        <View style={stylesFilter.wrapFilter}>
-            <View style={stylesFilter.innerFilter}>
-                {/* Sort */}
-                <TouchableOpacity style={stylesFilter.btnClose} onPress={handleClose}>
-                    <AntDesign name="close" size={24} color={COLORS.secondMain} />
-                </TouchableOpacity>
-                <View style={stylesFilter.container}>
-                    <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
-                    <View style={stylesFilter.field}>
-                        <Text style={stylesFilter.smallTitle}>Sort by</Text>
-                        <View style={stylesFilter.comboBox}>
-                            <RNPickerSelect
-                                items={listSortby1}
-                                onValueChange={(v)=> setsortby1(v)}
-                                value={sortby1}
-                            />
-                        </View>
-                        <View style={stylesFilter.comboBox}>
-                            <RNPickerSelect
-                                items={listSortby2}
-                                onValueChange={(v)=> setsortby2(v)}
-                                value={sortby2}
-                            />
-                        </View>
-                    </View>                                                      
-                </View>
-
-                {/* Filter */}
-                <View style={stylesFilter.container}>
-                    <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
-                    {/* Tags */}
-                    <View style={{ rowGap: 2}}>
+        <TouchableWithoutFeedback onPress={()=>setShowTag(false)}>
+            <View style={stylesFilter.wrapFilter}>
+                <View style={stylesFilter.innerFilter}>
+                    {/* Sort */}
+                    <TouchableOpacity style={stylesFilter.btnClose} onPress={handleClose}>
+                        <AntDesign name="close" size={24} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
                         <View style={stylesFilter.field}>
-                            <Text style={stylesFilter.smallTitle}>Tags</Text>
-                            <View style={[stylesFilter.comboBox, { width: "85%"}]}>
+                            <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                            <View style={stylesFilter.comboBox}>
                                 <RNPickerSelect
-                                    items={allTags}
-                                    onValueChange={(v)=> handleChooseTag(v)}
+                                    items={listSortby1}
+                                    onValueChange={(v)=> setsortby1(v)}
+                                    value={sortby1}
                                 />
                             </View>
-                        </View>  
-                        <View style={stylesFilter.tags}>
-                            {listTags?.map(item => 
-                                <View style={stylesFilter.wrapTag} key={item.value}>
-                                    <Text style={stylesFilter.textTag}>{item.label}</Text>
-                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
-                                        <AntDesign name="close" size={18} color={COLORS.main} />
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </View>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby2}
+                                    onValueChange={(v)=> setsortby2(v)}
+                                    value={sortby2}
+                                />
+                            </View>
+                        </View>                                                      
                     </View>
 
-                    {/* Price */}
-                    <View style={stylesFilter.field}>
-                        <Text style={stylesFilter.smallTitle}>Price</Text>
+                    {/* Filter */}
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                        {/* Tags */}
+                        <View style={{ rowGap: 2}}>
+                            <View style={[stylesFilter.field, { alignItems: "flex-start" }]}>
+                                <Text style={[stylesFilter.smallTitle, { marginTop: 8}]}>Tags</Text>
+                                <View style={[stylesFilter.comboBoxSearch]}>
+                                    <View style={[stylesFilter.comboBox, {flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems:"center"}]}>
+                                        <TextInput 
+                                            placeholder="Name tag" 
+                                            value={searchTag} 
+                                            onChangeText={(v)=>handleSearchTag(v)}
+                                            style={{width: "90%"}}
+                                        />
+                                        <TouchableOpacity onPress={()=>setShowTag(!showTag)} style={{ padding: 4}}>
+                                            <AntDesign name="caretdown" size={12} color="black" />
+                                        </TouchableOpacity>
+                                    </View>
+                                    {showTag &&
+                                        <FlatList
+                                            data={currentTags}
+                                            renderItem={({item}) => 
+                                                <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
+                                                        <Text style={stylesFilter.textListTag}>{item.label}</Text>
+                                                    </TouchableOpacity>
+                                                }
+                                            style={stylesFilter.listTags}
+                                        />
+                                    }
+                                </View>
+                            </View>  
+                            <View style={[stylesFilter.tags]}>
+                                {listTags?.map(item => 
+                                    <View style={stylesFilter.wrapTag} key={item.value}>
+                                        <Text style={stylesFilter.textTag}>{item.label}</Text>
+                                        <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
+                                            <AntDesign name="close" size={18} color={COLORS.main} />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
+
+                        {/* Price */}
                         <View style={stylesFilter.field}>
-                            <View style={[stylesFilter.wrapPrice, { marginRight: 16}]}>
-                                <TextInput  
-                                    keyboardType="numeric" 
-                                    placeholder="0"
-                                    value={startCost}
-                                    onChangeText={(v)=>setStartCost(v)}
-                                />
-                                <Feather name="dollar-sign" size={20} color="black" />
+                            <Text style={stylesFilter.smallTitle}>Price</Text>
+                            <View style={stylesFilter.field}>
+                                <View style={[stylesFilter.wrapPrice, { marginRight: 16}]}>
+                                    <TextInput  
+                                        keyboardType="numeric" 
+                                        placeholder="0"
+                                        value={startCost}
+                                        onChangeText={(v)=>setStartCost(v)}
+                                    />
+                                    <Feather name="dollar-sign" size={20} color="black" />
+                                </View>
+                                <AntDesign name="arrowright" size={16} color="black" />
+                                <View style={[stylesFilter.wrapPrice, { marginLeft: 16}]}>
+                                    <TextInput 
+                                        keyboardType="numeric" 
+                                        placeholder="0"
+                                        value={endCost}
+                                        onChangeText={(v)=>setEndCost(v)}
+                                    />
+                                    <Feather name="dollar-sign" size={20} color="black" />
+                                </View>
+                                
                             </View>
-                            <AntDesign name="arrowright" size={16} color="black" />
-                            <View style={[stylesFilter.wrapPrice, { marginLeft: 16}]}>
-                                <TextInput 
-                                    keyboardType="numeric" 
-                                    placeholder="0"
-                                    value={endCost}
-                                    onChangeText={(v)=>setEndCost(v)}
-                                />
-                                <Feather name="dollar-sign" size={20} color="black" />
-                            </View>
-                            
                         </View>
+
+                        {/* Course type */}
+                        <View style={stylesFilter.field}>
+                            <Text style={stylesFilter.smallTitle}>Course type</Text>
+                            <RadioBtn label="All" selected={selectType === "All"} onPress={()=>setSelectType("All")}/>
+                            <RadioBtn label="Limit" selected={selectType === "Limit"} onPress={()=>setSelectType("Limit")}/>
+                            <RadioBtn label="Unlimit" selected={selectType === "Unlimit"} onPress={()=>setSelectType("Unlimit")}/>
+                        </View>
+
+                        { selectType !== "Unlimit" &&
+                            <>
+                                {/* Registration date */}
+                                <View style={stylesFilter.field2}>
+                                    <Text style={stylesFilter.smallTitle}>Registration date</Text>
+                                    <View style={stylesFilter.field}>
+                                        <DateTimePickerComponent width="300" value={startRegist} setValue={setStartRegist}/>
+                                        <AntDesign name="arrowright" size={16} color="black" />
+                                        <DateTimePickerComponent width="300" value={endRegist} setValue={setEndRegist}/>
+                                    </View>
+                                </View>
+
+                                {/* Course duration */}
+                                <View style={stylesFilter.field2}>
+                                    <Text style={stylesFilter.smallTitle}>Course duration</Text>
+                                    <View style={stylesFilter.field}>
+                                        <DateTimePickerComponent width="200" value={startDuration} setValue={setStartDuration}/>
+                                        <AntDesign name="arrowright" size={16} color="black" />
+                                        <DateTimePickerComponent width="200" value={endDuration} setValue={setEndDuration}/>
+                                    </View>
+                                </View>
+                            </>
+                        }
+
+                        <View style={stylesFilter.bottom}>
+                            <ButtonWhite title={"Clear"} action={clearAll}/>
+                            <ButtonGreen title={"Save"} action={handleSave}/>
+                        </View>                                                         
                     </View>
 
-                    {/* Course type */}
-                    <View style={stylesFilter.field}>
-                        <Text style={stylesFilter.smallTitle}>Course type</Text>
-                        <RadioBtn label="All" selected={selectType === "All"} onPress={()=>setSelectType("All")}/>
-                        <RadioBtn label="Limit" selected={selectType === "Limit"} onPress={()=>setSelectType("Limit")}/>
-                        <RadioBtn label="Unlimit" selected={selectType === "Unlimit"} onPress={()=>setSelectType("Unlimit")}/>
-                    </View>
-
-                    { selectType === "Limit" &&
-                        <>
-                            {/* Registration date */}
-                            <View style={stylesFilter.field2}>
-                                <Text style={stylesFilter.smallTitle}>Registration date</Text>
-                                <View style={stylesFilter.field}>
-                                    <DateTimePickerComponent width="300" value={startRegist} setValue={setStartRegist}/>
-                                    <AntDesign name="arrowright" size={16} color="black" />
-                                    <DateTimePickerComponent width="300" value={endRegist} setValue={setEndRegist}/>
-                                </View>
-                            </View>
-
-                            {/* Course duration */}
-                            <View style={stylesFilter.field2}>
-                                <Text style={stylesFilter.smallTitle}>Course duration</Text>
-                                <View style={stylesFilter.field}>
-                                    <DateTimePickerComponent width="200" value={startDuration} setValue={setStartDuration}/>
-                                    <AntDesign name="arrowright" size={16} color="black" />
-                                    <DateTimePickerComponent width="200" value={endDuration} setValue={setEndDuration}/>
-                                </View>
-                            </View>
-                        </>
-                    }
-
-                    <View style={stylesFilter.bottom}>
-                        <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Save"} action={handleSave}/>
-                    </View>                                                         
                 </View>
-
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 
@@ -259,6 +293,10 @@ export const FilterCenter = ({
 
     // Filter
     const [allTags, setAllTags] = useState([])
+    const [currentTags, setCurrentTags] = useState([])
+    const [showTag, setShowTag] = useState(false)
+    const [searchTag, setSearchTag] = useState(null)
+
     const [listTags, setListTags] = useState(dataFilter.tags || [])
 
     const clearAll = ()=>{
@@ -285,6 +323,7 @@ export const FilterCenter = ({
                     }
                 })
                 setAllTags(data)
+                setCurrentTags(data)
             } catch(e){
 
             }
@@ -311,68 +350,97 @@ export const FilterCenter = ({
         })
         onPressCancel()
     }
+    const handleSearchTag = (v)=>{
+        setSearchTag(v)
+        setShowTag(true)
+        if(!v){
+            setShowTag(false)
+        }
+        const newTags = allTags.filter(item => item.label.toLowerCase().includes(v.toLowerCase()))
+        setCurrentTags(newTags)
+    }
     return(
-        <View style={stylesFilter.wrapFilter}>
-            <View style={stylesFilter.innerFilter}>
-                {/* Sort */}
-                <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
-                    <AntDesign name="close" size={24} color={COLORS.secondMain} />
-                </TouchableOpacity>
-                <View style={stylesFilter.container}>
-                    <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
-                    <View style={stylesFilter.field}>
-                        <Text style={stylesFilter.smallTitle}>Sort by</Text>
-                        <View style={stylesFilter.comboBox}>
-                            <RNPickerSelect
-                                items={listSortby1}
-                                onValueChange={(v)=> setsortby1(v)}
-                                value={sortby1}
-                            />
-                        </View>
-                        <View style={stylesFilter.comboBox}>
-                            <RNPickerSelect
-                                items={listSortby2}
-                                onValueChange={(v)=> setsortby2(v)}
-                                value={sortby2}
-                            />
-                        </View>
-                    </View>                                                         
-                </View>
-
-                {/* Filter */}
-                <View style={stylesFilter.container}>
-                    <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
-                    {/* Tags */}
-                    <View style={{ rowGap: 2}}>
+        <TouchableWithoutFeedback onPress={()=>setShowTag(false)}>
+            <View style={stylesFilter.wrapFilter}>
+                <View style={stylesFilter.innerFilter}>
+                    {/* Sort */}
+                    <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
+                        <AntDesign name="close" size={24} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
                         <View style={stylesFilter.field}>
-                            <Text style={stylesFilter.smallTitle}>Tags</Text>
-                            <View style={[stylesFilter.comboBox, { width: "80%"}]}>
+                            <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                            <View style={stylesFilter.comboBox}>
                                 <RNPickerSelect
-                                    items={allTags}
-                                    onValueChange={(v)=> handleChooseTag(v)}
+                                    items={listSortby1}
+                                    onValueChange={(v)=> setsortby1(v)}
+                                    value={sortby1}
                                 />
                             </View>
-                        </View>  
-                        <View style={stylesFilter.tags}>
-                            {listTags.map(item => 
-                                <View style={stylesFilter.wrapTag} key={item.value}>
-                                    <Text style={stylesFilter.textTag}>{item.label}</Text>
-                                    <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
-                                        <AntDesign name="close" size={18} color={COLORS.main} />
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </View>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby2}
+                                    onValueChange={(v)=> setsortby2(v)}
+                                    value={sortby2}
+                                />
+                            </View>
+                        </View>                                                         
                     </View>
 
-                    <View style={stylesFilter.bottom}>
-                        <ButtonWhite title={"Clear"} action={clearAll}/>
-                        <ButtonGreen title={"Save"} action={handleSave}/>
-                    </View>                                                         
-                </View>
+                    {/* Filter */}
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                        {/* Tags */}
+                        <View style={{ rowGap: 2}}>
+                                <View style={[stylesFilter.field, { alignItems: "flex-start" }]}>
+                                    <Text style={[stylesFilter.smallTitle, { marginTop: 8}]}>Tags</Text>
+                                    <View style={[stylesFilter.comboBoxSearch]}>
+                                        <View style={[stylesFilter.comboBox, {flexDirection: "row", justifyContent: "space-between", width: "100%", alignItems:"center"}]}>
+                                            <TextInput 
+                                                placeholder="Name tag" 
+                                                value={searchTag} 
+                                                onChangeText={(v)=>handleSearchTag(v)}
+                                                style={{width: "90%"}}
+                                            />
+                                            <TouchableOpacity onPress={()=>setShowTag(!showTag)} style={{ padding: 4}}>
+                                                <AntDesign name="caretdown" size={12} color="black" />
+                                            </TouchableOpacity>
+                                        </View>
+                                        {showTag &&
+                                            <FlatList
+                                                data={currentTags}
+                                                renderItem={({item}) => 
+                                                    <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
+                                                            <Text style={stylesFilter.textListTag}>{item.label}</Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                style={stylesFilter.listTags}
+                                            />
+                                        }
+                                    </View>
+                                </View>  
+                            <View style={stylesFilter.tags}>
+                                {listTags.map(item => 
+                                    <View style={stylesFilter.wrapTag} key={item.value}>
+                                        <Text style={stylesFilter.textTag}>{item.label}</Text>
+                                        <TouchableOpacity style={stylesFilter.close} onPress={()=>handleDeleteTag(item.value)}>
+                                            <AntDesign name="close" size={18} color={COLORS.main} />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+                        </View>
 
+                        <View style={stylesFilter.bottom}>
+                            <ButtonWhite title={"Clear"} action={clearAll}/>
+                            <ButtonGreen title={"Save"} action={handleSave}/>
+                        </View>                                                         
+                    </View>
+
+                </View>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 
@@ -516,12 +584,26 @@ const stylesFilter = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // paddingHorizontal: 16
     },
     btnClose: {
         position: "absolute",
         right: 16,
         top: 16,
         zIndex: 1
+    },
+    comboBoxSearch: { 
+        width: "85%",
+    },
+    listTags:{
+        maxHeight: 100,
+        width: "100%",
+        backgroundColor: "white",
+        borderWidth: 1,
+        borderColor: COLORS.stroke,
+        borderBottomRightRadius: 4,
+        borderBottomLeftRadius: 4,
+    },
+    textListTag: {
+        padding: 4
     }
 })

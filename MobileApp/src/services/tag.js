@@ -1,6 +1,7 @@
 import axios from "axios"
+import { currentIP } from "../utils/constants"
 // const baseUrl = "http://10.10.27.112:5000/api/Tag"
-const baseUrl = "http://192.168.1.209:5000/api/Tag"
+const baseUrl = "http://" + currentIP + ":5000/api/Tag"
 
 export const getAlltag = async ()=>{
     return await axios.get(baseUrl + "/GetAlltag")

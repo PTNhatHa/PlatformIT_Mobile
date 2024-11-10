@@ -1,7 +1,6 @@
 import axios from "axios"
-// const baseUrl = "http://10.10.27.112:5000/api/Notification"
-const baseUrl = "http://192.168.1.209:5000/api/Notification"
-
+import { currentIP } from "../utils/constants"
+const baseUrl = "http://" + currentIP +":5000/api/Notification"
 
 export const getAllNotificationOfUser = async (idUser)=>{
     const url = baseUrl + "/GetAllNotificationOfUser?IdUser=" + idUser

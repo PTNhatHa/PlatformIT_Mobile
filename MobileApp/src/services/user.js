@@ -1,6 +1,6 @@
 import axios from "axios"
-// const baseUrl = "http://10.10.27.112:5000/api/User"
-const baseUrl = "http://192.168.1.209:5000/api/User"
+import { currentIP } from "../utils/constants"
+const baseUrl = "http://" + currentIP + ":5000/api/User"
 
 
 export const getUserInfo = async (idUser)=>{

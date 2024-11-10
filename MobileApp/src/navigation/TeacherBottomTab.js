@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { COLORS } from "../utils/constants";
+import { COLORS, currentIP } from "../utils/constants";
 import { Home } from "../screens/Home";
 import { TeacherPI } from "../screens/Teacher/TabAccount/TeacherPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
+import * as signalR from '@microsoft/signalr';
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -157,6 +158,37 @@ export const TeacherBottomTab = ()=>{
         }
         setUnReadNoti(notiUnRead)
     }
+
+    useEffect(() => {
+        // Create connection to the SignalR hub
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('http://' + currentIP +':5000/notificationHub')  // Ensure the URL matches your backend
+            .build();
+
+        // Start the connection
+        connection.start()
+            .then(() => console.log('Connected to SignalR'))
+            .catch(err => console.error('SignalR Connection Error: ', err));
+
+        // Subscribe to the "UpdateNotifications" event
+        connection.on('UpdateNotifications', (updatedNotifications) => {
+            let notiUnRead = 0
+            if(updatedNotifications){
+                updatedNotifications.forEach(item => {
+                    if(item.isRead === 0){
+                        notiUnRead +=1
+                    }
+                });
+                setAllNoti(updatedNotifications)
+            }
+            setUnReadNoti(notiUnRead)
+        });
+
+        // Clean up the connection when component unmounts
+        return () => {
+            connection.stop();
+        };
+    }, []);
 
     useEffect(()=>{
         getNoti()

@@ -1,6 +1,7 @@
 import axios from "axios"
-// const baseUrl = "http://10.10.27.112:5000/api/Authen"
-const baseUrl = "http://192.168.1.209:5000/api/Authen"
+import { currentIP } from "../utils/constants"
+const baseUrl = "http://" + currentIP + ":5000/api/Authen"
+
 export const signupApi = async (name, email, username, password)=>{
     const url = baseUrl + "/signup"
     return await axios.post(url, {
