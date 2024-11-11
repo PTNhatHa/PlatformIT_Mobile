@@ -177,15 +177,16 @@ export const FilterCourse = ({
                                         </TouchableOpacity>
                                     </View>
                                     {showTag &&
-                                        <FlatList
-                                            data={currentTags}
-                                            renderItem={({item}) => 
-                                                <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
-                                                        <Text style={stylesFilter.textListTag}>{item.label}</Text>
-                                                    </TouchableOpacity>
-                                                }
-                                            style={stylesFilter.listTags}
-                                        />
+                                        <View style={stylesFilter.wrapList}>
+                                            <FlatList
+                                                data={currentTags}
+                                                renderItem={({item}) => 
+                                                    <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
+                                                            <Text style={stylesFilter.textListTag}>{item.label}</Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                            />
+                                        </View>
                                     }
                                 </View>
                             </View>  
@@ -604,6 +605,21 @@ const stylesFilter = StyleSheet.create({
         borderBottomLeftRadius: 4,
     },
     textListTag: {
-        padding: 4
-    }
+        margin: 4,
+        paddingVertical: 4,
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText,
+    },
+    wrapList:{
+        height: 200,
+        position: "absolute",
+        backgroundColor: COLORS.lightGray,
+        borderWidth: 1,
+        borderTopWidth: 0,
+        borderColor: COLORS.lightText,
+        alignSelf: "flex-end",
+        width: "100%",
+        top: 40,
+        zIndex: 1
+    },
 })

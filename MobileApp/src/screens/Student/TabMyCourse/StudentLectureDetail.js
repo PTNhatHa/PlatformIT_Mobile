@@ -142,7 +142,8 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         paddingHorizontal: 16,
-        marginVertical: 16
+        marginVertical: 16,
+        gap: 8
     },
     nav:{
         paddingHorizontal: 16,
