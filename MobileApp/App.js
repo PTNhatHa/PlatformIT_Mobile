@@ -3,14 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
 import { ModalCourseContent } from './src/components/ModalCourseContent';
+import { StudentLectureDetail } from './src/screens/Student/TabMyCourse/StudentLectureDetail';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <ModalCourseContent/> */}
+          {/* <SigninSignup/> */}
+          <StudentLectureDetail/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
