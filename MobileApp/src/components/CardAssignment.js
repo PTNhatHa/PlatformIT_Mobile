@@ -12,33 +12,37 @@ const initAssignment =     {
     "assignmentTitle": "Sample",
     "assignmentIntroduction": "Sample",
     "dueDate": "2024-11-06T18:05:42.5588662+07:00",
-    "isSubmitted": null
+    "isSubmitted": null,
+    duration: 12,
+    maxScore: 40,
+    assignmentType: 1
   }
-export const CardAssignment = ({data = initAssignment, role = 0})=>{
+export const CardAssignment = ({data = initAssignment, role = 0, isNoBoder = false})=>{
     const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
     return(
-        <TouchableOpacity style={styles.container} key={data.idAssignment}>
-            <View style={{flex: 1}}>
+        <TouchableOpacity style={isNoBoder ? styles.containerNoBoder : styles.container} key={data.idAssignment}>
+            <View style={styles.wrapContent}>
                 <Text style={styles.title}>{data.assignmentTitle}</Text>
-                {/* <Text style={styles.dataText}>{data.assignmentIntroduction}</Text> */}
-                <View style={styles.content}>
-                    <Foundation name="page-edit" size={12} color={COLORS.stroke} />
-                    <Text style={styles.dataText}>{typeAssignment[data.assignmentType]}</Text>
+                <View style={styles.wrapDetail}>
+                    <View style={styles.content}>
+                        <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                        <Text style={styles.dataText}>{typeAssignment[data.assignmentType]}</Text>
+                    </View>
+                    {data.duration &&
+                        <View style={styles.content}>
+                            <Feather name="clock" size={11} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>{data.duration} min</Text>
+                        </View>
+                    }
+                    {data.maxScore &&
+                        <View style={styles.content}>
+                            <FontAwesome6 name="square-check" size={12} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>{data.maxScore} score</Text>
+                        </View>
+                    }
                 </View>
-                {data.duration &&
-                    <View style={styles.content}>
-                        <Feather name="clock" size={11} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>{data.duration} min</Text>
-                    </View>
-                }
-                {data.maxScore &&
-                    <View style={styles.content}>
-                        <FontAwesome6 name="square-check" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>{data.maxScore} score</Text>
-                    </View>
-                }
                 {data.dueDate &&
-                    <View style={[styles.content, {alignSelf: "flex-end"}]}>
+                    <View style={[styles.content]}>
                         {/* {role === 1 &&
                             <>
                                 <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
@@ -60,17 +64,17 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         borderRadius: 8,
         marginBottom: 10,
-        flexDirection: "row",
-        columnGap: 10,
-        backgroundColor: "white"
+        backgroundColor: "white",
     },
-    img: {
-        width: 95,
-        height: 95,
-        borderWidth: 1,
+    containerNoBoder: {
+        borderLeftWidth: 1,
         borderColor: COLORS.lightText,
-        borderRadius: 4,
-        backgroundColor: COLORS.lightText
+        marginBottom: 10,
+        backgroundColor: "white",
+        paddingLeft: 8
+    },
+    wrapContent:{
+        gap: 2
     },
     title:{
         fontSize: 16,
@@ -91,4 +95,8 @@ const styles = StyleSheet.create({
         width: 16,
         borderRadius: 90,
     },
+    wrapDetail:{
+        flexDirection: "row",
+        gap: 16
+    }
 })

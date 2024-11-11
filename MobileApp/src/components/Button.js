@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.secondMain,
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 8,
+        borderRadius: 4,
     },
     btn_wh: {
         backgroundColor: "white",
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 8,
+        borderRadius: 4,
         borderWidth: 1,
         borderColor: COLORS.main,
         alignSelf: "flex-start"
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.main,
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 8,
+        borderRadius: 4,
         borderWidth: 1,
         borderColor: COLORS.main,
         alignSelf: "flex-start"

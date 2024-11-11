@@ -4,6 +4,7 @@ import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
 import { ModalCourseContent } from './src/components/ModalCourseContent';
 import { StudentLectureDetail } from './src/screens/Student/TabMyCourse/StudentLectureDetail';
+import { Comments } from './src/components/Comments';
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           {/* <SigninSignup/> */}
-          <StudentLectureDetail/>
+          {/* <StudentLectureDetail/> */}
+          <Comments/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
