@@ -14,7 +14,7 @@ export const Comments = ()=>{
                     <View style={styles.wrapCmt}>
                         <Image source={DefaultAva} style={styles.avata}/>
                         <TextInput 
-                            style={styles.textInput}
+                            style={[styles.textInput, cmt && {borderColor: COLORS.main}]}
                             placeholder="Comment"
                             value={cmt}
                             onChangeText={(v)=>setCmt(v)}
@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
         gap: 8
     },
     textInput: {
-        paddingHorizontal: 6,
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
         width: "100%"

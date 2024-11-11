@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
+import { Comments } from "../../../components/Comments";
 
 export const StudentLectureDetail = ()=>{
     const [index, setIndex] = useState(1) //1: Content, 2: Exercise, 3: Comment
@@ -73,6 +74,13 @@ export const StudentLectureDetail = ()=>{
                         <View style={[styles.wrapper]}>
                             <CardAssignment isNoBoder={true}/>
                             <CardAssignment isNoBoder={true}/>
+                        </View>
+                    }
+
+                    {/* Comment */}
+                    {index === 3 &&
+                        <View style={[styles.wrapper]}>
+                            <Comments/>
                         </View>
                     }
                 </View>
