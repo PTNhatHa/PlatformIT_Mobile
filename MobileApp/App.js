@@ -5,7 +5,8 @@ import { UserProvider } from './src/contexts/UserContext';
 import { ModalCourseContent } from './src/components/ModalCourseContent';
 import { StudentLectureDetail } from './src/screens/Student/TabMyCourse/StudentLectureDetail';
 import { Comments } from './src/components/Comments';
-import { TeacherLectureDetail } from './src/screens/Teacher/TabMyLecture/TeacherLectureDetail';
+import { TeacherLectureDetail } from './src/screens/Teacher/TabMyCourse/TeacherLectureDetail';
+import { TeacherLectureCreate } from './src/screens/Teacher/TabMyCourse/TeacherLectureCreate';
 
 export default function App() {
   return (
@@ -13,9 +14,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <StudentLectureDetail/> */}
-          {/* <Comments/> */}
-          {/* <TeacherLectureDetail/> */}
+          {/* <TeacherLectureCreate/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

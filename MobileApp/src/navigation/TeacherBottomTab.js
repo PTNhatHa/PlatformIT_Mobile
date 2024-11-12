@@ -21,7 +21,8 @@ import { useUser } from "../contexts/UserContext";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
-import { TeacherLectureDetail } from "../screens/Teacher/TabMyLecture/TeacherLectureDetail";
+import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLectureDetail";
+import { TeacherLectureCreate } from "../screens/Teacher/TabMyCourse/TeacherLectureCreate";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -90,6 +91,10 @@ const StackMyCourseScreen = ()=>{
             <StackMyCourse.Screen
                 name="Detail Lecture"
                 component={TeacherLectureDetail}
+            />
+            <StackMyCourse.Screen
+                name="Create Lecture"
+                component={TeacherLectureCreate}
             />
 
             <StackMyCourse.Screen

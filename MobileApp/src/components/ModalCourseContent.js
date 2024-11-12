@@ -7,6 +7,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabel } from "./TextInputField";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from "@react-navigation/native";
 
 const initLecture = [
     {
@@ -42,6 +43,7 @@ const initLecture = [
 ]
 
 export const ModalCourseContent = ({role=0, content=initLecture})=>{
+    const navigation = useNavigation()
     const [showSections, setShowSections] = useState(content.map(item => (
         {
             idSection: item.idSection,
@@ -96,7 +98,7 @@ export const ModalCourseContent = ({role=0, content=initLecture})=>{
                             )}
                             {role === 1 &&
                                 <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
-                                    <TouchableOpacity style={styles.addLec}>
+                                    <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture")}>
                                         <Entypo name="plus" size={14} color={COLORS.main} />
                                         <Text style={styles.addLecText}>Add new lecture</Text>
                                     </TouchableOpacity>

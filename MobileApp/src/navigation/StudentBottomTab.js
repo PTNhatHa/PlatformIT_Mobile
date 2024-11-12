@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
-import { TeacherLectureDetail } from "../screens/Teacher/TabMyLecture/TeacherLectureDetail";
+import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLectureDetail";
 import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLectureDetail";
 
 const StackHomeScreen = ()=>{

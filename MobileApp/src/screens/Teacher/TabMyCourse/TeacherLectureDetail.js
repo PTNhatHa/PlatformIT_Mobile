@@ -66,44 +66,45 @@ export const TeacherLectureDetail = ()=>{
                     {/* Content */}
                     {index === 2 &&
                         <View style={styles.wrapper}>
-                            <Image source={DefaultImg} style={styles.contentVideo}/>
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Lecture video</Text>
-                                <View style={styles.wrapFlex}>
-                                    <View style={[styles.inputLabelGray]}>
-                                        <TextInput 
-                                            style={styles.inputText}
-                                            value={"Video"}
-                                            onChangeText={(v)=>{}}
-                                            placeholder={"Video"}
-                                        />
-                                        <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                            <FontAwesome name="file" size={18} color="black" />
-                                        </TouchableOpacity>
-                                    </View>
-                                    <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                        <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                <View style={styles.wrapFlexAbsolute}>
+                                    <TouchableOpacity onPress={()=>{}} style={styles.btnGray}>
+                                        <FontAwesome name="file" size={18} color="black" />
                                     </TouchableOpacity>
+                                    {true &&
+                                        <TouchableOpacity onPress={()=>{}} style={styles.btnGray}>
+                                            <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                        </TouchableOpacity>
+                                    }
                                 </View>
-                            </View>                         
+                                <Image source={DefaultImg} style={styles.contentVideo}/>
+                            </View>                     
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Materials</Text>
-                                <View style={styles.wrapFlex}>
-                                    <View style={[styles.inputLabelGray]}>
-                                        <TextInput 
-                                            style={styles.inputText}
-                                            value={"Materials"}
-                                            onChangeText={(v)=>{}}
-                                            placeholder={"Materials"}
-                                        />
+                                {true ?
+                                    <View style={styles.wrapFlex}>
+                                        <View style={[styles.inputLabelGray]}>
+                                            <TextInput 
+                                                style={styles.inputText}
+                                                value={"Materials"}
+                                                onChangeText={(v)=>{}}
+                                                placeholder={"Materials"}
+                                            />
+                                            {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                                <Entypo name="edit" size={18} color="black" />
+                                            </TouchableOpacity> */}
+                                        </View>
                                         <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                            <FontAwesome name="file" size={18} color="black" />
+                                            <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
-                                    <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                        <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                    :
+                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                        <MaterialIcons name="upload-file" size={20} color="black" />
+                                        <Text>Attach file</Text>
                                     </TouchableOpacity>
-                                </View>
+                                }
                             </View>                         
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Supporting materials</Text>
@@ -115,16 +116,17 @@ export const TeacherLectureDetail = ()=>{
                                             onChangeText={(v)=>{}}
                                             placeholder={"Supporting materials"}
                                         />
-                                        <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                        {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                             <FontAwesome name="file" size={18} color="black" />
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
                                     </View>
                                     <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                         <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                     </TouchableOpacity>
                                 </View>
-                                <TouchableOpacity onPress={()=>{}} style={styles.btnGray}>
-                                    <Entypo name="plus" size={24} color="black" />
+                                <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                    <MaterialIcons name="upload-file" size={20} color="black" />
+                                    <Text>Attach file</Text>
                                 </TouchableOpacity>
                             </View>    
                             <View style={styles.wrapBtn}>
@@ -192,7 +194,6 @@ const styles = StyleSheet.create({
     },
     main: {
         ...commonStyles.shadow,
-        minHeight: 500,
         borderRadius: 8,
         backgroundColor: "white",
         paddingBottom: 16
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.lightText,
         borderTopRightRadius: 4,
         borderTopLeftRadius: 4,
-        // marginTop: 16,
         marginBottom: 8
     },
     textGray12:{
@@ -315,9 +315,36 @@ const styles = StyleSheet.create({
     },
     btnGray:{
         marginVertical: 4,
-        backgroundColor: COLORS.lightGray,
+        backgroundColor: "white",
         borderRadius: 4,
-        padding: 8,
-        alignSelf: "flex-start"
-    }
+        alignSelf: "flex-start",
+        width: 35,
+        height: 35,
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: COLORS.lightText
+    },
+    wrapFlexAbsolute:{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        position: "absolute",
+        zIndex: 1,
+        bottom: 10,
+        right: 10
+    },
+    btnText:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        marginVertical: 4,
+        gap: 4
+    },
 })
