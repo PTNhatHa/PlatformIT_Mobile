@@ -234,7 +234,13 @@ export const FilterCourse = ({
                             <Text style={stylesFilter.smallTitle}>Course type</Text>
                             <RadioBtn label="All" selected={selectType === "All"} onPress={()=>setSelectType("All")}/>
                             <RadioBtn label="Limit" selected={selectType === "Limit"} onPress={()=>setSelectType("Limit")}/>
-                            <RadioBtn label="Unlimit" selected={selectType === "Unlimit"} onPress={()=>setSelectType("Unlimit")}/>
+                            <RadioBtn label="Unlimit" selected={selectType === "Unlimit"} onPress={()=>{
+                                setSelectType("Unlimit")
+                                setStartRegist(null)
+                                setEndRegist(null)
+                                setStartDuration(null)
+                                setEndDuration(null)
+                            }}/>
                         </View>
 
                         { selectType !== "Unlimit" &&
@@ -409,15 +415,16 @@ export const FilterCenter = ({
                                             </TouchableOpacity>
                                         </View>
                                         {showTag &&
-                                            <FlatList
-                                                data={currentTags}
-                                                renderItem={({item}) => 
-                                                    <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
-                                                            <Text style={stylesFilter.textListTag}>{item.label}</Text>
-                                                        </TouchableOpacity>
-                                                    }
-                                                style={stylesFilter.listTags}
-                                            />
+                                            <View style={stylesFilter.wrapList}>
+                                                <FlatList
+                                                    data={currentTags}
+                                                    renderItem={({item}) => 
+                                                        <TouchableOpacity onPress={({})=> handleChooseTag(item.value)}>
+                                                                <Text style={stylesFilter.textListTag}>{item.label}</Text>
+                                                            </TouchableOpacity>
+                                                        }
+                                                />
+                                            </View>
                                         }
                                     </View>
                                 </View>  

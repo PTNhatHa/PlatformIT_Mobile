@@ -251,21 +251,16 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                 if(item.courseStartDate){
                     // startRegist - endRegist
                     // Ngày bắt đầu khóa học phải nằm sau hặc bằng startRegist
-                    // Ngày kết thúc khóa học phải trước sau hặc bằng startRegist
-                    if(dataFilterCourse.startRegist && new Date(item.registStartDate) < new Date(dataFilterCourse.startRegist)){
-                        return false
-                    }
-                    if(dataFilterCourse.endRegist && new Date(item.registEndDate) > new Date(dataFilterCourse.endRegist)){
-                        return false
+                    // Ngày kết thúc khóa học phải trước hoặc bằng endRegist
+                    if(dataFilterCourse.startRegist && new Date(item.registStartDate) >= new Date(dataFilterCourse.startRegist) ||
+                        dataFilterCourse.endRegist && new Date(item.registEndDate) <= new Date(dataFilterCourse.endRegist)){
+                        return true
                     }
                     // startDuration - endDuration
-                    if(dataFilterCourse.startDuration && new Date(item.courseStartDate) < new Date(dataFilterCourse.startDuration)){
-                        return false
+                    if(dataFilterCourse.startDuration && new Date(item.courseStartDate) >= new Date(dataFilterCourse.startDuration) ||
+                        dataFilterCourse.endDuration && new Date(item.courseEndDate) <= new Date(dataFilterCourse.endDuration)){
+                        return true
                     }
-                    if(dataFilterCourse.endDuration && new Date(item.courseEndDate) > new Date(dataFilterCourse.endDuration)){
-                        return false
-                    }
-                    return true
                 }
                 return false
             })
