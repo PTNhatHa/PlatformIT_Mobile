@@ -67,16 +67,18 @@ export const TeacherLectureDetail = ()=>{
                     {index === 2 &&
                         <View style={styles.wrapper}>
                             <View style={styles.containerGray}>
-                                <Text style={styles.label}>Lecture video</Text>
-                                <View style={styles.wrapFlexAbsolute}>
-                                    <TouchableOpacity onPress={()=>{}} style={styles.btnGray}>
-                                        <FontAwesome name="file" size={18} color="black" />
-                                    </TouchableOpacity>
+                                <View style={styles.wrapFlex}>
+                                    <Text style={styles.label}>Lecture video</Text>
                                     {true &&
-                                        <TouchableOpacity onPress={()=>{}} style={styles.btnGray}>
-                                            <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                        <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                            <MaterialIcons name="delete" size={20} color={COLORS.red} />
+                                            {/* <Text>Delete</Text> */}
                                         </TouchableOpacity>
                                     }
+                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                        <MaterialIcons name="upload-file" size={20} color="black" />
+                                        {/* <Text>Upload video</Text> */}
+                                    </TouchableOpacity>
                                 </View>
                                 <Image source={DefaultImg} style={styles.contentVideo}/>
                             </View>                     
@@ -259,7 +261,8 @@ const styles = StyleSheet.create({
 
     label: {
         fontSize: 10,
-        color: COLORS.stroke
+        color: COLORS.stroke,
+        flex: 1
     },
     containerGray: {
         width: "100%",
@@ -324,15 +327,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderWidth: 1,
         borderColor: COLORS.lightText
-    },
-    wrapFlexAbsolute:{
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-        position: "absolute",
-        zIndex: 1,
-        bottom: 10,
-        right: 10
     },
     btnText:{
         fontSize: 16,
