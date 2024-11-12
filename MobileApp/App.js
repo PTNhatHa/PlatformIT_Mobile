@@ -12,10 +12,10 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <StudentLectureDetail/> */}
           {/* <Comments/> */}
-          <TeacherLectureDetail/>
+          {/* <TeacherLectureDetail/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

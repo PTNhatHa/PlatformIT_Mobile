@@ -14,19 +14,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ButtonIconLightGreen } from "../../../components/Button";
 
 export const TeacherLectureDetail = ()=>{
-    const [index, setIndex] = useState(1) //1: Content, 2: Exercise, 3: Comment
+    const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [isOpenMenu, setIsOpentMenu] = useState(false)
-    const listSortby2 = [
-        { label: "None", value: 0},
-        { label: "Asc", value: 1},
-        { label: "Des", value: 2},
-        { label: "None", value: 0},
-        { label: "Asc", value: 1},
-        { label: "Des", value: 2},
-        { label: "None", value: 0},
-        { label: "Asc", value: 1},
-        { label: "Des", value: 2},
-    ]
 
     return(
         <>

@@ -41,7 +41,7 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=1, content=initLecture})=>{
+export const ModalCourseContent = ({role=0, content=initLecture})=>{
     const [showSections, setShowSections] = useState(content.map(item => (
         {
             idSection: item.idSection,
@@ -92,7 +92,7 @@ export const ModalCourseContent = ({role=1, content=initLecture})=>{
                         </TouchableOpacity>
                         <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                             {item.lectures.map(lec => 
-                                <CardLecture data={lec} key={lec.idLecture}/>
+                                <CardLecture data={lec} key={lec.idLecture} role={role}/>
                             )}
                             {role === 1 &&
                                 <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>

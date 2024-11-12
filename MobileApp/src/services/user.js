@@ -28,10 +28,10 @@ export const getAvaImg = async (idUser)=>{
     })
     .catch(error => {
         // console.log("==>Error:  ", error.response.data);
-        return {
-            error: 400,
-            data: error.response.data
-        }
+        // return {
+        //     error: 400,
+        //     data: error.response.data
+        // }
     })
 }
 

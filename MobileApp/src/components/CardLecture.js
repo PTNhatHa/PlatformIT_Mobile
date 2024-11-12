@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native"
 import { COLORS } from "../utils/constants"
+import { useNavigation } from "@react-navigation/native"
 
 const initLecture = {
     "idLecture": 0,
@@ -8,9 +9,10 @@ const initLecture = {
     "exerciseCount": 1,
     "createdDate": "2024-11-06T13:58:50.7138603+07:00"
   }
-export const CardLecture = ({data = initLecture})=>{
+export const CardLecture = ({data = initLecture, role=0})=>{
+    const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} key={data.idLecture}>
+        <TouchableOpacity style={styles.container} key={data.idLecture} onPress={()=> role !==0 ? navigation.navigate("Detail Lecture") : {}}>
             <Text style={styles.title}>{data.lectureTitle}</Text>
             <Text style={styles.body}>{data.lectureIntroduction}</Text>
             {data.exerciseCount === 1 ?

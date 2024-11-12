@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
+import { TeacherLectureDetail } from "../screens/Teacher/TabMyLecture/TeacherLectureDetail";
+import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLectureDetail";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -80,6 +82,10 @@ const StackMyCourseScreen = ()=>{
             <StackMyCourse.Screen
                 name="Detail My Course"
                 component={DetailCourse}
+            />
+            <StackMyCourse.Screen
+                name="Detail Lecture"
+                component={StudentLectureDetail}
             />
 
             <StackMyCourse.Screen

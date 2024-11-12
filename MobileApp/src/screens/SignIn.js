@@ -96,31 +96,35 @@ export default SignIn = ({navigation}) => {
             if(response.error){
                 setError(response.data)
             } else{
-                await AsyncStorage.setItem('username', username)
-                await AsyncStorage.setItem('password', password)
-                const ava = await getAvaImg(response.idUser)
-                if(determineFileType(ava) === "Image"){
-                    userInfo = {
-                        ...response,
-                        "avatar": ava
-                    } 
-                }else{
-                    userInfo = {
-                        ...response,
-                        "avatar": null
-                    }
-                }
-                dispatch({ type: SET_INFO, payload: userInfo })
-                if(response.idRole == 3){
-                    Alert.alert("Sign in", "Sign in successfully")
-                    navigation.navigate("Student")
-                } else if(response.idRole == 4){
-                    Alert.alert("Sign in", "Sign in successfully")
-                    navigation.navigate("Teacher")
+                if(response.status === 2){
+                    setError("Your account has been deactivated.")
                 } else{
-                    Alert.alert("Notification", "We do not support 'Admin Platform' and 'Admin Center' accounts here. Please log in on your computer to continue")
+                    await AsyncStorage.setItem('username', username)
+                    await AsyncStorage.setItem('password', password)
+                    const ava = await getAvaImg(response.idUser)
+                    if(ava){
+                        userInfo = {
+                            ...response,
+                            "avatar": ava
+                        } 
+                    }else{
+                        userInfo = {
+                            ...response,
+                            "avatar": null
+                        }
+                    }
+                    dispatch({ type: SET_INFO, payload: userInfo })
+                    if(response.idRole == 3){
+                        Alert.alert("Sign in", "Sign in successfully")
+                        navigation.navigate("Student")
+                    } else if(response.idRole == 4){
+                        Alert.alert("Sign in", "Sign in successfully")
+                        navigation.navigate("Teacher")
+                    } else{
+                        Alert.alert("Notification", "We do not support 'Admin Platform' and 'Admin Center' accounts here. Please log in on your computer to continue")
+                    }
+                    setError("")
                 }
-                setError("")
             }
         }
         catch (error){
