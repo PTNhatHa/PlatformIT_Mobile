@@ -4,15 +4,17 @@ import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonWhite } from "./Button"
 import { TouchableOpacity } from "react-native"
 import { useState } from "react"
+import { useUser } from "../contexts/UserContext"
 
 export const Comments = ()=>{
+    const {state, dispatch} = useUser()
     const [cmt, setCmt] = useState(null)
     return(
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.wrapInputCmt}>
                     <View style={styles.wrapCmt}>
-                        <Image source={DefaultAva} style={styles.avata}/>
+                        <Image source={state.avatar ? {uri: state.avatar} : DefaultAva} style={styles.avata}/>
                         <TextInput 
                             style={[styles.textInput, cmt && {borderColor: COLORS.main}]}
                             placeholder="Comment"
