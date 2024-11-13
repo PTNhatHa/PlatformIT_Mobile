@@ -138,12 +138,10 @@ export const TeacherLectureCreate = ({route})=>{
                                 {video &&
                                     <TouchableOpacity onPress={()=>setVideo(null)} style={[styles.btnText]}>
                                         <MaterialIcons name="delete" size={20} color={COLORS.red} />
-                                        {/* <Text>Delete</Text> */}
                                     </TouchableOpacity>
                                 }
                                 <TouchableOpacity onPress={()=>onChangeVideo()} style={[styles.btnText]}>
                                     <MaterialIcons name="upload-file" size={20} color="black" />
-                                    {/* <Text>Upload video</Text> */}
                                 </TouchableOpacity>
                             </View>
                             {video ? 

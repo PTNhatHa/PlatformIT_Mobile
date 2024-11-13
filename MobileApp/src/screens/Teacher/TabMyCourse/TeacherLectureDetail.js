@@ -12,10 +12,93 @@ import DefaultImg from "../../../../assets/images/DefaultImg.png"
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ButtonIconLightGreen } from "../../../components/Button";
+import * as DocumentPicker from 'expo-document-picker';
+import { Video } from "expo-av";
 
+const init = {
+    idCourse: 1, 
+    nameCourse: "ABC", 
+    idSection: 1, 
+    nameSection: "Section 1"
+}
 export const TeacherLectureDetail = ()=>{
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [isOpenMenu, setIsOpentMenu] = useState(false)
+
+    const {idCourse, nameCourse, idSection, nameSection} = init
+    const [lectureName, setLectureName] = useState()
+    const [intro, setIntro] = useState()
+    const [material, setMaterial] = useState(null)
+    const [supportMaterial, setSupportMaterial] = useState([])
+    const [idSupMaterial, setIdSupMaterial] = useState(1)
+    const [video, setVideo] = useState(null)
+    const pickFile = async(type = "*")=>{
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: [type + '/*'],
+                copyToCacheDirectory: true,
+            })
+            return result.assets[0]
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
+    const onChangeMaterial= async()=>{
+        const result = await pickFile()
+        if(result){
+            setMaterial({
+                nameFile: result.name,
+                file: {
+                    uri: result.uri,
+                    name: result.name,
+                    type: result.mimeType 
+                }
+            })
+        }
+    }
+    const addSupportMaterial= async()=>{
+        const result = await pickFile()
+        if(result){
+            const newMaterial = [...supportMaterial, {
+                id: "id" + idSupMaterial.toString(),
+                nameFile: result.name,
+                file: {
+                    uri: result.uri,
+                    name: result.name,
+                    type: result.mimeType 
+                }
+            }]
+            setSupportMaterial(newMaterial)
+            setIdSupMaterial(idSupMaterial + 1)
+        }
+    }
+    const onChangeSupportMaterial= async(id, value)=>{
+        const newMaterial = supportMaterial.map(item => {
+            if(item.id === id){
+                return{
+                    ...item,
+                    nameFile: value
+                }
+            }
+            return item
+        })
+        setSupportMaterial(newMaterial)
+    }
+    const onDeleteSupportMaterial= async(id,)=>{
+        const newMaterial = supportMaterial.filter(item => item.id !== id)
+        setSupportMaterial(newMaterial)
+    }
+    const onChangeVideo = async ()=>{
+        const result = await pickFile("video")
+        if(result){
+            setVideo({
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
+            })
+        }
+    }
 
     return(
         <>
@@ -48,10 +131,10 @@ export const TeacherLectureDetail = ()=>{
                     {/* Information */}
                     {index === 1 &&
                         <View style={styles.wrapper}>
-                            <TextInputSelectBox label={"Add to course"} placeholder={"Choose a course"} listSelect={[]}/>
-                            <TextInputSelectBox label={"Add to section"} placeholder={"Choose a section"} listSelect={[]}/>
-                            <TextInputLabelGray placeholder={"Lecture name"}  label={"Lecture name"}/>                            
-                            <TextInputLabelGray placeholder={"Introduction"}  label={"Introduction"}/> 
+                            <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
+                            <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                       
+                            <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
+                            <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro}/>                       
                             <View style={styles.wrapBtn}>
                                 <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
                                     <Text style={styles.textWhite14}>Save changes</Text>
@@ -69,40 +152,50 @@ export const TeacherLectureDetail = ()=>{
                             <View style={styles.containerGray}>
                                 <View style={styles.wrapFlex}>
                                     <Text style={styles.label}>Lecture video</Text>
-                                    {true &&
-                                        <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                    {video &&
+                                        <TouchableOpacity onPress={()=>setVideo(null)} style={[styles.btnText]}>
                                             <MaterialIcons name="delete" size={20} color={COLORS.red} />
-                                            {/* <Text>Delete</Text> */}
                                         </TouchableOpacity>
                                     }
-                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                    <TouchableOpacity onPress={()=>onChangeVideo()} style={[styles.btnText]}>
                                         <MaterialIcons name="upload-file" size={20} color="black" />
-                                        {/* <Text>Upload video</Text> */}
                                     </TouchableOpacity>
                                 </View>
-                                <Image source={DefaultImg} style={styles.contentVideo}/>
+                                {video ? 
+                                    <Video
+                                        source={{ uri: video.uri }}
+                                        style={styles.contentVideo}
+                                        useNativeControls
+                                        resizeMode="contain"
+                                    />
+                                    :
+                                    <Image source={DefaultImg} style={styles.contentVideo}/>
+                                }
                             </View>                     
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Materials</Text>
-                                {true ?
+                                {material ?
                                     <View style={styles.wrapFlex}>
                                         <View style={[styles.inputLabelGray]}>
                                             <TextInput 
                                                 style={styles.inputText}
-                                                value={"Materials"}
-                                                onChangeText={(v)=>{}}
+                                                value={material.nameFile}
+                                                onChangeText={(v)=>setMaterial({
+                                                    ...material,
+                                                    nameFile: v
+                                                })}
                                                 placeholder={"Materials"}
                                             />
                                             {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                                 <Entypo name="edit" size={18} color="black" />
                                             </TouchableOpacity> */}
                                         </View>
-                                        <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                        <TouchableOpacity onPress={()=>setMaterial(null)} style={{margin: 4}}>
                                             <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
                                     :
-                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                    <TouchableOpacity onPress={()=>onChangeMaterial()} style={[styles.btnText]}>
                                         <MaterialIcons name="upload-file" size={20} color="black" />
                                         <Text>Attach file</Text>
                                     </TouchableOpacity>
@@ -110,23 +203,23 @@ export const TeacherLectureDetail = ()=>{
                             </View>                         
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Supporting materials</Text>
-                                <View style={styles.wrapFlex}>
-                                    <View style={[styles.inputLabelGray]}>
-                                        <TextInput 
-                                            style={styles.inputText}
-                                            value={"Supporting materials"}
-                                            onChangeText={(v)=>{}}
-                                            placeholder={"Supporting materials"}
-                                        />
-                                        {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                            <FontAwesome name="file" size={18} color="black" />
-                                        </TouchableOpacity> */}
-                                    </View>
-                                    <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                        <MaterialIcons name="delete" size={24} color={COLORS.red} />
-                                    </TouchableOpacity>
-                                </View>
-                                <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                {supportMaterial.length > 0 &&
+                                    supportMaterial.map(item => 
+                                        <View style={[styles.wrapFlex, {marginBottom: 4}]} key={item.id}>
+                                            <View style={[styles.inputLabelGray]}>
+                                                <TextInput 
+                                                    style={styles.inputText}
+                                                    value={item.nameFile}
+                                                    onChangeText={(v)=>onChangeSupportMaterial(item.id, v)}
+                                                    placeholder={"Supporting materials"}
+                                                />
+                                            </View>
+                                            <TouchableOpacity onPress={()=>onDeleteSupportMaterial(item.id)} style={{margin: 4}}>
+                                                <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                            </TouchableOpacity>
+                                        </View>
+                                )}
+                                <TouchableOpacity onPress={()=>addSupportMaterial()} style={[styles.btnText]}>
                                     <MaterialIcons name="upload-file" size={20} color="black" />
                                     <Text>Attach file</Text>
                                 </TouchableOpacity>

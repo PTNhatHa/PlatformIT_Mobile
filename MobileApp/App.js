@@ -14,7 +14,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           {/* <SigninSignup/> */}
-          <TeacherLectureCreate/>
+          <TeacherLectureDetail/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
