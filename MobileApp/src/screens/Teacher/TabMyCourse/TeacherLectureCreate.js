@@ -136,7 +136,7 @@ export const TeacherLectureCreate = ({route})=>{
                             <View style={styles.wrapFlex}>
                                 <Text style={styles.label}>Lecture video</Text>
                                 {video &&
-                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                    <TouchableOpacity onPress={()=>setVideo(null)} style={[styles.btnText]}>
                                         <MaterialIcons name="delete" size={20} color={COLORS.red} />
                                         {/* <Text>Delete</Text> */}
                                     </TouchableOpacity>
