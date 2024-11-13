@@ -52,7 +52,7 @@ export const TextInputLabel = ({
 }
 
 export const TextInputLabelGray = ({
-    label, value, placeholder, onchangeText = ()=>{}
+    label, value, placeholder, onchangeText = ()=>{}, editable=true
 }) => {
     const handleOnchangeText = (v)=>{
         onchangeText(v)
@@ -67,6 +67,7 @@ export const TextInputLabelGray = ({
                     placeholder={placeholder}
                     onChangeText={(v)=>handleOnchangeText(v)}
                     multiline={label === "Introduction"}
+                    editable={editable}
                 />
             </View>
         </>
