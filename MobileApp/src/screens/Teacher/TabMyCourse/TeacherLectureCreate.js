@@ -14,6 +14,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ButtonIconLightGreen } from "../../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import * as DocumentPicker from 'expo-document-picker';
+import { Video } from "expo-av";
 
 const init = {
     idCourse: 1, 
@@ -29,6 +30,7 @@ export const TeacherLectureCreate = ({route})=>{
     const [material, setMaterial] = useState(null)
     const [supportMaterial, setSupportMaterial] = useState([])
     const [idSupMaterial, setIdSupMaterial] = useState(1)
+    const [video, setVideo] = useState(null)
     const pickFile = async(type = "*")=>{
         try{
             let result = await DocumentPicker.getDocumentAsync({
@@ -56,7 +58,6 @@ export const TeacherLectureCreate = ({route})=>{
     }
     const addSupportMaterial= async()=>{
         const result = await pickFile()
-        console.log(result);
         if(result){
             const newMaterial = [...supportMaterial, {
                 id: "id" + idSupMaterial.toString(),
@@ -87,7 +88,16 @@ export const TeacherLectureCreate = ({route})=>{
         const newMaterial = supportMaterial.filter(item => item.id !== id)
         setSupportMaterial(newMaterial)
     }
-
+    const onChangeVideo = async ()=>{
+        const result = await pickFile("video")
+        if(result){
+            setVideo({
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
+            })
+        }
+    }
 
     return(
         <>
@@ -125,18 +135,27 @@ export const TeacherLectureCreate = ({route})=>{
                         <View style={styles.containerGray}>
                             <View style={styles.wrapFlex}>
                                 <Text style={styles.label}>Lecture video</Text>
-                                {true &&
+                                {video &&
                                     <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
                                         <MaterialIcons name="delete" size={20} color={COLORS.red} />
                                         {/* <Text>Delete</Text> */}
                                     </TouchableOpacity>
                                 }
-                                <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                <TouchableOpacity onPress={()=>onChangeVideo()} style={[styles.btnText]}>
                                     <MaterialIcons name="upload-file" size={20} color="black" />
                                     {/* <Text>Upload video</Text> */}
                                 </TouchableOpacity>
                             </View>
-                            <Image source={DefaultImg} style={styles.contentVideo}/>
+                            {video ? 
+                                <Video
+                                    source={{ uri: video.uri }}
+                                    style={styles.contentVideo}
+                                    useNativeControls
+                                    resizeMode="contain"
+                                />
+                                :
+                                <Image source={DefaultImg} style={styles.contentVideo}/>
+                            }
                         </View>                         
                         <View style={styles.containerGray}>
                             <Text style={styles.label}>Material</Text>
