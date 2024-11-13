@@ -334,21 +334,15 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
         if(index === 0){
             result = dataSearch.filter(data => {
                 return data.courseTitle?.toLowerCase().includes(search.toLowerCase()) ||
-                        formatDateTime(data.courseStartDate).includes(search) || 
-                        formatDateTime(data.courseEndDate).includes(search) || 
-                        formatDateTime(data.registStartDate).includes(search) || 
-                        formatDateTime(data.registEndDate).includes(search) || 
-                        formatDateTime(data.createdDate).includes(search) || 
-                        data.price?.toString().includes(search) ||
-                        data.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
+                        data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
+                        data.price?.toString().includes(search)
             })            
         }
         // Center
         if(index === 1){
             result = dataSearch.filter(data => {
                 return data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.description?.toLowerCase().includes(search.toLowerCase()) ||
-                        data.tags?.some(tag => tag.tagName.toLowerCase().includes(search.toLowerCase()))
+                        data.description?.toLowerCase().includes(search.toLowerCase())
             })            
         }
         // Teacher

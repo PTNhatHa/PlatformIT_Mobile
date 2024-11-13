@@ -13,7 +13,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import DefaultImg from "../../assets/images/DefaultImg.png"
 const initCourse={
     "idCourse": 3,
-    "courseTitle": "Banh Bo",
+    "courseTitle": "Net core",
     "pathImg": null,
     "courseStartDate": "2024-10-05T08:22:25.752581",
     "courseEndDate": "2025-10-15T08:22:25.752581",
@@ -68,7 +68,7 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
                         {data.courseStartDate ? 
-                            formatDateTime(data.courseStartDate) + " - " + formatDateTime(data.courseEndDate)
+                            `${formatDateTime(data.courseStartDate)} - ${formatDateTime(data.courseEndDate)}`
                         :
                             "Created on: " + formatDateTime(data.createdDate)
                         }
@@ -88,8 +88,14 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
                     <Text style={styles.dataText}>{data.centerName}</Text>
                 </View>
                 <View style={styles.wrapCost}>
-                    <Text style={styles.costSale}>${data.price}</Text>
-                    <Text style={styles.cost}>{data.price}</Text>
+                    {data.price !== null ?
+                        <>
+                            <Text style={styles.costSale}>${data.price}</Text>
+                            {/* <Text style={styles.cost}>{data.price}</Text> */}
+                        </>
+                        :
+                            <Text style={styles.costSale}>Free</Text>
+                    }
                 </View>
             </View>
         </TouchableOpacity>

@@ -65,27 +65,35 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
                 <View style={styles.tags}>
                     <Feather name="clock" size={10} color={COLORS.stroke} />
                     <Text style={styles.dataText}>
-                        {formatDateTime(data.courseStartDate)} - {formatDateTime(data.courseEndDate)}
+                        {data.courseStartDate ? 
+                            `${formatDateTime(data.courseStartDate)} - ${formatDateTime(data.courseEndDate)}`
+                        :
+                            "Created on: " + formatDateTime(data.createdDate)
+                        }
                     </Text>
                 </View>
-                <View style={styles.tags}>
-                    {data.registStartDate &&
+                {data.registStartDate &&
+                    <View style={styles.tags}>
                         <FontAwesome6 name="pen-to-square" size={10} color={COLORS.stroke} />
-                    }
-                    {data.registStartDate &&
                         <Text style={styles.dataText}>
                             {data.isRegist ? "Registing" : 
                                 `${formatDateTime(data.registStartDate)} - ${formatDateTime(data.registEndDate)}`}
                         </Text>
-                    }
-                </View>
+                    </View>
+                }
                 <View style={styles.tags}>
                     <Ionicons name="business-outline" size={10} color={COLORS.secondMain} />
                     <Text style={styles.dataText}>{data.centerName}</Text>
                 </View>
                 <View style={styles.wrapCost}>
-                    <Text style={styles.costSale}>${data.price}</Text>
-                    <Text style={styles.cost}>{data.price}</Text>
+                    {data.price !== null ?
+                        <>
+                            <Text style={styles.costSale}>${data.price}</Text>
+                            {/* <Text style={styles.cost}>{data.price}</Text> */}
+                        </>
+                        :
+                            <Text style={styles.costSale}>Free</Text>
+                    }
                 </View>
             </View>
         </TouchableOpacity>
@@ -308,7 +316,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         columnGap: 2,
-        minHeight: 13,
+        // minHeight: 13,
         overflow: "hidden"
     },
     tagsText: {
@@ -321,7 +329,7 @@ const styles = StyleSheet.create({
     },
     wrapCost:{
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-end",
         columnGap: 2,
         justifyContent: "flex-end",
         flex: 1,
