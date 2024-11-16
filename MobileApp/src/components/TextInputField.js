@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     container: {
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        paddingVertical: 8,
+        // paddingVertical: 4,
         width: "100%",
         columnGap: 8,
     },

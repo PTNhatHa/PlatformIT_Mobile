@@ -44,7 +44,7 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
+export const ModalCourseContent = ({role=0, content, idCourse, getCourse})=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
@@ -57,12 +57,23 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
     const [isAddSection, setIsAddSection] = useState(false);
     const [newSection, setNewSection] = useState("");
 
+    useEffect(()=>{
+        setLoading(true)
+        setShowSections(content.map(item => (
+            {
+                idSection: item.idSection,
+                isShow: true
+            }
+        )) || [])
+        setLoading(false)
+    }, [content])
+
     const handleShowSection = (idSection)=>{
         const newShow = showSections.map(item => {
             if(item.idSection === idSection){
                 return{
                     ...item,
-                    isShow: !item.isShow
+                    isShow: !item.isShow || false
                 }
             }
             return item
@@ -71,13 +82,13 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
     }
 
     const handleAddSection = async()=>{
-        console.log("Zooooo");
         setLoading(true)
         try {
             const response = await addSection(newSection, idCourse, state.idUser)
             if(response){
                 Alert.alert("Add New Section", response)
                 setIsAddSection(false)
+                getCourse()
             } else {
                 Alert.alert("Error", "Please try again.")
             }
@@ -89,78 +100,81 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
     }
     return(
         <>
-            {role === 1 &&
-                <ButtonIconLightGreen 
-                    title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
-                    action={()=>setIsAddSection(true)}    
-                />
-            }
-            {content?.length > 0 &&
-            content?.map((item)=>{
-                let checkIsShow = showSections.find(section => section.idSection === item.idSection).isShow
-                return(
-                    <View key={item.idSection} style={styles.wrapSectionLecture}>
-                        <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
-                            <Text style={[styles.section, {flex: 1}]}>
-                                {item.sectionName} 
-                            </Text>
-                            <Text style={styles.section}>
-                                {item.lectureCount}
-                                {item.lectureCount > 1 ? " lectures" : " lecture"}
-                            </Text>
-                            { checkIsShow ?
-                                <Entypo name="chevron-up" size={20} color="black" />
-                                :
-                                <Entypo name="chevron-down" size={20} color="black" />
-                            }
-                        </TouchableOpacity>
-                        <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                            {item.lectures.map(lec => 
-                                <CardLecture data={lec} key={lec.idLecture} role={role}/>
-                            )}
-                            {role === 1 &&
-                                <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
-                                    <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture")}>
-                                        <Entypo name="plus" size={14} color={COLORS.main} />
-                                        <Text style={styles.addLecText}>Add new lecture</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.addLec}>
-                                        <Text style={[styles.addLecText, {color: COLORS.red}]}>Delete this section</Text>
-                                        <MaterialIcons name="delete" size={14} color={COLORS.red} />
-                                    </TouchableOpacity>
-                                </View>
-                            }
+        {loading ?
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color="white" />
+            </View>
+            :
+                <>
+                {role === 1 &&
+                    <ButtonIconLightGreen 
+                        title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                        action={()=>setIsAddSection(true)}    
+                    />
+                }
+                {content?.length > 0 &&
+                content?.map((item)=>{
+                    let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow || true
+                    return(
+                        <View key={item.idSection} style={styles.wrapSectionLecture}>
+                            <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
+                                <Text style={[styles.section, {flex: 1}]}>
+                                    {item.sectionName} 
+                                </Text>
+                                <Text style={styles.section}>
+                                    {item.lectureCount}
+                                    {item.lectureCount > 1 ? " lectures" : " lecture"}
+                                </Text>
+                                { checkIsShow ?
+                                    <Entypo name="chevron-up" size={20} color="black" />
+                                    :
+                                    <Entypo name="chevron-down" size={20} color="black" />
+                                }
+                            </TouchableOpacity>
+                            <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
+                                {item.lectures.map(lec => 
+                                    <CardLecture data={lec} key={lec.idLecture} role={role}/>
+                                )}
+                                {role === 1 &&
+                                    <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
+                                        <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture")}>
+                                            <Entypo name="plus" size={14} color={COLORS.main} />
+                                            <Text style={styles.addLecText}>Add new lecture</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.addLec}>
+                                            <Text style={[styles.addLecText, {color: COLORS.red}]}>Delete this section</Text>
+                                            <MaterialIcons name="delete" size={14} color={COLORS.red} />
+                                        </TouchableOpacity>
+                                    </View>
+                                }
+                            </View>
+                        </View>
+                    )}
+                )}
+
+                {/* Add Section */}
+                <Modal
+                    visible={isAddSection}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={()=>setIsAddSection(false)}
+                >
+                    <View style={styles.selectImgWrapper}>
+                        <View style={styles.addNoti}>
+                            <TouchableOpacity style={styles.close} onPress={()=>{
+                                setIsAddSection(false)
+                                setNewSection("")
+                            }}>
+                                <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                            </TouchableOpacity>
+                            <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
+                            <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
+                            <ButtonGreen title={"Save"} action={()=>handleAddSection()}/>
                         </View>
                     </View>
-                )}
-            )}
-
-            {/* Add Section */}
-            <Modal
-                visible={isAddSection}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={()=>setIsAddSection(false)}
-            >
-                <View style={styles.selectImgWrapper}>
-                    <View style={styles.addNoti}>
-                        <TouchableOpacity style={styles.close} onPress={()=>{
-                            setIsAddSection(false)
-                            setNewSection("")
-                        }}>
-                            <AntDesign name="close" size={30} color={COLORS.secondMain} />
-                        </TouchableOpacity>
-                        <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
-                        <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
-                        <ButtonGreen title={"Save"} action={()=>handleAddSection()}/>
-                    </View>
-                </View>
-            </Modal>
-            {loading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
-            }  
+                </Modal>
+            </>
+        }  
         </>
     )
 }
