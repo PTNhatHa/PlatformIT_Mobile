@@ -345,7 +345,13 @@ export const DetailCourse =({route})=>{
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
-                        <ModalCourseContent role={role} content={data.sectionsWithCourses} idCourse={data.idCourse} getCourse={getCourse}/>
+                        <ModalCourseContent 
+                            role={role} 
+                            content={data.sectionsWithCourses} 
+                            idCourse={data.idCourse} 
+                            nameCourse={data.courseTitle}
+                            getCourse={getCourse}
+                        />
                     </>
                 : selectBtn === 1 ?
                     <>

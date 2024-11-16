@@ -163,7 +163,7 @@ export const changeAvatar = async (idUser, linkAva)=>{
     const formData = new FormData()
     formData.append('IdUser', idUser)
     formData.append('AvatarFile', linkAva)
-    return await axios.post(url, formData,{
+    return await axios.post(url, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

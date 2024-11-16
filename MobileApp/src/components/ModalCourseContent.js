@@ -44,7 +44,7 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content, idCourse, getCourse})=>{
+export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCourse})=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
@@ -137,7 +137,12 @@ export const ModalCourseContent = ({role=0, content, idCourse, getCourse})=>{
                                 )}
                                 {role === 1 &&
                                     <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
-                                        <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture")}>
+                                        <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture", {
+                                            idCourse: idCourse, 
+                                            nameCourse: nameCourse, 
+                                            idSection: item.idSection, 
+                                            nameSection: item.sectionName
+                                        })}>
                                             <Entypo name="plus" size={14} color={COLORS.main} />
                                             <Text style={styles.addLecText}>Add new lecture</Text>
                                         </TouchableOpacity>

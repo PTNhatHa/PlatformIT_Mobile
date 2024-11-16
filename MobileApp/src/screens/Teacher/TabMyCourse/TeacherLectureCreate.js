@@ -1,4 +1,4 @@
-import { Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
@@ -15,6 +15,8 @@ import { ButtonIconLightGreen } from "../../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
+import { addLecture } from "../../../services/lecture";
+import { useUser } from "../../../contexts/UserContext";
 
 const init = {
     idCourse: 1, 
@@ -23,10 +25,11 @@ const init = {
     nameSection: "Section 1"
 }
 export const TeacherLectureCreate = ({route})=>{
-    const {idCourse, nameCourse, idSection, nameSection} = init
+    const {state, dispatch} = useUser()
+    const {idCourse, nameCourse, idSection, nameSection} = route?.params
     const navigation = useNavigation()
-    const [lectureName, setLectureName] = useState()
-    const [intro, setIntro] = useState()
+    const [lectureName, setLectureName] = useState(null)
+    const [intro, setIntro] = useState(null)
     const [material, setMaterial] = useState(null)
     const [supportMaterial, setSupportMaterial] = useState([])
     const [idSupMaterial, setIdSupMaterial] = useState(1)
@@ -47,7 +50,6 @@ export const TeacherLectureCreate = ({route})=>{
         const result = await pickFile()
         if(result){
             setMaterial({
-                nameFile: result.name,
                 file: {
                     uri: result.uri,
                     name: result.name,
@@ -61,7 +63,6 @@ export const TeacherLectureCreate = ({route})=>{
         if(result){
             const newMaterial = [...supportMaterial, {
                 id: "id" + idSupMaterial.toString(),
-                nameFile: result.name,
                 file: {
                     uri: result.uri,
                     name: result.name,
@@ -77,7 +78,9 @@ export const TeacherLectureCreate = ({route})=>{
             if(item.id === id){
                 return{
                     ...item,
-                    nameFile: value
+                    file: {
+                        name: value, 
+                    }
                 }
             }
             return item
@@ -98,14 +101,37 @@ export const TeacherLectureCreate = ({route})=>{
             })
         }
     }
+    const handleSave = async()=>{
+        try {
+            const listSupMaterials = supportMaterial.map(item => item.file) || null
+            const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, listSupMaterials)
+            if(response){
+                Alert.alert("Add Lecture Successfully", response)
+                navigation.goBack()
 
+            } else {
+                Alert.alert("Warning", "Please try again.")
+            }
+            
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
     return(
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
-                    <Text style={styles.title}>Create new lecture</Text>
+                    <View style={styles.wrapFlex}>
+                        <Text style={styles.title}>{nameCourse}</Text>
+                        <AntDesign name="right" size={18} color="black" style={{width: 18}}/>
+                        <Text style={styles.title}>{nameSection}</Text>
+                    </View>
+                    {/* <View style={styles.wrapFlex}>
+                        <AntDesign name="doubleright" size={18} color="black" />
+                        <Text style={styles.title}>{nameSection}</Text>
+                    </View> */}
                     <View style={styles.wrapBtn}>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
                             <Text style={styles.textWhite14}>Create</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>navigation.goBack()}>
@@ -119,8 +145,8 @@ export const TeacherLectureCreate = ({route})=>{
                     </View>
                     {/* Information */}
                     <View style={styles.wrapper}>
-                        <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
-                        <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                       
+                        {/* <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
+                        <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                        */}
                         <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
                         <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro}/>                       
                     </View>
@@ -162,10 +188,12 @@ export const TeacherLectureCreate = ({route})=>{
                                     <View style={[styles.inputLabelGray]}>
                                         <TextInput 
                                             style={styles.inputText}
-                                            value={material.nameFile}
+                                            value={material.file.name}
                                             onChangeText={(v)=>setMaterial({
                                                 ...material,
-                                                nameFile: v
+                                                file: {
+                                                    name: v
+                                                }
                                             })}
                                             placeholder={"Materials"}
                                         />
@@ -192,7 +220,7 @@ export const TeacherLectureCreate = ({route})=>{
                                         <View style={[styles.inputLabelGray]}>
                                             <TextInput 
                                                 style={styles.inputText}
-                                                value={item.nameFile}
+                                                value={item.file.name}
                                                 onChangeText={(v)=>onChangeSupportMaterial(item.id, v)}
                                                 placeholder={"Supporting materials"}
                                             />
@@ -310,15 +338,15 @@ const styles = StyleSheet.create({
         color: "black",
         backgroundColor: COLORS.lightGray,
         paddingHorizontal: 8,
-        paddingVertical: 4,
+        height: 38,
         borderRadius: 4,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        flex: 1
+        flex: 1,
     },
     inputText:{
-        // width: "90%"
+        padding: 0
     },
     textListTag: {
         margin: 4,
