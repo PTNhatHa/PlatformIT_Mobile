@@ -3,7 +3,9 @@ import { currentIP } from "../utils/constants"
 const baseUrl = "http://" + currentIP +":5000/api/Lecture"
 
 export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introduction, LectureVideo, MainMaterials, SupportMaterials)=>{
-    console.log(idCreatedBy, IdCourse, IdSection, Title, Introduction, LectureVideo, MainMaterials, SupportMaterials);
+    // console.log("LectureVideo: ", LectureVideo);
+    // console.log("MainMaterials: ", MainMaterials);
+    // console.log("SupportMaterials: ", SupportMaterials);
     const formData = new FormData()
     formData.append('IdCourse', IdCourse)
     formData.append('IdSection', IdSection)
@@ -18,7 +20,7 @@ export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introd
         },
     })
     .then(response => {
-        // console.log(response.data);
+        console.log(response.data);
         return response.data.message
     })
     .catch(error => {

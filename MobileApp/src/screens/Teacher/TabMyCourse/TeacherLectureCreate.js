@@ -1,4 +1,4 @@
-import { Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
@@ -34,6 +34,9 @@ export const TeacherLectureCreate = ({route})=>{
     const [supportMaterial, setSupportMaterial] = useState([])
     const [idSupMaterial, setIdSupMaterial] = useState(1)
     const [video, setVideo] = useState(null)
+
+    const [loading, setLoading] = useState(false);
+
     const pickFile = async(type = "*")=>{
         try{
             let result = await DocumentPicker.getDocumentAsync({
@@ -50,11 +53,9 @@ export const TeacherLectureCreate = ({route})=>{
         const result = await pickFile()
         if(result){
             setMaterial({
-                file: {
-                    uri: result.uri,
-                    name: result.name,
-                    type: result.mimeType 
-                }
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
             })
         }
     }
@@ -73,20 +74,6 @@ export const TeacherLectureCreate = ({route})=>{
             setIdSupMaterial(idSupMaterial + 1)
         }
     }
-    const onChangeSupportMaterial= async(id, value)=>{
-        const newMaterial = supportMaterial.map(item => {
-            if(item.id === id){
-                return{
-                    ...item,
-                    file: {
-                        name: value, 
-                    }
-                }
-            }
-            return item
-        })
-        setSupportMaterial(newMaterial)
-    }
     const onDeleteSupportMaterial= async(id,)=>{
         const newMaterial = supportMaterial.filter(item => item.id !== id)
         setSupportMaterial(newMaterial)
@@ -102,6 +89,7 @@ export const TeacherLectureCreate = ({route})=>{
         }
     }
     const handleSave = async()=>{
+        setLoading(true)
         try {
             const listSupMaterials = supportMaterial.map(item => item.file) || null
             const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, listSupMaterials)
@@ -115,6 +103,8 @@ export const TeacherLectureCreate = ({route})=>{
             
         } catch (error) {
             console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }
     return(
@@ -185,22 +175,7 @@ export const TeacherLectureCreate = ({route})=>{
                             <Text style={styles.label}>Material</Text>
                             {material ?
                                 <View style={styles.wrapFlex}>
-                                    <View style={[styles.inputLabelGray]}>
-                                        <TextInput 
-                                            style={styles.inputText}
-                                            value={material.file.name}
-                                            onChangeText={(v)=>setMaterial({
-                                                ...material,
-                                                file: {
-                                                    name: v
-                                                }
-                                            })}
-                                            placeholder={"Materials"}
-                                        />
-                                        {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                            <Entypo name="edit" size={18} color="black" />
-                                        </TouchableOpacity> */}
-                                    </View>
+                                    <Text style={[styles.inputLabelGray]} numberOfLines={1}>{material.name}</Text>
                                     <TouchableOpacity onPress={()=>setMaterial(null)} style={{margin: 4}}>
                                         <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                     </TouchableOpacity>
@@ -217,14 +192,9 @@ export const TeacherLectureCreate = ({route})=>{
                             {supportMaterial.length > 0 &&
                                 supportMaterial.map(item => 
                                     <View style={[styles.wrapFlex, {marginBottom: 4}]} key={item.id}>
-                                        <View style={[styles.inputLabelGray]}>
-                                            <TextInput 
-                                                style={styles.inputText}
-                                                value={item.file.name}
-                                                onChangeText={(v)=>onChangeSupportMaterial(item.id, v)}
-                                                placeholder={"Supporting materials"}
-                                            />
-                                        </View>
+                                        <Text style={[styles.inputLabelGray]} numberOfLines={1}>
+                                            {item.file.name}
+                                        </Text>
                                         <TouchableOpacity onPress={()=>onDeleteSupportMaterial(item.id)} style={{margin: 4}}>
                                             <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                         </TouchableOpacity>
@@ -238,6 +208,11 @@ export const TeacherLectureCreate = ({route})=>{
                     </View>
                 </View>
             </ScrollView>
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }  
         </>
     )
 }
@@ -338,7 +313,7 @@ const styles = StyleSheet.create({
         color: "black",
         backgroundColor: COLORS.lightGray,
         paddingHorizontal: 8,
-        height: 38,
+        paddingVertical: 4,
         borderRadius: 4,
         flexDirection: "row",
         alignItems: "center",
@@ -414,4 +389,12 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         gap: 4
     },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
 })
