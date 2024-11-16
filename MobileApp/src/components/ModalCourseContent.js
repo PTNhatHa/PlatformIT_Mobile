@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert } from "react-native"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
@@ -8,6 +8,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabel } from "./TextInputField";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
+import { addSection } from "../services/course";
+import { useUser } from "../contexts/UserContext";
 
 const initLecture = [
     {
@@ -42,7 +44,8 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content=initLecture})=>{
+export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
+    const {state, dispatch} = useUser()
     const navigation = useNavigation()
     const [showSections, setShowSections] = useState(content.map(item => (
         {
@@ -64,6 +67,20 @@ export const ModalCourseContent = ({role=0, content=initLecture})=>{
             return item
         })
         setShowSections(newShow)
+    }
+
+    const handleAddSection = async()=>{
+        try {
+            const response = await addSection(newSection, idCourse, state.idUser)
+            if(response){
+                Alert.alert("Add New Section", response)
+                setIsAddSection(false)
+            } else {
+                Alert.alert("Error", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
     }
     return(
         <>
@@ -130,7 +147,7 @@ export const ModalCourseContent = ({role=0, content=initLecture})=>{
                         </TouchableOpacity>
                         <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
                         <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
-                        <ButtonGreen title={"Save"}/>
+                        <ButtonGreen title={"Save"} onPress={()=>handleAddSection()}/>
                     </View>
                 </View>
             </Modal>

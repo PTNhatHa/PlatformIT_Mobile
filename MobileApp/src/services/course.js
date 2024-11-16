@@ -23,3 +23,14 @@ export const getCourseDetail = async (idCourse)=>{
         console.log("Error getCourseDetail: ", error);
     })
 }
+
+export const addSection = async (sectionName, idCourse, idCreatedBy)=>{
+    return await axios.post(baseUrl + "/AddSection?sectionName=" + sectionName + "&idCourse=" + idCourse + "&idCreatedBy=" + idCreatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error addSection: ", error);
+    })
+}

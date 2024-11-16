@@ -345,7 +345,7 @@ export const DetailCourse =({route})=>{
                 {selectBtn === 0 ?
                     <>
                         {/* Course contents */}
-                        <ModalCourseContent role={role} content={data.sectionsWithCourses}/>
+                        <ModalCourseContent role={role} content={data.sectionsWithCourses} idCourse={data.idCourse}/>
                     </>
                 : selectBtn === 1 ?
                     <>
