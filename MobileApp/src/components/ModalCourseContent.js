@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator } from "react-native"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
@@ -45,6 +45,7 @@ const initLecture = [
 ]
 
 export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
+    const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
     const [showSections, setShowSections] = useState(content.map(item => (
@@ -70,6 +71,8 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
     }
 
     const handleAddSection = async()=>{
+        console.log("Zooooo");
+        setLoading(true)
         try {
             const response = await addSection(newSection, idCourse, state.idUser)
             if(response){
@@ -80,6 +83,8 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }
     return(
@@ -147,10 +152,15 @@ export const ModalCourseContent = ({role=0, content=initLecture, idCourse})=>{
                         </TouchableOpacity>
                         <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
                         <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
-                        <ButtonGreen title={"Save"} onPress={()=>handleAddSection()}/>
+                        <ButtonGreen title={"Save"} action={()=>handleAddSection()}/>
                     </View>
                 </View>
             </Modal>
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }  
         </>
     )
 }
@@ -212,6 +222,14 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 20,
         rowGap: 12,
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })
 

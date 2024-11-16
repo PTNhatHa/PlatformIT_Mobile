@@ -116,11 +116,12 @@ const styles = StyleSheet.create({
     containerIcon: {
         borderRadius: 4,
         paddingHorizontal: 16,
-        paddingVertical: 8,
+        // paddingVertical: 4,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
-        backgroundColor: COLORS.lightGray
+        backgroundColor: COLORS.lightGray,
+        alignItems: "center"
     },
     container: {
         borderBottomWidth: 1,
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     },
     input:{
         fontSize: 16,
-        width: "85%"
+        width: "85%",
     },
     error:{
         color: COLORS.red

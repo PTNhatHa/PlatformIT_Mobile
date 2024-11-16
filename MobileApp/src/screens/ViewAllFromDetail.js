@@ -7,7 +7,7 @@ import { formatDateTime } from "../utils/utils";
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 
 export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
-    const initData = route?.params?.initData || myCourse
+    const initData = route?.params?.initData || myCourse || []
     const index = route?.params?.index || 1
     const namePage = route?.params?.namePage || ""
     const [data, setData] = useState(initData)
@@ -22,7 +22,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
     const numberItem = 10
-    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
+    const [currentData, setCurrentData] = useState(data?.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
     const inputRef = useRef(null)
     
     useEffect(() => {
@@ -294,9 +294,9 @@ const styles = StyleSheet.create({
     wrapperSearch: {
         ...commonStyles.shadow,
         backgroundColor: "white",
-        borderRadius: 90,
+        borderRadius: 8,
         paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingVertical: 4,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,

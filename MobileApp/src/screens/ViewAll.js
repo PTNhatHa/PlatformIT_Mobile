@@ -507,9 +507,9 @@ const styles = StyleSheet.create({
     wrapperSearch: {
         ...commonStyles.shadow,
         backgroundColor: "white",
-        borderRadius: 90,
+        borderRadius: 8,
         paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingVertical: 4,
         width: "100%",
         flexDirection: "row",
         columnGap: 8,
