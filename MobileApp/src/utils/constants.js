@@ -27,10 +27,10 @@ export const commonStyles = StyleSheet.create({
     },
     shadow: {
         shadowColor: "#000", // Màu của bóng đổ
-        shadowOffset: { width: 10, height: 10 }, // Độ lệch của bóng đổ
+        shadowOffset: { width: 5, height: 5 }, // Độ lệch của bóng đổ
         shadowOpacity: 0.25, // Độ mờ của bóng đổ
-        shadowRadius: 10, // Bán kính của bóng đổ
-        elevation: 10, // Độ cao của bóng đổ (chỉ dành cho Android)
+        shadowRadius: 5, // Bán kính của bóng đổ
+        elevation: 5, // Độ cao của bóng đổ (chỉ dành cho Android)
     }
 })
 

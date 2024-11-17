@@ -2,6 +2,10 @@ import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View 
 import { COLORS } from "../utils/constants"
 import { useState } from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+import { formatDateTime } from "../utils/utils";
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 export const TextInputIcon = ({
     value, icon, placeholder, onchangeText, error, keyboardType, isPassword, isMultiline = false
 }) => {
@@ -52,7 +56,7 @@ export const TextInputLabel = ({
 }
 
 export const TextInputLabelGray = ({
-    label, value, placeholder, onchangeText = ()=>{}, editable=true
+    label, value, placeholder, onchangeText = ()=>{}, editable=true, type="Default"
 }) => {
     const handleOnchangeText = (v)=>{
         onchangeText(v)
@@ -68,6 +72,7 @@ export const TextInputLabelGray = ({
                     onChangeText={(v)=>handleOnchangeText(v)}
                     multiline={label === "Introduction"}
                     editable={editable}
+                    keyboardType={type}
                 />
             </View>
         </>
@@ -95,7 +100,7 @@ export const TextInputSelectBox = ({
                         onBlur={()=>setIsOpentBox(false)}
                     />
                     <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)} style={{margin: 4}}>
-                        <AntDesign name="caretdown" size={18} color="black" />
+                        <AntDesign name="caretdown" size={14} color="black" />
                     </TouchableOpacity>
                 </View>
                 {isOpenBox &&
@@ -106,6 +111,43 @@ export const TextInputSelectBox = ({
                             </TouchableOpacity>
                         )}
                     </ScrollView>
+                }
+            </View>
+        </>
+    )
+}
+
+export const TextInputSelectDate = ({
+    label, value, placeholder, onchangeText = ()=>{}, listSelect=[]
+}) => {
+    const [show, setShow] = useState(false)
+    const handleOnChange = (e, selectDate)=>{
+        const currentDate = selectDate || value || new Date()
+        onchangeText(currentDate)
+        setShow(false)
+    }
+    return(
+        <>
+            <View style={styles.containerGray}>
+                <Text style={styles.label}>{label}</Text>
+                <View style={[styles.inputLabelBox]}>
+                    <TextInput 
+                        style={styles.inputText}
+                        value={value ? formatDateTime(new Date(value)) : null}
+                        editable={false}
+                        placeholder="Select a date"
+                    />
+                    <TouchableOpacity onPress={()=>setShow(!show)} style={{margin: 4}}>
+                        <Feather name="calendar" size={20} color="black" />
+                    </TouchableOpacity>
+                </View>
+                {show &&
+                    <DateTimePicker 
+                        mode="date" 
+                        onChange={handleOnChange}
+                        value={value instanceof Date ? new Date(value) : new Date()} 
+                        display="default"
+                    />
                 }
             </View>
         </>
@@ -157,7 +199,7 @@ const styles = StyleSheet.create({
         color: "black",
         backgroundColor: COLORS.lightGray,
         paddingHorizontal: 8,
-        paddingVertical: 4,
+        paddingVertical: 8,
         borderRadius: 4
     },
 
@@ -167,7 +209,7 @@ const styles = StyleSheet.create({
         color: "black",
         backgroundColor: COLORS.lightGray,
         paddingHorizontal: 8,
-        paddingVertical: 4,
+        // paddingVertical: 8,
         borderRadius: 4,
         flexDirection: "row",
         alignItems: "center",
