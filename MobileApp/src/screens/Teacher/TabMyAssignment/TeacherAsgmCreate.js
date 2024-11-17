@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
@@ -19,9 +19,11 @@ export const TeacherAsgmCreate = ({route})=>{
     const [startDate, setStartDate] = useState(null)
     const [dueDate, setDueDate] = useState(null)
 
+    const [isShuffling, setIsShuffling] = useState(false)
+
     return(
         <>
-            <ScrollView style={styles.container}>
+            <View style={styles.container}>
                 {idCourse &&
                     <>
                         <Text style={styles.title}>{"nameCourse"}</Text>
@@ -59,7 +61,11 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <TextInputSelectBox label={"Add to course*"} placeholder={"Select a course"} value={selectCourse} onchangeText={setSelectCourse}/>
                                 <CheckBox
                                     isChecked={isExercise}
-                                    onClick={()=>setIsExercise(!isExercise)}
+                                    onClick={()=>{
+                                        setIsExercise(!isExercise)
+                                        setSelectSection(null)
+                                        setSelectLecture(null)
+                                    }}
                                     checkBoxColor={COLORS.secondMain}
                                     rightText="This is an exercise of a lecture."
                                 />
@@ -77,10 +83,16 @@ export const TeacherAsgmCreate = ({route})=>{
                         <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
                     </View>
                     :
-                    <>
-                    </>
+                    <ScrollView>
+                        <Switch
+                            trackColor={{ false: COLORS.stroke, true: COLORS.main30 }}
+                            thumbColor={isShuffling ? COLORS.secondMain : COLORS.lightGray}
+                            value={isShuffling}
+                            onValueChange={()=>setIsShuffling(!isShuffling)}
+                        />
+                    </ScrollView>
                 }
-            </ScrollView>
+            </View>
         </>
     )
 }
