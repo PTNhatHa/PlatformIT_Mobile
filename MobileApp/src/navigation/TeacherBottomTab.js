@@ -214,7 +214,7 @@ export const TeacherBottomTab = ()=>{
                     if(route.name === "My Course"){
                         return <AntDesign name="book" size={24} color={color} />
                     }
-                    if(route.name === "My Lecture"){
+                    if(route.name === "My Assignment"){
                         return <Ionicons name="documents-outline" size={24} color={color} />
                     }
                     if(route.name === "Noti"){
@@ -234,7 +234,7 @@ export const TeacherBottomTab = ()=>{
         >
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }} />
             <Tab.Screen name="My Course" component={StackMyCourseScreen} />
-            <Tab.Screen name="My Lecture" component={Home} />
+            <Tab.Screen name="My Assignment" component={Home} />
             <Tab.Screen name="Noti" 
                 options={unReadNoti > 0 && { 
                     tabBarBadge: unReadNoti,

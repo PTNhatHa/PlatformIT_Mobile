@@ -12,11 +12,6 @@ import { getAllCourseCards } from "../services/course";
 import { formatDateTime } from "../utils/utils";
 import { CardAssignment } from "../components/CardAssignment";
 
-const renderCourse = ({item})=> <CardVirticalCourse data={item}/>
-const renderCenter = ({item})=> <CardVirticalCenter data={item}/>
-const renderTeacher = ({item})=> <CardVirticalTeacher data={item}/>
-const renderAssignment = ({item})=> <CardAssignment data={item} role={1}/>
-
 const ViewAllRender = ({data = [], type})=>{
     // console.log(data);
     const [indexPage, setIndexPage] = useState(1)
@@ -57,59 +52,40 @@ const ViewAllRender = ({data = [], type})=>{
             Alert.alert("Error Input", "Please enter from 1 to " + Math.ceil(data.length / numberItem))
         }
     }
-    const renderFlatlist = (renderItem)=>{
-        if(type === "Course"){
-            return(
-                <FlatList
-                    data={currentData}
-                    keyExtractor={(item) => item.idCourse}
-                    renderItem={renderItem}
-                    style={styles.wrapList}
-                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                />
-            )
-        } else if(type === "Center"){
-            return(
-                <FlatList
-                    data={currentData}
-                    keyExtractor={(item) => item.idCenter}
-                    renderItem={renderItem}
-                    style={styles.wrapList}
-                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                />
-            )
-        } else if(type === "Teacher"){
-            return(
-                <FlatList
-                    data={currentData}
-                    keyExtractor={(item) => item.idUser}
-                    renderItem={renderItem}
-                    style={styles.wrapList}
-                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                />
-            )
-        }else{
-            return(
-                <FlatList
-                    data={currentData}
-                    keyExtractor={(item) => item.idAssignment}
-                    renderItem={renderItem}
-                    style={styles.wrapList}
-                    ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
-                />
-            )
-        }
-    }
+
     return(
         <View style={{ flex: 1}}>
-            {renderFlatlist( 
-                type === "Course" ? renderCourse : 
-                type === "Center" ? renderCenter : 
-                type === "Teacher" ? renderTeacher :
-                type === "Assignment" ? renderAssignment : ""
-            )}
+            {
+                type === "Course" ? 
+                    <FlatList
+                        data={currentData}
+                        keyExtractor={(item) => item.idCourse}
+                        renderItem={({item}) => <CardVirticalCourse data={item}/>}
+                        style={styles.wrapList}
+                        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                    />
+                : 
+                type === "Center" ? 
+                    <FlatList
+                        data={currentData}
+                        keyExtractor={(item) => item.idCenter}
+                        renderItem={({item}) => <CardVirticalCenter data={item}/>}
+                        style={styles.wrapList}
+                        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                    />
+                : 
+                type === "Teacher" ? 
+                    <FlatList
+                        data={currentData}
+                        keyExtractor={(item) => item.idUser}
+                        renderItem={({item}) => <CardVirticalTeacher data={item}/>}
+                        style={styles.wrapList}
+                        ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                    />
+                : ""
+            }
             <View style={styles.bottom}>
-                {indexPage>1 && 
+                {indexPage > 1 && 
                     <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(false)}>
                         <Text style={[styles.pageNumberText, {color: "white"}]}>Previous</Text>
                     </TouchableOpacity>
@@ -134,66 +110,21 @@ const ViewAllRender = ({data = [], type})=>{
         </View>
     )
 }
-const renderSceneStudent = ({ route, dataCourse, dataCenter, dataTeacher})=>{
 
-    switch(route.key){
-        case 'first':
-            return <ViewAllRender data={dataCourse} type={"Course"}/>
-        case 'second':
-            return <ViewAllRender data={dataCenter} type={"Center"}/>
-        case 'third':
-            return <ViewAllRender data={dataTeacher} type={"Teacher"}/>
-        default:
-            return null;
-    }
-}
-const renderSceneTeacher = ({ route, dataCourse, dataCenter, dataTeacher, initAssignment})=>{
-    switch(route.key){
-        case 'first':
-            return <ViewAllRender data={dataCourse} type={"Course"}/>
-        case 'second':
-            return <ViewAllRender data={dataCenter} type={"Center"}/>
-        case 'third':
-            return <ViewAllRender data={dataTeacher} type={"Teacher"}/>
-        case 'Fourth':
-            return <ViewAllRender data={initAssignment} type={"Assignment"}/>
-        default:
-            return null;
-    }
-}
-const renderTabBar = (props)=>{
-    return(
-        <TabBar
-            {...props}
-            indicatorStyle={{ backgroundColor: COLORS.main, height: 4 }} // Custom line dưới tab
-            style={{ backgroundColor: '#FAFAFA'}} // Background cho header
-            labelStyle={{ color: COLORS.lightText, fontSize: 13, fontWeight: 'bold' }} // Style cho text của tab
-            activeColor={COLORS.main}
-            inactiveColor={COLORS.lightText}
-        />
-    )
-}
-
-const Assignment = [
-    {
-        "idAssignment": 0,
-        "assignmentTitle": "Sample",
-        "assignmentIntroduction": "Sample",
-        "dueDate": "2024-11-06T18:05:42.5588662+07:00",
-        "isSubmitted": null
-      },
-]
-
-export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
+export const ScreenViewAll = ({route})=>{
     const initialTab = route.params?.initTab || 0
-    const isTeacher = route.params?.isTeacher || false
 
     const [loading, setLoading] = useState(true);
+    const [selectBtn, setSelectBtn] = useState(initialTab)
 
     const [search, setSearch] = useState(null)
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [routes, setRoutes] = useState([])
+    const [routes, setRoutes] = useState([
+        { key: 'first', title: 'Course' },
+        { key: 'second', title: 'Center' },
+        { key: 'third', title: 'Teacher' },
+      ])
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
     const [dataFilterCourse, setDataFilterCourse] = useState([]);
@@ -412,20 +343,6 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
     }
 
     useEffect(()=>{
-        if(!isTeacher){
-            setRoutes([
-                { key: 'first', title: 'Course' },
-                { key: 'second', title: 'Center' },
-                { key: 'third', title: 'Teacher' },
-              ])
-        } else{
-            setRoutes([
-                { key: 'first', title: 'Course' },
-                { key: 'second', title: 'Center' },
-                { key: 'third', title: 'Teacher' },
-                { key: 'Fourth', title: 'Assign' },
-              ])
-        }
         getAllCard()
     }, [])
         
@@ -451,20 +368,25 @@ export const ScreenViewAll = ({ initAssignment = Assignment, route})=>{
                     <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                 </TouchableOpacity>
             </View>
-            {isTeacher === true ?
-                <TabView
-                    navigationState={{index, routes}}
-                    renderScene={({route})=> renderSceneTeacher({ route, dataCourse, dataCenter, dataTeacher, initAssignment})}
-                    onIndexChange={setIndex}
-                    renderTabBar={renderTabBar}
-                />
-            :
-                <TabView
-                    navigationState={{index, routes}}
-                    renderScene={({route})=> renderSceneStudent({ route, dataCourse, dataCenter, dataTeacher})}
-                    onIndexChange={setIndex}
-                    renderTabBar={renderTabBar}
-                />
+            <View style={styles.board}>
+                <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
+                    <Text style={[styles.normalBtn, selectBtn === 0 && styles.selectBtn]}>Course</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
+                    <Text style={[styles.normalBtn, selectBtn === 1 && styles.selectBtn]}>Center</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
+                    <Text style={[styles.normalBtn, selectBtn === 2 && styles.selectBtn]}>Teacher</Text>
+                </TouchableOpacity>
+            </View>
+            {selectBtn === 0 &&
+                <ViewAllRender data={dataCourse} type={"Course"}/>
+            }
+            {selectBtn === 1 &&
+                <ViewAllRender data={dataCenter} type={"Center"}/>
+            }
+            {selectBtn === 2 &&
+                <ViewAllRender data={dataTeacher} type={"Teacher"}/>
             }
             <Modal
                 visible={isOpenModal}
@@ -560,5 +482,27 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
-    }
+    },
+
+    board: {
+        flexDirection: "row",
+        columnGap: 4,
+    },
+    boardBtn: {
+        justifyContent: "center",
+        flex: 1,
+    },
+    normalBtn: {
+        paddingVertical: 4,
+        paddingHorizontal: 8,
+        fontSize: 18,
+        color: COLORS.lightText,
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+    selectBtn: {
+        borderBottomWidth: 2,
+        borderBottomColor: COLORS.main,
+        color: COLORS.main,
+    },
 })

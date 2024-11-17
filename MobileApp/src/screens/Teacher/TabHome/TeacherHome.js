@@ -82,7 +82,7 @@ export const TeacherHome = ({navigation})=>{
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Ongoing Assignments</Text>
-                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}} onPress={()=>navigation.navigate("View All", {initTab: 3, isTeacher: true})}>
+                    <TouchableOpacity style={{alignItems: "flex-end", flex: 1}}>
                         <Text style={commonStyles.viewAll}>View all assignments</Text>
                     </TouchableOpacity>
                 </View>
