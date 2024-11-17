@@ -13,7 +13,6 @@ import { formatDateTime } from "../utils/utils";
 import { CardAssignment } from "../components/CardAssignment";
 
 const ViewAllRender = ({data = [], type})=>{
-    // console.log(data);
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
     const numberItem = 10

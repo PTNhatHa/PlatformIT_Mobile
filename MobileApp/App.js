@@ -7,14 +7,16 @@ import { StudentLectureDetail } from './src/screens/Student/TabMyCourse/StudentL
 import { Comments } from './src/components/Comments';
 import { TeacherLectureDetail } from './src/screens/Teacher/TabMyCourse/TeacherLectureDetail';
 import { TeacherLectureCreate } from './src/screens/Teacher/TabMyCourse/TeacherLectureCreate';
+import { TeacherAllAssignment } from './src/screens/Teacher/TabMyAssignment/TeacherAllAssignment';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
+          {/* <SigninSignup/> */}
           {/* <TeacherLectureDetail/> */}
+          <TeacherAllAssignment/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
