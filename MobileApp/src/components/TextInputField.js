@@ -1,6 +1,6 @@
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
@@ -83,9 +83,24 @@ export const TextInputSelectBox = ({
     label, value, placeholder, onchangeText = ()=>{}, listSelect=[]
 }) => {
     const [isOpenBox, setIsOpentBox] = useState(false)
+    const [currentList, setCurrentList] = useState(listSelect)
+    const [currentValue, setCurrentValue] = useState(value?.label)
+
+    useEffect(()=>{
+        setCurrentList(listSelect)
+    }, [listSelect])
+
+    useEffect(()=>{
+        setCurrentValue(value?.label)
+    }, [value])
+
     const handleOnchangeText = (v)=>{
-        // onchangeText(v)
+        setCurrentValue(v)
+        const newList = listSelect.filter(item => item.label.toLowerCase().includes(v.toLowerCase()))
+        setCurrentList(newList)
     }
+    // console.log("listSelect: ", listSelect);
+    // console.log("currentList: ", currentList);
     return(
         <>
             <View style={styles.containerGray}>
@@ -93,24 +108,29 @@ export const TextInputSelectBox = ({
                 <View style={[styles.inputLabelBox]}>
                     <TextInput 
                         style={styles.inputText}
-                        value={value?.label}
+                        value={currentValue}
                         onChangeText={(v)=>handleOnchangeText(v)}
                         placeholder={placeholder}
                         onFocus={()=>setIsOpentBox(true)}
-                        onBlur={()=>setIsOpentBox(false)}
+                        // onBlur={()=>setIsOpentBox(false)}
                     />
                     <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)}>
                         <AntDesign name="caretdown" size={14} color="black" />
                     </TouchableOpacity>
                 </View>
                 {isOpenBox &&
-                    <ScrollView style={styles.wrapList}>
-                        {listSelect?.map(item => 
-                            <TouchableOpacity key={item?.value} onPress={()=>onchangeText(item)}>
-                                <Text style={styles.textListTag}>{item?.label}</Text>
-                            </TouchableOpacity>
-                        )}
-                    </ScrollView>
+                    <View style={styles.wrapList}>
+                        <ScrollView >
+                            {currentList?.map(item => 
+                                <TouchableOpacity key={item?.value} onPress={()=>onchangeText(item)}>
+                                    <Text style={styles.textListTag}>{item?.label}</Text>
+                                </TouchableOpacity>
+                            )}
+                        </ScrollView>
+                        <TouchableOpacity onPress={()=>setIsOpentBox(false)} style={styles.wrapClose}>
+                            <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                        </TouchableOpacity>
+                    </View>
                 }
             </View>
         </>
@@ -229,12 +249,17 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         width: "100%",
         top: 50,
-        zIndex: 1
+        zIndex: 1,
     },
     textListTag: {
         margin: 4,
         paddingVertical: 4,
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
+    },
+
+    wrapClose:{
+        justifyContent: 'center', 
+        alignItems: 'center'
     }
 })

@@ -48,6 +48,7 @@ export const TeacherAsgmCreate = ({route})=>{
         const getAllCourse = async()=>{
             try {
                 const response = await getAllActiveCourseOfTeacher(6)
+                // console.log("API response:", response);
                 setListCourses([...response?.map(item=>{
                     return{
                         value: item.idCourse,
@@ -126,7 +127,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                 }
                             </>
                         }
-                        <TextInputSelectBox label={"Type*"} placeholder={"Select a type"} value={type} onchangeText={setType}/>
+                        <TextInputSelectBox label={"Type*"} placeholder={"Select a type"} value={type} onchangeText={setType} listSelect={typeLimit}/>
                         <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
                         <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
                         <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
@@ -146,7 +147,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                 <Text style={styles.title}>Question 1*</Text>
                                 <TouchableOpacity>
-                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                                    <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                 </TouchableOpacity>
                             </View>
                             <TextInput
