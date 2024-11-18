@@ -1,5 +1,5 @@
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { COLORS } from "../utils/constants"
+import { AssignmentItemAnswerType, COLORS } from "../utils/constants"
 import { useEffect, useState } from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
@@ -56,10 +56,14 @@ export const TextInputLabel = ({
 }
 
 export const TextInputLabelGray = ({
-    label, value, placeholder, onchangeText = ()=>{}, editable=true, type="Default"
+    label, value, placeholder, onchangeText = ()=>{}, editable=true, type="Default", index, field
 }) => {
     const handleOnchangeText = (v)=>{
-        onchangeText(v)
+        if(index !== null){
+            onchangeText(v, index, field)
+        } else{
+            onchangeText(v)
+        }
     }
     return(
         <>
@@ -80,12 +84,11 @@ export const TextInputLabelGray = ({
 }
 
 export const TextInputSelectBox = ({
-    label, value, placeholder, onchangeText = ()=>{}, listSelect=[]
+    label, value, placeholder, onchangeText = ()=>{}, listSelect=[], index = null, field
 }) => {
     const [isOpenBox, setIsOpentBox] = useState(false)
     const [currentList, setCurrentList] = useState(listSelect)
-    const [currentValue, setCurrentValue] = useState(value?.label)
-
+    const [currentValue, setCurrentValue] = useState(value?.label || value)
     useEffect(()=>{
         if (JSON.stringify(currentList) !== JSON.stringify(listSelect)) {
             setCurrentList(listSelect);
@@ -93,7 +96,7 @@ export const TextInputSelectBox = ({
     }, [listSelect])
 
     useEffect(()=>{
-        setCurrentValue(value?.label)
+        setCurrentValue(value?.label || value)
     }, [value])
 
     const handleOnchangeText = (v)=>{
@@ -103,8 +106,7 @@ export const TextInputSelectBox = ({
             setCurrentList(newList);
         }
     }
-    // console.log("listSelect: ", listSelect);
-    // console.log("currentList: ", currentList);
+
     return(
         <>
             <View style={styles.containerGray}>
@@ -112,7 +114,7 @@ export const TextInputSelectBox = ({
                 <View style={[styles.inputLabelBox]}>
                     <TextInput 
                         style={styles.inputText}
-                        value={currentValue}
+                        value={index !== null ? AssignmentItemAnswerType[currentValue] : currentValue}
                         onChangeText={(v)=>handleOnchangeText(v)}
                         placeholder={placeholder}
                         onFocus={()=>setIsOpentBox(true)}
@@ -127,7 +129,11 @@ export const TextInputSelectBox = ({
                         <ScrollView >
                             {currentList?.map(item => 
                                 <TouchableOpacity key={item?.value} onPress={()=>{
-                                    onchangeText(item)
+                                    if(index !== null){
+                                        onchangeText(item.value, index, field)
+                                    } else{
+                                        onchangeText(item)
+                                    }
                                     setIsOpentBox(false)
                                 }}>
                                     <Text style={styles.textListTag}>{item?.label}</Text>
@@ -227,7 +233,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.lightGray,
         paddingHorizontal: 12,
         paddingVertical: 8,
-        borderRadius: 4
+        borderRadius: 4,
     },
 
     inputLabelBox:{
@@ -241,7 +247,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        height: 38
+        height: 36
     },
     inputText:{
         width: "90%"
@@ -256,7 +262,7 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end",
         width: "100%",
         top: 50,
-        zIndex: 1,
+        zIndex: 9999,
     },
     textListTag: {
         margin: 4,

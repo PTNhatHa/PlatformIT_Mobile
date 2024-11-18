@@ -8,6 +8,8 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllActiveCourseOfTeacher, getAllActiveSectionOfCourse } from "../../../services/course"
 import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
+import Entypo from '@expo/vector-icons/Entypo';
+import * as DocumentPicker from 'expo-document-picker';
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
@@ -26,14 +28,8 @@ export const TeacherAsgmCreate = ({route})=>{
     const [dueDate, setDueDate] = useState(null)
 
     const [isShuffling, setIsShuffling] = useState(false)
-    const [questions, setQuestions] = useState([
-        {
-            question: "",
-            mark: 2,
-            assignmentItemAnswerType: 1,
-            attachedFile: {},
-        }
-    ])
+    const [questions, setQuestions] = useState([])
+    const [totalMark, setTotalMark] = useState(0)
 
     const [listCourses, setListCourses] = useState([])
     const [listSections, setListSections] = useState([])
@@ -47,6 +43,10 @@ export const TeacherAsgmCreate = ({route})=>{
         { label: "Manual", value: 1 },
         { label: "Quiz", value: 2 },
         { label: "Code", value: 3 },
+    ]
+    const typeOfAnswer = [
+        { label: "Text", value: 1 },
+        { label: "Attach file", value: 2 },
     ]
 
     useEffect(()=>{
@@ -181,10 +181,59 @@ export const TeacherAsgmCreate = ({route})=>{
     useEffect(()=>{
         setError(null)
     }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
-    
+
+    const pickFile = async()=>{
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: ['*/*'],
+                copyToCacheDirectory: true,
+            })
+            return result.assets[0]
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
+    const handleChangeQuestion = (v, index, field)=>{
+        const newList = questions.map((item, i) =>{
+            if(i === index){
+                return{
+                    ...item,
+                    [field]: v
+                }
+            }
+            return item
+        })
+        const totalMark = newList?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
+        setTotalMark(totalMark)
+        setQuestions(newList)
+        console.log(totalMark);
+    }
+    const handleChangeQuestionMaterial = async(index)=>{
+        const result = await pickFile()
+        if(result){
+            handleChangeQuestion({
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
+            }, index, "attachedFile")
+        }
+    }
+    const addQuestion = ()=>{
+        setQuestions([...questions, {
+            question: null,
+            mark: 0,
+            assignmentItemAnswerType: 1,
+            attachedFile: null,
+        }])
+    }
+    const deleteQuestion = (index)=>{
+        const newQuestions = questions.filter((item, i) => i !==index)
+        setQuestions(newQuestions)
+    }
     return(
-        <>
-            <ScrollView style={styles.container}>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.inner}>
                 {idCourse &&
                     <>
                         <Text style={styles.title}>{"nameCourse"}</Text>
@@ -197,7 +246,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         }
                     </>
                 }
-                <Text style={styles.textGray14}>0 question |   0 mark</Text>
+                <Text style={styles.textGray14}>{questions.length} {questions.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
                 <View style={styles.wrapBtn}>
                     <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
                         <Text style={styles.textWhite14}>Publish</Text>
@@ -299,51 +348,76 @@ export const TeacherAsgmCreate = ({route})=>{
                                 onValueChange={()=>setIsShuffling(!isShuffling)}
                             />
                         </View>
-                        <View style={styles.wrapContent}>
-                            <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                <Text style={styles.title}>Question 1*</Text>
-                                <TouchableOpacity>
-                                    <AntDesign name="close" size={24} color={COLORS.secondMain}/>
-                                </TouchableOpacity>
-                            </View>
-                            <TextInput
-                                style={[styles.inputLabelGray]}
-                                placeholder="Question"
-                                multiline={true}
-                            />
-                            <View style={styles.containerGray}>
-                                <Text style={styles.label}>Reference material (maximum 1 file)</Text>
-                                {true ?
-                                    <View style={styles.inputLabelGray}>
-                                        <Text style={{flex: 1}} numberOfLines={1}>namefilemmmmmmmmmmmmmmmmmmmmmmm</Text>
-                                        <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                            <MaterialIcons name="delete" size={18} color={COLORS.red} />
+                        {questions &&
+                            questions.map((item, index) =>
+                                <View style={styles.wrapContent} key={index}>
+                                    <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                        <Text style={styles.title}>Question {index + 1}*</Text>
+                                        <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                            <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                         </TouchableOpacity>
                                     </View>
-                                    :
-                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
-                                        <MaterialIcons name="upload-file" size={20} color="black" />
-                                        <Text>Attach file</Text>
-                                    </TouchableOpacity>
-                                }
-                            </View> 
-                            <View style={[styles.wrapFlex, styles.topBorder]}>
-                                    <TextInputSelectBox label={"Type of answer"}/>
-                                    <TextInputLabelGray label={"Mark"} type={"numeric"}/>
-                            </View>  
-                        </View>
+                                    <TextInput
+                                        style={[styles.inputLabelGray]}
+                                        placeholder="Question"
+                                        multiline={true}
+                                        value={item.question}
+                                        onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
+                                    />
+                                    <View style={styles.containerGray}>
+                                        <Text style={styles.label}>Reference material (maximum 1 file)</Text>
+                                        {item.attachedFile ?
+                                            <View style={styles.inputLabelGray}>
+                                                <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
+                                                <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                                    <MaterialIcons name="delete" size={18} color="black" />
+                                                </TouchableOpacity>
+                                            </View>
+                                            :
+                                            <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index)} style={[styles.btnText]}>
+                                                <MaterialIcons name="upload-file" size={20} color="black" />
+                                                <Text>Attach file</Text>
+                                            </TouchableOpacity>
+                                        }
+                                    </View> 
+                                    <View style={{width: "50%"}}>
+                                        <TextInputSelectBox 
+                                            label={"Type of answer*"} listSelect={typeOfAnswer} 
+                                            index={index} field={"assignmentItemAnswerType"} value={item.assignmentItemAnswerType}
+                                            onchangeText={handleChangeQuestion}
+                                        />
+                                    </View>
+                                    <View style={[styles.wrapFlex, styles.topBorder]}>
+                                        <View style={{width: "50%"}}>
+                                            <TextInputLabelGray 
+                                                label={"Mark"} placeholder={"Mark"} type={"numeric"} value={item.mark} 
+                                                index={index} field={"mark"}
+                                                onchangeText={handleChangeQuestion}
+                                            />
+                                        </View>
+                                    </View>  
+                                </View>
+                            )
+                        }
                     </>
                 }
             </ScrollView>
-        </>
+            {selectBtn === 1 &&
+                <TouchableOpacity style={styles.btnPlus} onPress={()=>addQuestion()}>
+                    <Entypo name="plus" size={28} color="black" />
+                </TouchableOpacity>
+            }
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        padding: 16,
         backgroundColor: "#FAFAFA",
         flex: 1,
+    },
+    inner:{
+        padding: 16,
     },
     board: {
         flexDirection: "row",
@@ -403,7 +477,8 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 8,
         marginVertical: 8,
-        gap: 8
+        gap: 8,
+        zIndex: -1,
     },
 
     wrapFlex:{
@@ -453,9 +528,23 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: COLORS.lightText,
         marginTop: 8,
-        paddingTop: 4
+        paddingTop: 4,
+        position: 'relative',
     },
     error:{
         color: COLORS.red
     },
+    btnPlus:{
+        ...commonStyles.shadow,
+        backgroundColor: COLORS.main30,
+        width: 50,
+        height: 50,
+        borderRadius: 90,
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        margin: 16
+    }
 })
