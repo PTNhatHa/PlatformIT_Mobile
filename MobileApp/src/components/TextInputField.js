@@ -221,11 +221,11 @@ const styles = StyleSheet.create({
         flex: 1
     },
     inputLabelGray:{
-        fontSize: 16,
+        fontSize: 14,
         width: "100%",
         color: "black",
         backgroundColor: COLORS.lightGray,
-        paddingHorizontal: 8,
+        paddingHorizontal: 12,
         paddingVertical: 8,
         borderRadius: 4
     },

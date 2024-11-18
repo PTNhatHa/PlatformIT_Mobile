@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
@@ -13,6 +13,7 @@ export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
     const {state} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
+    const [error, setError] = useState(null)
 
     const [isExercise, setIsExercise] = useState(false)
     const [titleAsgm, setTitleAsgm] = useState(null)
@@ -105,6 +106,7 @@ export const TeacherAsgmCreate = ({route})=>{
         getAllLecture()
         setSelectSection(null)
         setSelectLecture(null)
+        if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
     }, [selectCourse])
 
     useEffect(()=>{
@@ -115,6 +117,71 @@ export const TeacherAsgmCreate = ({route})=>{
         setSelectLecture(null)
     }, [selectSection])
 
+    useEffect(()=>{
+        if(startDate && dueDate){
+            if(new Date(startDate) >= new Date(dueDate)){
+                setError("The start date must be before the due date.")
+            } else {
+                setError(null)
+            }
+        }
+    }, [startDate, dueDate])
+
+    const handleCreateAsgm = (isPublish)=>{
+        setError(null)
+        if(!titleAsgm || !selectCourse || !type){
+            setError("Fill all *")
+            return
+        }
+        if(isExercise){
+            if(!selectSection || !selectLecture){
+                setError("Fill all *")
+                return
+            }
+        }
+        if(startDate || dueDate){
+            if(!startDate) setError("Please select a start date if you have chosen a due date.")
+            if(!dueDate) setError("Please select a due date if you have chosen a start date.")
+        }
+
+        let textStatus = "create"
+        if(isPublish){
+            textStatus = "create and publish"
+        }
+        textStatus += " this " + type.label
+        if(isExercise){
+            textStatus += " exercise"
+        } else {
+            textStatus += " test"
+        }
+        if(questions.length > 1){
+            textStatus += " with " + questions.length + " questions?"
+        } else {
+            textStatus += " with " +  questions.length + " question?"
+        }
+        Alert.alert(
+            "Confirm Create Assignment",
+            "Are you sure you want to " + textStatus,
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> {},
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+        
+    }
+
+    useEffect(()=>{
+        setError(null)
+    }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
+    
     return(
         <>
             <ScrollView style={styles.container}>
@@ -132,10 +199,10 @@ export const TeacherAsgmCreate = ({route})=>{
                 }
                 <Text style={styles.textGray14}>0 question |   0 mark</Text>
                 <View style={styles.wrapBtn}>
-                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
+                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
                         <Text style={styles.textWhite14}>Publish</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>navigation.goBack()}>
+                    <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>handleCreateAsgm(0)}>
                         <Text style={styles.textGray14}>Save</Text>
                     </TouchableOpacity>
                 </View>
@@ -159,25 +226,31 @@ export const TeacherAsgmCreate = ({route})=>{
                                     onchangeText={setSelectCourse}
                                     listSelect={listCourses}
                                 />
-                                <CheckBox
-                                    isChecked={isExercise}
-                                    onClick={()=>{
-                                        setIsExercise(!isExercise)
-                                        setSelectSection(null)
-                                        setSelectLecture(null)
-                                    }}
-                                    checkBoxColor={COLORS.secondMain}
-                                    rightText="This is an exercise of a lecture."
-                                />
+                                {selectCourse ?
+                                    selectCourse?.isLimitedTime ?
+                                        <CheckBox
+                                            isChecked={isExercise}
+                                            onClick={()=>{
+                                                setIsExercise(!isExercise)
+                                                setSelectSection(null)
+                                                setSelectLecture(null)
+                                            }}
+                                            checkBoxColor={COLORS.secondMain}
+                                            rightText="This is an exercise of a lecture."
+                                        />
+                                        :
+                                        <Text style={styles.error}>You can only add exercises in unlimited courses.</Text>
+                                    : ""
+                                }
                                 {isExercise &&
                                     <>
                                         <TextInputSelectBox 
-                                            label={"Section"} placeholder={"Select a section"} 
+                                            label={"Section*"} placeholder={"Select a section"} 
                                             value={selectSection} onchangeText={setSelectSection}
                                             listSelect={listSections}
                                         />  
                                         <TextInputSelectBox 
-                                            label={"Lecture"} placeholder={"Select a lecture"} 
+                                            label={"Lecture*"} placeholder={"Select a lecture"} 
                                             value={selectLecture} onchangeText={setSelectLecture}
                                             listSelect={listCurrentLectures}
                                         />  
@@ -191,8 +264,29 @@ export const TeacherAsgmCreate = ({route})=>{
                             listSelect={selectCourse ? selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit : []}
                         />
                         <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
-                        <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
-                        <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
+                        {selectCourse?.isLimitedTime === 1 &&
+                            <>
+                                <View style={styles.wrapFlex}>
+                                    <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
+                                    {startDate &&
+                                        <TouchableOpacity onPress={()=>setStartDate(null)} style={{margin: 4, marginTop: 16}}>
+                                            <MaterialIcons name="delete" size={24} color="black" />
+                                        </TouchableOpacity>
+                                    }
+                                </View>
+                                <View style={styles.wrapFlex}>
+                                    <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
+                                    {dueDate &&
+                                        <TouchableOpacity onPress={()=>setDueDate(null)} style={{margin: 4, marginTop: 16}}>
+                                            <MaterialIcons name="delete" size={24} color="black" />
+                                        </TouchableOpacity>
+                                    }
+                                </View>
+                            </>
+                        }
+                        {error &&
+                            <Text style={styles.error}>{error}</Text>
+                        }
                     </View>
                     :
                     <>
@@ -360,5 +454,8 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         marginTop: 8,
         paddingTop: 4
-    }
+    },
+    error:{
+        color: COLORS.red
+    },
 })
