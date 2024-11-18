@@ -7,6 +7,7 @@ import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
+import { useNavigation } from "@react-navigation/native";
 
 // {
 //     "idNotification": 6,
@@ -21,6 +22,7 @@ import { changeReadStatus, readAllNotification } from "../services/notification"
 //   },
 
 export const NotificationScreen = (props)=>{
+    const navigation = useNavigation()
     const {state} = useUser()
     const [noti, setNoti] = useState([])
     const [loading, setLoading] = useState(false);
@@ -44,6 +46,19 @@ export const NotificationScreen = (props)=>{
         const response = await changeReadStatus(idNotification, state.idUser)
         if(response){
             props.getNoti()
+        }
+        const goal = noti.find(item => item.idNotification === idNotification).notificationType
+        if(goal === 1){
+            // QUALIFICATION
+            navigation.navigate("AccountScreen", {
+                screen: "Your infomation",
+            })
+        }
+        if(goal === 2){
+            // ASSIGNEDTEACHER
+            navigation.navigate("My Course", {
+                screen: "MyCourse",
+            })
         }
     }
 

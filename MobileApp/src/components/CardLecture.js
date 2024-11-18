@@ -14,7 +14,9 @@ export const CardLecture = ({data = initLecture, role=0})=>{
     return(
         <TouchableOpacity style={styles.container} key={data.idLecture} onPress={()=> role !==0 ? navigation.navigate("Detail Lecture") : {}}>
             <Text style={styles.title}>{data.lectureTitle}</Text>
-            <Text style={styles.body}>{data.lectureIntroduction}</Text>
+            {data.lectureIntroduction !== "null" && 
+                <Text style={styles.body}>{data.lectureIntroduction}</Text>
+            }           
             {data.exerciseCount === 1 ?
                 <Text style={styles.exercise}>{data.exerciseCount} exercise</Text>
                 :

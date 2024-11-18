@@ -26,7 +26,7 @@ const init = {
 }
 export const TeacherLectureCreate = ({route})=>{
     const {state, dispatch} = useUser()
-    const {idCourse, nameCourse, idSection, nameSection} = route?.params || {}
+    const {idCourse, nameCourse, idSection, nameSection, getCourse} = route?.params || {}
     const navigation = useNavigation()
     const [lectureName, setLectureName] = useState(null)
     const [intro, setIntro] = useState(null)
@@ -95,6 +95,7 @@ export const TeacherLectureCreate = ({route})=>{
             const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, listSupMaterials)
             if(response){
                 Alert.alert("Add Lecture Successfully", response)
+                getCourse()
                 navigation.goBack()
 
             } else {

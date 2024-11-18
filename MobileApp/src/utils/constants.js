@@ -39,12 +39,17 @@ export const Status = {
     inactive: 2
 }
 
-export const Genser = {
+export const Gender = {
+    QUALIFICATION: 1,
+    ASSIGNEDTEACHER : 2,
+    BOARD : 3,
+}
+
+export const NotificationType = {
     male: 0,
     female: 1,
     other: 2
 }
-
 
 export const initialCourse=[
 

@@ -141,7 +141,9 @@ export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCo
                                             idCourse: idCourse, 
                                             nameCourse: nameCourse, 
                                             idSection: item.idSection, 
-                                            nameSection: item.sectionName
+                                            nameSection: item.sectionName,
+                                            getCourse: getCourse
+
                                         })}>
                                             <Entypo name="plus" size={14} color={COLORS.main} />
                                             <Text style={styles.addLecText}>Add new lecture</Text>
