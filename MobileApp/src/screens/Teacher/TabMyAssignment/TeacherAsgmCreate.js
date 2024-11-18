@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
@@ -10,22 +10,24 @@ import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
+import { createManualAssignment } from "../../../services/assignment"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
     const {state} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
     const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(false);
 
     const [isExercise, setIsExercise] = useState(false)
-    const [titleAsgm, setTitleAsgm] = useState(null)
-    const [selectCourse, setSelectCourse] = useState(null)
-    const [selectSection, setSelectSection] = useState(null)
-    const [selectLecture, setSelectLecture] = useState(null)
-    const [type, setType] = useState(null)
-    const [duration, setDuration] = useState(null)
-    const [startDate, setStartDate] = useState(null)
-    const [dueDate, setDueDate] = useState(null)
+    const [titleAsgm, setTitleAsgm] = useState("")
+    const [selectCourse, setSelectCourse] = useState("")
+    const [selectSection, setSelectSection] = useState("")
+    const [selectLecture, setSelectLecture] = useState("")
+    const [type, setType] = useState("")
+    const [duration, setDuration] = useState("")
+    const [startDate, setStartDate] = useState("")
+    const [dueDate, setDueDate] = useState("")
 
     const [isShuffling, setIsShuffling] = useState(false)
     const [questions, setQuestions] = useState([])
@@ -127,6 +129,61 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }, [startDate, dueDate])
 
+    useEffect(()=>{
+        setError(null)
+    }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
+
+    const pickFile = async()=>{
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: ['*/*'],
+                copyToCacheDirectory: true,
+            })
+            return result.assets[0]
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
+    const handleChangeQuestion = (v, index, field)=>{
+        const newList = questions.map((item, i) =>{
+            if(i === index){
+                return{
+                    ...item,
+                    [field]: v
+                }
+            }
+            return item
+        })
+        if(field === "mark"){
+            const totalMark = newList?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
+            setTotalMark(totalMark)
+        }
+        setQuestions(newList)
+    }
+    const handleChangeQuestionMaterial = async(index)=>{
+        const result = await pickFile()
+        if(result){
+            handleChangeQuestion({
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
+            }, index, "attachedFile")
+        }
+    }
+    const addQuestion = ()=>{
+        setQuestions([...questions, {
+            question: null,
+            mark: 0,
+            assignmentItemAnswerType: 1,
+            attachedFile: null,
+        }])
+    }
+    const deleteQuestion = (index)=>{
+        const newQuestions = questions.filter((item, i) => i !==index)
+        setQuestions(newQuestions)
+    }
+
     const handleCreateAsgm = (isPublish)=>{
         setError(null)
         if(!titleAsgm || !selectCourse || !type){
@@ -159,13 +216,21 @@ export const TeacherAsgmCreate = ({route})=>{
         } else {
             textStatus += " with " +  questions.length + " question?"
         }
+        if(questions.length === 0){
+            Alert.alert("Warning", "You need to add at least 1 question.")
+            return
+        }
         Alert.alert(
             "Confirm Create Assignment",
             "Are you sure you want to " + textStatus,
             [
                 {
                     text: "Yes",
-                    onPress: ()=> {},
+                    onPress: ()=> {
+                        if(type.value === 1){
+                            postAsgm(isPublish)
+                        }
+                    },
                     style: "destructive"
                 },
                 {
@@ -177,59 +242,21 @@ export const TeacherAsgmCreate = ({route})=>{
         )
         
     }
-
-    useEffect(()=>{
-        setError(null)
-    }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
-
-    const pickFile = async()=>{
-        try{
-            let result = await DocumentPicker.getDocumentAsync({
-                type: ['*/*'],
-                copyToCacheDirectory: true,
-            })
-            return result.assets[0]
-        }
-        catch(error){
-            console.log("==>Error picking file: ", error);
-        }
-    }
-    const handleChangeQuestion = (v, index, field)=>{
-        const newList = questions.map((item, i) =>{
-            if(i === index){
-                return{
-                    ...item,
-                    [field]: v
-                }
+    const postAsgm = async(isPublish)=>{
+        setLoading(true)
+        try {
+            const response = await createManualAssignment(
+                titleAsgm, selectCourse.value, isExercise ? 1 : 0, selectLecture?.value || "", startDate, dueDate,
+                duration, type.value, isPublish, isShuffling ? 1 : 0, questions, 6
+            )
+            if(response){
+                Alert.alert("Done", response)
             }
-            return item
-        })
-        const totalMark = newList?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
-        setTotalMark(totalMark)
-        setQuestions(newList)
-        console.log(totalMark);
-    }
-    const handleChangeQuestionMaterial = async(index)=>{
-        const result = await pickFile()
-        if(result){
-            handleChangeQuestion({
-                uri: result.uri,
-                name: result.name,
-                type: result.mimeType 
-            }, index, "attachedFile")
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
-    }
-    const addQuestion = ()=>{
-        setQuestions([...questions, {
-            question: null,
-            mark: 0,
-            assignmentItemAnswerType: 1,
-            attachedFile: null,
-        }])
-    }
-    const deleteQuestion = (index)=>{
-        const newQuestions = questions.filter((item, i) => i !==index)
-        setQuestions(newQuestions)
     }
     return(
         <View style={styles.container}>
@@ -407,6 +434,11 @@ export const TeacherAsgmCreate = ({route})=>{
                     <Entypo name="plus" size={28} color="black" />
                 </TouchableOpacity>
             }
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }  
         </View>
     )
 }
@@ -546,5 +578,14 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
         margin: 16
+    },
+
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })
