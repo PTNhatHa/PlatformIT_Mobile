@@ -5,8 +5,9 @@ import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../
 import CheckBox from "react-native-check-box"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { getAllActiveCourseOfTeacher } from "../../../services/course"
+import { getAllActiveCourseOfTeacher, getAllActiveSectionOfCourse } from "../../../services/course"
 import { useUser } from "../../../contexts/UserContext"
+import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
@@ -27,13 +28,16 @@ export const TeacherAsgmCreate = ({route})=>{
     const [questions, setQuestions] = useState([
         {
             question: "",
-            material: {},
-            typeOfAnswer: 1,
-            mark: 2
+            mark: 2,
+            assignmentItemAnswerType: 1,
+            attachedFile: {},
         }
     ])
 
     const [listCourses, setListCourses] = useState([])
+    const [listSections, setListSections] = useState([])
+    const [listLectures, setListLectures] = useState([])
+    const [listCurrentLectures, setListCurrentLectures] = useState([])
     const typeUnlimit = [
         { label: "Quiz", value: 2 },
         { label: "Code", value: 3 },
@@ -62,8 +66,54 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         }
         getAllCourse()
-        
     }, [])
+
+    useEffect(()=>{
+        const getAllSection = async()=>{
+            try {
+                if(selectCourse){
+                    const response = await getAllActiveSectionOfCourse(selectCourse.value)
+                    setListSections([...response?.map(item=>{
+                        return{
+                            value: item.idSection,
+                            label: item.title,
+                        }
+                    })])
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+        const getAllLecture = async()=>{
+            try {
+                if(selectCourse){
+                    const response = await getAllActiveLecturesOfCourse(selectCourse.value)
+                    setListLectures([...response?.map(item=>{
+                        return{
+                            value: item.idLecture,
+                            label: item.titleLecture,
+                            idSection: item.idSection,
+                            titleSection: item.titleSection
+                        }
+                    })])
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+        getAllSection()
+        getAllLecture()
+        setSelectSection(null)
+        setSelectLecture(null)
+    }, [selectCourse])
+
+    useEffect(()=>{
+        if(selectSection){
+            const current = listLectures.filter(item => item.idSection === selectSection.value)
+            setListCurrentLectures(current)
+        }
+        setSelectLecture(null)
+    }, [selectSection])
 
     return(
         <>
@@ -121,13 +171,25 @@ export const TeacherAsgmCreate = ({route})=>{
                                 />
                                 {isExercise &&
                                     <>
-                                        <TextInputSelectBox label={"Section"} placeholder={"Select a section"} value={selectSection} onchangeText={setSelectSection}/>  
-                                        <TextInputSelectBox label={"Lecture"} placeholder={"Select a lecture"} value={selectLecture} onchangeText={setSelectLecture}/>  
+                                        <TextInputSelectBox 
+                                            label={"Section"} placeholder={"Select a section"} 
+                                            value={selectSection} onchangeText={setSelectSection}
+                                            listSelect={listSections}
+                                        />  
+                                        <TextInputSelectBox 
+                                            label={"Lecture"} placeholder={"Select a lecture"} 
+                                            value={selectLecture} onchangeText={setSelectLecture}
+                                            listSelect={listCurrentLectures}
+                                        />  
                                     </>
                                 }
                             </>
                         }
-                        <TextInputSelectBox label={"Type*"} placeholder={"Select a type"} value={type} onchangeText={setType} listSelect={typeLimit}/>
+                        <TextInputSelectBox 
+                            label={"Type*"} placeholder={"Select a type"} 
+                            value={type} onchangeText={setType} 
+                            listSelect={selectCourse ? selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit : []}
+                        />
                         <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
                         <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
                         <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>

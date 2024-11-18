@@ -27,3 +27,15 @@ export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introd
         console.log("Error addLecture: ", error.response);
     })
 }
+
+
+export const getAllActiveLecturesOfCourse = async (idCourse)=>{
+    return await axios.get(baseUrl + "/GetAllActiveLecturesOfCourse?idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetAllActiveLecturesOfCourse: ", error);
+    })
+}

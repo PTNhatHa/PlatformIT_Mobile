@@ -87,7 +87,9 @@ export const TextInputSelectBox = ({
     const [currentValue, setCurrentValue] = useState(value?.label)
 
     useEffect(()=>{
-        setCurrentList(listSelect)
+        if (JSON.stringify(currentList) !== JSON.stringify(listSelect)) {
+            setCurrentList(listSelect);
+        }
     }, [listSelect])
 
     useEffect(()=>{
@@ -97,7 +99,9 @@ export const TextInputSelectBox = ({
     const handleOnchangeText = (v)=>{
         setCurrentValue(v)
         const newList = listSelect.filter(item => item.label.toLowerCase().includes(v.toLowerCase()))
-        setCurrentList(newList)
+        if (JSON.stringify(newList) !== JSON.stringify(currentList)) {
+            setCurrentList(newList);
+        }
     }
     // console.log("listSelect: ", listSelect);
     // console.log("currentList: ", currentList);
@@ -122,7 +126,10 @@ export const TextInputSelectBox = ({
                     <View style={styles.wrapList}>
                         <ScrollView >
                             {currentList?.map(item => 
-                                <TouchableOpacity key={item?.value} onPress={()=>onchangeText(item)}>
+                                <TouchableOpacity key={item?.value} onPress={()=>{
+                                    onchangeText(item)
+                                    setIsOpentBox(false)
+                                }}>
                                     <Text style={styles.textListTag}>{item?.label}</Text>
                                 </TouchableOpacity>
                             )}

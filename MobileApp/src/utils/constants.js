@@ -55,3 +55,8 @@ export const typeAssignment = {
     2: "Quiz",
     3: "Code"
 }
+
+export const AssignmentItemAnswerType = {
+    1: "Text",
+    2: "Attach file",
+}
