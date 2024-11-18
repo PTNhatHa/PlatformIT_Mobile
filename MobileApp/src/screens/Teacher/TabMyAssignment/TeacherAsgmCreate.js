@@ -96,7 +96,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         </View>
                         <View style={styles.wrapContent}>
                             <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                <Text style={styles.title}>Question 1</Text>
+                                <Text style={styles.title}>Question 1*</Text>
                                 <TouchableOpacity>
                                 <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                 </TouchableOpacity>
@@ -110,7 +110,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <Text style={styles.label}>Reference material (maximum 1 file)</Text>
                                 {true ?
                                     <View style={styles.inputLabelGray}>
-                                        <Text style={{flex: 1}} numberOfLines={1}>namefile</Text>
+                                        <Text style={{flex: 1}} numberOfLines={1}>namefilemmmmmmmmmmmmmmmmmmmmmmm</Text>
                                         <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                             <MaterialIcons name="delete" size={18} color={COLORS.red} />
                                         </TouchableOpacity>

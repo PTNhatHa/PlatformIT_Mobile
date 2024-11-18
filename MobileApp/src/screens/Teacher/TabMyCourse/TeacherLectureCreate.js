@@ -26,7 +26,7 @@ const init = {
 }
 export const TeacherLectureCreate = ({route})=>{
     const {state, dispatch} = useUser()
-    const {idCourse, nameCourse, idSection, nameSection} = route?.params
+    const {idCourse, nameCourse, idSection, nameSection} = route?.params || {}
     const navigation = useNavigation()
     const [lectureName, setLectureName] = useState(null)
     const [intro, setIntro] = useState(null)
@@ -174,10 +174,10 @@ export const TeacherLectureCreate = ({route})=>{
                         <View style={styles.containerGray}>
                             <Text style={styles.label}>Material</Text>
                             {material ?
-                                <View style={styles.wrapFlex}>
-                                    <Text style={[styles.inputLabelGray]} numberOfLines={1}>{material.name}</Text>
+                                <View style={styles.inputLabelGray}>
+                                    <Text style={{flex: 1}} numberOfLines={1}>{material.name}</Text>
                                     <TouchableOpacity onPress={()=>setMaterial(null)} style={{margin: 4}}>
-                                        <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                        <MaterialIcons name="delete" size={18} color={COLORS.red} />
                                     </TouchableOpacity>
                                 </View>
                                 :
@@ -191,12 +191,12 @@ export const TeacherLectureCreate = ({route})=>{
                             <Text style={styles.label}>Supporting materials</Text>
                             {supportMaterial.length > 0 &&
                                 supportMaterial.map(item => 
-                                    <View style={[styles.wrapFlex, {marginBottom: 4}]} key={item.id}>
-                                        <Text style={[styles.inputLabelGray]} numberOfLines={1}>
+                                    <View style={[styles.inputLabelGray, {marginBottom: 4}]} key={item.id}>
+                                        <Text style={{flex: 1}} numberOfLines={1}>
                                             {item.file.name}
                                         </Text>
                                         <TouchableOpacity onPress={()=>onDeleteSupportMaterial(item.id)} style={{margin: 4}}>
-                                            <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                            <MaterialIcons name="delete" size={18} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
                             )}

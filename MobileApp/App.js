@@ -19,6 +19,7 @@ export default function App() {
           {/* <TeacherLectureDetail/> */}
           {/* <TeacherAllAssignment/> */}
           <TeacherAsgmCreate/>
+          {/* <TeacherLectureCreate/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
