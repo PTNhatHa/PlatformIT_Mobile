@@ -377,7 +377,14 @@ export const DetailCourse =({route})=>{
                     <>
                         {/* Course assignments */}
                         {role === 1 &&
-                            <ButtonIconLightGreen title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}/>
+                            <ButtonIconLightGreen 
+                                title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                                action={()=>navigation.navigate("Create Test", {
+                                    idCourse: idCourse, 
+                                    nameCourse: data.courseTitle,
+                                    isLimitedTime: data.registStartDate !== null ? 1 : 0
+                                })}
+                            />
                         }
                         <View style={[styles.wrapShow, {height: 390}]}>
                             {data.tests.length > 0 &&

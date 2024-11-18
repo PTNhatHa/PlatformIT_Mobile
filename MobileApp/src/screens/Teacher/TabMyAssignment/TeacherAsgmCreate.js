@@ -14,16 +14,16 @@ import { createManualAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 
 export const TeacherAsgmCreate = ({route})=>{
-    const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
+    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
     const {state} = useUser()
     const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false);
 
-    const [isExercise, setIsExercise] = useState(false)
+    const [isExercise, setIsExercise] = useState(idLecture ? true : false)
     const [titleAsgm, setTitleAsgm] = useState("")
-    const [selectCourse, setSelectCourse] = useState("")
+    const [selectCourse, setSelectCourse] = useState(nameCourse || "")
     const [selectSection, setSelectSection] = useState("")
     const [selectLecture, setSelectLecture] = useState("")
     const [type, setType] = useState("")
@@ -70,7 +70,9 @@ export const TeacherAsgmCreate = ({route})=>{
                 console.log("Error getAllCourse: ", error);
             }
         }
-        getAllCourse()
+        if(!idCourse){
+            getAllCourse()
+        }
     }, [])
 
     useEffect(()=>{
@@ -106,11 +108,13 @@ export const TeacherAsgmCreate = ({route})=>{
                 console.log("Error: ", error);
             }
         }
-        getAllSection()
-        getAllLecture()
-        setSelectSection(null)
-        setSelectLecture(null)
-        if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
+        if(!idCourse){
+            getAllSection()
+            getAllLecture()
+            setSelectSection(null)
+            setSelectLecture(null)
+            if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
+        }
     }, [selectCourse])
 
     useEffect(()=>{
@@ -187,7 +191,7 @@ export const TeacherAsgmCreate = ({route})=>{
     }
 
     const handleCreateAsgm = (isPublish)=>{
-        setError(null)
+        setError(!titleAsgm || !selectCourse || !type)
         if(!titleAsgm || !selectCourse || !type){
             setError("Fill all *")
             return
@@ -201,6 +205,15 @@ export const TeacherAsgmCreate = ({route})=>{
         if(startDate || dueDate){
             if(!startDate) setError("Please select a start date if you have chosen a due date.")
             if(!dueDate) setError("Please select a due date if you have chosen a start date.")
+        }
+        if(questions.length === 0){
+            Alert.alert("Warning", "You need to add at least 1 question.")
+            return
+        }
+        const check = questions.find(item => item.question === null)
+        if(check){
+            Alert.alert("Warning", "You need to fill all question.")
+            return
         }
 
         let textStatus = "create"
@@ -218,10 +231,7 @@ export const TeacherAsgmCreate = ({route})=>{
         } else {
             textStatus += " with " +  questions.length + " question?"
         }
-        if(questions.length === 0){
-            Alert.alert("Warning", "You need to add at least 1 question.")
-            return
-        }
+        
         Alert.alert(
             "Confirm Create Assignment",
             "Are you sure you want to " + textStatus,
@@ -266,12 +276,12 @@ export const TeacherAsgmCreate = ({route})=>{
             <ScrollView contentContainerStyle={styles.inner}>
                 {idCourse &&
                     <>
-                        <Text style={styles.title}>{"nameCourse"}</Text>
+                        <Text style={styles.title}>{nameCourse}</Text>
                         {idSection &&
                             <View style={styles.wrapFlex}>
-                                <Text style={[styles.title, {fontSize: 14}]}>{"nameSection"}</Text>
+                                <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
                                 <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
-                                <Text style={[styles.title, {fontSize: 14}]}>{"nameLecture"}</Text>
+                                <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
                             </View>
                         }
                     </>
@@ -340,7 +350,11 @@ export const TeacherAsgmCreate = ({route})=>{
                         <TextInputSelectBox 
                             label={"Type*"} placeholder={"Select a type"} 
                             value={type} onchangeText={setType} 
-                            listSelect={selectCourse ? selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit : []}
+                            listSelect={idCourse ? 
+                                isLimitedTime === 1 ? typeLimit : typeUnlimit 
+                                :
+                                selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit 
+                            }
                         />
                         <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
                         {selectCourse?.isLimitedTime === 1 &&
