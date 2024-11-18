@@ -99,7 +99,7 @@ export const TextInputSelectBox = ({
                         onFocus={()=>setIsOpentBox(true)}
                         onBlur={()=>setIsOpentBox(false)}
                     />
-                    <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)} style={{margin: 4}}>
+                    <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)}>
                         <AntDesign name="caretdown" size={14} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -190,8 +190,8 @@ const styles = StyleSheet.create({
     },
 
     containerGray: {
-        width: "100%",
         columnGap: 8,
+        flex: 1
     },
     inputLabelGray:{
         fontSize: 16,
@@ -213,7 +213,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        height: 38
     },
     inputText:{
         width: "90%"

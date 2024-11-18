@@ -1,9 +1,10 @@
 import { useState } from "react"
-import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native"
+import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
 import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
@@ -23,7 +24,7 @@ export const TeacherAsgmCreate = ({route})=>{
 
     return(
         <>
-            <View style={styles.container}>
+            <ScrollView style={styles.container}>
                 {idCourse &&
                     <>
                         <Text style={styles.title}>{"nameCourse"}</Text>
@@ -83,16 +84,52 @@ export const TeacherAsgmCreate = ({route})=>{
                         <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
                     </View>
                     :
-                    <ScrollView>
-                        <Switch
-                            trackColor={{ false: COLORS.stroke, true: COLORS.main30 }}
-                            thumbColor={isShuffling ? COLORS.secondMain : COLORS.lightGray}
-                            value={isShuffling}
-                            onValueChange={()=>setIsShuffling(!isShuffling)}
-                        />
-                    </ScrollView>
+                    <>
+                        <View style={[styles.wrapFlex, {alignSelf: "flex-end"}]}>
+                            <Text>Question Shuffling</Text>
+                            <Switch
+                                trackColor={{ false: COLORS.stroke, true: COLORS.main30 }}
+                                thumbColor={isShuffling ? COLORS.secondMain : COLORS.lightGray}
+                                value={isShuffling}
+                                onValueChange={()=>setIsShuffling(!isShuffling)}
+                            />
+                        </View>
+                        <View style={styles.wrapContent}>
+                            <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                <Text style={styles.title}>Question 1</Text>
+                                <TouchableOpacity>
+                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                                </TouchableOpacity>
+                            </View>
+                            <TextInput
+                                style={[styles.inputLabelGray]}
+                                placeholder="Question"
+                                multiline={true}
+                            />
+                            <View style={styles.containerGray}>
+                                <Text style={styles.label}>Reference material (maximum 1 file)</Text>
+                                {true ?
+                                    <View style={styles.inputLabelGray}>
+                                        <Text style={{flex: 1}} numberOfLines={1}>namefile</Text>
+                                        <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                            <MaterialIcons name="delete" size={18} color={COLORS.red} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    :
+                                    <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                        <MaterialIcons name="upload-file" size={20} color="black" />
+                                        <Text>Attach file</Text>
+                                    </TouchableOpacity>
+                                }
+                            </View> 
+                            <View style={[styles.wrapFlex, styles.topBorder]}>
+                                    <TextInputSelectBox label={"Type of answer"}/>
+                                    <TextInputLabelGray label={"Mark"} type={"numeric"}/>
+                            </View>  
+                        </View>
+                    </>
                 }
-            </View>
+            </ScrollView>
         </>
     )
 }
@@ -167,10 +204,50 @@ const styles = StyleSheet.create({
     wrapFlex:{
         flexDirection: "row",
         alignItems: "center",
-        gap: 4
+        gap: 8,
     },
     title: {
         fontSize: 18,
         fontWeight: "bold",
     },
+    label: {
+        fontSize: 10,
+        color: COLORS.stroke,
+        flex: 1
+    },
+    containerGray: {
+        width: "100%",
+        columnGap: 8,
+    },
+    inputLabelGray:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 8,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flex: 1,
+    },
+    btnText:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        marginVertical: 4,
+        gap: 4
+    },
+    topBorder:{
+        borderTopWidth: 1,
+        borderColor: COLORS.lightText,
+        marginTop: 8,
+        paddingTop: 4
+    }
 })
