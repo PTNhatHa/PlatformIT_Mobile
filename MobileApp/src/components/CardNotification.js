@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
     dataDate: {
         fontSize: 12,
         color: COLORS.main,
-        fontWeight: "bold",
-        alignSelf: "flex-end"
+        // fontWeight: "bold",
+        // alignSelf: "flex-end"
     },
     img:{
         width: 50,

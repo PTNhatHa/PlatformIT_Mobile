@@ -44,7 +44,7 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCourse})=>{
+export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, getCourse})=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
@@ -73,7 +73,7 @@ export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCo
             if(item.idSection === idSection){
                 return{
                     ...item,
-                    isShow: !item.isShow || false
+                    isShow: !item.isShow
                 }
             }
             return item
@@ -114,7 +114,7 @@ export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCo
                 }
                 {content?.length > 0 &&
                 content?.map((item)=>{
-                    let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow || true
+                    let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow
                     return(
                         <View key={item.idSection} style={styles.wrapSectionLecture}>
                             <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
@@ -132,7 +132,7 @@ export const ModalCourseContent = ({role=0, content, idCourse, nameCourse, getCo
                                 }
                             </TouchableOpacity>
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                                {item.lectures.map(lec => 
+                                {item.lectures?.map(lec => 
                                     <CardLecture data={lec} key={lec.idLecture} role={role}/>
                                 )}
                                 {role === 1 &&

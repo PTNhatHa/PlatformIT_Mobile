@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
@@ -28,6 +28,7 @@ import { TextInputLabel } from "../components/TextInputField"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { ModalCourseContent } from "../components/ModalCourseContent"
+import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
 
 const initCourse={
     idCourse: 1,
@@ -143,27 +144,27 @@ export const DetailCourse =({route})=>{
     const [loading, setLoading] = useState(true);
 
     const [isAddNoti, setIsAddNoti] = useState(false);
-    const [notiTitle, setNotiTitle] = useState("");
-    const [notiBody, setNotiBody] = useState("");
-
-    const [isAddSection, setIsAddSection] = useState(false);
-    const [newSection, setNewSection] = useState("");
-
-    const [showSections, setShowSections] = useState([])
+    const [notiContent, setNotiContent] = useState("");
+    const [listNoti, setListNoti] = useState([]);
 
     const getCourse = async()=>{
         try {
             const response = await getCourseDetail(idCourse)
             if(response){
                 setData(response)
-                if(response.sectionsWithCourses.length > 0){
-                    setShowSections(response.sectionsWithCourses.map(item => (
-                        {
-                            idSection: item.idSection,
-                            isShow: true
-                        }
-                    )))
-                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    const getNoti = async()=>{
+        try {
+            const response = await getNotificationBoardOfCourse(idCourse)
+            if(response){
+                setListNoti(response)
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -174,9 +175,28 @@ export const DetailCourse =({route})=>{
 
     useEffect(()=>{
         getCourse()
+        getNoti()
     }, [idCourse])
 
-    
+    const addNoti = async()=>{
+        if(!notiContent){
+            Alert.alert("Warning", "Please write something before save.")
+            return
+        }
+        try {
+            const response = await addBoardNotificationForCourse(idCourse, notiContent, state.idUser)
+            if(response){
+                Alert.alert("Add notification", response)
+                console.log(response);
+                setIsAddNoti(false)
+                setNotiContent("")
+                getNoti()
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
@@ -378,9 +398,10 @@ export const DetailCourse =({route})=>{
                             />
                         }
                         <View style={styles.wrapShow}>
-                            {/* {data.noti?.map(item =>  */}
-                                <CardNoti role={role}/>
-                            {/* )} */}
+                            {listNoti.length > 0 &&
+                                listNoti?.map(item => 
+                                    <CardNoti role={role} data={item} key={item.idNotification}/>
+                            )}
                         </View>
                     </>
                 : selectBtn === 3 ?
@@ -404,15 +425,13 @@ export const DetailCourse =({route})=>{
                 <View style={styles.addNoti}>
                     <TouchableOpacity style={styles.close} onPress={()=>{
                         setIsAddNoti(false)
-                        setNotiTitle("")
-                        setNotiBody("")
+                        setNotiContent("")
                     }}>
                         <AntDesign name="close" size={30} color={COLORS.secondMain} />
                     </TouchableOpacity>
                     <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
-                    <TextInputLabel label={"Title"} value={notiTitle} placeholder={"Title"} onchangeText={setNotiTitle}/>
-                    <TextInputLabel label={"Content"} value={notiBody} placeholder={"Content"} onchangeText={setNotiBody}/>
-                    <ButtonGreen title={"Save"}/>
+                    <TextInputLabel label={"Content"} value={notiContent} placeholder={"Content"} onchangeText={setNotiContent}/>
+                    <ButtonGreen title={"Save"} action={addNoti}/>
                 </View>
             </View>
         </Modal>
@@ -482,7 +501,8 @@ const styles = StyleSheet.create({
     },
     wrapShow: {
         overflow: "hidden",
-        height: "auto"
+        height: "auto",
+        gap: 4
     },
     showAll:{
         alignItems: "center"

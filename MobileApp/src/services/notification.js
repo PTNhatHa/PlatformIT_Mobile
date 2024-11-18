@@ -38,3 +38,27 @@ export const readAllNotification = async (idUser)=>{
         console.log("Error readAllNotification: ", error);
     })
 }
+
+export const getNotificationBoardOfCourse = async (idCourse)=>{
+    const url = baseUrl + "/GetNotificationBoardOfCourse?idCourse=" + idCourse
+    return await axios.get(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getNotificationBoardOfCourse: ", error);
+    })
+}
+
+export const addBoardNotificationForCourse = async (idCourse, content, idCreatedBy)=>{
+    const url = baseUrl + "/AddBoardNotificationForCourse?idCourse=" + idCourse + "&content=" + content + "&idCreatedBy=" + idCreatedBy
+    return await axios.post(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error addBoardNotificationForCourse: ", error);
+    })
+}
