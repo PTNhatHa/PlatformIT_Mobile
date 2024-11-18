@@ -11,10 +11,12 @@ import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
 import { createManualAssignment } from "../../../services/assignment"
+import { useNavigation } from "@react-navigation/native"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
     const {state} = useUser()
+    const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false);
@@ -54,7 +56,7 @@ export const TeacherAsgmCreate = ({route})=>{
     useEffect(()=>{
         const getAllCourse = async()=>{
             try {
-                const response = await getAllActiveCourseOfTeacher(6)
+                const response = await getAllActiveCourseOfTeacher(state.idUser)
                 // console.log("API response:", response);
                 setListCourses([...response?.map(item=>{
                     return{
@@ -247,10 +249,11 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await createManualAssignment(
                 titleAsgm, selectCourse.value, isExercise ? 1 : 0, selectLecture?.value || "", startDate, dueDate,
-                duration, type.value, isPublish, isShuffling ? 1 : 0, questions, 6
+                duration, type.value, isPublish, isShuffling ? 1 : 0, questions, state.idUser
             )
             if(response){
                 Alert.alert("Done", response)
+                navigation.goBack()
             }
         } catch (error) {
             console.log("Error: ", error);

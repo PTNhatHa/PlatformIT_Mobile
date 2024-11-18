@@ -6,6 +6,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { COLORS, commonStyles } from "../../../utils/constants";
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
+import { useNavigation } from "@react-navigation/native";
 
 const ViewAllRender = ({data = [], type})=>{
     const [indexPage, setIndexPage] = useState(1)
@@ -106,6 +107,7 @@ const ViewAllRender = ({data = [], type})=>{
 }
 
 export const TeacherAllAssignment = ()=>{
+    const navigation = useNavigation()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false);
     const [selectBtn, setSelectBtn] = useState(0)
@@ -135,7 +137,7 @@ export const TeacherAllAssignment = ()=>{
                             <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.btnCirlce}>
+                    <TouchableOpacity style={styles.btnCirlce} onPress={()=> navigation.navigate("Create Assignment")}>
                         <Entypo name="plus" size={24} color="white" />
                     </TouchableOpacity>
                 </View>

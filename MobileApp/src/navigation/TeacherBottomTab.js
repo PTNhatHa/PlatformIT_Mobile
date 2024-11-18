@@ -23,6 +23,8 @@ import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
 import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLectureDetail";
 import { TeacherLectureCreate } from "../screens/Teacher/TabMyCourse/TeacherLectureCreate";
+import { TeacherAllAssignment } from "../screens/Teacher/TabMyAssignment/TeacherAllAssignment";
+import { TeacherAsgmCreate } from "../screens/Teacher/TabMyAssignment/TeacherAsgmCreate";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -125,6 +127,26 @@ const StackMyCourseScreen = ()=>{
     )
 }
 
+const StackAssigmentScreen = ()=>{
+    const StackAssigmentScreen = createNativeStackNavigator()
+    return(
+        <StackAssigmentScreen.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackAssigmentScreen.Screen
+                name="My Assignment"
+                component={TeacherAllAssignment}
+            />
+            <StackAssigmentScreen.Screen
+                name="Create Assignment"
+                component={TeacherAsgmCreate}
+            />
+        </StackAssigmentScreen.Navigator>
+    )
+}
+
 const StackAccountScreen = ()=>{
     const StackAccount = createNativeStackNavigator()
     return(
@@ -214,7 +236,7 @@ export const TeacherBottomTab = ()=>{
                     if(route.name === "My Course"){
                         return <AntDesign name="book" size={24} color={color} />
                     }
-                    if(route.name === "My Assignment"){
+                    if(route.name === "My Asgm"){
                         return <Ionicons name="documents-outline" size={24} color={color} />
                     }
                     if(route.name === "Noti"){
@@ -234,7 +256,7 @@ export const TeacherBottomTab = ()=>{
         >
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }} />
             <Tab.Screen name="My Course" component={StackMyCourseScreen} />
-            <Tab.Screen name="My Assignment" component={Home} />
+            <Tab.Screen name="My Asgm" component={StackAssigmentScreen} />
             <Tab.Screen name="Noti" 
                 options={unReadNoti > 0 && { 
                     tabBarBadge: unReadNoti,

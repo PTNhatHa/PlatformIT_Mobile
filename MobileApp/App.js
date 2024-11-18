@@ -15,10 +15,10 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <TeacherLectureDetail/> */}
           {/* <TeacherAllAssignment/> */}
-          <TeacherAsgmCreate/>
+          {/* <TeacherAsgmCreate/> */}
           {/* <TeacherLectureCreate/> */}
         </UserProvider>
       </NavigationContainer>
