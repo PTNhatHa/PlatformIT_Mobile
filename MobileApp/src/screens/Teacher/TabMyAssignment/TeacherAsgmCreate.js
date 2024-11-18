@@ -1,16 +1,19 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAllActiveCourseOfTeacher } from "../../../services/course"
+import { useUser } from "../../../contexts/UserContext"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
+    const {state} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
-    const [isExercise, setIsExercise] = useState(false)
 
+    const [isExercise, setIsExercise] = useState(false)
     const [titleAsgm, setTitleAsgm] = useState(null)
     const [selectCourse, setSelectCourse] = useState(null)
     const [selectSection, setSelectSection] = useState(null)
@@ -21,6 +24,45 @@ export const TeacherAsgmCreate = ({route})=>{
     const [dueDate, setDueDate] = useState(null)
 
     const [isShuffling, setIsShuffling] = useState(false)
+    const [questions, setQuestions] = useState([
+        {
+            question: "",
+            material: {},
+            typeOfAnswer: 1,
+            mark: 2
+        }
+    ])
+
+    const [listCourses, setListCourses] = useState([])
+    const typeUnlimit = [
+        { label: "Quiz", value: 2 },
+        { label: "Code", value: 3 },
+    ]
+    const typeLimit = [
+        { label: "Manual", value: 1 },
+        { label: "Quiz", value: 2 },
+        { label: "Code", value: 3 },
+    ]
+
+    useEffect(()=>{
+        const getAllCourse = async()=>{
+            try {
+                const response = await getAllActiveCourseOfTeacher(6)
+                setListCourses([...response?.map(item=>{
+                    return{
+                        value: item.idCourse,
+                        label: item.title,
+                        isLimitedTime: item.isLimitedTime,
+                        endDate: item.endDate
+                    }
+                })])
+            } catch (error) {
+                console.log("Error getAllCourse: ", error);
+            }
+        }
+        getAllCourse()
+        
+    }, [])
 
     return(
         <>
@@ -59,7 +101,13 @@ export const TeacherAsgmCreate = ({route})=>{
                         <TextInputLabelGray label={"Title*"} placeholder={"Title assignment"} value={titleAsgm} onchangeText={setTitleAsgm}/>
                         {!idCourse &&
                             <>
-                                <TextInputSelectBox label={"Add to course*"} placeholder={"Select a course"} value={selectCourse} onchangeText={setSelectCourse}/>
+                                <TextInputSelectBox 
+                                    label={"Add to course*"} 
+                                    placeholder={"Select a course"} 
+                                    value={selectCourse} 
+                                    onchangeText={setSelectCourse}
+                                    listSelect={listCourses}
+                                />
                                 <CheckBox
                                     isChecked={isExercise}
                                     onClick={()=>{

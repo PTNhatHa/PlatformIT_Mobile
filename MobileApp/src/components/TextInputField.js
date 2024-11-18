@@ -84,7 +84,7 @@ export const TextInputSelectBox = ({
 }) => {
     const [isOpenBox, setIsOpentBox] = useState(false)
     const handleOnchangeText = (v)=>{
-        onchangeText(v)
+        // onchangeText(v)
     }
     return(
         <>
@@ -93,7 +93,7 @@ export const TextInputSelectBox = ({
                 <View style={[styles.inputLabelBox]}>
                     <TextInput 
                         style={styles.inputText}
-                        value={value}
+                        value={value?.label}
                         onChangeText={(v)=>handleOnchangeText(v)}
                         placeholder={placeholder}
                         onFocus={()=>setIsOpentBox(true)}
@@ -105,9 +105,9 @@ export const TextInputSelectBox = ({
                 </View>
                 {isOpenBox &&
                     <ScrollView style={styles.wrapList}>
-                        {listSelect?.map((item, index) => 
-                            <TouchableOpacity key={index}>
-                                <Text style={styles.textListTag}>{item.label}</Text>
+                        {listSelect?.map(item => 
+                            <TouchableOpacity key={item?.value} onPress={()=>onchangeText(item)}>
+                                <Text style={styles.textListTag}>{item?.label}</Text>
                             </TouchableOpacity>
                         )}
                     </ScrollView>
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
         width: "90%"
     },
     wrapList:{
-        height: 200,
+        maxHeight: 200,
         position: "absolute",
         backgroundColor: "white",
         borderWidth: 1,

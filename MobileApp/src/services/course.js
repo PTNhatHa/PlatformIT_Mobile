@@ -45,3 +45,14 @@ export const addSection = async (sectionName, idCourse, idCreatedBy)=>{
         console.log("Error addSection: ", error);
     })
 }
+
+export const getAllActiveCourseOfTeacher = async (idTeacher)=>{
+    return await axios.get(baseUrl + "/GetAllActiveCourseOfTeacher?idTeacher=" + idTeacher)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getCourseDetail: ", error);
+    })
+}
