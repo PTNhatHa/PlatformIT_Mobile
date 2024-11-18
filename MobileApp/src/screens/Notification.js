@@ -47,17 +47,31 @@ export const NotificationScreen = (props)=>{
         if(response){
             props.getNoti()
         }
-        const goal = noti.find(item => item.idNotification === idNotification).notificationType
-        if(goal === 1){
+        const goal = noti.find(item => item.idNotification === idNotification)
+        if(goal.notificationType === 1){
             // QUALIFICATION
             navigation.navigate("AccountScreen", {
                 screen: "Your infomation",
             })
         }
-        if(goal === 2){
+        if(goal.notificationType === 2){
             // ASSIGNEDTEACHER
             navigation.navigate("My Course", {
-                screen: "MyCourse",
+                screen: "Detail My Course",
+                params: {
+                    idCourse: goal.idCourse,
+                    role: 1
+                }
+            })
+        }
+        if(goal.notificationType === 3){
+            // BOARD
+            navigation.navigate("My Course", {
+                screen: "Detail My Course",
+                params: {
+                    idCourse: goal.idCourse,
+                    role: 2
+                }
             })
         }
     }
