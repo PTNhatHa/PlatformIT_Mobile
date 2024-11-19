@@ -36,7 +36,7 @@ const StackHomeScreen = ()=>{
         >
             <StackHome.Screen
                 name="Home"
-                component={TeacherHome}
+                component={Home}
             />
             <StackHome.Screen
                 name="View All"
@@ -100,6 +100,10 @@ const StackMyCourseScreen = ()=>{
             />
             <StackMyCourse.Screen
                 name="Create Test"
+                component={TeacherAsgmCreate}
+            />
+            <StackMyCourse.Screen
+                name="Create Exercise"
                 component={TeacherAsgmCreate}
             />
 

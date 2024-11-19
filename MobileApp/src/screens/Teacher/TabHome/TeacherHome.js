@@ -7,41 +7,6 @@ import { getAllCenterCards } from "../../../services/center"
 import { getAllTeacherCards } from "../../../services/user"
 import { getAllCourseCards } from "../../../services/course"
 
-const initAssignment = [
-    {
-        id: 1,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: true,
-        submitted: 0.8
-    },
-    {
-        id: 2,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: 45,
-        type: "Test",
-        isPublish: false,
-        submitted: 0
-    },
-    {
-        id: 3,
-        title: "Title",
-        img: "",
-        nameCourse: "OOP",
-        due: new Date(),
-        duration: null,
-        type: "Exercise",
-        isPublish: true,
-        submitted: 0.9
-    },
-]
 export const TeacherHome = ({navigation})=>{
     const [loading, setLoading] = useState(true);
     const [dataCourse, setDataCourse] = useState([])
@@ -79,7 +44,7 @@ export const TeacherHome = ({navigation})=>{
 
     return(
         <ScrollView style={styles.container}>
-            <View style={styles.wrapper}>
+            {/* <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Ongoing Assignments</Text>
                     <TouchableOpacity style={{alignItems: "flex-end", flex: 1}}>
@@ -94,7 +59,7 @@ export const TeacherHome = ({navigation})=>{
                     showsHorizontalScrollIndicator={false}
                     style={styles.list}
                 />
-            </View>
+            </View> */}
             <View style={styles.wrapper}>
                 <View style={styles.top}>
                     <Text style={commonStyles.title}>Top Courses</Text>

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { getCourseDetail } from "../services/course";
+import { getCourseDetail, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -30,114 +30,11 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { ModalCourseContent } from "../components/ModalCourseContent"
 import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
 
-const initCourse={
-    idCourse: 1,
-    img: "",
-    title: "Title",
-    listTags: [
-        { id: 1, value: "Web developer"},
-        { id: 2, value: "Backend"},
-        { id: 3, value: "Frontend"},
-    ],
-    startCourse: new Date(),
-    endCourse: new Date(),
-    startRegist: new Date(),
-    endRegist: new Date(),
-    isRegist: true,
-    cost: 120,
-    costSale: 100,
-    nameCenter: "Center ABC",
-    star: 4.5,
-    students: 500,
-    intro: "Intro about this course",
-
-    content: [
-        {
-            section: 1,
-            lecture: [
-                {
-                    title: "Title",
-                    introduction: "introduction",
-                    exercise: 0
-                },
-                {
-                    title: "Title",
-                    introduction: "introduction",
-                    exercise: 3
-                },
-            ]
-        },
-        {
-            section: 2,
-            lecture: [
-                {
-                    title: "Title2",
-                    introduction: "introduction2",
-                    exercise: 1
-                },
-            ]
-        },
-    ],
-    test:[
-        {
-            id: 1,
-            title: "Title",
-            introduction: "introduction",
-            due: new Date(),
-            duration: 45,
-        },
-        {
-            id: 2,
-            title: "Title2",
-            introduction: "Introduction2222222",
-            due: null,
-            duration: 45,
-        },
-        {
-            id: 3,
-            title: "Title3",
-            introduction: "Introduction3",
-        },
-        {
-            id: 4,
-            title: "Title4",
-            introduction: "Intro",
-            duration: 45,
-        },
-    ],
-    reviews: [
-        {
-            id: 1,
-            star: 4,
-            title: "Title",
-            reviewBoby: "ReviewBoby",
-            Reviewer: {
-                img: "",
-                name: "Name reviewer"
-            },
-            date: new Date()
-        },
-        {
-            id: 2,
-            star: 2,
-            title: "Title2",
-            reviewBoby: "ReviewBoby2",
-            Reviewer: {
-                img: "",
-                name: "Name reviewer2"
-            },
-            date: new Date()
-        },
-    ],
-    teacher: {
-
-    },
-}
-
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
     const idCourse = route.params?.idCourse || 0
-    const role = route.params?.role || 0 //0: guest, 1: teacher, 2: student
+    const initRole = route.params?.role || 0 //0: guest, 1: teacher, 2: student
+    const [role, setRole] = useState(initRole)
     const [data, setData] = useState([])
     const {state, dispatch} = useUser()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -173,9 +70,20 @@ export const DetailCourse =({route})=>{
         }
     }
 
+    const checkStudentIsEnrollCourse = async()=>{
+        try {
+            const response = await isEnrolledCourse(state.idUser, idCourse)
+            return response
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
     useEffect(()=>{
         getCourse()
         getNoti()
+        if(state.idRole === 4 && data.idTeacher === state.idUser) setRole(1)
+        if(state.idRole === 3 && checkStudentIsEnrollCourse()) setRole(2)
     }, [idCourse])
 
     const addNoti = async()=>{
@@ -371,6 +279,7 @@ export const DetailCourse =({route})=>{
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
                             getCourse={getCourse}
+                            isLimitedTime={data.registStartDate !== null ? 1 : 0}
                         />
                     </>
                 : selectBtn === 1 ?
@@ -388,8 +297,8 @@ export const DetailCourse =({route})=>{
                         }
                         <View style={[styles.wrapShow, {height: 390}]}>
                             {data.tests.length > 0 &&
-                            data.tests?.map(test => 
-                                <CardAssignment data={test} key={test.idAssignment} role={role}/>
+                                data.tests.map(test => 
+                                    <CardAssignment data={test} key={test.idAssignment} role={role}/>
                             )}
                         </View>
                     </>

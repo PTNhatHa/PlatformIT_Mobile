@@ -133,7 +133,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                             </TouchableOpacity>
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                                 {item.lectures?.map(lec => 
-                                    <CardLecture data={lec} key={lec.idLecture} role={role}/>
+                                    <CardLecture data={lec} key={lec.idLecture} role={role} idCourse={idCourse}/>
                                 )}
                                 {role === 1 &&
                                     <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>

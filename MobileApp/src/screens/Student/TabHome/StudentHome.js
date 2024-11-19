@@ -6,55 +6,6 @@ import { getAllCenterCards } from "../../../services/center"
 import { getAllTeacherCards } from "../../../services/user"
 import { getAllCourseCards } from "../../../services/course"
 
-const initCourse=[
-    {
-        id: 1,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 1, value: "Web developer"},
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 2,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 2, value: "Backend"},
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        startRegist: new Date(),
-        endRegist: new Date(),
-        isRegist: false,
-        cost: 120,
-        costSale: 100
-    },
-    {
-        id: 3,
-        img: "",
-        title: "Title",
-        listTags: [
-            { id: 3, value: "Frontend"},
-        ],
-        startCourse: new Date(),
-        endCourse: new Date(),
-        isRegist: true,
-        cost: 120,
-        costSale: 100
-    },
-]
-
 export const StudentHome = ({navigation})=>{
     const [loading, setLoading] = useState(true);
     const [dataCourse, setDataCourse] = useState([])

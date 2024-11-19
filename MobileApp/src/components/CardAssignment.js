@@ -8,14 +8,15 @@ import Foundation from '@expo/vector-icons/Foundation';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 const initAssignment =     {
-    "idAssignment": 0,
-    "assignmentTitle": "Sample",
-    "assignmentIntroduction": "Sample",
-    "dueDate": "2024-11-06T18:05:42.5588662+07:00",
+    "idAssignment": 12,
+    "assignmentTitle": "Asgm react",
+    "assignmentIntroduction": null,
+    "dueDate": null,
     "isSubmitted": null,
-    duration: 12,
-    maxScore: 40,
-    assignmentType: 1
+    "assignmentType": 1,
+    "assignmentTypeDesc": "MANUAL",
+    "duration": null,
+    "maxScore": 0
   }
 export const CardAssignment = ({data = initAssignment, role = 0, isNoBoder = false})=>{
     const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)

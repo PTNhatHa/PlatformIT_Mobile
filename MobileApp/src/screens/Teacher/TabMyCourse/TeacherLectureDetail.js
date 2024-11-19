@@ -14,18 +14,23 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { ButtonIconLightGreen } from "../../../components/Button";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
+import { useNavigation } from "@react-navigation/native";
 
 const init = {
+    idLecture: 1,
     idCourse: 1, 
     nameCourse: "ABC", 
     idSection: 1, 
     nameSection: "Section 1"
 }
-export const TeacherLectureDetail = ()=>{
+// Chỉ truyền idLecture vào thôi còn mấy kia getDetail trả thêm về
+export const TeacherLectureDetail = ({route})=>{
+    const {idLecture} = route?.params || init
+
+    const navigation = useNavigation()
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [isOpenMenu, setIsOpentMenu] = useState(false)
 
-    const {idCourse, nameCourse, idSection, nameSection} = init
     const [lectureName, setLectureName] = useState()
     const [intro, setIntro] = useState()
     const [material, setMaterial] = useState(null)
@@ -131,8 +136,8 @@ export const TeacherLectureDetail = ()=>{
                     {/* Information */}
                     {index === 1 &&
                         <View style={styles.wrapper}>
-                            <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
-                            <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                       
+                            <TextInputLabelGray label={"Add to course"} value={"nameCourse"} editable={false}/>                            
+                            <TextInputLabelGray label={"Add to section"} value={"nameSection"} editable={false}/>                       
                             <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
                             <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro}/>                       
                             <View style={styles.wrapBtn}>
@@ -240,7 +245,14 @@ export const TeacherLectureDetail = ()=>{
                         <View style={styles.wrapper}>
                             <CardAssignment isNoBoder={true}/>
                             <CardAssignment isNoBoder={true}/>
-                            <ButtonIconLightGreen title={"Add new exercise"} icon={<Entypo name="plus" size={18} color={COLORS.main}/>}/>
+                            <ButtonIconLightGreen 
+                                title={"Add new exercise"} icon={<Entypo name="plus" size={18} color={COLORS.main}/>}
+                                action={()=>navigation.navigate("Create Exercise", {
+                                    idCourse: idCourse, 
+                                    nameCourse: data.courseTitle,
+                                    isLimitedTime: data.registStartDate !== null ? 1 : 0
+                                })}
+                            />
                         </View>
                     }
 

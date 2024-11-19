@@ -9,17 +9,16 @@ import { TeacherLectureDetail } from './src/screens/Teacher/TabMyCourse/TeacherL
 import { TeacherLectureCreate } from './src/screens/Teacher/TabMyCourse/TeacherLectureCreate';
 import { TeacherAllAssignment } from './src/screens/Teacher/TabMyAssignment/TeacherAllAssignment';
 import { TeacherAsgmCreate } from './src/screens/Teacher/TabMyAssignment/TeacherAsgmCreate';
+import SigninGg from './src/components/SigninGg';
+import { DetailTeacher } from './src/screens/DetailTeacher';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <TeacherLectureDetail/> */}
-          {/* <TeacherAllAssignment/> */}
-          {/* <TeacherAsgmCreate/> */}
-          {/* <TeacherLectureCreate/> */}
+          {/* <SigninSignup/> */}
+          {/* <DetailTeacher/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

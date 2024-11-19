@@ -13,10 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.plait.MobileApp"
     },
     "android": {
-      "package": "com.plait.mobileapp",
+      "package": "com.plait.MobileApp",
       "config": {
         "googleSignIn": {
           "certificateHash": "42:80:33:E7:8C:2D:31:75:0C:98:03:C8:2B:0F:BF:8A:F3:A5:E2:18"  
@@ -35,11 +36,15 @@
       "eas": {
         "projectId": "b6dd9eef-5f1b-45ba-83cf-bda1cdd0143f",
         "androidClientId": "605777517558-m6s2vvj805r7qfcgju63bhlpqi3vid6g.apps.googleusercontent.com"
-      }
+      },
+      "authUrl": "https://auth.expo.io/@phanha182/MobileApp"
     },
     "plugins": [
       [
-        "@react-native-google-signin/google-signin"
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.605777517558-hn1157pd4gimiq630fhc83rbmh97sgm4"
+        }
       ]
     ]
   }

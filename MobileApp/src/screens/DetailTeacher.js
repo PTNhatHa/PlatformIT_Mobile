@@ -11,10 +11,11 @@ import { useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ButtonIconLightGreen } from "../components/Button";
-import { getDetailTeacher } from "../services/user";
+import { getDetailTeacher, isChatAvailable } from "../services/user";
 import { openLink } from "../utils/utils";
 import { useNavigation } from "@react-navigation/native";
 import { CardVirticalCourse } from "../components/CardVertical";
+import { useUser } from "../contexts/UserContext";
 
 const initTeacher={
     "name": "Phan Trần Nhật Hạ",
@@ -42,9 +43,11 @@ const initTeacher={
     "courses": []
   }
 export const DetailTeacher =({route})=>{
-    const idTeacher = route.params?.idTeacher || false
-    const [isLoading, setIsLoading] = useState(true)
+    const {state} = useUser()
+    const idTeacher = route?.params?.idTeacher || false
+    const [isLoading, setIsLoading] = useState(false)
     const [data, setData] = useState([])
+    const [isChat, setIsChat] = useState(false)
     const navigation = useNavigation()
     const getTeacher = async()=>{
         try {
@@ -58,9 +61,20 @@ export const DetailTeacher =({route})=>{
             setIsLoading(false)
         }
     }
+    const checkIsChat = async()=>{
+        try {
+            const response = await isChatAvailable(state.idUser, idTeacher)
+            return response
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
 
     useEffect(()=>{
-        getTeacher()
+        // getTeacher()
+        if(state.idRole === 3 && checkIsChat() === true){
+            setIsChat(true)
+        }
     }, [idTeacher])
 
     if (isLoading) {
@@ -103,9 +117,18 @@ export const DetailTeacher =({route})=>{
                         </View>
                     </LinearGradient>
                 </View>
+                {console.log(isChat)}
+                {isChat &&
+                    <TouchableOpacity style={styles.wrapperPro} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
+                        <View style={[styles.contentCard, {justifyContent: "center", alignItems: "center"}]}>
+                            <Text style={styles.titleContentCard}>Contact</Text>
+                            <Ionicons name="chatbubble-outline" size={24} color="white" />
+                        </View>
+                    </TouchableOpacity>
+                }
 
                 <View style={styles.wrapper}>
-                {/* Center */}
+                    {/* Center */}
                     <TouchableOpacity onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
                         <LinearGradient 
                             colors={['#4D768A', '#75A2A2']} 
@@ -245,6 +268,7 @@ const styles = StyleSheet.create({
 
     wrapInfo: {
         ...commonStyles.shadow,
+        marginBottom: 16
     },
     infoImg:{
         width: '100%',
@@ -299,7 +323,7 @@ const styles = StyleSheet.create({
     },
     wrapperPro:{
         padding: 12,
-        margin: 16,
+        marginHorizontal: 16,
         rowGap: 10,
         backgroundColor: "#4D768A",
         borderRadius: 8

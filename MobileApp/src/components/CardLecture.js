@@ -12,7 +12,10 @@ const initLecture = {
 export const CardLecture = ({data = initLecture, role=0})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} key={data.idLecture} onPress={()=> role !==0 ? navigation.navigate("Detail Lecture") : {}}>
+        <TouchableOpacity 
+            style={styles.container} key={data.idLecture} 
+            onPress={()=> role !==0 ? navigation.navigate("Detail Lecture", {idLecture: data.idLecture}) : {}}
+        >
             <Text style={styles.title}>{data.lectureTitle}</Text>
             {data.lectureIntroduction !== "null" && 
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>

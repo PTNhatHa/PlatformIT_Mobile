@@ -67,3 +67,14 @@ export const getAllActiveSectionOfCourse = async (idCourse)=>{
         console.log("Error getAllActiveSectionOfCourse: ", error);
     })
 }
+
+export const isEnrolledCourse = async (idStudent, idCourse)=>{
+    return await axios.get(baseUrl + "IsEnrolledCourse?idStudent=" + idStudent + "&idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error isEnrolledCourse: ", error);
+    })
+}

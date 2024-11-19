@@ -33,7 +33,7 @@ const StackHomeScreen = ()=>{
         >
             <StackHome.Screen
                 name="Home"
-                component={StudentHome}
+                component={Home}
             />
             <StackHome.Screen
                 name="View All"
