@@ -8,7 +8,6 @@ import { StudentPI } from "../screens/Student/TabAccount/StudentPI";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StudentAccount } from "../screens/Student/TabAccount/StudentAccount";
 import { ChangePassword } from "../components/ChangePassword";
-import { StudentHome } from "../screens/Student/TabHome/StudentHome";
 import { ScreenViewAll, StudentViewAll, ViewAll } from "../screens/ViewAll";
 import { DetailCourse } from "../screens/DetailCourse";
 import { DetailCenter } from "../screens/DetailCenter";
