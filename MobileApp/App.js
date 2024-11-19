@@ -11,6 +11,7 @@ import { TeacherAllAssignment } from './src/screens/Teacher/TabMyAssignment/Teac
 import { TeacherAsgmCreate } from './src/screens/Teacher/TabMyAssignment/TeacherAsgmCreate';
 import SigninGg from './src/components/SigninGg';
 import { DetailTeacher } from './src/screens/DetailTeacher';
+import { CardAssignment } from './src/components/CardAssignment';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <UserProvider>
           {/* <SigninSignup/> */}
           {/* <DetailTeacher/> */}
+          <CardAssignment/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

@@ -11,15 +11,17 @@ const initAssignment =     {
     "idAssignment": 12,
     "assignmentTitle": "Asgm react",
     "assignmentIntroduction": null,
-    "dueDate": null,
-    "isSubmitted": null,
+    "dueDate": new Date(),
+    "isSubmitted": 1,
     "assignmentType": 1,
     "assignmentTypeDesc": "MANUAL",
-    "duration": null,
-    "maxScore": 0
+    "duration": 20,
+    "maxScore": 10,
+    "numberQuestion": 5,
+    "isPublish": 1,
+    "isExercise": 1
   }
-export const CardAssignment = ({data = initAssignment, role = 0, isNoBoder = false})=>{
-    const [circleColor, setCircleColor] = useState(!data.isPublish? COLORS.lightText: COLORS.yellow)
+export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false})=>{
     return(
         <TouchableOpacity style={isNoBoder ? styles.containerNoBoder : styles.container} key={data.idAssignment}>
             <View style={styles.wrapContent}>
@@ -35,22 +37,32 @@ export const CardAssignment = ({data = initAssignment, role = 0, isNoBoder = fal
                             <Text style={styles.dataText}>{data.duration} min</Text>
                         </View>
                     }
-                    {data.maxScore &&
+                    {data.numberQuestion &&
                         <View style={styles.content}>
-                            <FontAwesome6 name="square-check" size={12} color={COLORS.stroke} />
-                            <Text style={styles.dataText}>{data.maxScore} score</Text>
+                            <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>{data.numberQuestion} {data.numberQuestion > 1 ? "questions" : "question"}</Text>
+                        </View>
+                    }
+                    {role === 1 && data.dueDate &&
+                        <View style={styles.content}>
+                            <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
                         </View>
                     }
                 </View>
-                {data.dueDate &&
-                    <View style={[styles.content]}>
-                        {/* {role === 1 &&
-                            <>
-                                <Image source={""} style={[styles.circle, {backgroundColor: circleColor}]}/>
-                                <TagNoColor label={"Publish"}/>
-                            </>
-                        } */}
+                {role === 2 && data.dueDate &&
+                    <View style={[styles.content, {justifyContent: "flex-end"}]}>
                         <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
+                    </View>
+                }
+                {role === 1 && 
+                    <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                        {data.isPublish &&
+                            <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
+                        }
+                        {data.isExercise &&
+                            <TagNoColor label={data.isExercise ? "Exercise" : "Test"}/>
+                        }
                     </View>
                 }
             </View>
