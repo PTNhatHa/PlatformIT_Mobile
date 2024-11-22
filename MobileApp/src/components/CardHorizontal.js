@@ -45,7 +45,7 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
     }, [data.tags])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} key={data.idCourse}>
-            <Image source={data.pathImg || DefaultImg} style={styles.img}/>
+            <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.courseTitle}</Text>
                 {data.tags.length > 0 && 
@@ -133,11 +133,11 @@ export const CardHorizontalCenter = ({data = initCenter})=>{
     }, [data.listTagCourses])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})} key={data.idCenter}>
-            <Image source={data.img || DefaultImg} style={styles.img}/>
+            <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultImg} style={styles.img}/>
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
                 {data.description &&
-                    <Text style={styles.dataText}>Description: {data.description}</Text>
+                    <Text style={styles.dataText}>{data.description}</Text>
                 }
                 {data.listTagCourses?.length > 0 && 
                     <View style={styles.tags}>
@@ -325,7 +325,8 @@ const styles = StyleSheet.create({
     },
     dataText: {
         fontSize: 10,
-        color: COLORS.stroke
+        color: COLORS.stroke,
+        textAlign: "justify"
     },
     wrapCost:{
         flexDirection: "row",

@@ -18,9 +18,9 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <DetailTeacher/> */}
-          <CardAssignment/>
+          {/* <CardAssignment/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

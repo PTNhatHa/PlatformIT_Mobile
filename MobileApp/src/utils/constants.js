@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const currentIP = "192.168.2.3"
+export const currentIP = "192.168.1.213"
 
 export const COLORS = {
     main: '#397979',
