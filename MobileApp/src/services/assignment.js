@@ -34,3 +34,15 @@ export const createManualAssignment = async (
         console.log("Error CreateManualAssignment: ", error.request);
     })
 }
+
+
+export const getAllAssignmentCardOfTeacher = async (idTeacher)=>{
+    return await axios.get(baseUrl + "/GetAllAssignmentCardOfTeacher?idTeacher=" + idTeacher)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetAllAssignmentCardOfTeacher: ", error);
+    })
+}

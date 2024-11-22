@@ -61,9 +61,9 @@ export const TeacherAsgmCreate = ({route})=>{
                 setListCourses([...response?.map(item=>{
                     return{
                         value: item.idCourse,
-                        label: item.title,
+                        label: item.courseTitle,
                         isLimitedTime: item.isLimitedTime,
-                        endDate: item.endDate
+                        courseEndDate: item.endDate
                     }
                 })])
             } catch (error) {

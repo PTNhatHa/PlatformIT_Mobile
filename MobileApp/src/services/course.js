@@ -47,6 +47,7 @@ export const addSection = async (sectionName, idCourse, idCreatedBy)=>{
 }
 
 export const getAllActiveCourseOfTeacher = async (idTeacher)=>{
+    // console.log(idTeacher);
     return await axios.get(baseUrl + "/GetAllActiveCourseOfTeacher?idTeacher=" + idTeacher)
     .then(response => {
         // console.log(response.data);
