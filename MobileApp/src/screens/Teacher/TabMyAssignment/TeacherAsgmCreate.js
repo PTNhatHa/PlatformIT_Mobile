@@ -258,7 +258,7 @@ export const TeacherAsgmCreate = ({route})=>{
         setLoading(true)
         try {
             const response = await createManualAssignment(
-                titleAsgm, selectCourse.value, isExercise ? 1 : 0, selectLecture?.value || "", startDate, dueDate,
+                titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
                 duration, type.value, isPublish, isShuffling ? 1 : 0, questions, state.idUser
             )
             if(response){

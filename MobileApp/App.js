@@ -12,15 +12,17 @@ import { TeacherAsgmCreate } from './src/screens/Teacher/TabMyAssignment/Teacher
 import SigninGg from './src/components/SigninGg';
 import { DetailTeacher } from './src/screens/DetailTeacher';
 import { CardAssignment } from './src/components/CardAssignment';
+import { FilterAsgm } from './src/components/Filter';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
+          {/* <SigninSignup/> */}
           {/* <DetailTeacher/> */}
           {/* <CardAssignment/> */}
+          <FilterAsgm/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

@@ -523,6 +523,136 @@ export const FilterTeacher = ({
 }
 
 
+export const FilterAsgm = ({
+    dataFilter=[], setDataFilter=()=>{},
+    isPastdue = false,
+    onPressCancel
+})=>{
+    // Sort
+    const [sortby1, setsortby1] = useState(dataFilter.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataFilter.sortway || 0)
+    const listSortby1 = [
+        { label: "None", value: 0},
+        { label: "Name", value: "createdDate"},
+        { label: "Create date", value: "createdDate"},
+        { label: "Start date", value: "startDate"},
+        { label: "Due date", value: "dueDate"},
+    ]
+    const listSortby2 = [
+        { label: "None", value: 0},
+        { label: "Asc", value: 1},
+        { label: "Des", value: 2},
+    ]
+
+    // Filter
+    const [type, setType] = useState("All")
+    const [format, setFormat] = useState("All")
+    const [status, setStatus] = useState("All")
+    const clearAll = ()=>{
+        setsortby1(0)
+        setsortby2(0)
+        setDataSort({
+            sortby: 0,
+            sortway: 0
+        })
+        setFormat("All")
+        setType("All")
+        setStatus("All")
+        onPressCancel()
+    }
+
+    const handleSave =()=>{
+        if(isPastdue){
+            setDataFilter({
+                sortby: sortby1,
+                sortway: sortby2,
+                type: type,
+                format: format,
+                status: status
+            })
+        } else{
+            setDataFilter({
+                sortby: sortby1,
+                sortway: sortby2,
+                type: type,
+                format: format
+            })
+        }
+        onPressCancel()
+    }
+
+    return(
+        <TouchableWithoutFeedback onPress={()=>setShowTag(false)}>
+            <View style={stylesFilter.wrapFilter}>
+                <View style={stylesFilter.innerFilter}>
+                    {/* Sort */}
+                    <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
+                        <AntDesign name="close" size={24} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
+                        <View style={stylesFilter.field}>
+                            <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby1}
+                                    onValueChange={(v)=> setsortby1(v)}
+                                    value={sortby1}
+                                />
+                            </View>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby2}
+                                    onValueChange={(v)=> setsortby2(v)}
+                                    value={sortby2}
+                                />
+                            </View>
+                        </View>                                                         
+                    </View>
+
+                    {/* Filter */}
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                        {isPastdue &&
+                            <View style={stylesFilter.field2}>
+                                <Text style={stylesFilter.smallTitle}>Status</Text>
+                                <View style={stylesFilter.field}>
+                                    <RadioBtn label="All" selected={type === "All"} onPress={()=>setType("All")}/>
+                                    <RadioBtn label="Publish" selected={type === "Publish"} onPress={()=>setType("Publish")}/>
+                                    <RadioBtn label="Unpublish" selected={type === "Unpublish"} onPress={()=>setType("Unpublish")}/>
+                                </View>
+                            </View>
+                        }
+                        <View style={stylesFilter.field2}>
+                            <Text style={stylesFilter.smallTitle}>Type</Text>
+                            <View style={stylesFilter.field}>
+                                <RadioBtn label="All" selected={type === "All"} onPress={()=>setType("All")}/>
+                                <RadioBtn label="Test" selected={type === "Test"} onPress={()=>setType("Test")}/>
+                                <RadioBtn label="Exercise" selected={type === "Exercise"} onPress={()=>setType("Exercise")}/>
+                            </View>
+                        </View>
+                        <View style={stylesFilter.field2}>
+                            <Text style={stylesFilter.smallTitle}>Format</Text>
+                            <View style={stylesFilter.field}>
+                                <RadioBtn label="All" selected={format === "All"} onPress={()=>setFormat("All")}/>
+                                <RadioBtn label="Manual" selected={format === "Manual"} onPress={()=>setFormat("Manual")}/>
+                                <RadioBtn label="Quiz" selected={format === "Quiz"} onPress={()=>setFormat("Quiz")}/>
+                                <RadioBtn label="Code" selected={format === "Code"} onPress={()=>setFormat("Code")}/>
+                            </View>
+                        </View>
+                        <View style={stylesFilter.bottom}>
+                            <ButtonWhite title={"Clear"} action={clearAll}/>
+                            <ButtonGreen title={"Save"} action={handleSave}/>
+                        </View>                                                         
+                    </View>
+
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    )
+}
+
+
 const stylesFilter = StyleSheet.create({
     wrapFilter: {
         position: "absolute",

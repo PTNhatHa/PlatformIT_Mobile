@@ -6,6 +6,7 @@ import { useState } from "react";
 import { TagNoColor } from "./Tag";
 import Foundation from '@expo/vector-icons/Foundation';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const initAssignment =     {
     "idAssignment": 12,
@@ -66,6 +67,15 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         </View>
                     }
                 </View>
+                <View style={styles.wrapFlex}>
+                    <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
+                    {data.nameLecture &&
+                        <>
+                            <AntDesign name="right" size={18} color="black" style={{width: 18}}/>
+                            <Text style={styles.dataText}>{data.nameLecture}</Text>
+                        </>
+                    }
+                </View>
                 {role === 2 && data.dueDate !== null &&
                     <View style={[styles.content, {justifyContent: "flex-end"}]}>
                         <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
@@ -77,7 +87,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
                         }
                         {data.isExam !== null &&
-                            <TagNoColor label={data.isExam ? "Exercise" : "Test"}/>
+                            <TagNoColor label={data.isExam ? "Test" : "Exercise"}/>
                         }
                     </View>
                 }
@@ -127,5 +137,10 @@ const styles = StyleSheet.create({
     wrapDetail:{
         flexDirection: "row",
         gap: 16
-    }
+    },
+    wrapFlex:{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8
+    },
 })
