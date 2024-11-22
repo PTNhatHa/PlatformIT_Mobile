@@ -545,19 +545,31 @@ export const FilterAsgm = ({
     ]
 
     // Filter
-    const [type, setType] = useState(dataFilter.type || "All")
-    const [format, setFormat] = useState(dataFilter.format || "All")
-    const [status, setStatus] = useState(dataFilter.status || "All")
+    const [type, setType] = useState(dataFilter?.type || "All")
+    const [format, setFormat] = useState(dataFilter?.format || "All")
+    const [status, setStatus] = useState(dataFilter?.status || "All")
     const clearAll = ()=>{
         setsortby1(0)
         setsortby2(0)
-        setDataSort({
-            sortby: 0,
-            sortway: 0
-        })
         setFormat("All")
         setType("All")
         setStatus("All")
+        if(isPastdue){
+            setDataFilter({
+                sortby: 0,
+                sortway: 0,
+                type: "All",
+                format: "All",
+                status: "All"
+            })
+        } else{
+            setDataFilter({
+                sortby: 0,
+                sortway: 0,
+                type: "All",
+                format: "All",
+            })
+        }
         onPressCancel()
     }
 
