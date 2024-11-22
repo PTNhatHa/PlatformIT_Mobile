@@ -529,8 +529,8 @@ export const FilterAsgm = ({
     onPressCancel
 })=>{
     // Sort
-    const [sortby1, setsortby1] = useState(dataFilter.sortby || 0)
-    const [sortby2, setsortby2] = useState(dataFilter.sortway || 0)
+    const [sortby1, setsortby1] = useState(dataFilter?.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataFilter?.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
         { label: "Name", value: "createdDate"},
@@ -545,9 +545,9 @@ export const FilterAsgm = ({
     ]
 
     // Filter
-    const [type, setType] = useState("All")
-    const [format, setFormat] = useState("All")
-    const [status, setStatus] = useState("All")
+    const [type, setType] = useState(dataFilter.type || "All")
+    const [format, setFormat] = useState(dataFilter.format || "All")
+    const [status, setStatus] = useState(dataFilter.status || "All")
     const clearAll = ()=>{
         setsortby1(0)
         setsortby2(0)
@@ -582,7 +582,7 @@ export const FilterAsgm = ({
     }
 
     return(
-        <TouchableWithoutFeedback onPress={()=>setShowTag(false)}>
+        <TouchableWithoutFeedback>
             <View style={stylesFilter.wrapFilter}>
                 <View style={stylesFilter.innerFilter}>
                     {/* Sort */}
@@ -617,9 +617,9 @@ export const FilterAsgm = ({
                             <View style={stylesFilter.field2}>
                                 <Text style={stylesFilter.smallTitle}>Status</Text>
                                 <View style={stylesFilter.field}>
-                                    <RadioBtn label="All" selected={type === "All"} onPress={()=>setType("All")}/>
-                                    <RadioBtn label="Publish" selected={type === "Publish"} onPress={()=>setType("Publish")}/>
-                                    <RadioBtn label="Unpublish" selected={type === "Unpublish"} onPress={()=>setType("Unpublish")}/>
+                                    <RadioBtn label="All" selected={status === "All"} onPress={()=>setStatus("All")}/>
+                                    <RadioBtn label="Publish" selected={status === "Publish"} onPress={()=>setStatus("Publish")}/>
+                                    <RadioBtn label="Unpublish" selected={status === "Unpublish"} onPress={()=>setStatus("Unpublish")}/>
                                 </View>
                             </View>
                         }
@@ -635,9 +635,9 @@ export const FilterAsgm = ({
                             <Text style={stylesFilter.smallTitle}>Format</Text>
                             <View style={stylesFilter.field}>
                                 <RadioBtn label="All" selected={format === "All"} onPress={()=>setFormat("All")}/>
-                                <RadioBtn label="Manual" selected={format === "Manual"} onPress={()=>setFormat("Manual")}/>
-                                <RadioBtn label="Quiz" selected={format === "Quiz"} onPress={()=>setFormat("Quiz")}/>
-                                <RadioBtn label="Code" selected={format === "Code"} onPress={()=>setFormat("Code")}/>
+                                <RadioBtn label="Manual" selected={format === 1} onPress={()=>setFormat(1)}/>
+                                <RadioBtn label="Quiz" selected={format === 2} onPress={()=>setFormat(2)}/>
+                                <RadioBtn label="Code" selected={format === 3} onPress={()=>setFormat(3)}/>
                             </View>
                         </View>
                         <View style={stylesFilter.bottom}>

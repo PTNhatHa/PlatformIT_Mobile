@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ViewAllFromDetail } from "../../ViewAllFromDetail";
-import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getAllCourseCardsByIdTeacher } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
 import { COLORS, commonStyles } from "../../../utils/constants";
@@ -10,8 +10,9 @@ import { useNavigation } from "@react-navigation/native";
 import { getAllAssignmentCardOfTeacher } from "../../../services/assignment";
 import { CardAssignment } from "../../../components/CardAssignment";
 import { formatDateTime } from "../../../utils/utils";
+import { FilterAsgm } from "../../../components/Filter";
 
-const ViewAllRender = ({data = [], isPastDue})=>{
+const ViewAllRender = ({data = [], status})=>{
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
     const numberItem = 10
@@ -60,22 +61,23 @@ const ViewAllRender = ({data = [], isPastDue})=>{
                         if(formatDateTime(item.createdDate) !== createDate){
                             createDate = formatDateTime(item.createdDate)
                             return(
-                                <>
-                                    <Text style={[commonStyles.title, {marginTop: 12}]}>Create on {createDate}</Text>
-                                    {isPastDue ?
-                                        <CardAssignment data={item} role={1} key={item.idAssignment} isPastDue={true}/>
+                                <View key={`${createDate}-${item.idAssignment}`}>
+                                    <Text style={[commonStyles.title, {marginTop: 12}]} key={createDate + status}>Create on {createDate}</Text>
+                                    {status === 2 ?
+                                        <CardAssignment data={item} role={1} key={item.idAssignment + status} isPastDue={true}/>
                                         :
-                                        <CardAssignment data={item} role={1}  key={item.idAssignment}/>
+                                        <CardAssignment data={item} role={1}  key={item.idAssignment + status}/>
                                     }
-                                </>
+                                </View>
+                            )
+                        } else  {
+                            return(
+                                status === 2 ?
+                                    <CardAssignment data={item} role={1} key={item.idAssignment + status} status={true}/>
+                                    :
+                                    <CardAssignment data={item} role={1}  key={item.idAssignment + status}/>
                             )
                         }
-                        return(
-                            isPastDue ?
-                                <CardAssignment data={item} role={1} key={item.idAssignment} isPastDue={true}/>
-                                :
-                                <CardAssignment data={item} role={1}  key={item.idAssignment}/>
-                        )
                     })}
                 </ScrollView>
             </View>
@@ -109,14 +111,27 @@ const ViewAllRender = ({data = [], isPastDue})=>{
 export const TeacherAllAssignment = ()=>{
     const {state} = useUser()
     const navigation = useNavigation()
-    const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
     const [selectBtn, setSelectBtn] = useState(0)
-    const [search, setSearch] = useState(null)
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [search, setSearch] = useState({
+        publish: "",
+        unPublish: "",
+        pastDue: "",
+    })
 
-    const [listPublish, setListPublish] = useState([])
-    const [listUnpublish, setListUnpublish] = useState([])
-    const [listPastDue, setListPastDue] = useState([])
+    const [listPublish, setListPublish] = useState(null)
+    const [listUnpublish, setListUnpublish] = useState(null)
+    const [listPastDue, setListPastDue] = useState(null)
+
+    const [currentPublish, setCurrentPublish] = useState(null)
+    const [currentUnpublish, setCurrentUnpublish] = useState(null)
+    const [currentPastDue, setCurrentPastDue] = useState(null)
+
+    const [filterPublish, setFilterPublish] = useState(null)
+    const [filterUnpublish, setFilterUnpublish] = useState(null)
+    const [filterPastDue, setFilterPastDue] = useState(null)
+    
     const getAllAsgm = async()=>{
         try {
             const response = await getAllAssignmentCardOfTeacher(state.idUser)
@@ -138,9 +153,14 @@ export const TeacherAllAssignment = ()=>{
             publish.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
             unPublish.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
             pastdue.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-            setListPublish(publish)
-            setListUnpublish(unPublish)
-            setListPastDue(pastdue)
+
+            setListPublish(publish || [])
+            setListUnpublish(unPublish || [])
+            setListPastDue(pastdue || [])
+
+            setCurrentPublish(publish || [])
+            setCurrentUnpublish(unPublish || [])
+            setCurrentPastDue(pastdue || [])
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -151,6 +171,94 @@ export const TeacherAllAssignment = ()=>{
     useEffect(()=>{
         getAllAsgm()
     }, [])
+    
+    const handleFilter = (initData, filterList)=>{
+        let newData = [...initData] || []
+        if(filterList?.sortby !== null && filterList?.sortway !== null){
+            newData = newData?.sort((a,b) => {
+                const field = filterList.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if(filterList.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    if(aValue === null && bValue === null) return 0
+                    return aValue.localeCompare(bValue)
+                }
+                if(filterList.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    if(aValue === null && bValue === null) return 0
+                    return bValue.localeCompare(aValue);
+                }
+                return 0
+            })
+        }
+        // Type
+        newData = newData?.filter(item =>{
+            if(filterList.type === "Test"){
+                return item.isExam === 1
+            }
+            if(filterList.type === "Exercise"){
+                return item.isExam === 0
+            }
+            return item
+        })
+        // format
+        newData = newData?.filter(item =>{
+            if(filterList.format !== "All"){
+                return item.assignmentType === filterList.format
+            }
+            return item
+        })
+       if(selectBtn === 2){
+            // status
+            newData = newData?.filter(item =>{
+                if(filterList.status === "Publish"){
+                    return item.isPublish === 1
+                }
+                if(filterList.status === "Unpublish"){
+                    return item.isPublish === 0
+                }
+                return item
+            })
+       }
+        return newData || []
+    }
+    const handleSearch =(initData, searchText)=>{
+        let newData = [...initData]
+        if(searchText !== null){
+            return newData.filter(item => {
+                return item.nameLecture?.toLowerCase().includes(searchText.toLowerCase()) ||
+                        item.nameCourse?.toLowerCase().includes(searchText.toLowerCase()) ||
+                        item.title?.toLowerCase().includes(searchText.toLowerCase())
+            })
+        }
+        return []
+    }
+
+    useEffect(()=>{
+        if(selectBtn === 0){
+            let result = listPublish ? [...listPublish] : []
+            result = handleFilter(result, filterPublish)
+            result = handleSearch(result, search.publish)
+            setCurrentPublish(result)
+        }
+        if(selectBtn === 1){
+            let result = listUnpublish ? [...listUnpublish] : []
+            result = handleFilter(result, filterUnpublish)
+            result = handleSearch(result, search.unPublish)
+            setCurrentUnpublish(result)
+        }
+        if(selectBtn === 2){
+            let result = listPastDue ? [...listPastDue] : []
+            result = handleFilter(result, filterPastDue)
+            result = handleSearch(result, search.pastDue)
+            setCurrentPastDue(result)
+        }
+    }, [filterPublish, filterUnpublish, filterPastDue, search])
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -167,10 +275,26 @@ export const TeacherAllAssignment = ()=>{
                 <View style={styles.header}>
                     <View style={styles.wrapperSearch}>
                         <TextInput
-                            // value={"search"}
+                            value={selectBtn === 0 ? search.publish : selectBtn === 1 ? search.unPublish : search.pastDue}
                             style={styles.input}
                             placeholder={"Search"}
-                            onChangeText={(value)=>{}}
+                            onChangeText={(v)=>{
+                                selectBtn === 0 ? 
+                                    setSearch({
+                                        ...search,
+                                        publish: v
+                                    })
+                                : selectBtn === 1 ? 
+                                    setSearch({
+                                        ...search,
+                                        unPublish: v
+                                    })
+                                : 
+                                    setSearch({
+                                        ...search,
+                                        pastDue: v
+                                    })
+                            }}
                         />
                         <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                             <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
@@ -192,14 +316,26 @@ export const TeacherAllAssignment = ()=>{
                     </TouchableOpacity>
                 </View>
                 {selectBtn === 0 &&
-                    <ViewAllRender data={listPublish}/>                    
+                    <ViewAllRender data={currentPublish} status={0} key={0}/>                    
                 }
                 {selectBtn === 1 &&
-                    <ViewAllRender data={listUnpublish}/>                    
+                    <ViewAllRender data={currentUnpublish} status={1} key={1}/>                    
                 }
                 {selectBtn === 2 &&
-                    <ViewAllRender data={listPastDue} isPastDue={true}/>                   
+                    <ViewAllRender data={currentPastDue} status={2} key={2}/>                   
                 }
+                <Modal
+                    visible={isOpenModal}
+                    animationType="fade"
+                >
+                    {selectBtn === 0 ?
+                        <FilterAsgm dataFilter={filterPublish} setDataFilter={setFilterPublish} onPressCancel={()=>setIsOpenModal(false)}/>                    
+                    : selectBtn === 1 ?
+                        <FilterAsgm dataFilter={filterUnpublish} setDataFilter={setFilterUnpublish} onPressCancel={()=>setIsOpenModal(false)}/>                 
+                    :
+                        <FilterAsgm dataFilter={filterPastDue} setDataFilter={setFilterPastDue} isPastdue={true} onPressCancel={()=>setIsOpenModal(false)}/>                
+                    }
+                </Modal>
             </View>
             {loading &&
                 <View style={styles.wrapLoading}>
