@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { getCourseDetail, isEnrolledCourse } from "../services/course";
+import { enrollCourse, getCourseDetail, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -49,11 +49,11 @@ export const DetailCourse =({route})=>{
             const response = await getCourseDetail(idCourse)
             if(response){
                 setData(response)
+                if(state.idRole === 4 && response.idTeacher === state.idUser) setRole(1)
+                if(state.idRole === 3) checkStudentIsEnrollCourse()
             }
         } catch (error) {
             console.log("Error: ", error);
-        } finally{
-            setLoading(false)
         }
     }
 
@@ -65,26 +65,30 @@ export const DetailCourse =({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
-        } finally{
-            setLoading(false)
         }
     }
 
     const checkStudentIsEnrollCourse = async()=>{
         try {
             const response = await isEnrolledCourse(state.idUser, idCourse)
-            return response
+            if(response === true){
+                setRole(2)
+            }
         } catch (error) {
             console.log("Error: ", error);
         }
     }
 
     useEffect(()=>{
-        getCourse()
-        getNoti()
-        if(state.idRole === 4 && data.idTeacher === state.idUser) setRole(1)
-        if(state.idRole === 3 && checkStudentIsEnrollCourse()) setRole(2)
-    }, [idCourse])
+        try {
+            getCourse()
+            getNoti()
+        } catch (error) {
+            console.log(error);
+        } finally{
+            setLoading(false)
+        }
+    }, [])
 
     const addNoti = async()=>{
         if(!notiContent){
@@ -105,7 +109,40 @@ export const DetailCourse =({route})=>{
         }
     }
 
-    if (loading) {
+    const payCourse = ()=>{
+        const callApi = async()=>{
+            try {
+                const response = await enrollCourse(state.idUser, idCourse)
+                console.log(response);
+                if(response.code){
+                    Alert.alert("Warning", response.message)
+                } else{
+                    Alert.alert("Done", response)
+                    checkStudentIsEnrollCourse()
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        Alert.alert(
+            "Confirm enroll",
+            "Are you sure you want to enroll this course?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> callApi(),
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+    }
+
+    if (loading === true) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
             <View style={styles.wrapLoading}>
@@ -162,11 +199,13 @@ export const DetailCourse =({route})=>{
                         </View>
                     }
                     <View style={styles.inforContent}>
-                        <Text style={styles.costSale}>${data.price}</Text>
-                        {/* <Text style={styles.cost}>{data.price}</Text> */}
+                        <Text style={styles.costSale}>{data.price ? `${data.price}VND` : "Free"}</Text>
+                        {data.discountedPrice &&
+                            <Text style={styles.cost}>{data.discountedPrice}</Text>
+                        }
                     </View>
                     {state.idRole === 3 && role === 0 &&
-                        <TouchableOpacity style={styles.infoBtn}>
+                        <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
                             <Text style={styles.infoBtnText}>Pay for this course</Text>
                         </TouchableOpacity>
                     }
@@ -351,6 +390,11 @@ export const DetailCourse =({route})=>{
                 </View>
             </View>
         </Modal>
+        {loading &&
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color="white" />
+            </View>
+        }
         </>
     )
 }

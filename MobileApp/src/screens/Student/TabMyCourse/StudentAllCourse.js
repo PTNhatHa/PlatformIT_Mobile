@@ -1,29 +1,60 @@
-import { Dimensions, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import Feather from '@expo/vector-icons/Feather';
+import { ActivityIndicator, StyleSheet, View } from "react-native"
 import { useState, useEffect, useRef } from "react";
-import { COLORS, initialCourse } from "../../../utils/constants";
-import { CardCourseStudent, CardVirticalCourse } from "../../../components/CardVertical";
+import { COLORS} from "../../../utils/constants";
 import { ViewAllFromDetail } from "../../ViewAllFromDetail";
-
-const initCourse=[{
-    "idCourse": 3,
-    "courseTitle": "Net Core",
-    "pathImg": null,
-    "courseStartDate": "2024-10-05T08:22:25.752581",
-    "courseEndDate": "2025-10-15T08:22:25.752581",
-    "registStartDate": "2024-10-05T13:29:21.8533333",
-    "registEndDate": "2025-10-05T18:22:25.752581",
-    "price": 10,
-    "tags": [
-      "C#",
-      "Java"
-    ],
-    "centerName": "HAHYWU CENTER",
-}]
+import { getAllCourseCardsByIdStudent } from "../../../services/course";
+import { useUser } from "../../../contexts/UserContext";
 
 export const StudentAllCourse = ()=>{
-    const [data, setData] = useState(initCourse)
+    const {state, dispatch} = useUser()
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true);
+    
+    const getAllCourseOfStudent = async()=>{
+        try {
+            setLoading(true)
+            const response = await getAllCourseCardsByIdStudent(state.idUser)
+            if(response){
+                setData(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+    useEffect(()=>{
+        getAllCourseOfStudent()
+    }, [])
+    
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
     return(
-        <ViewAllFromDetail myCourse={data} role={2}/>
+        <>
+            {!loading &&
+                <ViewAllFromDetail myCourse={data} role={1}/>
+            }
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }  
+        </>
     )
 }
+const styles = StyleSheet.create({
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    }
+})

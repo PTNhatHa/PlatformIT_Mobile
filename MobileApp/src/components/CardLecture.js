@@ -17,7 +17,7 @@ export const CardLecture = ({data = initLecture, role=0})=>{
             onPress={()=> role !==0 ? navigation.navigate("Detail Lecture", {idLecture: data.idLecture}) : {}}
         >
             <Text style={styles.title}>{data.lectureTitle}</Text>
-            {data.lectureIntroduction !== "null" && 
+            {data.lectureIntroduction !== "null" && data.lectureIntroduction !== null &&
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>
             }           
             {data.exerciseCount === 1 ?

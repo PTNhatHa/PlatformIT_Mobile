@@ -267,6 +267,7 @@ export const getDetailTeacher = async (idUser)=>{
 
 export const isChatAvailable = async (idStudent, idTeacher)=>{
     const url = baseUrl + "/IsChatAvailable?idStudent=" + idStudent + "&idTeacher=" + idTeacher
+    // console.log(idStudent, "--" , idTeacher);
     return await axios.get(url)
     .then(response => {
         // console.log(response.data);

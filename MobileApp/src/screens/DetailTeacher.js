@@ -64,6 +64,9 @@ export const DetailTeacher =({route})=>{
     const checkIsChat = async()=>{
         try {
             const response = await isChatAvailable(state.idUser, idTeacher)
+            if(response === true){
+                setIsChat(true)
+            }
             return response
         } catch (error) {
             console.log("Error: ", error);
@@ -71,9 +74,9 @@ export const DetailTeacher =({route})=>{
     }
 
     useEffect(()=>{
-        // getTeacher()
-        if(state.idRole === 3 && checkIsChat() === true){
-            setIsChat(true)
+        getTeacher()
+        if(state.idRole === 3){
+            checkIsChat()
         }
     }, [idTeacher])
 
@@ -117,7 +120,7 @@ export const DetailTeacher =({route})=>{
                         </View>
                     </LinearGradient>
                 </View>
-                {console.log(isChat)}
+                {console.log("isChat: ", isChat)}
                 {isChat &&
                     <TouchableOpacity style={styles.wrapperPro} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
                         <View style={[styles.contentCard, {justifyContent: "center", alignItems: "center"}]}>
@@ -144,7 +147,7 @@ export const DetailTeacher =({route})=>{
                                 <Image source={{uri: data.centerAvatar}} style={styles.avata}/>
                                 <View>
                                     <Text style={styles.titleContentCard}>{data.centerName}</Text>
-                                    <Text style={{color: "white"}}>{data.centerDescription}</Text>
+                                    <Text style={styles.dataText}>{data.centerDescription}</Text>
                                 </View>
                             </View>
                         </LinearGradient>
@@ -203,7 +206,7 @@ export const DetailTeacher =({route})=>{
                             action={()=> navigation.navigate("Courses of teacher", {initData: data.courses, index: 1, namePage: data.name ? data.name : "<Unknown>"})}
                         />
                     </View>
-                    {data.courses.length > 0 &&
+                    {data.courses?.length > 0 &&
                         data.courses.slice(0, 5).map((item)=><CardVirticalCourse data={item} key={item.idCourse}/>)
                     }
                     <Text style={styles.more}>...</Text>
@@ -345,5 +348,10 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16,
         fontWeight: "bold"
-    }
+    },
+    dataText:{
+        color: "white",
+        flexWrap: "wrap",
+        width: 300,
+    },
 })

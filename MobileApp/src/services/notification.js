@@ -47,7 +47,7 @@ export const getNotificationBoardOfCourse = async (idCourse)=>{
         return response.data
     })
     .catch(error => {
-        console.log("Error getNotificationBoardOfCourse: ", error);
+        // console.log("Error getNotificationBoardOfCourse: ", error);
     })
 }
 

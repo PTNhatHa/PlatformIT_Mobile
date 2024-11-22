@@ -69,12 +69,36 @@ export const getAllActiveSectionOfCourse = async (idCourse)=>{
 }
 
 export const isEnrolledCourse = async (idStudent, idCourse)=>{
-    return await axios.get(baseUrl + "IsEnrolledCourse?idStudent=" + idStudent + "&idCourse=" + idCourse)
+    return await axios.get(baseUrl + "/IsEnrolledCourse?idStudent=" + idStudent + "&idCourse=" + idCourse)
     .then(response => {
         // console.log(response.data);
         return response.data
     })
     .catch(error => {
         console.log("Error isEnrolledCourse: ", error);
+    })
+}
+
+export const getAllCourseCardsByIdStudent = async (idStudent)=>{
+    return await axios.get(baseUrl + "/GetAllCourseCardsByIdStudent?idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getAllCourseCardsByIdStudent: ", error);
+    })
+}
+
+export const enrollCourse = async (idStudent, idCourse)=>{
+    return await axios.post(baseUrl + "/EnrollCourse?idStudent=" + idStudent + "&idCourse=" + idCourse + "&idCreatedBy=" + idStudent)
+    .then(response => {
+        return response.data.message
+    })
+    .catch(error => {
+        return{
+            code: error.response.status,
+            message: error.request._response
+        }
     })
 }

@@ -88,7 +88,7 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
                 <View style={styles.wrapCost}>
                     {data.price !== null ?
                         <>
-                            <Text style={styles.costSale}>${data.price}</Text>
+                            <Text style={styles.costSale}>{data.price ? `${data.price}VND` : "Free"}</Text>
                             {/* <Text style={styles.cost}>{data.price}</Text> */}
                         </>
                         :
