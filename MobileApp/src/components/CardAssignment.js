@@ -34,7 +34,7 @@ const initAssignment =     {
 //     "duration": 0,
 //     "questionQuantity": 1,
 //     "isPublish": 0,
-//     "isExam": 1,
+//     "isTest": 1,
 //     "createdDate": "2024-11-20T11:23:31.7661598",
 //     "isPastDue": 0
 //   },
@@ -81,8 +81,8 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         {data.isPublish !== null && isPastDue &&
                             <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
                         }
-                        {data.isExam !== null &&
-                            <TagNoColor label={data.isExam ? "Test" : "Exercise"}/>
+                        {data.isTest !== null &&
+                            <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
                         }
                     </View>
                 }

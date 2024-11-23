@@ -199,10 +199,10 @@ export const TeacherAllAssignment = ()=>{
         // Type
         newData = newData?.filter(item =>{
             if(filterList.type === "Test"){
-                return item.isExam === 1
+                return item.isTest === 1
             }
             if(filterList.type === "Exercise"){
-                return item.isExam === 0
+                return item.isTest === 0
             }
             return item
         })
