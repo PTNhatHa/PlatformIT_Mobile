@@ -2,7 +2,7 @@ import { ActivityIndicator, Alert, Image, Modal, StyleSheet, Text, TextInput, To
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
@@ -34,6 +34,7 @@ export const TeacherLectureCreate = ({route})=>{
     const [supportMaterial, setSupportMaterial] = useState([])
     const [idSupMaterial, setIdSupMaterial] = useState(1)
     const [video, setVideo] = useState(null)
+    const [error, setError] = useState(null)
 
     const [loading, setLoading] = useState(false);
 
@@ -89,6 +90,14 @@ export const TeacherLectureCreate = ({route})=>{
         }
     }
     const handleSave = async()=>{
+        if(!lectureName){
+            setError("Please fill the lecture name.")
+            return
+        }
+        if(!video && !material){
+            setError("Please fill upload a video or a material.")
+            return
+        }
         setLoading(true)
         try {
             const listSupMaterials = supportMaterial.map(item => item.file) || null
@@ -108,12 +117,15 @@ export const TeacherLectureCreate = ({route})=>{
             setLoading(false)
         }
     }
+    useEffect(()=>{
+        setError(null)
+    }, [lectureName, video, material])
     return(
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
+                    <Text style={styles.title}>{nameCourse}</Text>
                     <View style={styles.wrapFlex}>
-                        <Text style={styles.title}>{nameCourse}</Text>
                         <AntDesign name="right" size={18} color="black" style={{width: 18}}/>
                         <Text style={styles.title}>{nameSection}</Text>
                     </View>
@@ -129,6 +141,7 @@ export const TeacherLectureCreate = ({route})=>{
                             <Text style={styles.textGray14}>Cancel</Text>
                         </TouchableOpacity>
                     </View>  
+                    {error && <Text style={{color: COLORS.red}}>{error}</Text>}
                 </View>
                 <View style={styles.main}>
                     <View style={styles.wrapper}>

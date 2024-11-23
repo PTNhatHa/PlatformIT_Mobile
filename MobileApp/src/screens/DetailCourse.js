@@ -334,7 +334,7 @@ export const DetailCourse =({route})=>{
                                 })}
                             />
                         }
-                        <View style={[styles.wrapShow, {height: 390}]}>
+                        <View style={[styles.wrapShow]}>
                             {data.tests.length > 0 &&
                                 data.tests.map(test => 
                                     <CardAssignment data={test} key={test.idAssignment} role={role}/>

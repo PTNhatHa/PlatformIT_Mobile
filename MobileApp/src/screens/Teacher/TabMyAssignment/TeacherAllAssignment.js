@@ -176,17 +176,17 @@ export const TeacherAllAssignment = ()=>{
         let newData = [...initData] || []
         if(filterList?.sortby !== null && filterList?.sortway !== null){
             newData = newData?.sort((a,b) => {
-                const field = filterList.sortby
+                const field = filterList?.sortby
                 const aValue = a[field]
                 const bValue = b[field]
-                if(filterList.sortway === 1){
+                if(filterList?.sortway === 1){
                     //Asc
                     if(aValue === null) return -1
                     if(bValue === null) return 1
                     if(aValue === null && bValue === null) return 0
                     return aValue.localeCompare(bValue)
                 }
-                if(filterList.sortway === 2){
+                if(filterList?.sortway === 2){
                     //Desc
                     if(aValue === null) return 1
                     if(bValue === null) return -1
@@ -300,7 +300,7 @@ export const TeacherAllAssignment = ()=>{
                             <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.btnCirlce} onPress={()=> navigation.navigate("Create Assignment")}>
+                    <TouchableOpacity style={styles.btnCirlce} onPress={()=> navigation.navigate("Create Assignment", { getAllAsgm: getAllAsgm})}>
                         <Entypo name="plus" size={24} color="white" />
                     </TouchableOpacity>
                 </View>

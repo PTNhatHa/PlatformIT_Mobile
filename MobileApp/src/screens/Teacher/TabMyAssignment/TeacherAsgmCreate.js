@@ -14,7 +14,7 @@ import { createManualAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 
 export const TeacherAsgmCreate = ({route})=>{
-    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture} = route?.params || {}
+    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, getAllAsgm} = route?.params || {}
     const {state} = useUser()
     const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -263,6 +263,7 @@ export const TeacherAsgmCreate = ({route})=>{
             )
             if(response){
                 Alert.alert("Done", response)
+                getAllAsgm()
                 navigation.goBack()
             }
         } catch (error) {

@@ -67,13 +67,10 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         </View>
                     }
                 </View>
-                <View style={styles.wrapFlex}>
+                <View>
                     <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
                     {data.nameLecture &&
-                        <>
-                            <AntDesign name="right" size={18} color="black" style={{width: 18}}/>
-                            <Text style={styles.dataText}>{data.nameLecture}</Text>
-                        </>
+                        <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>
                     }
                 </View>
                 {role === 2 && data.dueDate !== null &&
