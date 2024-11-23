@@ -68,10 +68,8 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     }
                 </View>
                 <View>
-                    <Text style={styles.dataText}>Course: {data.nameCourse}</Text>
-                    {data.nameLecture &&
-                        <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>
-                    }
+                    {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
+                    {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
                 </View>
                 {role === 2 && data.dueDate !== null &&
                     <View style={[styles.content, {justifyContent: "flex-end"}]}>

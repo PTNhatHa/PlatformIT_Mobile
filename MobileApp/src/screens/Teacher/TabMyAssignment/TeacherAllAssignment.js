@@ -300,7 +300,7 @@ export const TeacherAllAssignment = ()=>{
                             <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
                         </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.btnCirlce} onPress={()=> navigation.navigate("Create Assignment", { getAllAsgm: getAllAsgm})}>
+                    <TouchableOpacity style={styles.btnCirlce} onPress={()=> navigation.navigate("Create Assignment", { reload: getAllAsgm})}>
                         <Entypo name="plus" size={24} color="white" />
                     </TouchableOpacity>
                 </View>
@@ -421,7 +421,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         columnGap: 20,
         backgroundColor: "#FAFAFA",
-        paddingTop: 10
+        paddingTop: 10,
+        alignItems: "center"
     },
     wrapPageNumber:{
         flexDirection: "row",

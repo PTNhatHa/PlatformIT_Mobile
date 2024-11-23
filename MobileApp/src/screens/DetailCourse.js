@@ -330,7 +330,11 @@ export const DetailCourse =({route})=>{
                                 action={()=>navigation.navigate("Create Test", {
                                     idCourse: idCourse, 
                                     nameCourse: data.courseTitle,
-                                    isLimitedTime: data.registStartDate !== null ? 1 : 0
+                                    isLimitedTime: data.registStartDate !== null ? 1 : 0,
+                                    reload: ()=>{
+                                        getCourse()
+                                        getNoti()
+                                    }
                                 })}
                             />
                         }

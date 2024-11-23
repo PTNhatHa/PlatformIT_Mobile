@@ -6,18 +6,22 @@ export const createManualAssignment = async (
     Title, IdCourse, IsTest, IdLecture, StartDate, DueDate, Duration,
     AssignmentType, IsPublish, IsShufflingQuestion, AssignmentItems, CreatedBy
 )=>{
-    // console.log("AssignmentItems: ", AssignmentItems);
+    // console.log(Title, IdCourse, IsTest, IdLecture, StartDate, DueDate, Duration,
+    //     AssignmentType, IsPublish, IsShufflingQuestion, AssignmentItems, CreatedBy);
     const formData = new FormData()
     formData.append('Title', Title)
     formData.append('IdCourse', IdCourse)
     formData.append('IsTest', IsTest)
+
     formData.append('IdLecture', IdLecture)
     formData.append('StartDate', StartDate)
     formData.append('DueDate', DueDate)
     formData.append('Duration', Duration)
+
     formData.append('AssignmentType', AssignmentType)
     formData.append('IsPublish', IsPublish)
     formData.append('IsShufflingQuestion', IsShufflingQuestion)
+
     AssignmentItems.forEach((question, index)=>{
         formData.append(`AssignmentItems[${index}].question`, question.question)
         formData.append(`AssignmentItems[${index}].mark`, question.mark)

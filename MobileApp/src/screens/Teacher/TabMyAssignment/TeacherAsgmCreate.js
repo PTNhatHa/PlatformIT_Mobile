@@ -14,7 +14,7 @@ import { createManualAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 
 export const TeacherAsgmCreate = ({route})=>{
-    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, getAllAsgm} = route?.params || {}
+    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
     const {state} = useUser()
     const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -23,7 +23,12 @@ export const TeacherAsgmCreate = ({route})=>{
 
     const [isExercise, setIsExercise] = useState(idLecture ? true : false)
     const [titleAsgm, setTitleAsgm] = useState("")
-    const [selectCourse, setSelectCourse] = useState(nameCourse || "")
+    const [selectCourse, setSelectCourse] = useState(idCourse ? {
+        value: idCourse,
+        label: nameCourse,
+        isLimitedTime: isLimitedTime,
+    } : "")
+    // console.log("selectCourse: ", selectCourse);
     const [selectSection, setSelectSection] = useState("")
     const [selectLecture, setSelectLecture] = useState("")
     const [type, setType] = useState("")
@@ -261,9 +266,11 @@ export const TeacherAsgmCreate = ({route})=>{
                 titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
                 duration, type.value, isPublish, isShuffling ? 1 : 0, questions, state.idUser
             )
+            console.log("response: ", response);
             if(response){
+                console.log("zooooo");
                 Alert.alert("Done", response)
-                getAllAsgm()
+                reload()
                 navigation.goBack()
             }
         } catch (error) {
