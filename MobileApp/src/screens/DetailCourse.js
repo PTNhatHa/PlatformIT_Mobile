@@ -29,6 +29,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { ModalCourseContent } from "../components/ModalCourseContent"
 import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
+import { isChatAvailable } from "../services/user"
 
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
@@ -43,6 +44,7 @@ export const DetailCourse =({route})=>{
     const [isAddNoti, setIsAddNoti] = useState(false);
     const [notiContent, setNotiContent] = useState("");
     const [listNoti, setListNoti] = useState([]);
+    const [isChat, setIsChat] = useState(false)
 
     const getCourse = async()=>{
         try {
@@ -50,7 +52,13 @@ export const DetailCourse =({route})=>{
             if(response){
                 setData(response)
                 if(state.idRole === 4 && response.idTeacher === state.idUser) setRole(1)
-                if(state.idRole === 3) checkStudentIsEnrollCourse()
+                if(state.idRole === 3){
+                    checkStudentIsEnrollCourse()
+                    const check = await isChatAvailable(state.idUser, response.idTeacher)
+                    if(check === true){
+                        setIsChat(true)
+                    }
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -227,9 +235,17 @@ export const DetailCourse =({route})=>{
                             start={{ x: 0, y: 0 }} // Bắt đầu từ bên trái
                             end={{ x: 1, y: 0 }} // Kết thúc ở bên phải
                         >
-                            <View style={styles.titleCard}>
-                                <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
-                                <Text style={styles.titleCardText}>Teacher</Text>
+                            <View style={styles.wrapFlex}>
+                                <View style={styles.titleCard}>
+                                    <FontAwesome6 name="graduation-cap" size={16} color={COLORS.secondMain} />
+                                    <Text style={styles.titleCardText}>Teacher</Text>
+                                </View>
+                                {isChat &&
+                                    <TouchableOpacity style={[styles.titleCard, {backgroundColor: COLORS.main30}]}>
+                                        <Ionicons name="chatbubble-outline" size={16} color="black" />
+                                        <Text style={[styles.titleCardText, {color: "black"}]}>Contact</Text>
+                                    </TouchableOpacity>
+                                }
                             </View>
                             <View style={styles.contentCard}>
                                 <Image source={data.teacherAvatarPath ? {uri: data.teacherAvatarPath} : DefaultAva} style={styles.avata}/>
@@ -618,6 +634,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 20,
         rowGap: 12,
+    },
+    wrapFlex:{
+        flexDirection: "row",
+        justifyContent: "space-between"
     }
 })
 
