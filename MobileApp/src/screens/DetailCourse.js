@@ -338,6 +338,7 @@ export const DetailCourse =({route})=>{
                         />
                     </>
                 : selectBtn === 1 ?
+                    data.tests.length > 0 &&
                     <>
                         {/* Course assignments */}
                         {role === 1 &&
@@ -361,6 +362,7 @@ export const DetailCourse =({route})=>{
                             )}
                         </View>
                     </>
+                
                 : selectBtn === 2 ?
                     <>
                         {role === 1 &&

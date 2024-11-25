@@ -13,7 +13,9 @@ export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introd
     formData.append('Introduction', Introduction)
     formData.append('LectureVideo', LectureVideo)
     formData.append('MainMaterials', MainMaterials)
-    formData.append('SupportMaterials', SupportMaterials)
+    SupportMaterials.forEach((item, index) => {
+        formData.append(`SupportMaterials[${index}]`, item)
+    })
     return await axios.post(baseUrl + "/AddLecture?idCreatedBy=" + idCreatedBy, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',

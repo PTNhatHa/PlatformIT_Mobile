@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator, TouchableWithoutFeedback } from "react-native"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
@@ -56,6 +56,9 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
     )) || [])
     const [isAddSection, setIsAddSection] = useState(false);
     const [newSection, setNewSection] = useState("");
+
+    const [longPressSection, setLongPressSection] = useState(false);
+    const [selectSection, setSelectSection] = useState("");
 
     useEffect(()=>{
         setLoading(true)
@@ -117,11 +120,21 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                     let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow
                     return(
                         <View key={item.idSection} style={styles.wrapSectionLecture}>
-                            <TouchableOpacity style={styles.wrapSection} onPress={()=>handleShowSection(item.idSection)}>
-                                <Text style={[styles.section, {flex: 1}]}>
-                                    {item.sectionName} 
+                            <TouchableOpacity 
+                                style={styles.wrapSection} 
+                                onPress={()=>handleShowSection(item.idSection)}
+                                onLongPress={()=>{
+                                    setSelectSection({
+                                        idSection: item.idSection,
+                                        sectionName: item.sectionName
+                                    })
+                                    setLongPressSection(true)
+                                }}
+                            >
+                                <Text style={[styles.section, {flex: 1}]} numberOfLines={1}>
+                                    {item.sectionName}
                                 </Text>
-                                <Text style={styles.section}>
+                                <Text style={[styles.section, {fontSize: 12}]}>
                                     {item.lectureCount}
                                     {item.lectureCount > 1 ? " lectures" : " lecture"}
                                 </Text>
@@ -147,10 +160,6 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                                         })}>
                                             <Entypo name="plus" size={14} color={COLORS.main} />
                                             <Text style={styles.addLecText}>Add new lecture</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.addLec}>
-                                            <Text style={[styles.addLecText, {color: COLORS.red}]}>Delete this section</Text>
-                                            <MaterialIcons name="delete" size={14} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
                                 }
@@ -180,6 +189,36 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                         </View>
                     </View>
                 </Modal>
+
+                {/* LongPress Section */}
+                <Modal
+                    visible={longPressSection}
+                    transparent={true}
+                    animationType="fade"
+                >
+                    <TouchableWithoutFeedback onPress={() => {
+                        setLongPressSection(false)
+                        setSelectSection("")
+                    }}>
+                        <View style={styles.selectImgWrapper}>
+                            <View style={[styles.wrapSection, {borderRadius: 8}]} >
+                                <Text style={[styles.section, {flex: 1}]}>
+                                    {selectSection?.sectionName}
+                                </Text>
+                            </View>
+                            <View style={styles.selectSection}>
+                                <TouchableOpacity style={[styles.btnSelectSection, {borderBottomWidth: 1}]}>
+                                    <Text>Edit name section</Text>
+                                    <Entypo name="edit" size={20} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.btnSelectSection}>
+                                    <Text>Delete section</Text>
+                                    <MaterialIcons name="delete" size={20} color="black" />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
             </>
         }  
         </>
@@ -197,7 +236,8 @@ const styles = StyleSheet.create({
         columnGap: 4,
         backgroundColor: COLORS.main30,
         paddingHorizontal: 16,
-        paddingVertical: 8
+        paddingVertical: 8,
+        gap: 8
     },
     wrapShow: {
         overflow: "hidden",
@@ -208,7 +248,7 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        marginVertical: 8
+        marginVertical: 4
     },
 
     addLec: {
@@ -230,7 +270,8 @@ const styles = StyleSheet.create({
         height: "100%",
         padding: 16,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        gap: 8
     },
     close:{
         alignSelf: "flex-end"
@@ -251,6 +292,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+    selectSection: {
+        backgroundColor: "white",
+        width: "100%",
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    btnSelectSection:{
+        borderColor: COLORS.lightText,
+        width: "100%",
+        padding: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
     }
 })
 
