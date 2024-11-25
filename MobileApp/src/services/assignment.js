@@ -43,7 +43,6 @@ export const createManualAssignment = async (
     })
 }
 
-
 export const getAllAssignmentCardOfTeacher = async (idTeacher)=>{
     return await axios.get(baseUrl + "/GetAllAssignmentCardOfTeacher?idTeacher=" + idTeacher)
     .then(response => {
@@ -52,5 +51,16 @@ export const getAllAssignmentCardOfTeacher = async (idTeacher)=>{
     })
     .catch(error => {
         console.log("Error GetAllAssignmentCardOfTeacher: ", error);
+    })
+}
+
+export const deleteAssignment = async (idAssignment, idUpdatedBy)=>{
+    return await axios.delete(baseUrl + "/DeleteAssignment?idAssignment=" + idAssignment + "&idUpdatedBy=" + idUpdatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data.message
+    })
+    .catch(error => {
+        console.log("Error deleteAssignment: ", error);
     })
 }

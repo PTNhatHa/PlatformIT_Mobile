@@ -1,4 +1,4 @@
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
@@ -10,6 +10,8 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { deleteAssignment } from "../services/assignment";
+import { useUser } from "../contexts/UserContext";
 
 const initAssignment =     {
     "idAssignment": 12,
@@ -41,8 +43,28 @@ const initAssignment =     {
 //     "createdDate": "2024-11-20T11:23:31.7661598",
 //     "isPastDue": 0
 //   },
-export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false})=>{
+export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}})=>{
     const [longPress, setLongPress] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const {state} = useUser()
+    const handleDeleteAsgm = async()=>{
+        setLoading(true)
+        try {
+            const response = await deleteAssignment(data.idAssignment, state.idUser)
+            if(response){
+                Alert.alert("Delete", response)
+                setLongPress(false)
+                getAllAsgm()
+            } else {
+                Alert.alert("Error", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return(
         <>
             <TouchableOpacity 
@@ -168,7 +190,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                                 <Text>Duplicate</Text>
                                 <Ionicons name="duplicate" size={20} color="black" />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.btnSelectAsgm}>
+                            <TouchableOpacity style={styles.btnSelectAsgm} onPress={()=>handleDeleteAsgm()}>
                                 <Text>Delete</Text>
                                 <MaterialIcons name="delete" size={20} color="black" />
                             </TouchableOpacity>
@@ -176,6 +198,17 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+            {loading &&
+            <Modal
+                visible={loading}
+                transparent={true}
+                animationType="fade"
+            >
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            </Modal>
+            }
         </>
     )
 }
@@ -252,5 +285,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
-    }
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.1)',
+    },
 })

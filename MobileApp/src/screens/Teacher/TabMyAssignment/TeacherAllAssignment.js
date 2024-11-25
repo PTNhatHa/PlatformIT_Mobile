@@ -12,7 +12,7 @@ import { CardAssignment } from "../../../components/CardAssignment";
 import { formatDateTime } from "../../../utils/utils";
 import { FilterAsgm } from "../../../components/Filter";
 
-const ViewAllRender = ({data = [], status})=>{
+const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
     const [indexPage, setIndexPage] = useState(1)
     const [inputIndex, setInputIndex] = useState(1)
     const numberItem = 10
@@ -64,18 +64,18 @@ const ViewAllRender = ({data = [], status})=>{
                                 <View key={`${createDate}-${item.idAssignment}`}>
                                     <Text style={[commonStyles.title, {marginTop: 12}]} key={createDate + status}>Create on {createDate}</Text>
                                     {status === 2 ?
-                                        <CardAssignment data={item} role={1} key={item.idAssignment + status} isPastDue={true}/>
+                                        <CardAssignment data={item} role={1} key={item.idAssignment + status} isPastDue={true} getAllAsgm={getAllAsgm}/>
                                         :
-                                        <CardAssignment data={item} role={1}  key={item.idAssignment + status}/>
+                                        <CardAssignment data={item} role={1}  key={item.idAssignment + status} getAllAsgm={getAllAsgm}/>
                                     }
                                 </View>
                             )
                         } else  {
                             return(
                                 status === 2 ?
-                                    <CardAssignment data={item} role={1} key={item.idAssignment + status} status={true}/>
+                                    <CardAssignment data={item} role={1} key={item.idAssignment + status} status={true} getAllAsgm={getAllAsgm}/>
                                     :
-                                    <CardAssignment data={item} role={1}  key={item.idAssignment + status}/>
+                                    <CardAssignment data={item} role={1}  key={item.idAssignment + status} getAllAsgm={getAllAsgm}/>
                             )
                         }
                     })}
@@ -316,13 +316,13 @@ export const TeacherAllAssignment = ()=>{
                     </TouchableOpacity>
                 </View>
                 {selectBtn === 0 &&
-                    <ViewAllRender data={currentPublish} status={0} key={0}/>                    
+                    <ViewAllRender data={currentPublish} status={0} key={0} getAllAsgm={getAllAsgm}/>                    
                 }
                 {selectBtn === 1 &&
-                    <ViewAllRender data={currentUnpublish} status={1} key={1}/>                    
+                    <ViewAllRender data={currentUnpublish} status={1} key={1} getAllAsgm={getAllAsgm}/>                    
                 }
                 {selectBtn === 2 &&
-                    <ViewAllRender data={currentPastDue} status={2} key={2}/>                   
+                    <ViewAllRender data={currentPastDue} status={2} key={2} getAllAsgm={getAllAsgm}/>                   
                 }
                 <Modal
                     visible={isOpenModal}
