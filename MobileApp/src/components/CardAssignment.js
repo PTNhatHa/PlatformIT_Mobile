@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
@@ -7,6 +7,9 @@ import { TagNoColor } from "./Tag";
 import Foundation from '@expo/vector-icons/Foundation';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const initAssignment =     {
     "idAssignment": 12,
@@ -39,55 +42,141 @@ const initAssignment =     {
 //     "isPastDue": 0
 //   },
 export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false})=>{
+    const [longPress, setLongPress] = useState(false);
     return(
-        <TouchableOpacity style={isNoBoder ? styles.containerNoBoder : styles.container} key={data.idAssignment}>
-            <View style={styles.wrapContent}>
-                <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
-                <View style={styles.wrapDetail}>
-                    <View style={styles.content}>
-                        <Foundation name="page-edit" size={12} color={COLORS.stroke} />
-                        <Text style={styles.dataText}>{typeAssignment[data.assignmentType] || "Unknown"}</Text>
+        <>
+            <TouchableOpacity 
+                style={isNoBoder ? styles.containerNoBoder : styles.container} 
+                key={data.idAssignment}
+                onLongPress={()=>{
+                    if(role === 1){
+                        setLongPress(true)
+                    }
+                }}    
+            >
+                <View style={styles.wrapContent}>
+                    <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
+                    <View style={styles.wrapDetail}>
+                        <View style={styles.content}>
+                            <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>{typeAssignment[data.assignmentType] || "Unknown"}</Text>
+                        </View>
+                        {data.duration !== 0 && data.duration !== null &&
+                            <View style={styles.content}>
+                                <Feather name="clock" size={11} color={COLORS.stroke} />
+                                <Text style={styles.dataText}>{data.duration} min</Text>
+                            </View>
+                        }
+                        {data.questionQuantity !== null &&
+                            <View style={styles.content}>
+                                <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
+                                <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
+                            </View>
+                        }
+                        {role === 1 && data.dueDate !== null &&
+                            <View style={styles.content}>
+                                <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                                <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
+                            </View>
+                        }
                     </View>
-                    {data.duration !== 0 && data.duration !== null &&
-                        <View style={styles.content}>
-                            <Feather name="clock" size={11} color={COLORS.stroke} />
-                            <Text style={styles.dataText}>{data.duration} min</Text>
+                    <View>
+                        {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
+                        {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
+                    </View>
+                    {role === 2 && data.dueDate !== null &&
+                        <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                            <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
                         </View>
                     }
-                    {data.questionQuantity !== null &&
-                        <View style={styles.content}>
-                            <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
-                            <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
-                        </View>
-                    }
-                    {role === 1 && data.dueDate !== null &&
-                        <View style={styles.content}>
-                            <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
-                            <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
+                    {role === 1 && 
+                        <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                            {data.isPublish !== null && isPastDue &&
+                                <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
+                            }
+                            {data.isTest !== null &&
+                                <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
+                            }
                         </View>
                     }
                 </View>
-                <View>
-                    {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
-                    {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
-                </View>
-                {role === 2 && data.dueDate !== null &&
-                    <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                        <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
+            </TouchableOpacity>
+
+            <Modal
+                visible={longPress}
+                transparent={true}
+                animationType="fade"
+            >
+                <TouchableWithoutFeedback onPress={() => {
+                    setLongPress(false)
+                }}>
+                    <View style={styles.modalWrapper}>
+                        <View style={styles.container}>
+                            <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
+                            <View style={styles.wrapDetail}>
+                                <View style={styles.content}>
+                                    <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                                    <Text style={styles.dataText}>{typeAssignment[data.assignmentType] || "Unknown"}</Text>
+                                </View>
+                                {data.duration !== 0 && data.duration !== null &&
+                                    <View style={styles.content}>
+                                        <Feather name="clock" size={11} color={COLORS.stroke} />
+                                        <Text style={styles.dataText}>{data.duration} min</Text>
+                                    </View>
+                                }
+                                {data.questionQuantity !== null &&
+                                    <View style={styles.content}>
+                                        <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
+                                        <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
+                                    </View>
+                                }
+                                {data.dueDate !== null &&
+                                    <View style={styles.content}>
+                                        <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                                        <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
+                                    </View>
+                                }
+                            </View>
+                            <View>
+                                {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
+                                {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
+                            </View>
+                            <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                                {data.isPublish !== null && isPastDue &&
+                                    <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
+                                }
+                                {data.isTest !== null &&
+                                    <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
+                                }
+                            </View>
+
+                        </View>
+                        <View style={styles.selectAsgm}>
+                            {!data.isPublish &&
+                                <>
+                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                                        <Text>Publish</Text>
+                                        <MaterialIcons name="cloud-upload" size={24} color="black" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                                        <Text>Edit</Text>
+                                        <Entypo name="edit" size={20} color="black" />
+                                    </TouchableOpacity>
+                                </>
+                            }
+                            <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                                <Text>Duplicate</Text>
+                                <Ionicons name="duplicate" size={20} color="black" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.btnSelectAsgm}>
+                                <Text>Delete</Text>
+                                <MaterialIcons name="delete" size={20} color="black" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                }
-                {role === 1 && 
-                    <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                        {data.isPublish !== null && isPastDue &&
-                            <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
-                        }
-                        {data.isTest !== null &&
-                            <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
-                        }
-                    </View>
-                }
-            </View>
-        </TouchableOpacity>
+                </TouchableWithoutFeedback>
+            </Modal>
+        </>
     )
 }
 
@@ -138,4 +227,30 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 8
     },
+
+    modalWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8
+    },
+    selectAsgm: {
+        backgroundColor: "white",
+        width: "100%",
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    btnSelectAsgm:{
+        borderColor: COLORS.lightText,
+        width: "100%",
+        padding: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    }
 })
