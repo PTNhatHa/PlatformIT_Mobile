@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { enrollCourse, getCourseDetail, isEnrolledCourse } from "../services/course";
+import { enrollCourse, getCourseDetail, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -45,6 +45,8 @@ export const DetailCourse =({route})=>{
     const [notiContent, setNotiContent] = useState("");
     const [listNoti, setListNoti] = useState([]);
     const [isChat, setIsChat] = useState(false)
+    
+    const [studentTest, setStudentTest] = useState([])
 
     const getCourse = async()=>{
         try {
@@ -57,6 +59,7 @@ export const DetailCourse =({route})=>{
                     const check = await isChatAvailable(state.idUser, response.idTeacher)
                     if(check === true){
                         setIsChat(true)
+
                     }
                 }
             }
@@ -81,6 +84,11 @@ export const DetailCourse =({route})=>{
             const response = await isEnrolledCourse(state.idUser, idCourse)
             if(response === true){
                 setRole(2)
+                // Get test of student
+                const testOfStudent = await getTestOfCourseStudent(state.idUser, idCourse)
+                if(testOfStudent){
+                    setStudentTest(testOfStudent)
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -341,6 +349,14 @@ export const DetailCourse =({route})=>{
                     data.tests.length > 0 &&
                     <>
                         {/* Course assignments */}
+                        {role === 0 &&
+                            <View style={[styles.wrapShow]}>
+                                {data.tests.length > 0 &&
+                                    data.tests.map(test => 
+                                        <CardAssignment data={test} key={test.idAssignment} role={role}/>
+                                    )}
+                            </View>
+                        }
                         {role === 1 &&
                             <ButtonIconLightGreen 
                                 title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
@@ -355,12 +371,14 @@ export const DetailCourse =({route})=>{
                                 })}
                             />
                         }
-                        <View style={[styles.wrapShow]}>
-                            {data.tests.length > 0 &&
-                                data.tests.map(test => 
-                                    <CardAssignment data={test} key={test.idAssignment} role={role}/>
-                            )}
-                        </View>
+                        {role === 2 &&
+                            <View style={[styles.wrapShow]}>
+                                {studentTest.length > 0 &&
+                                    studentTest.map(test => 
+                                        <CardAssignment data={test} key={test.idAssignment} role={role}/>
+                                    )}
+                            </View>
+                        }
                     </>
                 
                 : selectBtn === 2 ?

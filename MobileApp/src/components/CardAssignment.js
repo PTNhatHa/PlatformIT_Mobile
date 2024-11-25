@@ -3,7 +3,7 @@ import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 import { useState } from "react";
-import { TagNoColor } from "./Tag";
+import { Tag, TagNoColor, TagRed } from "./Tag";
 import Foundation from '@expo/vector-icons/Foundation';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -106,9 +106,16 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
                         {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
                     </View>
-                    {role === 2 && data.dueDate !== null &&
+                    {role === 2 && 
                         <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>
+                            {data.isSubmitted ?
+                                <Tag label={"Submited"}/>                                
+                            : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
+                                <TagRed label={"Past due"}/>                    
+                            : data.dueDate !== null ?
+                                <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>   
+                            :""
+                            }
                         </View>
                     }
                     {role === 1 && 
@@ -121,6 +128,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             }
                         </View>
                     }
+                    {role === 0 && <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>  }
                 </View>
             </TouchableOpacity>
 
