@@ -361,7 +361,7 @@ export const DetailCourse =({route})=>{
                     <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
                         <Text style={selectBtn === 0 ? styles.selectBtn : styles.normalBtn}>Content</Text>
                     </TouchableOpacity>
-                    {data.isLimitedTime &&
+                    {data.isLimitedTime === 1 &&
                         <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
                             <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
                         </TouchableOpacity>
@@ -451,12 +451,14 @@ export const DetailCourse =({route})=>{
                         </View>
                     </>
                 : selectBtn === 3 ?
-                <View style={styles.wrapShow}>
-                    {/* {data.attendance?.map(item =>  */}
-                        <CardStudentAttendance/>
-                    {/* )} */}
-                </View>
-                : ""}
+                    <View style={styles.wrapShow}>
+                        {/* {data.attendance?.map(item =>  */}
+                            <CardStudentAttendance/>
+                        {/* )} */}
+                    </View>
+                : 
+                    <></>
+                }
             </View>     
         </ScrollView>
 
