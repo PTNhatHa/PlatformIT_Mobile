@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ViewAllFromDetail } from "../../ViewAllFromDetail";
 import { ActivityIndicator, FlatList, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getAllCourseCardsByIdTeacher } from "../../../services/course";
@@ -6,7 +6,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { COLORS, commonStyles } from "../../../utils/constants";
 import Feather from '@expo/vector-icons/Feather';
 import Entypo from '@expo/vector-icons/Entypo';
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getAllAssignmentCardOfTeacher } from "../../../services/assignment";
 import { CardAssignment } from "../../../components/CardAssignment";
 import { formatDateTime } from "../../../utils/utils";

@@ -115,7 +115,6 @@ export const DetailCourse =({route})=>{
             const response = await addBoardNotificationForCourse(idCourse, notiContent, state.idUser)
             if(response){
                 Alert.alert("Add notification", response)
-                console.log(response);
                 setIsAddNoti(false)
                 setNotiContent("")
                 getNoti()
@@ -129,7 +128,6 @@ export const DetailCourse =({route})=>{
         const callApi = async()=>{
             try {
                 const response = await enrollCourse(state.idUser, idCourse)
-                console.log(response);
                 if(response.code){
                     Alert.alert("Warning", response.message)
                 } else{
@@ -319,9 +317,11 @@ export const DetailCourse =({route})=>{
                     <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
                         <Text style={selectBtn === 0 ? styles.selectBtn : styles.normalBtn}>Content</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
-                        <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
-                    </TouchableOpacity>
+                    {data.isLimitedTime &&
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
+                            <Text style={selectBtn === 1 ? styles.selectBtn : styles.normalBtn}>Test</Text>
+                        </TouchableOpacity>
+                    }
                     {role !== 0 &&
                         <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(2)}>
                             <Text style={selectBtn === 2 ? styles.selectBtn : styles.normalBtn}>Noti</Text>
@@ -346,7 +346,6 @@ export const DetailCourse =({route})=>{
                         />
                     </>
                 : selectBtn === 1 ?
-                    data.tests.length > 0 &&
                     <>
                         {/* Course assignments */}
                         {role === 0 &&
@@ -357,7 +356,7 @@ export const DetailCourse =({route})=>{
                                     )}
                             </View>
                         }
-                        {role === 1 &&
+                        {role === 1 && data.isLimitedTime &&
                             <>
                                 <ButtonIconLightGreen 
                                     title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}

@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     container: {
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        paddingVertical: 8,
         flexDirection: "row",
         columnGap: 8,
         justifyContent: "center",

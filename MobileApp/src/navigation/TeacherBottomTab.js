@@ -206,23 +206,31 @@ export const TeacherBottomTab = ()=>{
 
         // Start the connection
         connection.start()
-            .then(() => console.log('Connected to SignalR'))
+            .then(() => {
+                console.log('Connected to SignalR')
+
+                // Subscribe to the "UpdateNotifications" event
+                connection.on('UpdateNotifications', (updatedNotifications) => {
+                    console.log('UpdateNotifications event triggered'); // Kiểm tra sự kiện có kích hoạt
+                    console.log('Received notifications:', updatedNotifications); // Kiểm tra dữ liệu nhận được
+                    let notiUnRead = 0
+                    if(updatedNotifications){
+                        updatedNotifications.forEach(item => {
+                            if(item.isRead === 0){
+                                notiUnRead +=1
+                            }
+                        });
+                        setAllNoti(updatedNotifications)
+                    }
+                    setUnReadNoti(notiUnRead)
+                });
+            })
             .catch(err => console.error('SignalR Connection Error: ', err));
 
-        // Subscribe to the "UpdateNotifications" event
-        connection.on('UpdateNotifications', (updatedNotifications) => {
-            let notiUnRead = 0
-            if(updatedNotifications){
-                updatedNotifications.forEach(item => {
-                    if(item.isRead === 0){
-                        notiUnRead +=1
-                    }
-                });
-                setAllNoti(updatedNotifications)
-            }
-            setUnReadNoti(notiUnRead)
+        // Check close
+        connection.onclose((error) => {
+            console.error("SignalR connection closed:", error);
         });
-
         // Clean up the connection when component unmounts
         return () => {
             connection.stop();

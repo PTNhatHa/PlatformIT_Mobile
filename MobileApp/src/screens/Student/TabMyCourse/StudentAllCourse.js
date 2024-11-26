@@ -1,9 +1,10 @@
 import { ActivityIndicator, StyleSheet, View } from "react-native"
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { COLORS} from "../../../utils/constants";
 import { ViewAllFromDetail } from "../../ViewAllFromDetail";
 import { getAllCourseCardsByIdStudent } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 export const StudentAllCourse = ()=>{
     const {state, dispatch} = useUser()
@@ -26,6 +27,12 @@ export const StudentAllCourse = ()=>{
     useEffect(()=>{
         getAllCourseOfStudent()
     }, [])
+    
+    useFocusEffect(
+        useCallback(() => {
+            getAllCourseOfStudent();
+        }, []) // Dependency array đảm bảo hiệu suất
+    );
     
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải

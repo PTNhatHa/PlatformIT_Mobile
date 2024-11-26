@@ -371,7 +371,6 @@ export const TeacherAsgmCreate = ({route})=>{
     const postAsgm = async(isPublish)=>{
         setLoading(true)
         try {
-            console.log("zooo");
             let response = null
             if(type.value === 1){
                 response = await createManualAssignment(
