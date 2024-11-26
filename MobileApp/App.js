@@ -13,16 +13,19 @@ import SigninGg from './src/components/SigninGg';
 import { DetailTeacher } from './src/screens/DetailTeacher';
 import { CardAssignment } from './src/components/CardAssignment';
 import { FilterAsgm } from './src/components/Filter';
+import { CustomSwitch } from './src/components/CustomSwitch';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
+          {/* <SigninSignup/> */}
           {/* <DetailTeacher/> */}
           {/* <CardAssignment/> */}
           {/* <FilterAsgm/> */}
+          <TeacherAsgmCreate/>
+          {/* <CustomSwitch label={"label"}/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

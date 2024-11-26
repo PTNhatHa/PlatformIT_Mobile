@@ -1,13 +1,15 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 
-export const RadioBtn =({label="label", selected = false, onPress=()=>{}})=>{
+export const RadioBtn =({label, selected = false, onPress=()=>{}})=>{
     return(
         <TouchableOpacity style={styles.container} onPress={onPress}>
             <View style={styles.circle}>
-                {selected ? <View  style={styles.circleSelected}/> : ""}
+                {selected ? <View style={styles.circleSelected}/> : ""}
             </View>
-            <Text style={styles.label}>{label}</Text>
+            {label &&
+                <Text style={styles.label}>{label}</Text>
+            }
         </TouchableOpacity>
     )
 }
@@ -19,22 +21,20 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     circle: {
-        borderWidth: 1,
+        borderWidth: 2,
         width: 20,
         height: 20,
         borderRadius: 90,
-        borderColor: COLORS.main,
-        backgroundColor: COLORS.lightText,
+        borderColor: "black",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        margin: 2
     },
     circleSelected: {
-        borderWidth: 1,
         width: 12,
         height: 12,
         borderRadius: 90,
-        borderColor: COLORS.main,
-        backgroundColor: COLORS.main,
+        backgroundColor: COLORS.secondMain,
     },
     label: {
         fontSize: 16,

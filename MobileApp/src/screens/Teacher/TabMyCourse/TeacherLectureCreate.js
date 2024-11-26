@@ -152,7 +152,7 @@ export const TeacherLectureCreate = ({route})=>{
                         {/* <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
                         <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                        */}
                         <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
-                        <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro}/>                       
+                        <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro} multiline={true}/>                       
                     </View>
                 </View>
 

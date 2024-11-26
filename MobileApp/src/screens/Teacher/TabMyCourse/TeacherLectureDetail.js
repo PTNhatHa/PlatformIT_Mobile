@@ -139,7 +139,7 @@ export const TeacherLectureDetail = ({route})=>{
                             <TextInputLabelGray label={"Add to course"} value={"nameCourse"} editable={false}/>                            
                             <TextInputLabelGray label={"Add to section"} value={"nameSection"} editable={false}/>                       
                             <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
-                            <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro}/>                       
+                            <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro} multiline={true}/>                       
                             <View style={styles.wrapBtn}>
                                 <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
                                     <Text style={styles.textWhite14}>Save changes</Text>

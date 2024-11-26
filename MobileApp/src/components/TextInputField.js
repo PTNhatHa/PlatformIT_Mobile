@@ -56,14 +56,10 @@ export const TextInputLabel = ({
 }
 
 export const TextInputLabelGray = ({
-    label, value, placeholder, onchangeText = ()=>{}, editable=true, type="Default", index, field
+    label, value, placeholder, onchangeText = ()=>{}, editable=true, type="Default", multiline = false
 }) => {
     const handleOnchangeText = (v)=>{
-        if(index !== null){
-            onchangeText(v, index, field)
-        } else{
-            onchangeText(v)
-        }
+        onchangeText(v)
     }
     return(
         <>
@@ -74,7 +70,7 @@ export const TextInputLabelGray = ({
                     value={value}
                     placeholder={placeholder}
                     onChangeText={(v)=>handleOnchangeText(v)}
-                    multiline={label === "Introduction"}
+                    multiline={multiline}
                     editable={editable}
                     keyboardType={type}
                 />

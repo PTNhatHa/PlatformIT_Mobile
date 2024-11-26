@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
@@ -12,6 +12,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
 import { createManualAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
+import { CustomSwitch } from "../../../components/CustomSwitch"
+import { RadioBtn } from "../../../components/RadioBtn"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -31,13 +33,30 @@ export const TeacherAsgmCreate = ({route})=>{
     // console.log("selectCourse: ", selectCourse);
     const [selectSection, setSelectSection] = useState("")
     const [selectLecture, setSelectLecture] = useState("")
-    const [type, setType] = useState("")
+    const [type, setType] = useState({ label: "Quiz", value: 2 })
     const [duration, setDuration] = useState("")
     const [startDate, setStartDate] = useState("")
     const [dueDate, setDueDate] = useState("")
 
     const [isShuffling, setIsShuffling] = useState(false)
     const [questions, setQuestions] = useState([])
+    // [
+    //     {
+    //         "question": "string",
+    //         "mark": "50",
+    //         "explanation": "string",
+    //         "isMultipleAnswer": 0,
+    //         "attachedFile": "",
+    //         "items": [
+    //             {
+    //             "idMultipleAssignmentItem": 0,
+    //             "content": "string",
+    //             "isCorrect": 0,
+    //             "multipleAssignmentItemStatus": 0
+    //             }
+    //         ]
+    //     }
+    // ]
     const [totalMark, setTotalMark] = useState(0)
 
     const [listCourses, setListCourses] = useState([])
@@ -62,7 +81,6 @@ export const TeacherAsgmCreate = ({route})=>{
         const getAllCourse = async()=>{
             try {
                 const response = await getAllActiveCourseOfTeacher(state.idUser)
-                // console.log("API response:", response);
                 setListCourses([...response?.map(item=>{
                     return{
                         value: item.idCourse,
@@ -113,13 +131,13 @@ export const TeacherAsgmCreate = ({route})=>{
                 console.log("Error: ", error);
             }
         }
-        if(!idCourse){
-            getAllSection()
-            getAllLecture()
-            setSelectSection(null)
-            setSelectLecture(null)
-            if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
-        }
+        // if(!idCourse){
+        //     getAllSection()
+        //     getAllLecture()
+        //     setSelectSection(null)
+        //     setSelectLecture(null)
+        //     if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
+        // }
     }, [selectCourse])
 
     useEffect(()=>{
@@ -144,10 +162,10 @@ export const TeacherAsgmCreate = ({route})=>{
         setError(null)
     }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
 
-    const pickFile = async()=>{
+    const pickFile = async(type = "*")=>{
         try{
             let result = await DocumentPicker.getDocumentAsync({
-                type: ['*/*'],
+                type: [type + '/*'],
                 copyToCacheDirectory: true,
             })
             return result.assets[0]
@@ -172,8 +190,8 @@ export const TeacherAsgmCreate = ({route})=>{
         }
         setQuestions(newList)
     }
-    const handleChangeQuestionMaterial = async(index)=>{
-        const result = await pickFile()
+    const handleChangeQuestionMaterial = async(index, type = "*")=>{
+        const result = await pickFile(type)
         if(result){
             handleChangeQuestion({
                 uri: result.uri,
@@ -183,41 +201,131 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }
     const addQuestion = ()=>{
-        setQuestions([...questions, {
-            question: null,
-            mark: 0,
-            assignmentItemAnswerType: 1,
-            attachedFile: null,
-        }])
+        if(type.value === 1){
+            setQuestions([...questions, {
+                question: null,
+                mark: 0,
+                assignmentItemAnswerType: 1,
+                attachedFile: null,
+            }])
+        }
+        if(type.value === 2){
+            setQuestions([...questions, {
+                question: null,
+                mark: 0,
+                explanation: null,
+                isMultipleAnswer: false,
+                attachedFile: null,
+                items: []
+            }])
+        }
+    }
+    const addNewChoice = (i)=>{
+        const newList = questions.map((question, index) => {
+            if(index === i){
+                return{
+                    ...question,
+                    items: [
+                        ...question.items,
+                        {
+                            content: null,
+                            isCorrect: 0,
+                        }
+                    ]
+                }
+            }
+            return question
+        })
+        setQuestions(newList)
     }
     const deleteQuestion = (index)=>{
         const newQuestions = questions.filter((item, i) => i !==index)
         setQuestions(newQuestions)
     }
+    const deleteChoice = (indexQuestion, indexChoice)=>{
+        const newQuestions = questions.map((question, i) => {
+            if(i === indexQuestion){
+                const newItems = question.items.filter((choice, ichoice) => ichoice !== indexChoice)
+                return{
+                    ...question,
+                    items: [...newItems]
+                }
+            }
+            return question
+        })
+        setQuestions(newQuestions)
+    }
+    const handleChangeChoice = (indexQuestion, indexChoice, field, value)=>{
+        const newQuestions = questions.map((question, i) => {
+            if(i === indexQuestion){
+                const newItems = question.items.map((choice, iChoice)=>{
+                    if(iChoice === indexChoice){
+                        return{
+                            ...choice,
+                            [field]: value
+                        }
+                    }
+                    if(field === "isCorrect" && value === true && question.isMultipleAnswer === false){
+                        return{
+                            ...choice,
+                            "isCorrect": false
+                        }
+                    }
+                    return choice
+                })
+                return{
+                    ...question,
+                    items: [...newItems]
+                }
+            }
+            return question
+        })
+        setQuestions(newQuestions)
+    }
+    const changeIsMultipleAnswer = (indexQ)=>{
+        const newQuestions = questions.map((question, i) => {
+            if(i === indexQ){
+                const newItems = question.items.map((choice)=>{
+                    return{
+                        ...choice,
+                        "isCorrect": false
+                    }
+                })
+                return{
+                    ...question,
+                    isMultipleAnswer: !question.isMultipleAnswer,
+                    items: [...newItems]
+                }
+            }
+            return question
+        })
+        setQuestions(newQuestions)
+    }
 
     const handleCreateAsgm = (isPublish)=>{
-        setError(!titleAsgm || !selectCourse || !type)
-        if(!titleAsgm || !selectCourse || !type){
-            setError("Fill all *")
-            return
-        }
-        if(isExercise){
-            if(!selectSection || !selectLecture){
-                setError("Fill all *")
-                return
-            }
-        }
-        if(startDate || dueDate){
-            if(!startDate) setError("Please select a start date if you have chosen a due date.")
-            if(!dueDate) setError("Please select a due date if you have chosen a start date.")
-        }
+        // setError(!titleAsgm || !selectCourse || !type)
+        // if(!titleAsgm || !selectCourse || !type){
+        //     setError("Fill all *")
+        //     return
+        // }
+        // if(isExercise){
+        //     if(!selectSection || !selectLecture){
+        //         setError("Fill all *")
+        //         return
+        //     }
+        // }
+        // if(startDate || dueDate){
+        //     if(!startDate) setError("Please select a start date if you have chosen a due date.")
+        //     if(!dueDate) setError("Please select a due date if you have chosen a start date.")
+        //     return
+        // }
         if(questions.length === 0){
-            Alert.alert("Warning", "You need to add at least 1 question.")
+            setError("You need to add at least 1 question.")
             return
         }
-        const check = questions.find(item => item.question === null)
+        const check = questions.find(item => item.question === null || item.items.length === 0 || item.mark === 0)
         if(check){
-            Alert.alert("Warning", "You need to fill all question.")
+            setError("You need to fill all question.")
             return
         }
 
@@ -266,9 +374,9 @@ export const TeacherAsgmCreate = ({route})=>{
                 titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
                 duration, type.value, isPublish, isShuffling ? 1 : 0, questions, state.idUser
             )
-            console.log("response: ", response);
+            // console.log("response: ", response);
             if(response){
-                console.log("zooooo");
+                // console.log("zooooo");
                 Alert.alert("Done", response)
                 reload()
                 navigation.goBack()
@@ -295,6 +403,9 @@ export const TeacherAsgmCreate = ({route})=>{
                     </>
                 }
                 <Text style={styles.textGray14}>{questions.length} {questions.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
+                {error &&
+                    <Text style={styles.error}>{error}</Text>
+                }
                 <View style={styles.wrapBtn}>
                     <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
                         <Text style={styles.textWhite14}>Publish</Text>
@@ -385,71 +496,152 @@ export const TeacherAsgmCreate = ({route})=>{
                                 </View>
                             </>
                         }
-                        {error &&
-                            <Text style={styles.error}>{error}</Text>
-                        }
+                        
                     </View>
                     :
                     <>
-                        <View style={[styles.wrapFlex, {alignSelf: "flex-end"}]}>
-                            <Text>Question Shuffling</Text>
-                            <Switch
-                                trackColor={{ false: COLORS.stroke, true: COLORS.main30 }}
-                                thumbColor={isShuffling ? COLORS.secondMain : COLORS.lightGray}
-                                value={isShuffling}
-                                onValueChange={()=>setIsShuffling(!isShuffling)}
-                            />
+                        <View style={{alignSelf: "flex-end", marginVertical: 8}}>
+                            <CustomSwitch label={"Question Shuffling"}value={isShuffling} onChangeText={setIsShuffling}/>   
                         </View>
-                        {questions &&
-                            questions.map((item, index) =>
-                                <View style={styles.wrapContent} key={index}>
-                                    <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                        <Text style={styles.title}>Question {index + 1}*</Text>
-                                        <TouchableOpacity onPress={()=>deleteQuestion(index)}>
-                                            <AntDesign name="close" size={24} color={COLORS.secondMain}/>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <TextInput
-                                        style={[styles.inputLabelGray]}
-                                        placeholder="Question"
-                                        multiline={true}
-                                        value={item.question}
-                                        onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
-                                    />
-                                    <View style={styles.containerGray}>
-                                        <Text style={styles.label}>Reference material (maximum 1 file)</Text>
-                                        {item.attachedFile ?
-                                            <View style={styles.inputLabelGray}>
-                                                <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
-                                                <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                                    <MaterialIcons name="delete" size={18} color="black" />
-                                                </TouchableOpacity>
-                                            </View>
-                                            :
-                                            <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index)} style={[styles.btnText]}>
-                                                <MaterialIcons name="upload-file" size={20} color="black" />
-                                                <Text>Attach file</Text>
+                        {questions ?
+                            type.value === 1 ?
+                                questions.map((item, index) =>
+                                    <View style={styles.wrapContent} key={index}>
+                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                            <Text style={styles.title}>Question {index + 1}*</Text>
+                                            <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                             </TouchableOpacity>
-                                        }
-                                    </View> 
-                                    <View style={{width: "50%"}}>
-                                        <TextInputSelectBox 
-                                            label={"Type of answer*"} listSelect={typeOfAnswer} 
-                                            index={index} field={"assignmentItemAnswerType"} value={item.assignmentItemAnswerType}
-                                            onchangeText={handleChangeQuestion}
+                                        </View>
+                                        <TextInput
+                                            style={[styles.inputLabelGray]}
+                                            placeholder="Question"
+                                            multiline={true}
+                                            value={item.question}
+                                            onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
                                         />
-                                    </View>
-                                    <View style={[styles.wrapFlex, styles.topBorder]}>
+                                        <View style={styles.containerGray}>
+                                            <Text style={styles.label}>Reference material (maximum 1 file)</Text>
+                                            {item.attachedFile ?
+                                                <View style={styles.inputLabelGray}>
+                                                    <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
+                                                    <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                                        <MaterialIcons name="delete" size={18} color="black" />
+                                                    </TouchableOpacity>
+                                                </View>
+                                                :
+                                                <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index)} style={[styles.btnText]}>
+                                                    <MaterialIcons name="upload-file" size={20} color="black" />
+                                                    <Text>Attach file</Text>
+                                                </TouchableOpacity>
+                                            }
+                                        </View> 
                                         <View style={{width: "50%"}}>
-                                            <TextInputLabelGray 
-                                                label={"Mark"} placeholder={"Mark"} type={"numeric"} value={item.mark} 
-                                                index={index} field={"mark"}
+                                            <TextInputSelectBox 
+                                                label={"Type of answer*"} listSelect={typeOfAnswer} 
+                                                index={index} field={"assignmentItemAnswerType"} value={item.assignmentItemAnswerType}
                                                 onchangeText={handleChangeQuestion}
                                             />
                                         </View>
-                                    </View>  
-                                </View>
-                            )
+                                        <View style={[styles.wrapFlex, styles.topBorder]}>
+                                            <View style={{width: "50%"}}>
+                                                <TextInputLabelGray 
+                                                    label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={item.mark} 
+                                                    onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
+                                                />
+                                            </View>
+                                        </View>  
+                                    </View>
+                                )
+                            : type.value === 2 ?
+                                questions.map((question, index) =>
+                                    <View style={styles.wrapContent} key={index}>
+                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                            <Text style={styles.title}>Question {index + 1}*</Text>
+                                            <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <TextInput
+                                            style={[styles.inputLabelGray]}
+                                            placeholder="Question"
+                                            multiline={true}
+                                            value={question.question}
+                                            onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
+                                        />
+                                        <View style={styles.wrapFlex}>
+                                            <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index, "image")} style={[styles.btnText]}>
+                                                <MaterialIcons name="upload-file" size={20} color="black" />
+                                                <Text>Upload Image</Text>
+                                            </TouchableOpacity>
+                                            {question.attachedFile &&
+                                                <TouchableOpacity onPress={()=>handleChangeQuestion(null, index, "attachedFile")} style={{margin: 4}} >
+                                                    <MaterialIcons name="delete" size={18} color="black" />
+                                                </TouchableOpacity>
+                                            }
+                                        </View>
+                                        {question.attachedFile &&
+                                            <Image source={{uri: question.attachedFile.uri}} style={styles.questionImg}/>
+                                        }
+
+                                        {/* Answers */}
+                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                            <Text style={styles.textGray14}>Choices*</Text>
+                                            <CustomSwitch 
+                                                label={"Multiple answer"} 
+                                                value={question.isMultipleAnswer} 
+                                                onChangeText={(v)=>{
+                                                    changeIsMultipleAnswer(index)
+                                                }}
+                                            />
+                                        </View>
+                                        <View style={{gap: 4}}>
+                                            {question.items &&
+                                                question.items.map((choice, indexChoice) =>
+                                                        <View style={styles.wrapFlex} key={indexChoice}>
+                                                            {question.isMultipleAnswer ?
+                                                                <CheckBox
+                                                                    isChecked={choice.isCorrect}
+                                                                    onClick={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}
+                                                                    checkBoxColor={COLORS.secondMain}
+                                                                />
+                                                                :
+                                                                <RadioBtn selected={choice.isCorrect} onPress={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}/>
+                                                            }
+                                                            <TextInput
+                                                                style={[[styles.inputLabelGray, {height: 38}]]}
+                                                                placeholder="Type a choice"
+                                                                value={choice.content}
+                                                                onChangeText={(v)=>handleChangeChoice(index, indexChoice, "content", v)}
+                                                            />
+                                                            <TouchableOpacity style={{margin: 4}} onPress={()=>deleteChoice(index, indexChoice)}>
+                                                                <MaterialIcons name="delete" size={20} color="black"/>
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                )
+                                            }
+                                            <TouchableOpacity style={styles.btnAddChoice} onPress={()=>addNewChoice(index)}>
+                                                <AntDesign name="plus" size={16} color="black" />
+                                                <Text style={styles.textGray14}>Add new choice</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={[styles.topBorder]}>
+                                            <TextInputLabelGray 
+                                                label={"Answer explanation"} placeholder={"Explanation"} value={question.explanation}
+                                                onchangeText={(v)=>handleChangeQuestion(v, index, "explanation")}
+                                                multiline={true}
+                                            />
+                                            <View style={{width: "50%"}}>
+                                                <TextInputLabelGray 
+                                                    label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={question.mark} 
+                                                    onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
+                                                />
+                                            </View>
+                                        </View>  
+                                    </View>
+                                )   
+                            :""
+                        :""
                         }
                     </>
                 }
@@ -612,5 +804,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+
+    questionImg:{
+        backgroundColor: COLORS.lightGray,
+        width: "100%",
+        height: 200,
+        resizeMode: 'contain',
+    },
+    btnAddChoice:{
+        flexDirection: "row",
+        borderColor: COLORS.stroke,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderStyle: "dashed",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        alignItems: "center",
+        gap: 8,
+        alignSelf: "flex-start"
     }
 })

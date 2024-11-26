@@ -358,18 +358,26 @@ export const DetailCourse =({route})=>{
                             </View>
                         }
                         {role === 1 &&
-                            <ButtonIconLightGreen 
-                                title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
-                                action={()=>navigation.navigate("Create Test", {
-                                    idCourse: idCourse, 
-                                    nameCourse: data.courseTitle,
-                                    isLimitedTime: data.registStartDate !== null ? 1 : 0,
-                                    reload: ()=>{
-                                        getCourse()
-                                        getNoti()
-                                    }
-                                })}
-                            />
+                            <>
+                                <ButtonIconLightGreen 
+                                    title={"Add new test"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                                    action={()=>navigation.navigate("Create Test", {
+                                        idCourse: idCourse, 
+                                        nameCourse: data.courseTitle,
+                                        isLimitedTime: data.registStartDate !== null ? 1 : 0,
+                                        reload: ()=>{
+                                            getCourse()
+                                            getNoti()
+                                        }
+                                    })}
+                                />
+                                <View style={[styles.wrapShow]}>
+                                    {data.tests.length > 0 &&
+                                        data.tests.map(test => 
+                                            <CardAssignment data={test} key={test.idAssignment} role={role}/>
+                                        )}
+                                </View>
+                            </>
                         }
                         {role === 2 &&
                             <View style={[styles.wrapShow]}>

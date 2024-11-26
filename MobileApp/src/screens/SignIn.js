@@ -91,6 +91,7 @@ export default SignIn = ({navigation}) => {
     const handleSignin = async ()=>{
         try{
             setLoading(true);
+            setError(null)
             const response = await signinApi(username, password)
             setLoading(false);
             if(response.error){
