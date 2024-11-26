@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
@@ -30,33 +30,19 @@ export const TeacherAsgmCreate = ({route})=>{
         label: nameCourse,
         isLimitedTime: isLimitedTime,
     } : "")
-    // console.log("selectCourse: ", selectCourse);
     const [selectSection, setSelectSection] = useState("")
     const [selectLecture, setSelectLecture] = useState("")
-    const [type, setType] = useState({ label: "Quiz", value: 2 })
+    const [type, setType] = useState(null)
     const [duration, setDuration] = useState("")
     const [startDate, setStartDate] = useState("")
     const [dueDate, setDueDate] = useState("")
 
-    const [isShuffling, setIsShuffling] = useState(false)
+    const [isShufflingQuestion, setIsShufflingQuestion] = useState(false)
+    const [isShufflingAnswer, setIsShufflingAnswer] = useState(false)
+    const [isShowAnswer, setIsShowAnswer] = useState(false)
+    const [isOpenModal, setIsOpenModal] = useState(false)
+
     const [questions, setQuestions] = useState([])
-    // [
-    //     {
-    //         "question": "string",
-    //         "mark": "50",
-    //         "explanation": "string",
-    //         "isMultipleAnswer": 0,
-    //         "attachedFile": "",
-    //         "items": [
-    //             {
-    //             "idMultipleAssignmentItem": 0,
-    //             "content": "string",
-    //             "isCorrect": 0,
-    //             "multipleAssignmentItemStatus": 0
-    //             }
-    //         ]
-    //     }
-    // ]
     const [totalMark, setTotalMark] = useState(0)
 
     const [listCourses, setListCourses] = useState([])
@@ -131,13 +117,14 @@ export const TeacherAsgmCreate = ({route})=>{
                 console.log("Error: ", error);
             }
         }
-        // if(!idCourse){
-        //     getAllSection()
-        //     getAllLecture()
-        //     setSelectSection(null)
-        //     setSelectLecture(null)
-        //     if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
-        // }
+        if(!idCourse){
+            setType(null)
+            getAllSection()
+            getAllLecture()
+            setSelectSection(null)
+            setSelectLecture(null)
+            if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
+        }
     }, [selectCourse])
 
     useEffect(()=>{
@@ -201,7 +188,11 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }
     const addQuestion = ()=>{
-        if(type.value === 1){
+        if(!type){
+            setError("Please choose a type first.")
+            return
+        }
+        if(type?.value === 1){
             setQuestions([...questions, {
                 question: null,
                 mark: 0,
@@ -209,7 +200,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 attachedFile: null,
             }])
         }
-        if(type.value === 2){
+        if(type?.value === 2){
             setQuestions([...questions, {
                 question: null,
                 mark: 0,
@@ -303,22 +294,22 @@ export const TeacherAsgmCreate = ({route})=>{
     }
 
     const handleCreateAsgm = (isPublish)=>{
-        // setError(!titleAsgm || !selectCourse || !type)
-        // if(!titleAsgm || !selectCourse || !type){
-        //     setError("Fill all *")
-        //     return
-        // }
-        // if(isExercise){
-        //     if(!selectSection || !selectLecture){
-        //         setError("Fill all *")
-        //         return
-        //     }
-        // }
-        // if(startDate || dueDate){
-        //     if(!startDate) setError("Please select a start date if you have chosen a due date.")
-        //     if(!dueDate) setError("Please select a due date if you have chosen a start date.")
-        //     return
-        // }
+        setError(!titleAsgm || !selectCourse || !type)
+        if(!titleAsgm || !selectCourse || !type){
+            setError("Fill all *")
+            return
+        }
+        if(isExercise){
+            if(!selectSection || !selectLecture){
+                setError("Fill all *")
+                return
+            }
+        }
+        if(startDate || dueDate){
+            if(!startDate) setError("Please select a start date if you have chosen a due date.")
+            if(!dueDate) setError("Please select a due date if you have chosen a start date.")
+            return
+        }
         if(questions.length === 0){
             setError("You need to add at least 1 question.")
             return
@@ -372,7 +363,7 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await createManualAssignment(
                 titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
-                duration, type.value, isPublish, isShuffling ? 1 : 0, questions, state.idUser
+                duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, questions, state.idUser
             )
             // console.log("response: ", response);
             if(response){
@@ -388,275 +379,311 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }
     return(
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.inner}>
-                {idCourse &&
-                    <>
-                        <Text style={styles.title}>{nameCourse}</Text>
-                        {idSection &&
-                            <View style={styles.wrapFlex}>
-                                <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
-                                <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
-                                <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
-                            </View>
-                        }
-                    </>
-                }
-                <Text style={styles.textGray14}>{questions.length} {questions.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
-                {error &&
-                    <Text style={styles.error}>{error}</Text>
-                }
-                <View style={styles.wrapBtn}>
-                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
-                        <Text style={styles.textWhite14}>Publish</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>handleCreateAsgm(0)}>
-                        <Text style={styles.textGray14}>Save</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.board}>
-                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
-                        <Text style={[styles.normalBtn, selectBtn === 0 && styles.selectBtn]}>Detail assignment</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
-                        <Text style={[styles.normalBtn, selectBtn === 1 && styles.selectBtn]}>Questions</Text>
-                    </TouchableOpacity>
-                </View>
-                {selectBtn === 0 ?
-                    <View style={styles.wrapContent}>
-                        <TextInputLabelGray label={"Title*"} placeholder={"Title assignment"} value={titleAsgm} onchangeText={setTitleAsgm}/>
-                        {!idCourse &&
-                            <>
-                                <TextInputSelectBox 
-                                    label={"Add to course*"} 
-                                    placeholder={"Select a course"} 
-                                    value={selectCourse} 
-                                    onchangeText={setSelectCourse}
-                                    listSelect={listCourses}
-                                />
-                                {selectCourse ?
-                                    selectCourse?.isLimitedTime ?
-                                        <CheckBox
-                                            isChecked={isExercise}
-                                            onClick={()=>{
-                                                setIsExercise(!isExercise)
-                                                setSelectSection(null)
-                                                setSelectLecture(null)
-                                            }}
-                                            checkBoxColor={COLORS.secondMain}
-                                            rightText="This is an exercise of a lecture."
-                                        />
-                                        :
-                                        <Text style={styles.error}>You can only add exercises in unlimited courses.</Text>
-                                    : ""
-                                }
-                                {isExercise &&
-                                    <>
-                                        <TextInputSelectBox 
-                                            label={"Section*"} placeholder={"Select a section"} 
-                                            value={selectSection} onchangeText={setSelectSection}
-                                            listSelect={listSections}
-                                        />  
-                                        <TextInputSelectBox 
-                                            label={"Lecture*"} placeholder={"Select a lecture"} 
-                                            value={selectLecture} onchangeText={setSelectLecture}
-                                            listSelect={listCurrentLectures}
-                                        />  
-                                    </>
-                                }
-                            </>
-                        }
-                        <TextInputSelectBox 
-                            label={"Type*"} placeholder={"Select a type"} 
-                            value={type} onchangeText={setType} 
-                            listSelect={idCourse ? 
-                                isLimitedTime === 1 ? typeLimit : typeUnlimit 
-                                :
-                                selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit 
+        <>
+            <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.inner}>
+                    {idCourse &&
+                        <>
+                            <Text style={styles.title}>{nameCourse}</Text>
+                            {idSection &&
+                                <View style={styles.wrapFlex}>
+                                    <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
+                                    <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
+                                    <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
+                                </View>
                             }
-                        />
-                        <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
-                        {selectCourse?.isLimitedTime === 1 &&
-                            <>
-                                <View style={styles.wrapFlex}>
-                                    <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
-                                    {startDate &&
-                                        <TouchableOpacity onPress={()=>setStartDate(null)} style={{margin: 4, marginTop: 16}}>
-                                            <MaterialIcons name="delete" size={24} color="black" />
-                                        </TouchableOpacity>
-                                    }
-                                </View>
-                                <View style={styles.wrapFlex}>
-                                    <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
-                                    {dueDate &&
-                                        <TouchableOpacity onPress={()=>setDueDate(null)} style={{margin: 4, marginTop: 16}}>
-                                            <MaterialIcons name="delete" size={24} color="black" />
-                                        </TouchableOpacity>
-                                    }
-                                </View>
-                            </>
-                        }
-                        
+                        </>
+                    }
+                    <Text style={styles.textGray14}>{questions.length} {questions.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
+                    {error &&
+                        <Text style={styles.error}>{error}</Text>
+                    }
+                    <View style={styles.wrapBtn}>
+                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
+                            <Text style={styles.textWhite14}>Publish</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>handleCreateAsgm(0)}>
+                            <Text style={styles.textGray14}>Save</Text>
+                        </TouchableOpacity>
                     </View>
-                    :
-                    <>
-                        <View style={{alignSelf: "flex-end", marginVertical: 8}}>
-                            <CustomSwitch label={"Question Shuffling"}value={isShuffling} onChangeText={setIsShuffling}/>   
-                        </View>
-                        {questions ?
-                            type.value === 1 ?
-                                questions.map((item, index) =>
-                                    <View style={styles.wrapContent} key={index}>
-                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                            <Text style={styles.title}>Question {index + 1}*</Text>
-                                            <TouchableOpacity onPress={()=>deleteQuestion(index)}>
-                                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                    <View style={styles.board}>
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(0)}>
+                            <Text style={[styles.normalBtn, selectBtn === 0 && styles.selectBtn]}>Detail assignment</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(1)}>
+                            <Text style={[styles.normalBtn, selectBtn === 1 && styles.selectBtn]}>Questions</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {selectBtn === 0 ?
+                        <View style={styles.wrapContent}>
+                            <TextInputLabelGray label={"Title*"} placeholder={"Title assignment"} value={titleAsgm} onchangeText={setTitleAsgm}/>
+                            {!idCourse &&
+                                <>
+                                    <TextInputSelectBox 
+                                        label={"Add to course*"} 
+                                        placeholder={"Select a course"} 
+                                        value={selectCourse} 
+                                        onchangeText={setSelectCourse}
+                                        listSelect={listCourses}
+                                    />
+                                    {selectCourse ?
+                                        selectCourse?.isLimitedTime ?
+                                            <CheckBox
+                                                isChecked={isExercise}
+                                                onClick={()=>{
+                                                    setIsExercise(!isExercise)
+                                                    setSelectSection(null)
+                                                    setSelectLecture(null)
+                                                }}
+                                                checkBoxColor={COLORS.secondMain}
+                                                rightText="This is an exercise of a lecture."
+                                            />
+                                            :
+                                            <Text style={styles.error}>You can only add exercises in unlimited courses.</Text>
+                                        : ""
+                                    }
+                                    {isExercise &&
+                                        <>
+                                            <TextInputSelectBox 
+                                                label={"Section*"} placeholder={"Select a section"} 
+                                                value={selectSection} onchangeText={setSelectSection}
+                                                listSelect={listSections}
+                                            />  
+                                            <TextInputSelectBox 
+                                                label={"Lecture*"} placeholder={"Select a lecture"} 
+                                                value={selectLecture} onchangeText={setSelectLecture}
+                                                listSelect={listCurrentLectures}
+                                            />  
+                                        </>
+                                    }
+                                </>
+                            }
+                            <TextInputSelectBox 
+                                label={"Type*"} placeholder={"Select a type"} 
+                                value={type} onchangeText={setType} 
+                                listSelect={idCourse ? 
+                                    isLimitedTime === 1 ? typeLimit : typeUnlimit 
+                                    :
+                                    selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit 
+                                }
+                            />
+                            <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
+                            {selectCourse?.isLimitedTime === 1 &&
+                                <>
+                                    <View style={styles.wrapFlex}>
+                                        <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
+                                        {startDate &&
+                                            <TouchableOpacity onPress={()=>setStartDate(null)} style={{margin: 4, marginTop: 16}}>
+                                                <MaterialIcons name="delete" size={24} color="black" />
                                             </TouchableOpacity>
+                                        }
+                                    </View>
+                                    <View style={styles.wrapFlex}>
+                                        <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
+                                        {dueDate &&
+                                            <TouchableOpacity onPress={()=>setDueDate(null)} style={{margin: 4, marginTop: 16}}>
+                                                <MaterialIcons name="delete" size={24} color="black" />
+                                            </TouchableOpacity>
+                                        }
+                                    </View>
+                                </>
+                            }
+                            
+                        </View>
+                        :
+                        <>
+                            {questions && type ?
+                                type.value === 1 ?
+                                    <>
+                                        <View style={{alignSelf: "flex-end", marginVertical: 8}}>
+                                            <CustomSwitch label={"Question Shuffling"}value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
                                         </View>
-                                        <TextInput
-                                            style={[styles.inputLabelGray]}
-                                            placeholder="Question"
-                                            multiline={true}
-                                            value={item.question}
-                                            onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
-                                        />
-                                        <View style={styles.containerGray}>
-                                            <Text style={styles.label}>Reference material (maximum 1 file)</Text>
-                                            {item.attachedFile ?
-                                                <View style={styles.inputLabelGray}>
-                                                    <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
-                                                    <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                                        <MaterialIcons name="delete" size={18} color="black" />
+                                        {questions.map((item, index) =>
+                                            <View style={styles.wrapContent} key={index}>
+                                                <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                                    <Text style={styles.title}>Question {index + 1}*</Text>
+                                                    <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                        <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                                     </TouchableOpacity>
                                                 </View>
-                                                :
-                                                <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index)} style={[styles.btnText]}>
-                                                    <MaterialIcons name="upload-file" size={20} color="black" />
-                                                    <Text>Attach file</Text>
-                                                </TouchableOpacity>
-                                            }
-                                        </View> 
-                                        <View style={{width: "50%"}}>
-                                            <TextInputSelectBox 
-                                                label={"Type of answer*"} listSelect={typeOfAnswer} 
-                                                index={index} field={"assignmentItemAnswerType"} value={item.assignmentItemAnswerType}
-                                                onchangeText={handleChangeQuestion}
-                                            />
-                                        </View>
-                                        <View style={[styles.wrapFlex, styles.topBorder]}>
-                                            <View style={{width: "50%"}}>
-                                                <TextInputLabelGray 
-                                                    label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={item.mark} 
-                                                    onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
+                                                <TextInput
+                                                    style={[styles.inputLabelGray]}
+                                                    placeholder="Question"
+                                                    multiline={true}
+                                                    value={item.question}
+                                                    onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
                                                 />
-                                            </View>
-                                        </View>  
-                                    </View>
-                                )
-                            : type.value === 2 ?
-                                questions.map((question, index) =>
-                                    <View style={styles.wrapContent} key={index}>
-                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                            <Text style={styles.title}>Question {index + 1}*</Text>
-                                            <TouchableOpacity onPress={()=>deleteQuestion(index)}>
-                                                <AntDesign name="close" size={24} color={COLORS.secondMain}/>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <TextInput
-                                            style={[styles.inputLabelGray]}
-                                            placeholder="Question"
-                                            multiline={true}
-                                            value={question.question}
-                                            onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
-                                        />
-                                        <View style={styles.wrapFlex}>
-                                            <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index, "image")} style={[styles.btnText]}>
-                                                <MaterialIcons name="upload-file" size={20} color="black" />
-                                                <Text>Upload Image</Text>
-                                            </TouchableOpacity>
-                                            {question.attachedFile &&
-                                                <TouchableOpacity onPress={()=>handleChangeQuestion(null, index, "attachedFile")} style={{margin: 4}} >
-                                                    <MaterialIcons name="delete" size={18} color="black" />
-                                                </TouchableOpacity>
-                                            }
-                                        </View>
-                                        {question.attachedFile &&
-                                            <Image source={{uri: question.attachedFile.uri}} style={styles.questionImg}/>
-                                        }
-
-                                        {/* Answers */}
-                                        <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
-                                            <Text style={styles.textGray14}>Choices*</Text>
-                                            <CustomSwitch 
-                                                label={"Multiple answer"} 
-                                                value={question.isMultipleAnswer} 
-                                                onChangeText={(v)=>{
-                                                    changeIsMultipleAnswer(index)
-                                                }}
-                                            />
-                                        </View>
-                                        <View style={{gap: 4}}>
-                                            {question.items &&
-                                                question.items.map((choice, indexChoice) =>
-                                                        <View style={styles.wrapFlex} key={indexChoice}>
-                                                            {question.isMultipleAnswer ?
-                                                                <CheckBox
-                                                                    isChecked={choice.isCorrect}
-                                                                    onClick={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}
-                                                                    checkBoxColor={COLORS.secondMain}
-                                                                />
-                                                                :
-                                                                <RadioBtn selected={choice.isCorrect} onPress={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}/>
-                                                            }
-                                                            <TextInput
-                                                                style={[[styles.inputLabelGray, {height: 38}]]}
-                                                                placeholder="Type a choice"
-                                                                value={choice.content}
-                                                                onChangeText={(v)=>handleChangeChoice(index, indexChoice, "content", v)}
-                                                            />
-                                                            <TouchableOpacity style={{margin: 4}} onPress={()=>deleteChoice(index, indexChoice)}>
-                                                                <MaterialIcons name="delete" size={20} color="black"/>
+                                                <View style={styles.containerGray}>
+                                                    <Text style={styles.label}>Reference material (maximum 1 file)</Text>
+                                                    {item.attachedFile ?
+                                                        <View style={styles.inputLabelGray}>
+                                                            <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
+                                                            <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                                                <MaterialIcons name="delete" size={18} color="black" />
                                                             </TouchableOpacity>
                                                         </View>
-                                                )
-                                            }
-                                            <TouchableOpacity style={styles.btnAddChoice} onPress={()=>addNewChoice(index)}>
-                                                <AntDesign name="plus" size={16} color="black" />
-                                                <Text style={styles.textGray14}>Add new choice</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <View style={[styles.topBorder]}>
-                                            <TextInputLabelGray 
-                                                label={"Answer explanation"} placeholder={"Explanation"} value={question.explanation}
-                                                onchangeText={(v)=>handleChangeQuestion(v, index, "explanation")}
-                                                multiline={true}
-                                            />
-                                            <View style={{width: "50%"}}>
-                                                <TextInputLabelGray 
-                                                    label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={question.mark} 
-                                                    onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
-                                                />
+                                                        :
+                                                        <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index)} style={[styles.btnText]}>
+                                                            <MaterialIcons name="upload-file" size={20} color="black" />
+                                                            <Text>Attach file</Text>
+                                                        </TouchableOpacity>
+                                                    }
+                                                </View> 
+                                                <View style={{width: "50%"}}>
+                                                    <TextInputSelectBox 
+                                                        label={"Type of answer*"} listSelect={typeOfAnswer} 
+                                                        index={index} field={"assignmentItemAnswerType"} value={item.assignmentItemAnswerType}
+                                                        onchangeText={handleChangeQuestion}
+                                                    />
+                                                </View>
+                                                <View style={[styles.wrapFlex, styles.topBorder]}>
+                                                    <View style={{width: "50%"}}>
+                                                        <TextInputLabelGray 
+                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={item.mark} 
+                                                            onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
+                                                        />
+                                                    </View>
+                                                </View>  
                                             </View>
-                                        </View>  
-                                    </View>
-                                )   
+                                        )}
+                                    </> 
+                                : type.value === 2 ?
+                                    <>
+                                        <View style={{alignSelf: "flex-end", marginVertical: 8}}>
+                                            <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
+                                                <MaterialIcons name="menu" size={24} color="black" />
+                                            </TouchableOpacity>
+                                        </View> 
+                                        {questions.map((question, index) =>
+                                            <View style={styles.wrapContent} key={index}>
+                                                <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                                    <Text style={styles.title}>Question {index + 1}*</Text>
+                                                    <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                        <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <TextInput
+                                                    style={[styles.inputLabelGray]}
+                                                    placeholder="Question"
+                                                    multiline={true}
+                                                    value={question.question}
+                                                    onChangeText={(v)=>handleChangeQuestion(v, index, "question")}
+                                                />
+                                                <View style={styles.wrapFlex}>
+                                                    <TouchableOpacity onPress={()=>handleChangeQuestionMaterial(index, "image")} style={[styles.btnText]}>
+                                                        <MaterialIcons name="upload-file" size={20} color="black" />
+                                                        <Text>Upload Image</Text>
+                                                    </TouchableOpacity>
+                                                    {question.attachedFile &&
+                                                        <TouchableOpacity onPress={()=>handleChangeQuestion(null, index, "attachedFile")} style={{margin: 4}} >
+                                                            <MaterialIcons name="delete" size={18} color="black" />
+                                                        </TouchableOpacity>
+                                                    }
+                                                </View>
+                                                {question.attachedFile &&
+                                                    <Image source={{uri: question.attachedFile.uri}} style={styles.questionImg}/>
+                                                }
+
+                                                {/* Answers */}
+                                                <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
+                                                    <Text style={styles.textGray14}>Choices*</Text>
+                                                    <CustomSwitch 
+                                                        label={"Multiple answer"} 
+                                                        value={question.isMultipleAnswer} 
+                                                        onChangeText={(v)=>{
+                                                            changeIsMultipleAnswer(index)
+                                                        }}
+                                                    />
+                                                </View>
+                                                <View style={{gap: 4}}>
+                                                    {question.items &&
+                                                        question.items.map((choice, indexChoice) =>
+                                                                <View style={styles.wrapFlex} key={indexChoice}>
+                                                                    {question.isMultipleAnswer ?
+                                                                        <CheckBox
+                                                                            isChecked={choice.isCorrect}
+                                                                            onClick={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}
+                                                                            checkBoxColor={COLORS.secondMain}
+                                                                        />
+                                                                        :
+                                                                        <RadioBtn selected={choice.isCorrect} onPress={()=>handleChangeChoice(index, indexChoice, "isCorrect", !choice.isCorrect)}/>
+                                                                    }
+                                                                    <TextInput
+                                                                        style={[[styles.inputLabelGray, {height: 38}]]}
+                                                                        placeholder="Type a choice"
+                                                                        value={choice.content}
+                                                                        onChangeText={(v)=>handleChangeChoice(index, indexChoice, "content", v)}
+                                                                    />
+                                                                    <TouchableOpacity style={{margin: 4}} onPress={()=>deleteChoice(index, indexChoice)}>
+                                                                        <MaterialIcons name="delete" size={20} color="black"/>
+                                                                    </TouchableOpacity>
+                                                                </View>
+                                                        )
+                                                    }
+                                                    <TouchableOpacity style={styles.btnAddChoice} onPress={()=>addNewChoice(index)}>
+                                                        <AntDesign name="plus" size={16} color="black" />
+                                                        <Text style={styles.textGray14}>Add new choice</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={[styles.topBorder]}>
+                                                    <TextInputLabelGray 
+                                                        label={"Answer explanation"} placeholder={"Explanation"} value={question.explanation}
+                                                        onchangeText={(v)=>handleChangeQuestion(v, index, "explanation")}
+                                                        multiline={true}
+                                                    />
+                                                    <View style={{width: "50%"}}>
+                                                        <TextInputLabelGray 
+                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={question.mark} 
+                                                            onchangeText={(v)=>handleChangeQuestion(v, index, "mark")}
+                                                        />
+                                                    </View>
+                                                </View>  
+                                            </View>
+                                        )}
+                                    </>   
+                                :""
                             :""
-                        :""
-                        }
-                    </>
+                            }
+                        </>
+                    }
+                </ScrollView>
+                {selectBtn === 1 &&
+                    <TouchableOpacity style={styles.btnPlus} onPress={()=>addQuestion()}>
+                        <Entypo name="plus" size={28} color="black" />
+                    </TouchableOpacity>
                 }
-            </ScrollView>
-            {selectBtn === 1 &&
-                <TouchableOpacity style={styles.btnPlus} onPress={()=>addQuestion()}>
-                    <Entypo name="plus" size={28} color="black" />
-                </TouchableOpacity>
-            }
-            {loading &&
-                <View style={styles.wrapLoading}>
-                    <ActivityIndicator size="large" color="white" />
-                </View>
-            }  
-        </View>
+                {loading &&
+                    <View style={styles.wrapLoading}>
+                        <ActivityIndicator size="large" color="white" />
+                    </View>
+                }  
+            </View>
+            <Modal
+                visible={isOpenModal}
+                transparent={true}
+                animationType="fade"
+            >
+                <TouchableWithoutFeedback onPress={() => setIsOpenModal(false)}>
+                    <View style={styles.modalWrapper}>
+                        <View style={styles.openModal}>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Question Shuffling</Text>
+                                <CustomSwitch value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>  
+                            </View>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Answer Shuffling</Text>
+                                <CustomSwitch value={isShufflingAnswer} onChangeText={setIsShufflingAnswer}/>  
+                            </View>
+                            <View style={styles.btnOpenModal}>
+                                <Text>Show answer on submit</Text>
+                                <CustomSwitch value={isShowAnswer} onChangeText={setIsShowAnswer}/>  
+                            </View>
+                            
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+        </>
     )
 }
 
@@ -823,5 +850,31 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 8,
         alignSelf: "flex-start"
-    }
+    },
+
+    modalWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8
+    },
+    openModal: {
+        backgroundColor: "white",
+        width: "100%",
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    btnOpenModal:{
+        borderColor: COLORS.lightText,
+        width: "100%",
+        padding: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
 })
