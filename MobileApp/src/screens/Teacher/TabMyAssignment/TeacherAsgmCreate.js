@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
-import { COLORS, commonStyles } from "../../../utils/constants"
+import { COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -10,13 +10,14 @@ import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
-import { createManualAssignment, createQuizAssignment } from "../../../services/assignment"
+import { createManualAssignment, createQuizAssignment, getAssignmentInfo } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
+    const idAssignment = route?.params?.idAssignment || null
     const {state} = useUser()
     const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -63,6 +64,39 @@ export const TeacherAsgmCreate = ({route})=>{
         { label: "Attach file", value: 2 },
     ]
 
+    const fetchAsgm = async()=>{
+        setLoading(true)
+        try {
+            const response = await getAssignmentInfo(idAssignment)
+            if(response){
+                setTitleAsgm(response.title)
+                setStartDate(response.startDate)
+                setDueDate(response.dueDate)
+                setDuration(response.duration.toString())
+                setType({
+                    label: typeAssignment[response.assignmentType], 
+                    value: response.assignmentType
+                })
+                setIsShufflingQuestion(response.isShufflingQuestion ? false : true)
+                setIsShufflingAnswer(response.isShufflingAnswer ? false : true)
+                setIsShowAnswer(response.showAnswer ? false : true)
+                setQuestions([...response.assignmentItems.map(item=>{
+                    return{
+                        ...item,
+                        mark: item.mark.toString(),
+                        isMultipleAnswer: item.isMultipleAnswer === 0 ? false : true,
+                    }
+                })])
+                const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
+                setTotalMark(totalMark)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
     useEffect(()=>{
         const getAllCourse = async()=>{
             try {
@@ -81,6 +115,9 @@ export const TeacherAsgmCreate = ({route})=>{
         }
         if(!idCourse){
             getAllCourse()
+            if(idAssignment){
+                fetchAsgm()
+            }
         }
     }, [])
 
@@ -148,9 +185,10 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }, [startDate, dueDate])
 
-    useEffect(()=>{
+    const handleChangeType = (v)=>{
+        setType(v)
         setQuestions([])
-    }, [type])
+    }
 
     useEffect(()=>{
         setError(null)
@@ -448,7 +486,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                     {selectCourse ?
                                         selectCourse?.isLimitedTime ?
                                             <CheckBox
-                                                isChecked={isExercise}
+                                                isChecked={isExercise || false}
                                                 onClick={()=>{
                                                     setIsExercise(!isExercise)
                                                     setSelectSection(null)
@@ -479,7 +517,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             }
                             <TextInputSelectBox 
                                 label={"Type*"} placeholder={"Select a type"} 
-                                value={type} onchangeText={setType} 
+                                value={type} onchangeText={handleChangeType} 
                                 listSelect={idCourse ? 
                                     isLimitedTime === 1 ? typeLimit : typeUnlimit 
                                     :

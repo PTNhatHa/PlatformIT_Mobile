@@ -124,3 +124,14 @@ export const deleteAssignment = async (idAssignment, idUpdatedBy)=>{
         console.log("Error deleteAssignment: ", error);
     })
 }
+
+export const getAssignmentInfo = async (idAssignment)=>{
+    return await axios.get(baseUrl + "/GetAssignmentInfo?idAssignment=" + idAssignment)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetAssignmentInfo: ", error);
+    })
+}

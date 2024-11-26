@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { deleteAssignment } from "../services/assignment";
 import { useUser } from "../contexts/UserContext";
+import { useNavigation } from "@react-navigation/native";
 
 const initAssignment =     {
     "idAssignment": 12,
@@ -44,6 +45,7 @@ const initAssignment =     {
 //     "isPastDue": 0
 //   },
 export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}})=>{
+    const navigation = useNavigation()
     const [longPress, setLongPress] = useState(false);
     const [loading, setLoading] = useState(false);
     const {state} = useUser()
@@ -84,6 +86,13 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
             ],
             { cancelable: true }
         )
+    }
+
+    const handelDuplicate = ()=>{
+        navigation.navigate("Create Assignment", { 
+            reload: getAllAsgm,
+            idAssignment: data.idAssignment
+        })
     }
 
     return(
@@ -215,7 +224,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                                     </TouchableOpacity>
                                 </>
                             }
-                            <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                            <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]} onPress={()=>handelDuplicate()}>
                                 <Text>Duplicate</Text>
                                 <Ionicons name="duplicate" size={20} color="black" />
                             </TouchableOpacity>
