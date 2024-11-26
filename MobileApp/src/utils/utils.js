@@ -41,3 +41,31 @@ export const openLink = async(uri)=>{
         console.log("==>Error opening link: ", e);
     }
 }
+
+// Helper to calculate relative time
+export const calculateRelativeTime = (timestamp) => {
+    const now = new Date();
+    const difference = Math.floor((now - timestamp) / 1000); // Difference in seconds
+
+    if (difference < 60) return `${difference} seconds ago`;
+    if (difference < 3600) return `${Math.floor(difference / 60)} minutes ago`;
+    if (difference < 86400) return `${Math.floor(difference / 3600)} hours ago`;
+    return `${Math.floor(difference / 86400)} days ago`;
+};
+
+// Helper to parse "relativeTime" into a timestamp
+export const parseRelativeTime = (relativeTime) => {
+    const now = new Date();
+    const parts = relativeTime.split(" ");
+
+    if (parts.includes("seconds")) {
+        return new Date(now.getTime() - parseInt(parts[0], 10) * 1000);
+    } else if (parts.includes("minutes")) {
+        return new Date(now.getTime() - parseInt(parts[0], 10) * 60 * 1000);
+    } else if (parts.includes("hours")) {
+        return new Date(now.getTime() - parseInt(parts[0], 10) * 3600 * 1000);
+    } else if (parts.includes("days")) {
+        return new Date(now.getTime() - parseInt(parts[0], 10) * 86400 * 1000);
+    }
+    return now; // Default to current time if unrecognized format
+};

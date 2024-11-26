@@ -24,6 +24,7 @@ import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLect
 import { TeacherLectureCreate } from "../screens/Teacher/TabMyCourse/TeacherLectureCreate";
 import { TeacherAllAssignment } from "../screens/Teacher/TabMyAssignment/TeacherAllAssignment";
 import { TeacherAsgmCreate } from "../screens/Teacher/TabMyAssignment/TeacherAsgmCreate";
+import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -193,7 +194,14 @@ export const TeacherBottomTab = ()=>{
                     notiUnRead +=1
                 }
             });
-            setAllNoti(response)
+
+            const newNoti = response.map(noti => {
+                return{
+                    ...noti,
+                    timestamp: parseRelativeTime(noti.relativeTime),
+                }
+            })
+            setAllNoti(newNoti)
         }
         setUnReadNoti(notiUnRead)
     }
@@ -239,6 +247,15 @@ export const TeacherBottomTab = ()=>{
 
     useEffect(()=>{
         getNoti()
+        const interval = setInterval(() => {
+            setAllNoti((prevNotifications) =>
+              prevNotifications.map((notification) => ({
+                ...notification,
+                relativeTime: calculateRelativeTime(notification.timestamp),
+              }))
+            );
+        }, 60000); // Update every minute
+        return () => clearInterval(interval);
     }, [])
 
     return(

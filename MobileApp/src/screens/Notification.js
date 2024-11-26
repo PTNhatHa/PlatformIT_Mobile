@@ -57,7 +57,7 @@ export const NotificationScreen = (props)=>{
         if(goal.notificationType === 2){
             // ASSIGNEDTEACHER
             navigation.navigate("My Course", {
-                screen: "Detail My Course",
+                screen: "MyCourse",
                 params: {
                     idCourse: goal.idCourse,
                     role: 1
@@ -67,7 +67,7 @@ export const NotificationScreen = (props)=>{
         if(goal.notificationType === 3){
             // BOARD
             navigation.navigate("My Course", {
-                screen: "Detail My Course",
+                screen: "MyCourse",
                 params: {
                     idCourse: goal.idCourse,
                     role: 2

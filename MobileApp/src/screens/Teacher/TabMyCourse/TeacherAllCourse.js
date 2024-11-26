@@ -4,12 +4,22 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { getAllCourseCardsByIdTeacher } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
 import { COLORS } from "../../../utils/constants";
+import { useNavigation } from "@react-navigation/native";
 
-export const TeacherAllCourse = ()=>{
+export const TeacherAllCourse = ({route})=>{
+    const navigation = useNavigation()
+    const idCourse = route?.params?.idCourse || null
     const {state, dispatch} = useUser()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
     
+    useEffect(()=>{
+        navigation.navigate("Detail My Course", {
+            idCourse: idCourse,
+            role: route?.params?.role
+          });
+    },[idCourse])
+
     const getAllCourseOfTeacher = async()=>{
         try {
             setLoading(true)

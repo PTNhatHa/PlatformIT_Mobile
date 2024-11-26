@@ -154,7 +154,13 @@ export const StudentBottomTab = ()=>{
                     notiUnRead +=1
                 }
             });
-            setAllNoti(response)
+            const newNoti = response.map(noti => {
+                return{
+                    ...noti,
+                    timestamp: parseRelativeTime(noti.relativeTime),
+                }
+            })
+            setAllNoti(newNoti)
         }
         setUnReadNoti(notiUnRead)
     }
@@ -192,6 +198,15 @@ export const StudentBottomTab = ()=>{
 
     useEffect(()=>{
         getNoti()
+        const interval = setInterval(() => {
+            setAllNoti((prevNotifications) =>
+              prevNotifications.map((notification) => ({
+                ...notification,
+                relativeTime: calculateRelativeTime(notification.timestamp),
+              }))
+            );
+        }, 60000); // Update every minute
+        return () => clearInterval(interval);
     }, [])
 
     return(
