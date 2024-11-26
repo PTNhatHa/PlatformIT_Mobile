@@ -47,7 +47,8 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
     const [longPress, setLongPress] = useState(false);
     const [loading, setLoading] = useState(false);
     const {state} = useUser()
-    const handleDeleteAsgm = async()=>{
+
+    const deleteAsgm = async()=>{
         setLoading(true)
         try {
             const response = await deleteAssignment(data.idAssignment, state.idUser)
@@ -63,6 +64,26 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
         } finally {
             setLoading(false)
         }
+    }
+    const handleDeleteAsgm = ()=>{
+        Alert.alert(
+            "Confirm Delete Assignment",
+            "Are you sure you want to delete this assignment?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> {
+                        deleteAsgm()
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
     }
 
     return(

@@ -10,7 +10,7 @@ import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
-import { createManualAssignment } from "../../../services/assignment"
+import { createManualAssignment, createQuizAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
@@ -118,7 +118,10 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         }
         if(!idCourse){
-            setType(null)
+            if(type && type?.value === 1 && selectCourse.isLimitedTime !== 1){
+                setType(null)
+                setQuestions([])
+            }
             getAllSection()
             getAllLecture()
             setSelectSection(null)
@@ -144,6 +147,10 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         }
     }, [startDate, dueDate])
+
+    useEffect(()=>{
+        setQuestions([])
+    }, [type])
 
     useEffect(()=>{
         setError(null)
@@ -197,16 +204,16 @@ export const TeacherAsgmCreate = ({route})=>{
                 question: null,
                 mark: 0,
                 assignmentItemAnswerType: 1,
-                attachedFile: null,
+                attachedFile: "",
             }])
         }
         if(type?.value === 2){
             setQuestions([...questions, {
                 question: null,
                 mark: 0,
-                explanation: null,
+                explanation: "",
                 isMultipleAnswer: false,
-                attachedFile: null,
+                attachedFile: "",
                 items: []
             }])
         }
@@ -306,10 +313,15 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         }
         if(startDate || dueDate){
-            if(!startDate) setError("Please select a start date if you have chosen a due date.")
-            if(!dueDate) setError("Please select a due date if you have chosen a start date.")
-            return
-        }
+            if(!startDate){
+                setError("Please select a start date if you have chosen a due date.")
+                return
+            }
+            if(!dueDate){
+                setError("Please select a due date if you have chosen a start date.")
+                return
+            }
+            }
         if(questions.length === 0){
             setError("You need to add at least 1 question.")
             return
@@ -343,9 +355,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 {
                     text: "Yes",
                     onPress: ()=> {
-                        if(type.value === 1){
-                            postAsgm(isPublish)
-                        }
+                        postAsgm(isPublish)
                     },
                     style: "destructive"
                 },
@@ -361,11 +371,21 @@ export const TeacherAsgmCreate = ({route})=>{
     const postAsgm = async(isPublish)=>{
         setLoading(true)
         try {
-            const response = await createManualAssignment(
-                titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
-                duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, questions, state.idUser
-            )
-            // console.log("response: ", response);
+            console.log("zooo");
+            let response = null
+            if(type.value === 1){
+                response = await createManualAssignment(
+                    titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
+                    duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, questions, state.idUser
+                )
+            }
+            if(type.value === 2){
+                response = await createQuizAssignment(
+                    titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
+                    duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, isShufflingAnswer ? 1 : 0, isShowAnswer ? 1 : 0,
+                    questions, state.idUser
+                )
+            }
             if(response){
                 // console.log("zooooo");
                 Alert.alert("Done", response)
