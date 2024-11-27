@@ -14,6 +14,7 @@ import { DetailTeacher } from './src/screens/DetailTeacher';
 import { CardAssignment } from './src/components/CardAssignment';
 import { FilterAsgm } from './src/components/Filter';
 import { CustomSwitch } from './src/components/CustomSwitch';
+import { SelectCourseBox } from './src/components/TextInputField';
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           {/* <FilterAsgm/> */}
           {/* <TeacherAsgmCreate/> */}
           {/* <CustomSwitch label={"label"}/> */}
+          {/* <SelectCourseBox/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

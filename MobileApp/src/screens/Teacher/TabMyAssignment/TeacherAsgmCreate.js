@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
-import { TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
+import { SelectCourseBox, TextInputLabelGray, TextInputSelectBox, TextInputSelectDate } from "../../../components/TextInputField"
 import CheckBox from "react-native-check-box"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -127,6 +127,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         value: item.idCourse,
                         label: item.courseTitle,
                         isLimitedTime: item.isLimitedTime,
+                        courseStartDate: item.courseStartDate,
                         courseEndDate: item.courseEndDate
                     }
                 })])
@@ -501,9 +502,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             <TextInputLabelGray label={"Title*"} placeholder={"Title assignment"} value={titleAsgm} onchangeText={setTitleAsgm}/>
                             {!idCourse &&
                                 <>
-                                    <TextInputSelectBox 
-                                        label={"Add to course*"} 
-                                        placeholder={"Select a course"} 
+                                    <SelectCourseBox
                                         value={selectCourse} 
                                         onchangeText={setSelectCourse}
                                         listSelect={listCourses}

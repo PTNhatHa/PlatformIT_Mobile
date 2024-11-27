@@ -1,10 +1,11 @@
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { AssignmentItemAnswerType, COLORS } from "../utils/constants"
+import { AssignmentItemAnswerType, COLORS, commonStyles } from "../utils/constants"
 import { useEffect, useState } from "react"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export const TextInputIcon = ({
     value, icon, placeholder, onchangeText, error, keyboardType, isPassword, isMultiline = false
@@ -183,6 +184,107 @@ export const TextInputSelectDate = ({
     )
 }
 
+
+export const SelectCourseBox = ({
+    value="", onchangeText = ()=>{}, listSelect=[
+        {
+            value: 1,
+            label: "ABC",
+            isLimitedTime: 0,
+            courseStartDate: null,
+            courseEndDate: null,
+        },
+        {
+            value: 2,
+            label: "ABCDFGH",
+            isLimitedTime: 1,
+            courseStartDate: new Date(),
+            courseEndDate: new Date()
+        }
+    ]
+}) => {
+    const [isOpenBox, setIsOpentBox] = useState(true)
+    const [currentList, setCurrentList] = useState(listSelect)
+    const [currentValue, setCurrentValue] = useState(value?.label || value)
+    useEffect(()=>{
+        if (JSON.stringify(currentList) !== JSON.stringify(listSelect)) {
+            setCurrentList(listSelect);
+        }
+    }, [listSelect])
+
+    useEffect(()=>{
+        setCurrentValue(value?.label || value)
+    }, [value])
+
+    const handleOnchangeText = (v)=>{
+        setCurrentValue(v)
+        const newList = listSelect.filter(item => item.label.toLowerCase().includes(v.toLowerCase()))
+        if (JSON.stringify(newList) !== JSON.stringify(currentList)) {
+            setCurrentList(newList);
+        }
+    }
+
+    return(
+        <>
+            <View style={styles.containerGray}>
+                <Text style={styles.label}>Choose a course</Text>
+                <View style={[styles.inputLabelBox]}>
+                    <TextInput 
+                        style={styles.inputText}
+                        value={currentValue}
+                        onChangeText={(v)=>handleOnchangeText(v)}
+                        placeholder={"Choose a course"}
+                        onFocus={()=>setIsOpentBox(true)}
+                        // onBlur={()=>setIsOpentBox(false)}
+                    />
+                    <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)}>
+                        <AntDesign name="caretdown" size={14} color="black" />
+                    </TouchableOpacity>
+                </View>
+                {isOpenBox &&
+                    <View style={[styles.wrapList, {backgroundColor: COLORS.lightGray}]}>
+                        <ScrollView >
+                            {currentList?.map(item => 
+                                <TouchableOpacity key={item?.value} onPress={()=>{
+                                    onchangeText(item)
+                                    setIsOpentBox(false)
+                                }}>
+                                    <View style={styles.wrapSelect}>
+                                        <View>
+                                            <Text style={[styles.titleCourse, item.isLimitedTime === 1 && { maxWidth: 200}]}>{item?.label}</Text>
+                                            {item.isLimitedTime === 1 &&
+                                                <View style={styles.wrapFlex}>
+                                                    <Ionicons name="calendar-clear" size={14} color="black" />
+                                                    <Text style={styles.dateCourse}>{formatDateTime(item.courseStartDate)} - {formatDateTime(item.courseEndDate)}</Text>
+                                                </View>
+                                            }
+                                        </View>
+                                        {item.isLimitedTime === 1 ?
+                                            new Date(item.courseStartDate) < new Date() ?
+                                                <View style={[styles.wrapTag, {backgroundColor: "#B2E0C8"}]}>
+                                                    <Text style={styles.titleCourse}>Ongoing</Text>
+                                                </View>
+                                            :
+                                                <View style={styles.wrapTag}>
+                                                    <Text style={styles.titleCourse}>Starting soon</Text>
+                                                </View>
+                                            :""
+                                        }
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                        </ScrollView>
+                        <TouchableOpacity onPress={()=>setIsOpentBox(false)} style={styles.wrapClose}>
+                            <AntDesign name="close" size={24} color={COLORS.secondMain}/>
+                        </TouchableOpacity>
+                    </View>
+                }
+            </View>
+        </>
+    )
+}
+
+
 const styles = StyleSheet.create({
     containerIcon: {
         borderRadius: 4,
@@ -249,9 +351,9 @@ const styles = StyleSheet.create({
         width: "90%"
     },
     wrapList:{
-        maxHeight: 200,
+        maxHeight: 300,
         position: "absolute",
-        backgroundColor: "white",
+        backgroundColor: COLORS.lightGray,
         borderWidth: 1,
         borderTopWidth: 0,
         borderColor: COLORS.lightText,
@@ -259,6 +361,7 @@ const styles = StyleSheet.create({
         width: "100%",
         top: 50,
         zIndex: 9999,
+        borderRadius: 4
     },
     textListTag: {
         margin: 4,
@@ -269,6 +372,33 @@ const styles = StyleSheet.create({
 
     wrapClose:{
         justifyContent: 'center', 
-        alignItems: 'center'
+        alignItems: 'center',
+        padding: 8
+    },
+    wrapSelect:{
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText,
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    titleCourse: {
+        fontWeight: "bold",
+        fontSize: 14,
+    },
+    dateCourse: {
+        fontSize: 12
+    },
+    wrapFlex: {
+        flexDirection: "row",
+        gap: 4
+    },
+    wrapTag: {
+        paddingVertical:  4,
+        paddingHorizontal: 8,
+        backgroundColor: "#F8E9AC",
+        alignSelf: "flex-start",
+        borderRadius: 4
     }
 })
