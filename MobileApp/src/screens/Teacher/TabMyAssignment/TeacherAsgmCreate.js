@@ -14,6 +14,7 @@ import { createManualAssignment, createQuizAssignment, getAssignmentInfo } from 
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
+import { formatDateTime } from "../../../utils/utils"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -80,12 +81,32 @@ export const TeacherAsgmCreate = ({route})=>{
                 setIsShufflingQuestion(response.isShufflingQuestion ? false : true)
                 setIsShufflingAnswer(response.isShufflingAnswer ? false : true)
                 setIsShowAnswer(response.showAnswer ? false : true)
-                setQuestions([...response.assignmentItems.map(item=>{
-                    return{
-                        ...item,
-                        mark: item.mark.toString(),
-                        isMultipleAnswer: item.isMultipleAnswer === 0 ? false : true,
+                setQuestions([...response.assignmentItems.map(question=>{
+                    let realQuestion
+                    if(response.assignmentType === 1){
+                        // Manual
+                        realQuestion = {
+                            ...question,
+                            mark: question.mark.toString(),
+                        }
                     }
+                    if(response.assignmentType === 2){
+                        // Quiz
+                        const listItems = question.items.map(item=>{
+                            return{
+                                ...item,
+                                isCorrect: item.isCorrect === 0 ? false : true
+                            }
+                        })
+                        realQuestion = {
+                            ...question,
+                            mark: question.mark.toString(),
+                            isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
+                            items: listItems
+                        }
+                    }
+                    // console.log(realQuestion);
+                    return realQuestion
                 })])
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
@@ -106,7 +127,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         value: item.idCourse,
                         label: item.courseTitle,
                         isLimitedTime: item.isLimitedTime,
-                        courseEndDate: item.endDate
+                        courseEndDate: item.courseEndDate
                     }
                 })])
             } catch (error) {
@@ -183,6 +204,9 @@ export const TeacherAsgmCreate = ({route})=>{
                 setError(null)
             }
         }
+        if(dueDate !== null && new Date(dueDate) > new Date(selectCourse.courseEndDate)){
+            setError("The due date must be before " + formatDateTime(selectCourse.courseEndDate) + " (the course end date).")
+        }
     }, [startDate, dueDate])
 
     const handleChangeType = (v)=>{
@@ -192,7 +216,7 @@ export const TeacherAsgmCreate = ({route})=>{
 
     useEffect(()=>{
         setError(null)
-    }, [titleAsgm, selectCourse, selectSection, selectLecture, type, startDate, dueDate])
+    }, [titleAsgm, selectCourse, selectSection, selectLecture, type])
 
     const pickFile = async(type = "*")=>{
         try{
@@ -435,6 +459,7 @@ export const TeacherAsgmCreate = ({route})=>{
             setLoading(false)
         }
     }
+
     return(
         <>
             <View style={styles.container}>
