@@ -135,3 +135,14 @@ export const getAssignmentInfo = async (idAssignment)=>{
         console.log("Error GetAssignmentInfo: ", error);
     })
 }
+
+export const publishAssignment = async (idAssignment, idUpdatedBy)=>{
+    return await axios.post(baseUrl + "/PublishAssignment?idAssignment=" + idAssignment + "&idUpdatedBy=" + idUpdatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error PublishAssignment: ", error);
+    })
+}

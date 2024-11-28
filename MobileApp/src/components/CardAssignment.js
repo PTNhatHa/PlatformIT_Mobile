@@ -10,7 +10,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { deleteAssignment } from "../services/assignment";
+import { deleteAssignment, publishAssignment } from "../services/assignment";
 import { useUser } from "../contexts/UserContext";
 import { useNavigation } from "@react-navigation/native";
 
@@ -101,7 +101,43 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
             isEdit: true
         })
     }
-
+    const handlePublish = async()=>{
+        const callPublish = async()=>{
+            setLoading(true)
+            try {
+                const response = await publishAssignment(data.idAssignment, state.idUser)
+                if(response){
+                    Alert.alert("Publish assignment", response)
+                    setLongPress(false)
+                    getAllAsgm()
+                } else{
+                    Alert.alert("Warning", "Something went wrong!")
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally{
+                setLoading(false)
+            }
+        }
+        Alert.alert(
+            "Confirm Publish Assignment",
+            "Are you sure you want to publish this assignment?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> {
+                        callPublish()
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+    }
     return(
         <>
             <TouchableOpacity 
@@ -112,6 +148,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         setLongPress(true)
                     }
                 }}    
+                onPress={()=> data.isPublish ? {} : handelEdit()}
             >
                 <View style={styles.wrapContent}>
                     <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
@@ -221,7 +258,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         <View style={styles.selectAsgm}>
                             {!data.isPublish &&
                                 <>
-                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]} onPress={()=>handlePublish()}>
                                         <Text>Publish</Text>
                                         <MaterialIcons name="cloud-upload" size={24} color="black" />
                                     </TouchableOpacity>
