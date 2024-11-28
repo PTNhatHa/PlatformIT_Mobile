@@ -44,7 +44,7 @@ const initAssignment =     {
 //     "createdDate": "2024-11-20T11:23:31.7661598",
 //     "isPastDue": 0
 //   },
-export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}})=>{
+export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}, isDetail = false})=>{
     const navigation = useNavigation()
     const [longPress, setLongPress] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -194,15 +194,17 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     }
                     {role === 1 && 
                         <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            {data.isPublish !== null && isPastDue &&
+                            {(data.isPublish !== null && isPastDue) || isDetail &&
                                 <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
                             }
-                            {data.isTest !== null &&
+                            {data.isTest !== null && !isDetail &&
                                 <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
                             }
                         </View>
                     }
-                    {role === 0 && <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>  }
+                    {role === 0 && data.dueDate !== null &&
+                        <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>  
+                    }
                 </View>
             </TouchableOpacity>
 
