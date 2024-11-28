@@ -358,7 +358,6 @@ export const DetailCourse =({route})=>{
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
                             getCourse={getCourse}
-                            isLimitedTime={data.registStartDate !== null ? 1 : 0}
                         />
                     </>
                 : selectBtn === 1 ?
@@ -380,6 +379,7 @@ export const DetailCourse =({route})=>{
                                         idCourse: idCourse, 
                                         nameCourse: data.courseTitle,
                                         isLimitedTime: data.registStartDate !== null ? 1 : 0,
+                                        courseEndDate: data.courseEndDate || "",
                                         reload: ()=>{
                                             getCourse()
                                             getNoti()

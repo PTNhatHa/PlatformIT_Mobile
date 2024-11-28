@@ -81,7 +81,7 @@ export const TextInputLabelGray = ({
 }
 
 export const TextInputSelectBox = ({
-    label, value, placeholder, onchangeText = ()=>{}, listSelect=[], index = null, field
+    label, value, placeholder, onchangeText = ()=>{}, listSelect=[], index = null, field, isDisable = false
 }) => {
     const [isOpenBox, setIsOpentBox] = useState(false)
     const [currentList, setCurrentList] = useState(listSelect)
@@ -109,17 +109,25 @@ export const TextInputSelectBox = ({
             <View style={styles.containerGray}>
                 <Text style={styles.label}>{label}</Text>
                 <View style={[styles.inputLabelBox]}>
-                    <TextInput 
-                        style={styles.inputText}
-                        value={index !== null ? AssignmentItemAnswerType[currentValue] : currentValue}
-                        onChangeText={(v)=>handleOnchangeText(v)}
-                        placeholder={placeholder}
-                        onFocus={()=>setIsOpentBox(true)}
-                        // onBlur={()=>setIsOpentBox(false)}
-                    />
-                    <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)}>
-                        <AntDesign name="caretdown" size={14} color="black" />
-                    </TouchableOpacity>
+                    {isDisable ? 
+                        <>
+                            <Text style={styles.inputText}>{currentValue}</Text>
+                        </>
+                        :
+                        <>
+                        <TextInput 
+                            style={styles.inputText}
+                            value={index !== null ? AssignmentItemAnswerType[currentValue] : currentValue}
+                            onChangeText={(v)=>handleOnchangeText(v)}
+                            placeholder={placeholder}
+                            onFocus={()=>setIsOpentBox(true)}
+                            // onBlur={()=>setIsOpentBox(false)}
+                        />
+                        <TouchableOpacity onPress={()=>setIsOpentBox(!isOpenBox)}>
+                            <AntDesign name="caretdown" size={14} color="black" />
+                        </TouchableOpacity>
+                        </>
+                    }
                 </View>
                 {isOpenBox &&
                     <View style={styles.wrapList}>
@@ -203,7 +211,7 @@ export const SelectCourseBox = ({
         }
     ]
 }) => {
-    const [isOpenBox, setIsOpentBox] = useState(true)
+    const [isOpenBox, setIsOpentBox] = useState(false)
     const [currentList, setCurrentList] = useState(listSelect)
     const [currentValue, setCurrentValue] = useState(value?.label || value)
     useEffect(()=>{

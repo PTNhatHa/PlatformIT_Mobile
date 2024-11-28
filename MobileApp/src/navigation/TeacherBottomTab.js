@@ -151,6 +151,10 @@ const StackAssigmentScreen = ()=>{
                 name="Create Assignment"
                 component={TeacherAsgmCreate}
             />
+            <StackAssigmentScreen.Screen
+                name="Edit Assignment"
+                component={TeacherAsgmCreate}
+            />
         </StackAssigmentScreen.Navigator>
     )
 }

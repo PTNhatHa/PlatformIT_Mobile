@@ -17,8 +17,10 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime } from "../../../utils/utils"
 
 export const TeacherAsgmCreate = ({route})=>{
-    const {idCourse, nameCourse, isLimitedTime, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
+    const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
     const idAssignment = route?.params?.idAssignment || null
+    const isEdit = route?.params?.isEdit || false
+
     const {state} = useUser()
     const navigation = useNavigation()
     const [selectBtn, setSelectBtn] = useState(0)
@@ -31,6 +33,7 @@ export const TeacherAsgmCreate = ({route})=>{
         value: idCourse,
         label: nameCourse,
         isLimitedTime: isLimitedTime,
+        courseEndDate: courseEndDate,
     } : "")
     const [selectSection, setSelectSection] = useState("")
     const [selectLecture, setSelectLecture] = useState("")
@@ -70,10 +73,28 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
-                setTitleAsgm(response.title)
-                setStartDate(response.startDate)
-                setDueDate(response.dueDate)
-                setDuration(response.duration.toString())
+                if(isEdit === true){
+                    setSelectCourse({
+                        value: response.idCourse,
+                        label: response.courseTitle,
+                        isLimitedTime: response.isLimitedTime,
+                        courseStartDate: response.courseStartDate,
+                        courseEndDate: response.courseEndDate
+                    })
+                    setSelectSection({
+                        value: response.idSection || "",
+                        label: response.nameSection || ""
+                    })
+                    setSelectLecture({
+                        value: response.idLecture || "",
+                        label: response.nameLecture || ""
+                    })
+                }
+                setTitleAsgm(response.title + " (Duplicate)")
+                setIsExercise(response.isTest === 1 ? false : true)
+                setStartDate(response.startDate || "")
+                setDueDate(response.dueDate || "")
+                setDuration(response.duration.toString() || "")
                 setType({
                     label: typeAssignment[response.assignmentType], 
                     value: response.assignmentType
@@ -81,7 +102,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 setIsShufflingQuestion(response.isShufflingQuestion ? false : true)
                 setIsShufflingAnswer(response.isShufflingAnswer ? false : true)
                 setIsShowAnswer(response.showAnswer ? false : true)
-                setQuestions([...response.assignmentItems.map(question=>{
+                setQuestions([...response.assignmentItems?.map(question=>{
                     let realQuestion
                     if(response.assignmentType === 1){
                         // Manual
@@ -107,7 +128,7 @@ export const TeacherAsgmCreate = ({route})=>{
                     }
                     // console.log(realQuestion);
                     return realQuestion
-                })])
+                })] || [])
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
             }
@@ -183,18 +204,22 @@ export const TeacherAsgmCreate = ({route})=>{
             }
             getAllSection()
             getAllLecture()
-            setSelectSection(null)
-            setSelectLecture(null)
+            if(!isEdit){
+                setSelectSection(null)
+                setSelectLecture(null)
+            }
             if(selectCourse && selectCourse.isLimitedTime !== 1) setIsExercise(true)
         }
     }, [selectCourse])
 
     useEffect(()=>{
-        if(selectSection){
+        if(selectSection && isEdit === false){
             const current = listLectures.filter(item => item.idSection === selectSection.value)
             setListCurrentLectures(current)
         }
-        setSelectLecture(null)
+        if(!isEdit){
+            setSelectLecture(null)
+        }
     }, [selectSection])
 
     useEffect(()=>{
@@ -385,11 +410,11 @@ export const TeacherAsgmCreate = ({route})=>{
                 return
             }
             }
-        if(questions.length === 0){
+        if(questions?.length === 0){
             setError("You need to add at least 1 question.")
             return
         }
-        const check = questions.find(item => item.question === null || item.items.length === 0 || item.mark === 0)
+        const check = questions.find(item => item.question === null || item.items?.length === 0 || item.mark === 0)
         if(check){
             setError("You need to fill all question.")
             return
@@ -405,7 +430,7 @@ export const TeacherAsgmCreate = ({route})=>{
         } else {
             textStatus += " test"
         }
-        if(questions.length > 1){
+        if(questions?.length > 1){
             textStatus += " with " + questions.length + " questions?"
         } else {
             textStatus += " with " +  questions.length + " question?"
@@ -465,19 +490,36 @@ export const TeacherAsgmCreate = ({route})=>{
         <>
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={styles.inner}>
-                    {idCourse &&
+                    {idCourse || isEdit &&
                         <>
-                            <Text style={styles.title}>{nameCourse}</Text>
+                            <Text style={styles.title}>{nameCourse || selectCourse?.label}</Text>
                             {idSection &&
-                                <View style={styles.wrapFlex}>
-                                    <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
-                                    <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
-                                    <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
-                                </View>
+                                <>
+                                    <View style={styles.wrapFlex}>
+                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
+                                        <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
+                                    </View>
+                                    <View style={styles.wrapFlex}>
+                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
+                                        <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
+                                    </View>
+                                </>
+                            }
+                            {selectSection?.value !== "" &&
+                                <>
+                                    <View style={styles.wrapFlex}>
+                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
+                                        <Text style={[styles.title, {fontSize: 14}]}>{selectSection?.label}</Text>
+                                    </View>
+                                    <View style={styles.wrapFlex}>
+                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
+                                        <Text style={[styles.title, {fontSize: 14}]}>{selectLecture?.label}</Text>
+                                    </View>
+                                </>
                             }
                         </>
                     }
-                    <Text style={styles.textGray14}>{questions.length} {questions.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
+                    <Text style={styles.textGray14}>{questions?.length} {questions?.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
                     {error &&
                         <Text style={styles.error}>{error}</Text>
                     }
@@ -500,7 +542,7 @@ export const TeacherAsgmCreate = ({route})=>{
                     {selectBtn === 0 ?
                         <View style={styles.wrapContent}>
                             <TextInputLabelGray label={"Title*"} placeholder={"Title assignment"} value={titleAsgm} onchangeText={setTitleAsgm}/>
-                            {!idCourse &&
+                            {(!idCourse && !isEdit) &&
                                 <>
                                     <SelectCourseBox
                                         value={selectCourse} 
@@ -547,6 +589,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                     :
                                     selectCourse.isLimitedTime === 1 ? typeLimit : typeUnlimit 
                                 }
+                                isDisable={isEdit}
                             />
                             <TextInputLabelGray label={"Duration (minutes)"} type={"numeric"} placeholder={"Minutes"} value={duration} onchangeText={setDuration}/>
                             {selectCourse?.isLimitedTime === 1 &&
@@ -596,9 +639,9 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 />
                                                 <View style={styles.containerGray}>
                                                     <Text style={styles.label}>Reference material (maximum 1 file)</Text>
-                                                    {item.attachedFile ?
+                                                    {item.attachedFile || item.fileUrl ?
                                                         <View style={styles.inputLabelGray}>
-                                                            <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
+                                                            <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name || item.nameFile}</Text>
                                                             <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                                                 <MaterialIcons name="delete" size={18} color="black" />
                                                             </TouchableOpacity>

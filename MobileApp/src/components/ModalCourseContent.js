@@ -155,7 +155,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                                             nameCourse: nameCourse, 
                                             idSection: item.idSection, 
                                             nameSection: item.sectionName,
-                                            getCourse: getCourse
+                                            getCourse: getCourse,
 
                                         })}>
                                             <Entypo name="plus" size={14} color={COLORS.main} />

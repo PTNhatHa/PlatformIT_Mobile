@@ -94,6 +94,13 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
             idAssignment: data.idAssignment
         })
     }
+    const handelEdit = ()=>{
+        navigation.navigate("Edit Assignment", { 
+            reload: getAllAsgm,
+            idAssignment: data.idAssignment,
+            isEdit: true
+        })
+    }
 
     return(
         <>
@@ -218,7 +225,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                                         <Text>Publish</Text>
                                         <MaterialIcons name="cloud-upload" size={24} color="black" />
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]}>
+                                    <TouchableOpacity style={[styles.btnSelectAsgm, {borderBottomWidth: 1}]} onPress={()=>handelEdit()}>
                                         <Text>Edit</Text>
                                         <Entypo name="edit" size={20} color="black" />
                                     </TouchableOpacity>
