@@ -14,10 +14,12 @@ export const TeacherAllCourse = ({route})=>{
     const [loading, setLoading] = useState(true);
     
     useEffect(()=>{
-        navigation.navigate("Detail My Course", {
-            idCourse: idCourse,
-            role: route?.params?.role
-          });
+        if(idCourse !== null){
+            navigation.navigate("Detail My Course", {
+                idCourse: idCourse,
+                role: route?.params?.role
+            });
+        }
     },[idCourse])
 
     const getAllCourseOfTeacher = async()=>{
