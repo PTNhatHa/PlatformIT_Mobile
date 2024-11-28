@@ -10,7 +10,7 @@ import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
-import { createManualAssignment, createQuizAssignment, getAssignmentInfo } from "../../../services/assignment"
+import { createManualAssignment, createQuizAssignment, getAssignmentInfo, updateAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
@@ -20,6 +20,7 @@ export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
     const idAssignment = route?.params?.idAssignment || null
     const isEdit = route?.params?.isEdit || false
+    const [detailAsgm, setDetailAsgm] = useState([])
 
     const {state} = useUser()
     const navigation = useNavigation()
@@ -73,7 +74,10 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
+                setTitleAsgm(response.title + " (Duplicate)")
                 if(isEdit === true){
+                    setTitleAsgm(response.title)
+                    setDetailAsgm(response)
                     setSelectCourse({
                         value: response.idCourse,
                         label: response.courseTitle,
@@ -90,7 +94,6 @@ export const TeacherAsgmCreate = ({route})=>{
                         label: response.nameLecture || ""
                     })
                 }
-                setTitleAsgm(response.title + " (Duplicate)")
                 setIsExercise(response.isTest === 1 ? false : true)
                 setStartDate(response.startDate || "")
                 setDueDate(response.dueDate || "")
@@ -122,6 +125,10 @@ export const TeacherAsgmCreate = ({route})=>{
                         realQuestion = {
                             ...question,
                             mark: question.mark.toString(),
+                            attachedFile: {
+                                uri: question.fileUrl,
+                                name: question.nameFile
+                            },
                             isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
                             items: listItems
                         }
@@ -325,20 +332,55 @@ export const TeacherAsgmCreate = ({route})=>{
         setQuestions(newList)
     }
     const deleteQuestion = (index)=>{
-        const newQuestions = questions.filter((item, i) => i !==index)
+        let newQuestions 
+        if(isEdit){
+            newQuestions = questions.map((item, i) => {
+                if(i === index){
+                    return{
+                        ...item,
+                        assignmentStatus: 0
+                    }
+                }
+                return item
+            })
+        } else{
+            newQuestions = questions.filter((item, i) => i !==index)
+        }
         setQuestions(newQuestions)
     }
     const deleteChoice = (indexQuestion, indexChoice)=>{
-        const newQuestions = questions.map((question, i) => {
-            if(i === indexQuestion){
-                const newItems = question.items.filter((choice, ichoice) => ichoice !== indexChoice)
-                return{
-                    ...question,
-                    items: [...newItems]
+        let newQuestions
+        if(isEdit){
+            newQuestions = questions.map((question, i) => {
+                if(i === indexQuestion){
+                    const newItems = question.items.map((choice, ichoice) => {
+                        if(ichoice === indexChoice){
+                            return{
+                                ...choice,
+                                multipleAssignmentItemStatus: 0
+                            }
+                        }
+                        return choice
+                    })
+                    return{
+                        ...question,
+                        items: [...newItems]
+                    }
                 }
-            }
-            return question
-        })
+                return question
+            })
+        } else{
+            newQuestions = questions.map((question, i) => {
+                if(i === indexQuestion){
+                    const newItems = question.items.filter((choice, ichoice) => ichoice !== indexChoice)
+                    return{
+                        ...question,
+                        items: [...newItems]
+                    }
+                }
+                return question
+            })
+        }
         setQuestions(newQuestions)
     }
     const handleChangeChoice = (indexQuestion, indexChoice, field, value)=>{
@@ -421,8 +463,10 @@ export const TeacherAsgmCreate = ({route})=>{
         }
 
         let textStatus = "create"
+        if(isEdit) textStatus = "update"
         if(isPublish){
             textStatus = "create and publish"
+            if(isEdit) textStatus = "update and publish"
         }
         textStatus += " this " + type.label
         if(isExercise){
@@ -460,18 +504,56 @@ export const TeacherAsgmCreate = ({route})=>{
         setLoading(true)
         try {
             let response = null
-            if(type.value === 1){
-                response = await createManualAssignment(
-                    titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
-                    duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, questions, state.idUser
-                )
-            }
-            if(type.value === 2){
-                response = await createQuizAssignment(
-                    titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
-                    duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, isShufflingAnswer ? 1 : 0, isShowAnswer ? 1 : 0,
-                    questions, state.idUser
-                )
+            if(isEdit){
+                const editData = {
+                    idAssignment: detailAsgm.idAssignment,
+                    title: titleAsgm,
+                    isTest: detailAsgm.isTest,
+                    startDate: startDate || null,
+                    dueDate: dueDate || null,
+                    duration: duration || 0,
+                    assignmentType: detailAsgm.assignmentType,
+                    isPublish: isPublish,
+                    isShufflingQuestion: isShufflingQuestion ? 1 : 0,
+                    isShufflingAnswer: isShufflingAnswer ? 1 : 0,
+                    showAnswer: isShowAnswer ? 1 : 0,
+                    assignmentStatus: detailAsgm.assignmentStatus,
+                    assignmentItems: questions.map(asgmItem => {
+                        return{
+                            idAssignmentItem: asgmItem.idAssignmentItem,
+                            question: asgmItem.question,
+                            mark: asgmItem.mark,                            
+                            explanation: asgmItem.explanation || null,
+                            isMultipleAnswer: asgmItem.isMultipleAnswer === true ? 1 : 0,
+                            attachedFile: asgmItem.attachedFile?.uri || null,
+                            assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || null,
+                            assignmentItemStatus: asgmItem.assignmentItemStatus,
+                            items: asgmItem.items.map(item => {
+                                return{
+                                    idMultipleAssignmentItem: item.idMultipleAssignmentItem || null,
+                                    content: item.content,
+                                    isCorrect: item.isCorrect === true ? 1 : 0,
+                                    multipleAssignmentItemStatus: item.multipleAssignmentItemStatus === true ? 1 : 0
+                                }
+                            })
+                        }
+                    })
+                }
+                response = await updateAssignment(state.idUser, editData)
+            } else{
+                if(type.value === 1){
+                    response = await createManualAssignment(
+                        titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
+                        duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, questions, state.idUser
+                    )
+                }
+                if(type.value === 2){
+                    response = await createQuizAssignment(
+                        titleAsgm, selectCourse.value, isExercise ? 0 : 1, selectLecture?.value || "", startDate, dueDate,
+                        duration, type.value, isPublish, isShufflingQuestion ? 1 : 0, isShufflingAnswer ? 1 : 0, isShowAnswer ? 1 : 0,
+                        questions, state.idUser
+                    )
+                }
             }
             if(response){
                 // console.log("zooooo");
@@ -622,8 +704,8 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View style={{alignSelf: "flex-end", marginVertical: 8}}>
                                             <CustomSwitch label={"Question Shuffling"}value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
                                         </View>
-                                        {questions.map((item, index) =>
-                                            <View style={styles.wrapContent} key={index}>
+                                        {questions.map((item, index) => (item.assignmentStatus !== 0) &&
+                                            (<View style={styles.wrapContent} key={index}>
                                                 <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                                     <Text style={styles.title}>Question {index + 1}*</Text>
                                                     <TouchableOpacity onPress={()=>deleteQuestion(index)}>
@@ -639,9 +721,9 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 />
                                                 <View style={styles.containerGray}>
                                                     <Text style={styles.label}>Reference material (maximum 1 file)</Text>
-                                                    {item.attachedFile || item.fileUrl ?
+                                                    {item.attachedFile ?
                                                         <View style={styles.inputLabelGray}>
-                                                            <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name || item.nameFile}</Text>
+                                                            <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
                                                             <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
                                                                 <MaterialIcons name="delete" size={18} color="black" />
                                                             </TouchableOpacity>
@@ -668,7 +750,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                         />
                                                     </View>
                                                 </View>  
-                                            </View>
+                                            </View>)
                                         )}
                                     </> 
                                 : type.value === 2 ?
@@ -678,7 +760,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 <MaterialIcons name="menu" size={24} color="black" />
                                             </TouchableOpacity>
                                         </View> 
-                                        {questions.map((question, index) =>
+                                        {questions.map((question, index) => (question.assignmentItemStatus !== 0) &&
                                             <View style={styles.wrapContent} key={index}>
                                                 <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                                     <Text style={styles.title}>Question {index + 1}*</Text>
@@ -705,7 +787,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                     }
                                                 </View>
                                                 {question.attachedFile &&
-                                                    <Image source={{uri: question.attachedFile.uri}} style={styles.questionImg}/>
+                                                    <Image source={{uri: question.attachedFile?.uri}} style={styles.questionImg}/>
                                                 }
 
                                                 {/* Answers */}
@@ -721,7 +803,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 </View>
                                                 <View style={{gap: 4}}>
                                                     {question.items &&
-                                                        question.items.map((choice, indexChoice) =>
+                                                        question.items.map((choice, indexChoice) => (choice?.multipleAssignmentItemStatus !== 0) &&
                                                                 <View style={styles.wrapFlex} key={indexChoice}>
                                                                     {question.isMultipleAnswer ?
                                                                         <CheckBox
