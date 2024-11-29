@@ -91,3 +91,14 @@ export const getFileTypeFromUrl = (url) => {
   
     return 'unknown'; // Trả về 'unknown' nếu không tìm thấy
   }
+
+  export const getMimeType = (fileName) => {
+    const extension = fileName.split('.').pop();
+    const mimeTypes = {
+        jpeg: 'image/jpeg',
+        jpg: 'image/jpeg',
+        png: 'image/png',
+        pdf: 'application/pdf',
+    };
+    return mimeTypes[extension] || 'application/octet-stream';
+}

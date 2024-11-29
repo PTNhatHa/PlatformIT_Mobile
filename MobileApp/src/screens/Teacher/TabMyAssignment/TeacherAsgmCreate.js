@@ -14,7 +14,7 @@ import { createManualAssignment, createQuizAssignment, getAssignmentInfo, update
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
-import { formatDateTime, getFileTypeFromUrl } from "../../../utils/utils"
+import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -75,7 +75,7 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
-                // console.log("response: ", response);
+                console.log("response: ", response);
                 setTitleAsgm(response.title + " (Duplicate)")
                 if(isEdit === true){
                     setTitleAsgm(response.title)
@@ -99,7 +99,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 setIsExercise(response.isTest === 1 ? false : true)
                 setStartDate(response.startDate || "")
                 setDueDate(response.dueDate || "")
-                setDuration(response.duration.toString() || "")
+                setDuration(response.duration?.toString() || "")
                 setType({
                     label: typeAssignment[response.assignmentType], 
                     value: response.assignmentType
@@ -114,10 +114,10 @@ export const TeacherAsgmCreate = ({route})=>{
                         realQuestion = {
                             ...question,
                             mark: question.mark.toString(),
-                            attachedFile: question.fileUrl !== null && {
-                                uri: question.fileUrl,
+                            attachedFile: question.attachedFile !== null && {
+                                uri: question.attachedFile,
                                 name: question.nameFile,
-                                type: getFileTypeFromUrl(question.fileUrl)
+                                type: getMimeType(question.attachedFile)
                             },
                         }
                     }
@@ -132,10 +132,10 @@ export const TeacherAsgmCreate = ({route})=>{
                         realQuestion = {
                             ...question,
                             mark: question.mark.toString(),
-                            attachedFile: question.fileUrl !== null && {
-                                uri: question.fileUrl,
+                            attachedFile: question.attachedFile !== null && {
+                                uri: question.attachedFile,
                                 name: question.nameFile,
-                                type: getFileTypeFromUrl(question.fileUrl)
+                                type: getMimeType(question.attachedFile)
                             },
                             isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
                             items: listItems
@@ -344,9 +344,10 @@ export const TeacherAsgmCreate = ({route})=>{
         })
         setQuestions(newList)
     }
-    const deleteQuestion = (index)=>{
+    const deleteQuestion = (index, idAssignmentItem = null)=>{
         let newQuestions 
-        if(isEdit){
+        if(isEdit && idAssignmentItem){
+            console.log("zoo", idAssignmentItem);
             newQuestions = questions.map((item, i) => {
                 if(i === index){
                     setTotalMark(totalMark - item.mark)
@@ -471,30 +472,33 @@ export const TeacherAsgmCreate = ({route})=>{
             setError("You need to add at least 1 question.")
             return
         }
-        const check = questions.find(item => item.assignmentStatus !== 0 && (item.question === null || item.items?.length === 0 || item.mark === 0))
+        const check = questions.find(item => item.assignmentItemStatus !== 0 && (item.question === null || item.items?.length === 0 || item.mark === 0))
         if(check){
             setError("You need to fill all question.")
             return
         }
-        const checkItemContent = questions.every(question => {
-            if (question.assignmentStatus !== 0) {
-                return question.items.some(item => item.content === null || item.content === "");
+
+        if(type.value === 2){
+            const checkItemContent = questions.every(question => {
+                if (question.assignmentItemStatus !== 0) {
+                    return question.items?.some(item => item.content === null || item.content === "");
+                }
+                return false;
+            });
+            if(checkItemContent){
+                setError("You must fill all the choices")
+                return
             }
-            return false;
-        });
-        if(checkItemContent){
-            setError("You must fill all the choices")
-            return
-        }
-        const checkIsCorrect = questions.every(question => {
-            if(question.assignmentStatus !== 0){
-                return question.items.some(item => item.isCorrect)
+            const checkIsCorrect = questions.every(question => {
+                if(question.assignmentItemStatus !== 0){
+                    return question.items?.some(item => item.isCorrect)
+                }
+                return true
+              });
+            if(!checkIsCorrect){
+                setError("You must provide at least one choice for each question.")
+                return
             }
-            return true
-          });
-        if(!checkIsCorrect){
-            setError("You must provide at least one choice for each question.")
-            return
         }
 
         let textStatus = "create"
@@ -563,14 +567,14 @@ export const TeacherAsgmCreate = ({route})=>{
                             attachedFile: asgmItem.attachedFile || "",
                             assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || "",
                             assignmentItemStatus: asgmItem.assignmentItemStatus,
-                            items: asgmItem.items.map(item => {
+                            items: asgmItem.items?.map(item => {
                                 return{
                                     idMultipleAssignmentItem: item.idMultipleAssignmentItem || "",
                                     content: item.content,
                                     isCorrect: item.isCorrect === true ? 1 : 0,
                                     multipleAssignmentItemStatus: item.multipleAssignmentItemStatus
                                 }
-                            })
+                            }) || []
                         }
                     })
                 }
@@ -743,7 +747,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             <View style={styles.wrapContent} key={index}>
                                                 <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                                     <Text style={styles.title}>Question {index + 1}*</Text>
-                                                    <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                    <TouchableOpacity onPress={()=>deleteQuestion(index, item.idAssignmentItem || null)}>
                                                         <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                                     </TouchableOpacity>
                                                 </View>
@@ -759,7 +763,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                     {item.attachedFile ?
                                                         <View style={styles.inputLabelGray}>
                                                             <Text style={{flex: 1}} numberOfLines={1}>{item.attachedFile?.name}</Text>
-                                                            <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
+                                                            <TouchableOpacity onPress={()=>handleChangeQuestion(null, index, "attachedFile")} style={{margin: 4}}>
                                                                 <MaterialIcons name="delete" size={18} color="black" />
                                                             </TouchableOpacity>
                                                         </View>
@@ -799,7 +803,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             <View style={styles.wrapContent} key={index}>
                                                 <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                                     <Text style={styles.title}>Question {index + 1}*</Text>
-                                                    <TouchableOpacity onPress={()=>deleteQuestion(index)}>
+                                                    <TouchableOpacity onPress={()=>deleteQuestion(index, question.idAssignmentItem || null)}>
                                                         <AntDesign name="close" size={24} color={COLORS.secondMain}/>
                                                     </TouchableOpacity>
                                                 </View>

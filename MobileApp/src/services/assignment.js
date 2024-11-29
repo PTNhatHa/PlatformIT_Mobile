@@ -161,31 +161,30 @@ export const updateAssignment = async (updatedBy, updateData)=>{
     formData.append('ShowAnswer', updateData.showAnswer)
     formData.append('AssignmentStatus', updateData.assignmentStatus)
 
-    for (const [index, question] of updateData.assignmentItems.entries()) {
+    updateData.assignmentItems.forEach((question, index)=>{
         formData.append(`AssignmentItems[${index}].idAssignmentItem`, question.idAssignmentItem);
         formData.append(`AssignmentItems[${index}].question`, question.question);
         formData.append(`AssignmentItems[${index}].mark`, question.mark);
         formData.append(`AssignmentItems[${index}].explanation`, question.explanation);
         formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer);
-    
         if (question.attachedFile) {
-            formData.append(`AssignmentItems[${index}].attachedFile`, JSON.stringify(question.attachedFile));
+            formData.append(`AssignmentItems[${index}].attachedFile`, question.attachedFile);
         }
     
         formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType);
         formData.append(`AssignmentItems[${index}].assignmentItemStatus`, question.assignmentItemStatus);
     
-        for (const [indexItem, item] of question.items.entries()) {
+        question.items.forEach((item, indexItem)=>{
             formData.append(`AssignmentItems[${index}].items[${indexItem}].idMultipleAssignmentItem`, item.idMultipleAssignmentItem);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].content`, item.content);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].isCorrect`, item.isCorrect);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].multipleAssignmentItemStatus`, item.multipleAssignmentItemStatus);
-        }
-    }    
+        })
+    })
 
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value, "\n");
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(key, value, "\n");
+    // }
 
     return await axios.post(baseUrl + "/UpdateAssignment?updatedBy=" + updatedBy, formData, {
         headers: {
