@@ -148,13 +148,55 @@ export const publishAssignment = async (idAssignment, idUpdatedBy)=>{
 }
 
 export const updateAssignment = async (updatedBy, updateData)=>{
-    console.log("updateData: ", updateData.assignmentItems);
-    return await axios.post(baseUrl + "/UpdateAssignment?updatedBy=" + updatedBy, updateData)
+    // console.log("updateData: ", updateData.assignmentItems);
+    const formData = new FormData()
+    formData.append('IdAssignment', updateData.idAssignment)
+    formData.append('Title', updateData.title)
+    formData.append('StartDate', updateData.startDate)
+    formData.append('DueDate', updateData.dueDate)
+    formData.append('Duration', updateData.duration)
+    formData.append('IsPublish', updateData.isPublish)
+    formData.append('IsShufflingQuestion', updateData.isShufflingQuestion)
+    formData.append('IsShufflingAnswer', updateData.isShufflingAnswer)
+    formData.append('ShowAnswer', updateData.showAnswer)
+    formData.append('AssignmentStatus', updateData.assignmentStatus)
+
+    for (const [index, question] of updateData.assignmentItems.entries()) {
+        formData.append(`AssignmentItems[${index}].idAssignmentItem`, question.idAssignmentItem);
+        formData.append(`AssignmentItems[${index}].question`, question.question);
+        formData.append(`AssignmentItems[${index}].mark`, question.mark);
+        formData.append(`AssignmentItems[${index}].explanation`, question.explanation);
+        formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer);
+    
+        if (question.attachedFile) {
+            formData.append(`AssignmentItems[${index}].attachedFile`, JSON.stringify(question.attachedFile));
+        }
+    
+        formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType);
+        formData.append(`AssignmentItems[${index}].assignmentItemStatus`, question.assignmentItemStatus);
+    
+        for (const [indexItem, item] of question.items.entries()) {
+            formData.append(`AssignmentItems[${index}].items[${indexItem}].idMultipleAssignmentItem`, item.idMultipleAssignmentItem);
+            formData.append(`AssignmentItems[${index}].items[${indexItem}].content`, item.content);
+            formData.append(`AssignmentItems[${index}].items[${indexItem}].isCorrect`, item.isCorrect);
+            formData.append(`AssignmentItems[${index}].items[${indexItem}].multipleAssignmentItemStatus`, item.multipleAssignmentItemStatus);
+        }
+    }    
+
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value, "\n");
+    }
+
+    return await axios.post(baseUrl + "/UpdateAssignment?updatedBy=" + updatedBy, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }}
+    )
     .then(response => {
         return response.data
     })
     .catch(error => {
-        console.log("Error PublishAssignment: ", error.request);
+        console.log("Error UpdateAssignment: ", error.request);
         if (error.response) {
             console.log("Server response: ", error.response.data);
         }

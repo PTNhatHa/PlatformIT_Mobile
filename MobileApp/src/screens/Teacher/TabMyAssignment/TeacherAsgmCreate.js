@@ -14,7 +14,7 @@ import { createManualAssignment, createQuizAssignment, getAssignmentInfo, update
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
-import { formatDateTime } from "../../../utils/utils"
+import { formatDateTime, getFileTypeFromUrl } from "../../../utils/utils"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -50,6 +50,7 @@ export const TeacherAsgmCreate = ({route})=>{
 
     const [questions, setQuestions] = useState([])
     const [totalMark, setTotalMark] = useState(0)
+    const [totalQuestion, setTotalQuestion] = useState(0)
 
     const [listCourses, setListCourses] = useState([])
     const [listSections, setListSections] = useState([])
@@ -74,6 +75,7 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
+                // console.log("response: ", response);
                 setTitleAsgm(response.title + " (Duplicate)")
                 if(isEdit === true){
                     setTitleAsgm(response.title)
@@ -112,6 +114,11 @@ export const TeacherAsgmCreate = ({route})=>{
                         realQuestion = {
                             ...question,
                             mark: question.mark.toString(),
+                            attachedFile: question.fileUrl !== null && {
+                                uri: question.fileUrl,
+                                name: question.nameFile,
+                                type: getFileTypeFromUrl(question.fileUrl)
+                            },
                         }
                     }
                     if(response.assignmentType === 2){
@@ -125,9 +132,10 @@ export const TeacherAsgmCreate = ({route})=>{
                         realQuestion = {
                             ...question,
                             mark: question.mark.toString(),
-                            attachedFile: {
+                            attachedFile: question.fileUrl !== null && {
                                 uri: question.fileUrl,
-                                name: question.nameFile
+                                name: question.nameFile,
+                                type: getFileTypeFromUrl(question.fileUrl)
                             },
                             isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
                             items: listItems
@@ -138,6 +146,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 })] || [])
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
+                setTotalQuestion(response.assignmentItems.length)
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -300,6 +309,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 mark: 0,
                 assignmentItemAnswerType: 1,
                 attachedFile: "",
+                assignmentItemStatus: 1
             }])
         }
         if(type?.value === 2){
@@ -309,9 +319,11 @@ export const TeacherAsgmCreate = ({route})=>{
                 explanation: "",
                 isMultipleAnswer: false,
                 attachedFile: "",
-                items: []
+                items: [],
+                assignmentItemStatus: 1
             }])
         }
+        setTotalQuestion(totalQuestion + 1)
     }
     const addNewChoice = (i)=>{
         const newList = questions.map((question, index) => {
@@ -322,7 +334,8 @@ export const TeacherAsgmCreate = ({route})=>{
                         ...question.items,
                         {
                             content: null,
-                            isCorrect: 0,
+                            isCorrect: false,
+                            multipleAssignmentItemStatus: 1
                         }
                     ]
                 }
@@ -336,9 +349,10 @@ export const TeacherAsgmCreate = ({route})=>{
         if(isEdit){
             newQuestions = questions.map((item, i) => {
                 if(i === index){
+                    setTotalMark(totalMark - item.mark)
                     return{
                         ...item,
-                        assignmentStatus: 0
+                        assignmentItemStatus: 0
                     }
                 }
                 return item
@@ -347,6 +361,7 @@ export const TeacherAsgmCreate = ({route})=>{
             newQuestions = questions.filter((item, i) => i !==index)
         }
         setQuestions(newQuestions)
+        setTotalQuestion(totalQuestion - 1)
     }
     const deleteChoice = (indexQuestion, indexChoice)=>{
         let newQuestions
@@ -456,9 +471,29 @@ export const TeacherAsgmCreate = ({route})=>{
             setError("You need to add at least 1 question.")
             return
         }
-        const check = questions.find(item => item.question === null || item.items?.length === 0 || item.mark === 0)
+        const check = questions.find(item => item.assignmentStatus !== 0 && (item.question === null || item.items?.length === 0 || item.mark === 0))
         if(check){
             setError("You need to fill all question.")
+            return
+        }
+        const checkItemContent = questions.every(question => {
+            if (question.assignmentStatus !== 0) {
+                return question.items.some(item => item.content === null || item.content === "");
+            }
+            return false;
+        });
+        if(checkItemContent){
+            setError("You must fill all the choices")
+            return
+        }
+        const checkIsCorrect = questions.every(question => {
+            if(question.assignmentStatus !== 0){
+                return question.items.some(item => item.isCorrect)
+            }
+            return true
+          });
+        if(!checkIsCorrect){
+            setError("You must provide at least one choice for each question.")
             return
         }
 
@@ -474,10 +509,10 @@ export const TeacherAsgmCreate = ({route})=>{
         } else {
             textStatus += " test"
         }
-        if(questions?.length > 1){
-            textStatus += " with " + questions.length + " questions?"
+        if(totalQuestion > 1){
+            textStatus += " with " + totalQuestion + " questions?"
         } else {
-            textStatus += " with " +  questions.length + " question?"
+            textStatus += " with " +  totalQuestion + " question?"
         }
         
         Alert.alert(
@@ -509,8 +544,8 @@ export const TeacherAsgmCreate = ({route})=>{
                     idAssignment: detailAsgm.idAssignment,
                     title: titleAsgm,
                     isTest: detailAsgm.isTest,
-                    startDate: startDate || null,
-                    dueDate: dueDate || null,
+                    startDate: startDate || "",
+                    dueDate: dueDate || "",
                     duration: duration || 0,
                     assignmentType: detailAsgm.assignmentType,
                     isPublish: isPublish,
@@ -520,20 +555,20 @@ export const TeacherAsgmCreate = ({route})=>{
                     assignmentStatus: detailAsgm.assignmentStatus,
                     assignmentItems: questions.map(asgmItem => {
                         return{
-                            idAssignmentItem: asgmItem.idAssignmentItem,
+                            idAssignmentItem: asgmItem.idAssignmentItem || "",
                             question: asgmItem.question,
                             mark: asgmItem.mark,                            
-                            explanation: asgmItem.explanation || null,
+                            explanation: (asgmItem.explanation === null || asgmItem.explanation === "null") ? "" : asgmItem.explanation ,
                             isMultipleAnswer: asgmItem.isMultipleAnswer === true ? 1 : 0,
-                            attachedFile: asgmItem.attachedFile?.uri || null,
-                            assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || null,
+                            attachedFile: asgmItem.attachedFile || "",
+                            assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || "",
                             assignmentItemStatus: asgmItem.assignmentItemStatus,
                             items: asgmItem.items.map(item => {
                                 return{
-                                    idMultipleAssignmentItem: item.idMultipleAssignmentItem || null,
+                                    idMultipleAssignmentItem: item.idMultipleAssignmentItem || "",
                                     content: item.content,
                                     isCorrect: item.isCorrect === true ? 1 : 0,
-                                    multipleAssignmentItemStatus: item.multipleAssignmentItemStatus === true ? 1 : 0
+                                    multipleAssignmentItemStatus: item.multipleAssignmentItemStatus
                                 }
                             })
                         }
@@ -601,7 +636,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             }
                         </>
                     }
-                    <Text style={styles.textGray14}>{questions?.length} {questions?.length > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
+                    <Text style={styles.textGray14}>{totalQuestion} {totalQuestion > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
                     {error &&
                         <Text style={styles.error}>{error}</Text>
                     }
@@ -704,8 +739,8 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View style={{alignSelf: "flex-end", marginVertical: 8}}>
                                             <CustomSwitch label={"Question Shuffling"}value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
                                         </View>
-                                        {questions.map((item, index) => (item.assignmentStatus !== 0) &&
-                                            (<View style={styles.wrapContent} key={index}>
+                                        {questions.map((item, index) => (item.assignmentItemStatus !== 0) &&
+                                            <View style={styles.wrapContent} key={index}>
                                                 <View style={[styles.wrapFlex, {justifyContent: "space-between"}]}>
                                                     <Text style={styles.title}>Question {index + 1}*</Text>
                                                     <TouchableOpacity onPress={()=>deleteQuestion(index)}>
@@ -750,7 +785,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                         />
                                                     </View>
                                                 </View>  
-                                            </View>)
+                                            </View>
                                         )}
                                     </> 
                                 : type.value === 2 ?
