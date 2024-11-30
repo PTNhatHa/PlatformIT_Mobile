@@ -13,11 +13,12 @@ import { SpecialPI } from '../../../components/SpecialPI';
 import { SocialLink } from '../../../components/SocialLink';
 import { Professional } from '../../../components/Professional';
 
-export const TeacherPI = () => {
+export const TeacherPI = ({route}) => {
+    const isNoti = route?.params?.idNotification || false
     const { state, dispatch } = useUser();
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [indexTab, setIndexTab] = useState(1)
+    const [indexTab, setIndexTab] = useState(isNoti ? 3 : 1)
     const [refreshing, setRefreshing] = useState(false)
 
     const fetchData = async () => {

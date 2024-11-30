@@ -10,14 +10,12 @@ import { useNavigation } from "@react-navigation/native";
 export const TeacherAccount = ({route})=>{
     const navigation = useNavigation()
     const {state, dispatch} = useUser()
-    const isNoti = route?.params?.idNotification
+    const idNotification = route?.params?.idNotification || false
     useEffect(()=>{
-        console.log("route: ", route);
-        if(isNoti){
-            console.log("isNoti: ", isNoti);
-            navigation.navigate("Your infomation")
+        if(idNotification){
+            navigation.navigate("Your infomation", {idNotification: idNotification})
         }
-    }, [isNoti])
+    }, [idNotification])
     return(
         <View style={styles.container}>
             <View style={styles.top}>
