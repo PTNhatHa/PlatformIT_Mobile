@@ -4,9 +4,20 @@ import { useUser } from "../../../contexts/UserContext";
 import { COLORS } from "../../../utils/constants";
 import DefaultAva from "../../../../assets/images/DefaultAva.png"
 import { determineFileType } from "../../../utils/utils";
+import { useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
-export const TeacherAccount = ({navigation})=>{
+export const TeacherAccount = ({route})=>{
+    const navigation = useNavigation()
     const {state, dispatch} = useUser()
+    const isNoti = route?.params?.idNotification
+    useEffect(()=>{
+        console.log("route: ", route);
+        if(isNoti){
+            console.log("isNoti: ", isNoti);
+            navigation.navigate("Your infomation")
+        }
+    }, [isNoti])
     return(
         <View style={styles.container}>
             <View style={styles.top}>

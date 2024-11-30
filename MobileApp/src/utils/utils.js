@@ -92,13 +92,52 @@ export const getFileTypeFromUrl = (url) => {
     return 'unknown'; // Trả về 'unknown' nếu không tìm thấy
   }
 
-  export const getMimeType = (fileName) => {
+export const getMimeType = (fileName) => {
     const extension = fileName.split('.').pop();
     const mimeTypes = {
+        // Hình ảnh
         jpeg: 'image/jpeg',
         jpg: 'image/jpeg',
         png: 'image/png',
+        gif: 'image/gif',
+        bmp: 'image/bmp',
+        webp: 'image/webp',
+        svg: 'image/svg+xml',
+
+        // Tài liệu
         pdf: 'application/pdf',
+        doc: 'application/msword',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        xls: 'application/vnd.ms-excel',
+        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ppt: 'application/vnd.ms-powerpoint',
+        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        txt: 'text/plain',
+        csv: 'text/csv',
+
+        // Âm thanh
+        mp3: 'audio/mpeg',
+        wav: 'audio/wav',
+        ogg: 'audio/ogg',
+        m4a: 'audio/mp4',
+
+        // Video
+        mp4: 'video/mp4',
+        avi: 'video/x-msvideo',
+        mov: 'video/quicktime',
+        mkv: 'video/x-matroska',
+        webm: 'video/webm',
+
+        // Lập trình
+        js: 'application/javascript',
+        json: 'application/json',
+        html: 'text/html',
+        css: 'text/css',
+        xml: 'application/xml',
+        zip: 'application/zip',
+        rar: 'application/vnd.rar',
+        tar: 'application/x-tar',
+        gz: 'application/gzip',
     };
     return mimeTypes[extension] || 'application/octet-stream';
 }

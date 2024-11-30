@@ -75,7 +75,7 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
-                console.log("response: ", response);
+                // console.log("response: ", response);
                 setTitleAsgm(response.title + " (Duplicate)")
                 if(isEdit === true){
                     setTitleAsgm(response.title)

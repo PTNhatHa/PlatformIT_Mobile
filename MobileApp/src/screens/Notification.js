@@ -50,8 +50,12 @@ export const NotificationScreen = (props)=>{
         const goal = noti.find(item => item.idNotification === idNotification)
         if(goal.notificationType === 1){
             // QUALIFICATION
+            console.log(idNotification);
             navigation.navigate("AccountScreen", {
-                screen: "Your infomation",
+                screen: "TeacherAccount",
+                params: {
+                    idNotification: goal.idNotification
+                }
             })
         }
         if(goal.notificationType === 2){

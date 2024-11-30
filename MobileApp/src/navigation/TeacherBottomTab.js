@@ -175,10 +175,10 @@ const StackAccountScreen = ()=>{
                 name="Your infomation"
                 component={TeacherPI}
             />
-            <StackAccount.Screen
+            {/* <StackAccount.Screen
                 name="Change password"
                 component={ChangePassword}
-            />
+            /> */}
         </StackAccount.Navigator>
     )
 }
@@ -210,45 +210,6 @@ export const TeacherBottomTab = ()=>{
         setUnReadNoti(notiUnRead)
     }
 
-    useEffect(() => {
-        // Create connection to the SignalR hub
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://' + currentIP +':5000/notificationHub')  // Ensure the URL matches your backend
-            .build();
-
-        // Start the connection
-        connection.start()
-            .then(() => {
-                console.log('Connected to SignalR')
-
-                // Subscribe to the "UpdateNotifications" event
-                connection.on('UpdateNotifications', (updatedNotifications) => {
-                    console.log('UpdateNotifications event triggered'); // Kiểm tra sự kiện có kích hoạt
-                    console.log('Received notifications:', updatedNotifications); // Kiểm tra dữ liệu nhận được
-                    let notiUnRead = 0
-                    if(updatedNotifications){
-                        updatedNotifications.forEach(item => {
-                            if(item.isRead === 0){
-                                notiUnRead +=1
-                            }
-                        });
-                        setAllNoti(updatedNotifications)
-                    }
-                    setUnReadNoti(notiUnRead)
-                });
-            })
-            .catch(err => console.error('SignalR Connection Error: ', err));
-
-        // Check close
-        connection.onclose((error) => {
-            console.error("SignalR connection closed:", error);
-        });
-        // Clean up the connection when component unmounts
-        return () => {
-            connection.stop();
-        };
-    }, []);
-
     useEffect(()=>{
         getNoti()
         const interval = setInterval(() => {
@@ -261,6 +222,96 @@ export const TeacherBottomTab = ()=>{
         }, 60000); // Update every minute
         return () => clearInterval(interval);
     }, [])
+
+    useEffect(() => {
+        console.log('Attempting to connect to SignalR hub...');
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/notificationHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                console.log('Connected to SignalR hub.');
+        
+                connection.on('UpdateNotifications', (updatedNotifications) => {
+                    console.log('Received UpdateNotifications event:', updatedNotifications);
+                    let notiUnRead = 0
+                    let processedData = updatedNotifications.map((notification) => {
+                        try {
+                            if(item.isRead === 0){
+                                notiUnRead +=1
+                            }
+                            return {
+                                ...notification,
+                                timestamp: parseRelativeTime(notification.relativeTime),
+                            };
+                        } catch (error) {
+                        console.error('Error parsing notification:', notification, error);
+                        return notification; // Fallback
+                        }
+                    });
+                    setAllNoti(processedData);
+                    setUnReadNoti(notiUnRead)
+                });
+            } catch (error) {
+                console.error('SignalR Connection Error:', error);
+            }
+        };
+        console.log(">> after get from quin:", allNoti)
+    
+        startConnection();
+    
+        connection.onclose((error) => {
+            console.error('SignalR connection closed:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
+    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, []);
+
+    // useEffect(() => {
+    //     // Create connection to the SignalR hub
+    //     const connection = new signalR.HubConnectionBuilder()
+    //         .withUrl('http://' + currentIP +':5000/notificationHub')  // Ensure the URL matches your backend
+    //         .build();
+
+    //     // Start the connection
+    //     connection.start()
+    //         .then(() => {
+    //             console.log('Connected to SignalR')
+
+    //             // Subscribe to the "UpdateNotifications" event
+    //             connection.on('UpdateNotifications', (updatedNotifications) => {
+    //                 console.log('UpdateNotifications event triggered'); // Kiểm tra sự kiện có kích hoạt
+    //                 console.log('Received notifications:', updatedNotifications); // Kiểm tra dữ liệu nhận được
+    //                 let notiUnRead = 0
+    //                 if(updatedNotifications){
+    //                     updatedNotifications.forEach(item => {
+    //                         if(item.isRead === 0){
+    //                             notiUnRead +=1
+    //                         }
+    //                     });
+    //                     setAllNoti(updatedNotifications)
+    //                 }
+    //                 setUnReadNoti(notiUnRead)
+    //             });
+    //         })
+    //         .catch(err => console.error('SignalR Connection Error: ', err));
+
+    //     // Check close
+    //     connection.onclose((error) => {
+    //         console.error("SignalR connection closed:", error);
+    //     });
+    //     // Clean up the connection when component unmounts
+    //     return () => {
+    //         connection.stop();
+    //     };
+    // }, []);
 
     return(
         <Tab.Navigator
