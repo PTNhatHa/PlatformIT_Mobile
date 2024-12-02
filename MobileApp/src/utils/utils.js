@@ -1,6 +1,6 @@
 import { Linking } from "react-native";
 
-export const formatDateTime = (date) => {
+export const formatDateTime = (date, isTime = false) => {
     if(date === null) return ""
     // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
     if (typeof date === 'string') {
@@ -11,7 +11,17 @@ export const formatDateTime = (date) => {
         return ''; // Trả về chuỗi rỗng nếu date không hợp lệ
     }
     // Định dạng ngày theo chuẩn của Mỹ
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    let options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    if(isTime){
+        options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false, // Sử dụng định dạng 24 giờ
+        };
+    }
     return date ? date.toLocaleDateString('en-US', options) : '';
 };
 export const validateEmail = (email) => {
@@ -70,27 +80,27 @@ export const parseRelativeTime = (relativeTime) => {
     return now; // Default to current time if unrecognized format
 };
 
-export const getFileTypeFromUrl = (url) => {
-    if (!url) return null; // Trả về null nếu link không hợp lệ
+// export const getFileTypeFromUrl = (url) => {
+//     if (!url) return null; // Trả về null nếu link không hợp lệ
   
-    const extension = url.split('.').pop().split('?')[0].toLowerCase(); // Lấy phần mở rộng
-    const typeMap = {
-      image: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'],
-      video: ['mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm'],
-      document: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'],
-      audio: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
-      archive: ['zip', 'rar', '7z', 'tar', 'gz'],
-    };
+//     const extension = url.split('.').pop().split('?')[0].toLowerCase(); // Lấy phần mở rộng
+//     const typeMap = {
+//       image: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'],
+//       video: ['mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm'],
+//       document: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'],
+//       audio: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
+//       archive: ['zip', 'rar', '7z', 'tar', 'gz'],
+//     };
   
-    // Duyệt qua typeMap để kiểm tra phần mở rộng
-    for (const [type, extensions] of Object.entries(typeMap)) {
-      if (extensions.includes(extension)) {
-        return type; // Trả về loại file nếu tìm thấy
-      }
-    }
+//     // Duyệt qua typeMap để kiểm tra phần mở rộng
+//     for (const [type, extensions] of Object.entries(typeMap)) {
+//       if (extensions.includes(extension)) {
+//         return type; // Trả về loại file nếu tìm thấy
+//       }
+//     }
   
-    return 'unknown'; // Trả về 'unknown' nếu không tìm thấy
-  }
+//     return 'unknown'; // Trả về 'unknown' nếu không tìm thấy
+//   }
 
 export const getMimeType = (fileName) => {
     const extension = fileName.split('.').pop();

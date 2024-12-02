@@ -15,6 +15,7 @@ import { CardAssignment } from './src/components/CardAssignment';
 import { FilterAsgm } from './src/components/Filter';
 import { CustomSwitch } from './src/components/CustomSwitch';
 import { SelectCourseBox } from './src/components/TextInputField';
+import { StudentDetailAsgm } from './src/screens/Student/TabMyTest/StudentDetailAsgm';
 
 export default function App() {
   return (
@@ -22,12 +23,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <DetailTeacher/> */}
-          {/* <CardAssignment/> */}
-          {/* <FilterAsgm/> */}
-          {/* <TeacherAsgmCreate/> */}
-          {/* <CustomSwitch label={"label"}/> */}
-          {/* <SelectCourseBox/> */}
+          {/* <StudentDetailAsgm/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

@@ -148,7 +148,18 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         setLongPress(true)
                     }
                 }}    
-                onPress={()=> data.isPublish ? {} : handelEdit()}
+                onPress={()=> {
+                    if(role === 1 && !data.isPublish){
+                        handelEdit()
+                    }
+                    if(role === 2){
+                        navigation.navigate("Detail Test", { 
+                            idAssignment: data.idAssignment,
+                            isPastDue: data.isPastDue,
+                            isCompleted: data.isCompleted
+                        })
+                    }
+                }}
             >
                 <View style={styles.wrapContent}>
                     <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>

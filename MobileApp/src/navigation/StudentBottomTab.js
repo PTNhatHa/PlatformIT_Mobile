@@ -22,6 +22,7 @@ import * as signalR from '@microsoft/signalr';
 import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLectureDetail";
 import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLectureDetail";
 import { StudentAllTest } from "../screens/Student/TabMyTest/StudentAllTest";
+import { StudentDetailAsgm } from "../screens/Student/TabMyTest/StudentDetailAsgm";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -127,6 +128,10 @@ const StackMyTestScreen = ()=>{
             <StackMyTest.Screen
                 name="My Test"
                 component={StudentAllTest}
+            />
+            <StackMyTest.Screen
+                name="Detail Test"
+                component={StudentDetailAsgm}
             />
         </StackMyTest.Navigator>
     )
