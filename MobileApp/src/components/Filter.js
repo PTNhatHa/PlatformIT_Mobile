@@ -526,7 +526,8 @@ export const FilterTeacher = ({
 export const FilterAsgm = ({
     dataFilter=[], setDataFilter=()=>{},
     isPastdue = false,
-    onPressCancel
+    onPressCancel,
+    isStudent = false
 })=>{
     // Sort
     const [sortby1, setsortby1] = useState(dataFilter?.sortby || 0)
@@ -574,6 +575,13 @@ export const FilterAsgm = ({
     }
 
     const handleSave =()=>{
+        if(isStudent){
+            setDataFilter({
+                sortby: sortby1,
+                sortway: sortby2,
+                format: format,
+            })
+        } else
         if(isPastdue){
             setDataFilter({
                 sortby: sortby1,
@@ -625,24 +633,28 @@ export const FilterAsgm = ({
                     {/* Filter */}
                     <View style={stylesFilter.container}>
                         <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
-                        {isPastdue &&
-                            <View style={stylesFilter.field2}>
-                                <Text style={stylesFilter.smallTitle}>Status</Text>
-                                <View style={stylesFilter.field}>
-                                    <RadioBtn label="All" selected={status === "All"} onPress={()=>setStatus("All")}/>
-                                    <RadioBtn label="Publish" selected={status === "Publish"} onPress={()=>setStatus("Publish")}/>
-                                    <RadioBtn label="Unpublish" selected={status === "Unpublish"} onPress={()=>setStatus("Unpublish")}/>
+                        {!isStudent &&
+                            <>
+                                {isPastdue &&
+                                    <View style={stylesFilter.field2}>
+                                        <Text style={stylesFilter.smallTitle}>Status</Text>
+                                        <View style={stylesFilter.field}>
+                                            <RadioBtn label="All" selected={status === "All"} onPress={()=>setStatus("All")}/>
+                                            <RadioBtn label="Publish" selected={status === "Publish"} onPress={()=>setStatus("Publish")}/>
+                                            <RadioBtn label="Unpublish" selected={status === "Unpublish"} onPress={()=>setStatus("Unpublish")}/>
+                                        </View>
+                                    </View>
+                                }
+                                <View style={stylesFilter.field2}>
+                                    <Text style={stylesFilter.smallTitle}>Type</Text>
+                                    <View style={stylesFilter.field}>
+                                        <RadioBtn label="All" selected={type === "All"} onPress={()=>setType("All")}/>
+                                        <RadioBtn label="Test" selected={type === "Test"} onPress={()=>setType("Test")}/>
+                                        <RadioBtn label="Exercise" selected={type === "Exercise"} onPress={()=>setType("Exercise")}/>
+                                    </View>
                                 </View>
-                            </View>
+                            </>
                         }
-                        <View style={stylesFilter.field2}>
-                            <Text style={stylesFilter.smallTitle}>Type</Text>
-                            <View style={stylesFilter.field}>
-                                <RadioBtn label="All" selected={type === "All"} onPress={()=>setType("All")}/>
-                                <RadioBtn label="Test" selected={type === "Test"} onPress={()=>setType("Test")}/>
-                                <RadioBtn label="Exercise" selected={type === "Exercise"} onPress={()=>setType("Exercise")}/>
-                            </View>
-                        </View>
                         <View style={stylesFilter.field2}>
                             <Text style={stylesFilter.smallTitle}>Format</Text>
                             <View style={stylesFilter.field}>

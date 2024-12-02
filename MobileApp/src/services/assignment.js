@@ -201,3 +201,14 @@ export const updateAssignment = async (updatedBy, updateData)=>{
         }
     })
 }
+
+export const getAllTestCardOfStudent = async (idStudent)=>{
+    return await axios.get(baseUrl + "/GetAllTestCardOfStudent?idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetAllTestCardOfStudent: ", error);
+    })
+}

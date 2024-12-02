@@ -21,6 +21,7 @@ import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
 import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLectureDetail";
 import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLectureDetail";
+import { StudentAllTest } from "../screens/Student/TabMyTest/StudentAllTest";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -112,6 +113,22 @@ const StackMyCourseScreen = ()=>{
                 component={ViewAllFromDetail}
             />
         </StackMyCourse.Navigator>
+    )
+}
+
+const StackMyTestScreen = ()=>{
+    const StackMyTest = createNativeStackNavigator()
+    return(
+        <StackMyTest.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackMyTest.Screen
+                name="My Test"
+                component={StudentAllTest}
+            />
+        </StackMyTest.Navigator>
     )
 }
 
@@ -239,7 +256,7 @@ export const StudentBottomTab = ()=>{
         >
             <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }}/>
             <Tab.Screen name="My Course" component={StackMyCourseScreen} />
-            <Tab.Screen name="My Test" component={Home} />
+            <Tab.Screen name="My Test" component={StackMyTestScreen} />
             <Tab.Screen name="Noti" 
                 options={unReadNoti > 0 && { 
                     tabBarBadge: unReadNoti,
