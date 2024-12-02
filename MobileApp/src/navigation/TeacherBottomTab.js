@@ -25,6 +25,7 @@ import { TeacherLectureCreate } from "../screens/Teacher/TabMyCourse/TeacherLect
 import { TeacherAllAssignment } from "../screens/Teacher/TabMyAssignment/TeacherAllAssignment";
 import { TeacherAsgmCreate } from "../screens/Teacher/TabMyAssignment/TeacherAsgmCreate";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
+import { TeacherDetailAsgm } from "../screens/Teacher/TabMyAssignment/TeacherDetailAsgm";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -154,6 +155,10 @@ const StackAssigmentScreen = ()=>{
             <StackAssigmentScreen.Screen
                 name="Edit Assignment"
                 component={TeacherAsgmCreate}
+            />
+            <StackAssigmentScreen.Screen
+                name="Detail Assignment"
+                component={TeacherDetailAsgm}
             />
         </StackAssigmentScreen.Navigator>
     )

@@ -73,7 +73,7 @@ const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
                         } else  {
                             return(
                                 status === 2 ?
-                                    <CardAssignment data={item} role={1} key={item.idAssignment + status} status={true} getAllAsgm={getAllAsgm}/>
+                                    <CardAssignment data={item} role={1} key={item.idAssignment + status} isPastDue={true} getAllAsgm={getAllAsgm}/>
                                     :
                                     <CardAssignment data={item} role={1}  key={item.idAssignment + status} getAllAsgm={getAllAsgm}/>
                             )

@@ -159,6 +159,13 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             isCompleted: data.isCompleted
                         })
                     }
+                    if(role === 1 && data.isPublish){
+                        navigation.navigate("Detail Assignment", { 
+                            idAssignment: data.idAssignment,
+                            isPastDue: data.isPastDue,
+                            isCompleted: data.isCompleted
+                        })
+                    }
                 }}
             >
                 <View style={styles.wrapContent}>
@@ -205,7 +212,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     }
                     {role === 1 && 
                         <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            {(data.isPublish !== null && isPastDue) || isDetail &&
+                            {(isPastDue || isDetail) &&
                                 <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
                             }
                             {data.isTest !== null && !isDetail &&

@@ -1,3 +1,4 @@
+
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
@@ -9,12 +10,14 @@ import { getAssignmentInfo } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime } from "../../../utils/utils";
 
-export const StudentDetailAsgm = ({route})=>{
+export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
     const {idAssignment, isPastDue, isCompleted} = route?.params || null
     const [loading, setLoading] = useState(true);
     const {state} = useUser()
     const [data, setData] = useState({})
+
+    const [index, setIndex] = useState(1)
 
     const fetchDetailAsgm = async()=>{
         try {
@@ -86,12 +89,25 @@ export const StudentDetailAsgm = ({route})=>{
                                     </>
                                 }
                             </View>
-                            {isPastDue === 0 && isCompleted === 0 &&
-                                <TouchableOpacity style={styles.btn} onPress={()=>{}}>
-                                    <Text style={styles.textWhite14}>Start</Text>
-                                </TouchableOpacity>
-                            }
                         </View>
+                        <View style={styles.nav}>
+                            <TouchableOpacity onPress={()=>setIndex(1)}>
+                                <Text style={index === 1 ? styles.navTextActive : styles.navText}>Questions</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={()=>setIndex(2)}>
+                                <Text style={index === 2 ? styles.navTextActive : styles.navText}>Overview</Text>
+                            </TouchableOpacity>                            
+                        </View>
+                        {index === 1 ?
+                            <View style={styles.innerContent}>
+                                <Text>Question</Text>
+                            </View>
+                            :
+                            <>
+                            
+                            </>
+                        }
+                        { false &&
                         <>
                             <View style={styles.line}/>
                             {/* Detail result */}
@@ -116,7 +132,7 @@ export const StudentDetailAsgm = ({route})=>{
                                     </View>
                                 </>
                             </View>
-                        </>
+                        </>}
                     </View>
             </ScrollView>
             {loading &&
@@ -203,5 +219,29 @@ const styles = StyleSheet.create({
     },
     boxYellow: {
         backgroundColor: "#FFCC00",
+    },
+
+    nav:{
+        paddingHorizontal: 16,
+        borderBottomWidth: 0.7,
+        borderColor: COLORS.lightText,
+        flexDirection: "row",
+        gap: 20
+    },
+    navText: {
+        fontSize: 14,
+        color: COLORS.lightText,
+        paddingVertical: 8
+    },
+    navTextActive: {
+        fontSize: 14,
+        paddingVertical: 8,
+        color: COLORS.main,
+        fontWeight: "bold",
+        borderBottomWidth: 2,
+        borderColor: COLORS.main,
+    },
+    innerContent:{
+        paddingHorizontal: 16
     }
 })
