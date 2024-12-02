@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator, TouchableWithoutFeedback } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator, TouchableWithoutFeedback, TextInput } from "react-native"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
@@ -10,6 +10,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
 import { addSection } from "../services/course";
 import { useUser } from "../contexts/UserContext";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const initLecture = [
     {
@@ -51,11 +52,12 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
     const [showSections, setShowSections] = useState(content.map(item => (
         {
             idSection: item.idSection,
-            isShow: true
+            isShow: false
         }
     )) || [])
     const [isAddSection, setIsAddSection] = useState(false);
     const [newSection, setNewSection] = useState("");
+    const [isEditSection, setIsEditSection] = useState(false);
 
     const [longPressSection, setLongPressSection] = useState(false);
     const [selectSection, setSelectSection] = useState("");
@@ -65,7 +67,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
         setShowSections(content.map(item => (
             {
                 idSection: item.idSection,
-                isShow: true
+                isShow: false
             }
         )) || [])
         setLoading(false)
@@ -109,12 +111,6 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
             </View>
             :
                 <>
-                {role === 1 &&
-                    <ButtonIconLightGreen 
-                        title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
-                        action={()=>setIsAddSection(true)}    
-                    />
-                }
                 {content?.length > 0 &&
                 content?.map((item)=>{
                     let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow
@@ -167,28 +163,31 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                         </View>
                     )}
                 )}
-
-                {/* Add Section */}
-                <Modal
-                    visible={isAddSection}
-                    transparent={true}
-                    animationType="fade"
-                    onRequestClose={()=>setIsAddSection(false)}
-                >
-                    <View style={styles.selectImgWrapper}>
-                        <View style={styles.addNoti}>
-                            <TouchableOpacity style={styles.close} onPress={()=>{
-                                setIsAddSection(false)
-                                setNewSection("")
-                            }}>
-                                <AntDesign name="close" size={30} color={COLORS.secondMain} />
-                            </TouchableOpacity>
-                            <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new section</Text>
-                            <TextInputLabel label={"Name section"} value={newSection} placeholder={"Name section"} onchangeText={setNewSection}/>
-                            <ButtonGreen title={"Save"} action={()=>handleAddSection()}/>
-                        </View>
+                {role === 1 &&
+                    <ButtonIconLightGreen 
+                        title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                        action={()=>setIsAddSection(true)}    
+                    />
+                }
+                {isAddSection &&
+                    <View style={styles.addSection}>
+                        <TextInput
+                            style={styles.textSection}
+                            placeholder="Name section"
+                            value={newSection}
+                            onChangeText={(v)=>setNewSection(v)}
+                        />
+                        <TouchableOpacity onPress={()=>{
+                            setIsAddSection(false)
+                            setNewSection("")
+                        }}>
+                            <FontAwesome name="close" size={24} color={COLORS.stroke} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>handleAddSection()}>
+                            <FontAwesome name="check" size={24} color="black" />
+                        </TouchableOpacity>
                     </View>
-                </Modal>
+                }
 
                 {/* LongPress Section */}
                 <Modal
@@ -199,15 +198,43 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                     <TouchableWithoutFeedback onPress={() => {
                         setLongPressSection(false)
                         setSelectSection("")
+                        setIsEditSection(false)
+                        setNewSection("")
                     }}>
                         <View style={styles.selectImgWrapper}>
-                            <View style={[styles.wrapSection, {borderRadius: 8}]} >
-                                <Text style={[styles.section, {flex: 1}]}>
-                                    {selectSection?.sectionName}
-                                </Text>
-                            </View>
+                            {isEditSection ?
+                                <View style={styles.addSection}>
+                                    <TextInput
+                                        style={styles.textSection}
+                                        placeholder="Name section"
+                                        value={newSection}
+                                        onChangeText={(v)=>setNewSection(v)}
+                                    />
+                                    <TouchableOpacity onPress={()=>{
+                                        setIsEditSection(false)
+                                        setNewSection("")
+                                    }}>
+                                        <FontAwesome name="close" size={24} color={COLORS.stroke} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity>
+                                        <FontAwesome name="check" size={24} color="black" />
+                                    </TouchableOpacity>
+                                </View>
+                            :
+                                <View style={[styles.wrapSection, {borderRadius: 8}]} >
+                                    <Text style={[styles.section, {flex: 1}]}>
+                                        {selectSection?.sectionName}
+                                    </Text>
+                                </View>
+                            }
+                            
                             <View style={styles.selectSection}>
-                                <TouchableOpacity style={[styles.btnSelectSection, {borderBottomWidth: 1}]}>
+                                <TouchableOpacity style={[styles.btnSelectSection, {borderBottomWidth: 1}]} 
+                                    onPress={()=>{
+                                        setNewSection(selectSection?.sectionName)
+                                        setIsEditSection(true)
+                                    }}
+                                >
                                     <Text>Edit name section</Text>
                                     <Entypo name="edit" size={20} color="black" />
                                 </TouchableOpacity>
@@ -248,7 +275,7 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        marginVertical: 4
+        marginVertical: 2
     },
 
     addLec: {
@@ -307,6 +334,23 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
+    },
+    addSection:{
+        backgroundColor: COLORS.main30,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 16,
+    },
+    textSection:{
+        fontSize: 16,
+        borderBottomWidth: 1,
+        flex: 1,
+        padding: 0,
+        height: 24
     }
 })
 
