@@ -10,11 +10,13 @@ import { useUser } from "../../../contexts/UserContext"
 import { getAllActiveLecturesOfCourse } from "../../../services/lecture"
 import Entypo from '@expo/vector-icons/Entypo';
 import * as DocumentPicker from 'expo-document-picker';
-import { createManualAssignment, createQuizAssignment, getAssignmentInfo, updateAssignment } from "../../../services/assignment"
+import { createManualAssignment, createQuizAssignment, deleteAssignment, getAssignmentInfo, updateAssignment } from "../../../services/assignment"
 import { useNavigation } from "@react-navigation/native"
 import { CustomSwitch } from "../../../components/CustomSwitch"
 import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Fontisto from '@expo/vector-icons/Fontisto';
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -173,7 +175,9 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         }
         if(!idCourse){
-            getAllCourse()
+            if(!isEdit){
+                getAllCourse()
+            }
             if(idAssignment){
                 fetchAsgm()
             }
@@ -347,7 +351,7 @@ export const TeacherAsgmCreate = ({route})=>{
     const deleteQuestion = (index, idAssignmentItem = null)=>{
         let newQuestions 
         if(isEdit && idAssignmentItem){
-            console.log("zoo", idAssignmentItem);
+            // console.log("zoo", idAssignmentItem);
             newQuestions = questions.map((item, i) => {
                 if(i === index){
                     setTotalMark(totalMark - item.mark)
@@ -607,6 +611,52 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }
 
+    const handleDeleteAsgm = ()=>{
+        Alert.alert(
+            "Confirm Delete Assignment",
+            "Are you sure you want to delete this assignment?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> {
+                        deleteAsgm()
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+    }
+
+    const deleteAsgm = async()=>{
+        setLoading(true)
+        try {
+            const response = await deleteAssignment(idAssignment, state.idUser)
+            if(response){
+                Alert.alert("Delete", response)
+                reload()
+                navigation.goBack()
+            } else {
+                Alert.alert("Error", "Please try again.")
+            }
+        } catch (error) {
+            
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    const handelDuplicate = ()=>{
+        navigation.navigate("Create Assignment", { 
+            reload: reload,
+            idAssignment: idAssignment
+        })
+    }
+
     return(
         <>
             <View style={styles.container}>
@@ -645,6 +695,20 @@ export const TeacherAsgmCreate = ({route})=>{
                         <Text style={styles.error}>{error}</Text>
                     }
                     <View style={styles.wrapBtn}>
+                        {isEdit &&
+                            <>
+                                <TouchableOpacity style={styles.btnIcon} onPress={()=>handleDeleteAsgm()}>
+                                    <MaterialIcons name="delete" size={24} color={COLORS.stroke} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.btnIcon} onPress={()=>fetchAsgm()}>
+                                    <Fontisto name="redo" size={20} color={COLORS.stroke} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.btnIcon} onPress={()=>handelDuplicate()}>
+                                    <Ionicons name="duplicate" size={20} color={COLORS.stroke} />
+                                </TouchableOpacity>
+                                <View style={styles.line}/>
+                            </>
+                        }
                         <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleCreateAsgm(1)}>
                             <Text style={styles.textWhite14}>Publish</Text>
                         </TouchableOpacity>
@@ -1122,4 +1186,13 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center"
     },
+    btnIcon:{
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 4
+    },
+    line:{
+        width: 1,
+        backgroundColor: COLORS.lightText
+    }
 })
