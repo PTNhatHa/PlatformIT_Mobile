@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ButtonIcon } from "./Button";
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import DefaultAva from "../../assets/images/DefaultAva.png"
+import Entypo from '@expo/vector-icons/Entypo';
 
 const initCourse=  {
     "idCourse": 3,
@@ -45,7 +46,23 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
     }, [data.tags])
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} key={data.idCourse}>
-            <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>
+            <View>
+                {true && <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />}
+                <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>
+                {data.isLimitedTime === 1 &&
+                    <>
+                        {new Date() < new Date(data.registStartDate) ? 
+                            <Text style={[styles.tagDate, styles.bgYellow]}>Opening soon</Text>
+                            : new Date() <= new Date(data.registEndDate) ?
+                                <Text style={[styles.tagDate, styles.bgBlue]}>Registering</Text>
+                                : new Date() < new Date(data.courseStartDate) ? 
+                                    <Text style={[styles.tagDate, styles.bgYellow]}>Starting soon</Text>
+                                    : 
+                                        <Text style={[styles.tagDate, styles.bgGreen]}>Ongoing</Text>
+                        }
+                    </>
+                }
+            </View>
             <View style={{ flex: 1}}>
                 <Text style={styles.title}>{data.courseTitle}</Text>
                 {data.tags.length > 0 && 
@@ -393,4 +410,27 @@ const styles = StyleSheet.create({
         fontStyle: "italic",
         fontWeight: "bold"
     },
+    tagDate:{
+        position: "absolute",
+        alignSelf: "flex-start",
+        padding: 4,
+        top: 8,
+        fontSize: 10,
+        fontWeight: "bold"
+    },
+    bgBlue: {
+        backgroundColor: "#ACBEC6",
+    },
+    bgYellow: {
+        backgroundColor: "#F8E9AC",
+    },
+    bgGreen: {
+        backgroundColor: "#B2E0C8",
+    },
+    pin:{
+        position: "absolute",
+        top: -6,
+        right: -6,
+        zIndex: 1,
+    }
 })
