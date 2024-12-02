@@ -609,7 +609,6 @@ export const TeacherAsgmCreate = ({route})=>{
                 }
             }
             if(response){
-                // console.log("zooooo");
                 Alert.alert("Done", response)
                 reload()
                 navigation.goBack()
