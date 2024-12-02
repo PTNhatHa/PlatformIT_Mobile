@@ -191,8 +191,8 @@ export const StudentAllTest = ()=>{
         }
         // format
         newData = newData?.filter(item =>{
-            if(filterList.format !== "All"){
-                return item.assignmentType === filterList.format
+            if(filterList?.format !== "All"){
+                return item.assignmentType === filterList?.format
             }
             return item
         })
@@ -202,8 +202,7 @@ export const StudentAllTest = ()=>{
         let newData = [...initData]
         if(searchText !== null){
             return newData.filter(item => {
-                return item.nameLecture?.toLowerCase().includes(searchText.toLowerCase()) ||
-                        item.nameCourse?.toLowerCase().includes(searchText.toLowerCase()) ||
+                return item.nameCourse?.toLowerCase().includes(searchText.toLowerCase()) ||
                         item.title?.toLowerCase().includes(searchText.toLowerCase())
             })
         }
@@ -213,19 +212,25 @@ export const StudentAllTest = ()=>{
     useEffect(()=>{
         if(selectBtn === 0){
             let result = listUpComing ? [...listUpComing] : []
-            result = handleFilter(result, filterUpComing)
+            if(filterUpComing !== null){
+                result = handleFilter(result, filterUpComing)
+            }
             result = handleSearch(result, search.upComing)
             setCurrentUpComing(result)
         }
         if(selectBtn === 1){
             let result = listPastDue ? [...listPastDue] : []
-            result = handleFilter(result, filterPastDue)
+            if(filterPastDue !== null){
+                result = handleFilter(result, filterPastDue)
+            }
             result = handleSearch(result, search.pastDue)
             setCurrentPastDue(result)
         }
         if(selectBtn === 2){
             let result = listCompleted ? [...listCompleted] : []
-            result = handleFilter(result, filterCompleted)
+            if(filterCompleted !== null){
+                result = handleFilter(result, filterCompleted)
+            }
             result = handleSearch(result, search.completed)
             setCurrentCompleted(result)
         }
@@ -246,7 +251,7 @@ export const StudentAllTest = ()=>{
                 <View style={styles.header}>
                     <View style={styles.wrapperSearch}>
                         <TextInput
-                            value={selectBtn === 0 ? search.publish : selectBtn === 1 ? search.unPublish : search.pastDue}
+                            value={selectBtn === 0 ? search.upComing : selectBtn === 1 ? search.pastDue : search.completed}
                             style={styles.input}
                             placeholder={"Search"}
                             onChangeText={(v)=>{
