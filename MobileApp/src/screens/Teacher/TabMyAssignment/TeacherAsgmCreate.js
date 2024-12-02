@@ -121,6 +121,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                 name: question.nameFile,
                                 type: getMimeType(question.attachedFile)
                             },
+                            isDeletedFile: 0,
                         }
                     }
                     if(response.assignmentType === 2){
@@ -139,6 +140,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                 name: question.nameFile,
                                 type: getMimeType(question.attachedFile)
                             },
+                            isDeletedFile: 0,
                             isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
                             items: listItems
                         }
@@ -278,6 +280,13 @@ export const TeacherAsgmCreate = ({route})=>{
     }
     const handleChangeQuestion = (v, index, field)=>{
         const newList = questions.map((item, i) =>{
+            if(isEdit && field === "attachedFile" && i === index && v === null){
+                return{
+                    ...item,
+                    [field]: v,
+                    isDeletedFile: 1
+                }
+            }
             if(i === index){
                 return{
                     ...item,
@@ -357,7 +366,7 @@ export const TeacherAsgmCreate = ({route})=>{
                     setTotalMark(totalMark - item.mark)
                     return{
                         ...item,
-                        assignmentItemStatus: 0
+                        assignmentItemStatus: 0,
                     }
                 }
                 return item
@@ -569,6 +578,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             explanation: (asgmItem.explanation === null || asgmItem.explanation === "null") ? "" : asgmItem.explanation ,
                             isMultipleAnswer: asgmItem.isMultipleAnswer === true ? 1 : 0,
                             attachedFile: asgmItem.attachedFile || "",
+                            isDeletedFile: (asgmItem.attachedFile === null && asgmItem.isDeletedFile === 1) ? 1 : 0,
                             assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || "",
                             assignmentItemStatus: asgmItem.assignmentItemStatus,
                             items: asgmItem.items?.map(item => {

@@ -167,10 +167,10 @@ export const updateAssignment = async (updatedBy, updateData)=>{
         formData.append(`AssignmentItems[${index}].mark`, question.mark);
         formData.append(`AssignmentItems[${index}].explanation`, question.explanation);
         formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer);
-        if (question.attachedFile) {
+        if(question.attachedFile) {
             formData.append(`AssignmentItems[${index}].attachedFile`, question.attachedFile);
         }
-    
+        formData.append(`AssignmentItems[${index}].isDeletedFile`, question.isDeletedFile);
         formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType);
         formData.append(`AssignmentItems[${index}].assignmentItemStatus`, question.assignmentItemStatus);
     
