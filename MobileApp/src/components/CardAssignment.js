@@ -187,13 +187,13 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                                 <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
                             </View>
                         }
-                        {role === 1 && data.dueDate !== null &&
-                            <View style={styles.content}>
-                                <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
-                                <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
-                            </View>
-                        }
                     </View>
+                    {role === 1 && data.dueDate !== null &&
+                        <View style={styles.content}>
+                            <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                            <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
+                        </View>
+                    }
                     <View>
                         {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
                         {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
@@ -205,7 +205,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
                                 <TagRed label={"Past due"}/>                    
                             : data.dueDate !== null ?
-                                <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>   
+                                <TagNoColor label={"Due: " + formatDateTime(data.dueDate, true)}/>   
                             :""
                             }
                         </View>
@@ -221,7 +221,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                         </View>
                     }
                     {role === 0 && data.dueDate !== null &&
-                        <TagNoColor label={"Due: " + formatDateTime(data.dueDate)}/>  
+                        <TagNoColor label={"Due: " + formatDateTime(data.dueDate, true)}/>  
                     }
                 </View>
             </TouchableOpacity>
@@ -254,13 +254,13 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                                         <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
                                     </View>
                                 }
-                                {data.dueDate !== null &&
-                                    <View style={styles.content}>
-                                        <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
-                                        <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate)}</Text>
-                                    </View>
-                                }
                             </View>
+                            {data.dueDate !== null &&
+                                <View style={styles.content}>
+                                    <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                                    <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
+                                </View>
+                            }
                             <View>
                                 {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}
                                 {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}

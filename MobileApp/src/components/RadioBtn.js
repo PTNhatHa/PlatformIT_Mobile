@@ -14,6 +14,19 @@ export const RadioBtn =({label, selected = false, onPress=()=>{}})=>{
     )
 }
 
+export const RadioView =({label, selected = false})=>{
+    return(
+        <View style={styles.container}>
+            <View style={styles.circle}>
+                {selected ? <View style={styles.circleSelected}/> : ""}
+            </View>
+            {label &&
+                <Text style={styles.label}>{label}</Text>
+            }
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",

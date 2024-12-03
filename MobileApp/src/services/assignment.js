@@ -27,6 +27,8 @@ export const createManualAssignment = async (
         formData.append(`AssignmentItems[${index}].mark`, question.mark)
         formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType)
         formData.append(`AssignmentItems[${index}].attachedFile`, question.attachedFile)
+        formData.append(`AssignmentItems[${index}].pathFile`, "")
+        formData.append(`AssignmentItems[${index}].fileName`, "")
     })
     formData.append('CreatedBy', CreatedBy)
     return await axios.post(baseUrl + "/CreateManualAssignment", formData, {
@@ -73,6 +75,8 @@ export const createQuizAssignment = async (
         formData.append(`AssignmentItems[${index}].mark`, question.mark)
         formData.append(`AssignmentItems[${index}].explanation`, question.explanation || "")
         formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer === false ? 0 : 1)
+        formData.append(`AssignmentItems[${index}].pathFile`, "")
+        formData.append(`AssignmentItems[${index}].fileName`, "")
         if(question.attachedFile){
             formData.append(`AssignmentItems[${index}].attachedFile`, question.attachedFile)
         }
