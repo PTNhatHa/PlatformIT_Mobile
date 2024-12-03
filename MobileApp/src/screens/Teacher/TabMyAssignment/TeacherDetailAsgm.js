@@ -20,9 +20,10 @@ export const TeacherDetailAsgm = ({route})=>{
     const [data, setData] = useState({})
     const [totalMark, setTotalMark] = useState(0)
     const [selectFile, setSelectFile] = useState("")
-    const [currentQuestion, setcurrentQuestion] = useState(0)
-
+    const [listQuestion, setListQuestion] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
     const [index, setIndex] = useState(1)
+    const numberItem = 2
 
     const fetchDetailAsgm = async()=>{
         try {
@@ -31,6 +32,12 @@ export const TeacherDetailAsgm = ({route})=>{
                 setData(response)
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
+                let listData = []
+                for(let i=0; i <= response.assignmentItems.length; i += numberItem){
+                    const newData = response.assignmentItems.slice(i, i + numberItem)
+                    listData.push(newData)
+                }
+                setListQuestion(listData)
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -47,16 +54,51 @@ export const TeacherDetailAsgm = ({route})=>{
 
     const openURL = (url) => {  
         Linking.canOpenURL(url)  
-          .then((supported) => {  
+        .then((supported) => {  
             if (supported) {  
-              return Linking.openURL(url);  
+            return Linking.openURL(url);  
             } else {  
-              console.log("Can't open URL: " + url);  
+            console.log("Can't open URL: " + url);  
             }  
-          })  
-          .catch((err) => console.error('Error occurred', err));  
-      };  
+        })  
+        .catch((err) => console.error('Error occurred', err));  
+    };  
 
+    const getPagination = () => {
+        const totalPages = listQuestion.length
+        if (totalPages <= 5) {
+        // Show all pages if there are 5 or fewer
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+        } else {
+        // Logic for more than 5 pages
+        if (currentPage <= 3) {
+            // Show first few pages if current page is near the start
+            return [1, 2, 3, 4, "...", totalPages];
+        } else if (currentPage >= totalPages - 2) {
+            // Show last few pages if current page is near the end
+            return [
+                1,
+                "...",
+                totalPages - 3,
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        } else {
+            // Show current page in the middle with surrounding pages
+            return [
+                1,
+                "...",
+                currentPage - 1,
+                currentPage,
+                currentPage + 1,
+                "...",
+                totalPages,
+            ];
+        }
+        }
+    }
+        
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -120,11 +162,11 @@ export const TeacherDetailAsgm = ({route})=>{
                         </View>
                         {index === 1 ?
                             <View style={styles.innerContent}>
-                                {data.assignmentType === 1 ? 
-                                    data.assignmentItems.map((question, index) =>     
+                                {(data.assignmentType === 1 && listQuestion !== null) ? 
+                                    listQuestion[currentPage-1]?.map((question, index) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
                                             <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + 1}</Text>
+                                                <Text style={styles.title}>Question {index + currentPage}</Text>
                                                 <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
                                             </View>
                                             <Text style={styles.questionContent}>{question.question}</Text>
@@ -143,11 +185,11 @@ export const TeacherDetailAsgm = ({route})=>{
                                         </View>
                                     ) :""
                                 }
-                                {data.assignmentType === 2 && 
-                                    data.assignmentItems.map((question, index) =>     
+                                {(data.assignmentType === 2 && listQuestion !== null) && 
+                                    listQuestion[currentPage-1]?.map((question, index) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                             <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + 1}</Text>
+                                                <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>
                                                 <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
                                             </View>
                                             <Text style={styles.questionContent}>{question.question}</Text>
@@ -180,7 +222,21 @@ export const TeacherDetailAsgm = ({route})=>{
                                             </View>
                                         </View>
                                     )
-                                }                                
+                                }  
+                                
+                                {/* paginage */}
+                                <View style={styles.bottom}>
+                                    {getPagination().map(page => 
+                                        page !== "..." ? 
+                                        <TouchableOpacity style={styles.wrapNumber} onPress={()=>setCurrentPage(page)}>
+                                            <Text style={styles.bottomNumber}>{page}</Text>
+                                        </TouchableOpacity>
+                                        :
+                                        <View style={styles.wrapNumber}>
+                                            <Text style={styles.bottomNumber}>{page}</Text>
+                                        </View>
+                                    )}
+                                </View>
                             </View>
                             :
                             <>
@@ -369,4 +425,25 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: "contain",
     },
+    bottom: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8,
+        margin: 10
+    },
+    bottomNumber:{
+        fontWeight: "bold",
+        color: "white",
+        textAlign: "center",
+        fontSize: 16
+    },
+    wrapNumber:{
+        width: 32,
+        height: 32,
+        backgroundColor: COLORS.main,
+        borderRadius: 4,
+        justifyContent: "center",
+        alignItems: "center",
+    }
 })
