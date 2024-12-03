@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { AssignmentItemAnswerType, COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -15,11 +15,12 @@ import CheckBox from "react-native-check-box";
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
     const {idAssignment, isPastDue, isCompleted} = route?.params || null
-    console.log(idAssignment);
     const [loading, setLoading] = useState(true);
     const {state} = useUser()
     const [data, setData] = useState({})
     const [totalMark, setTotalMark] = useState(0)
+    const [selectFile, setSelectFile] = useState("")
+    const [currentQuestion, setcurrentQuestion] = useState(0)
 
     const [index, setIndex] = useState(1)
 
@@ -43,6 +44,18 @@ export const TeacherDetailAsgm = ({route})=>{
     useEffect(()=>{
         fetchDetailAsgm()
     }, [])
+
+    const openURL = (url) => {  
+        Linking.canOpenURL(url)  
+          .then((supported) => {  
+            if (supported) {  
+              return Linking.openURL(url);  
+            } else {  
+              console.log("Can't open URL: " + url);  
+            }  
+          })  
+          .catch((err) => console.error('Error occurred', err));  
+      };  
 
     return(
         <View style={styles.wrapContainer}>
@@ -118,7 +131,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                             {question.attachedFile &&
                                                 <View>
                                                     <Text style={styles.textGray12}>Reference material:</Text>
-                                                    <TouchableOpacity style={styles.wrapFile}>
+                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
                                                         <Text>{question.nameFile}</Text>
                                                     </TouchableOpacity>
                                                 </View>
@@ -139,8 +152,8 @@ export const TeacherDetailAsgm = ({route})=>{
                                             </View>
                                             <Text style={styles.questionContent}>{question.question}</Text>
                                             {question.attachedFile && 
-                                                <TouchableOpacity>
-                                                    <Image source={question.attachedFile} style={styles.questionImg}/>
+                                                <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                                    <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
                                                 </TouchableOpacity>
                                             }
                                             <View>
@@ -148,7 +161,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 {question.isMultipleAnswer === 0 ?
                                                     question.items.map(item => 
                                                         <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <RadioView selected={item.isCorrect}/>  
+                                                            <RadioView selected={item.isCorrect === 1 ? true : false}/>  
                                                             <Text>{item.content}</Text>
                                                         </View>
                                                     )
@@ -156,7 +169,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     question.items.map(item => 
                                                         <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
                                                             <CheckBox
-                                                                isChecked={item.isCorrect}
+                                                                isChecked={item.isCorrect === 1 ? true : false}
                                                                 checkBoxColor={COLORS.secondMain}
                                                                 onClick={()=>{}}
                                                             />
@@ -182,6 +195,19 @@ export const TeacherDetailAsgm = ({route})=>{
                     <ActivityIndicator size="large" color="white" />
                 </View>
             } 
+            <Modal
+                visible={!!selectFile}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={()=>setSelectFile("")}
+            >
+                <View style={styles.selectImgWrapper}>
+                    <TouchableOpacity style={styles.close} onPress={()=>setSelectFile("")}>
+                        <AntDesign name="close" size={30} color="white" />
+                    </TouchableOpacity>
+                    <Image source={{uri: selectFile}} style={styles.selectImg}/>
+                </View>
+            </Modal>
         </View>
     )
 }
@@ -328,5 +354,19 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 200,
         resizeMode: 'contain',
+    },
+    selectImgWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16
+    },
+    close:{
+        alignSelf: "flex-end"
+    },
+    selectImg: {
+        flex: 1,
+        resizeMode: "contain",
     },
 })
