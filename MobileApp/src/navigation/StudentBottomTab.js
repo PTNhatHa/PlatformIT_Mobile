@@ -23,6 +23,7 @@ import { TeacherLectureDetail } from "../screens/Teacher/TabMyCourse/TeacherLect
 import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLectureDetail";
 import { StudentAllTest } from "../screens/Student/TabMyTest/StudentAllTest";
 import { StudentDetailAsgm } from "../screens/Student/TabMyTest/StudentDetailAsgm";
+import { StudentDoAsgm } from "../screens/Student/TabMyTest/StudentDoAsgm";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -132,6 +133,10 @@ const StackMyTestScreen = ()=>{
             <StackMyTest.Screen
                 name="Detail Test"
                 component={StudentDetailAsgm}
+            />
+            <StackMyTest.Screen
+                name="Do Assignment"
+                component={StudentDoAsgm}
             />
         </StackMyTest.Navigator>
     )

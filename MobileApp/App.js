@@ -16,14 +16,16 @@ import { FilterAsgm } from './src/components/Filter';
 import { CustomSwitch } from './src/components/CustomSwitch';
 import { SelectCourseBox } from './src/components/TextInputField';
 import { StudentDetailAsgm } from './src/screens/Student/TabMyTest/StudentDetailAsgm';
+import { AttendanceIndicator } from './src/components/SubmittedCircle';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
+          {/* <SigninSignup/> */}
           {/* <StudentDetailAsgm/> */}
+          <AttendanceIndicator/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
