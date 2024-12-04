@@ -3,7 +3,7 @@ import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 import { useState } from "react";
-import { Tag, TagNoColor, TagRed } from "./Tag";
+import { Tag, TagMain30, TagNoColor, TagRed } from "./Tag";
 import Foundation from '@expo/vector-icons/Foundation';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -205,7 +205,7 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
                                 <TagRed label={"Past due"}/>                    
                             : data.dueDate !== null ?
-                                <TagNoColor label={"Due: " + formatDateTime(data.dueDate, true)}/>   
+                                <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
                             :""
                             }
                         </View>

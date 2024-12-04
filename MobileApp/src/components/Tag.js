@@ -33,6 +33,14 @@ export const TagRed = ({label})=>{
     )
 }
 
+export const TagMain30 = ({label})=>{
+    return(
+        <View style={[styles.container, {backgroundColor: COLORS.main30}]}>
+            <Text style={[styles.text, {fontWeight: "bold"}]}>{label}</Text>
+        </View>
+    )
+}
+
 const styles = StyleSheet.create({
     container:{
         paddingHorizontal: 8,
