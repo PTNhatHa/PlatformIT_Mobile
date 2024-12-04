@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo } from "../../../services/assignment";
+import { getAssignmentInfo, getDetailAssignmentForStudent } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime } from "../../../utils/utils";
 
@@ -18,7 +18,7 @@ export const StudentDetailAsgm = ({route})=>{
 
     const fetchDetailAsgm = async()=>{
         try {
-            const response = await getAssignmentInfo(idAssignment)
+            const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
             if(response){
                 setData(response)
             } else {
@@ -59,7 +59,7 @@ export const StudentDetailAsgm = ({route})=>{
                                 <Text style={styles.title}>{data.title}</Text>
                                 <View style={styles.wrapFlex}>
                                     <Octicons name="dot-fill" size={10} color="black" />
-                                    <Text style={styles.textBBlack12}>{data.assignmentItems?.length} {data.assignmentItems?.length > 1 ? "questions" : "question"}</Text>
+                                    <Text style={styles.textBBlack12}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
                                 </View>
                             </View>
                             <View style={styles.wrapDetail}>
@@ -86,39 +86,46 @@ export const StudentDetailAsgm = ({route})=>{
                                     </>
                                 }
                             </View>
-                            {isPastDue === 0 && isCompleted === 0 &&
+                            {data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate) &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>{navigation.navigate("Do Assignment", {
-                                    idAssignment: idAssignment
+                                    idAssignment: idAssignment,
+                                    assignmentType: data.assignmentType,
+                                    initduration: data.duration
                                 })}}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
                             }
                         </View>
-                        <>
-                            <View style={styles.line}/>
-                            {/* Detail result */}
-                            <View style={styles.container}>
-                                <>
-                                    <View style={styles.wrapFlex}>
-                                        <Text style={styles.textGray16}>Submitted at</Text>
-                                        <Text style={styles.textBlack16}>{formatDateTime(new Date(), true)}</Text>
-                                    </View>
-                                    <View style={styles.wrapFlex}>
-                                        <Text style={styles.textGray16}>Status</Text>
-                                        <Text style={[styles.boxStatus, styles.boxGreen]}>On time</Text>
-                                        <Text style={[styles.boxStatus, styles.boxYellow]}>Late</Text>
-                                    </View>
-                                    <View style={styles.wrapFlex}>
-                                        <Text style={styles.textGray16}>Marks</Text>
-                                        <Text style={styles.textBlack16}>37</Text>
-                                    </View>
-                                    <View style={styles.wrapFlex}>
-                                        <Text style={styles.textGray16}>Duration</Text>
-                                        <Text style={styles.textBlack16}>24 minutes</Text>
-                                    </View>
-                                </>
-                            </View>
-                        </>
+                        {data.submittedDate !== null &&
+                            <>
+                                <View style={styles.line}/>
+                                {/* Detail result */}
+                                <View style={styles.container}>
+                                    <>
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Submitted at</Text>
+                                            <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate)}</Text>
+                                        </View>
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Status</Text>
+                                            {data.resultStatus === 1 ?
+                                                <Text style={[styles.boxStatus, styles.boxGreen]}>On time</Text>
+                                                :
+                                                <Text style={[styles.boxStatus, styles.boxYellow]}>Late</Text>
+                                            }
+                                        </View>
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Marks</Text>
+                                            <Text style={styles.textBlack16}>{data.totalMark}</Text>
+                                        </View>
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Duration</Text>
+                                            <Text style={styles.textBlack16}>{data.resultDuration}</Text>
+                                        </View>
+                                    </>
+                                </View>
+                            </>
+                        }
                     </View>
             </ScrollView>
             {loading &&

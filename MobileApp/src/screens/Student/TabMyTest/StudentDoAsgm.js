@@ -1,37 +1,53 @@
-import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AssignmentItemAnswerType, COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo } from "../../../services/assignment";
+import { getAssignmentInfo, getDetailAssignmentItemForStudent } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime } from "../../../utils/utils";
 import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {idAssignment} = route?.params || null
-    // console.log(idAssignment);
+    const {idAssignment, assignmentType, initduration} = route?.params || null
     const [loading, setLoading] = useState(true);
-    const [assignmentType, setAssignmentType] = useState(0);
     const {state} = useUser()
     const [selectFile, setSelectFile] = useState("")
     const [listQuestion, setListQuestion] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const [index, setIndex] = useState(1)
     const numberItem = 2
+
+    const [duration, setDuration] = useState(initduration*60);
+
+    useEffect(() => {
+        if (duration > 0) {
+            const timer = setInterval(() => {
+                setDuration((prev) => prev - 1);
+            }, 1000);
+    
+            return () => clearInterval(timer); // Xóa timer khi component unmount
+        }
+    }, [duration]);
+  
+    // Hàm format thời gian (phút:giây)
+    const formatTime = (time) => {
+      const minutes = Math.floor(time / 60);
+      const secs = time % 60;
+      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     const fetchDetailAsgm = async()=>{
         try {
-            const response = await getAssignmentInfo(idAssignment)
+            const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
-                setAssignmentType(response.assignmentType)
                 let listData = []
-                for(let i=0; i <= response.assignmentItems.length; i += numberItem){
-                    const newData = response.assignmentItems.slice(i, i + numberItem)
+                for(let i=0; i <= response.length; i += numberItem){
+                    const newData = response.slice(i, i + numberItem)
                     listData.push(newData)
                 }
                 setListQuestion(listData)
@@ -54,9 +70,9 @@ export const StudentDoAsgm = ({route})=>{
         Linking.canOpenURL(url)  
         .then((supported) => {  
             if (supported) {  
-            return Linking.openURL(url);  
+                return Linking.openURL(url);  
             } else {  
-            console.log("Can't open URL: " + url);  
+                console.log("Can't open URL: " + url);  
             }  
         })  
         .catch((err) => console.error('Error occurred', err));  
@@ -133,98 +149,110 @@ export const StudentDoAsgm = ({route})=>{
 
     return(
         <View style={styles.wrapContainer}>
+            {duration > 0 &&
+                <View style={styles.wrapTime}>
+                    <Text  style={styles.textTime}>{formatTime(duration)}</Text>
+                </View>
+            }
             <ScrollView contentContainerStyle={styles.container}>
-                    <View>
-                        {index === 1 ?
-                            <View style={styles.innerContent}>
-                                {(assignmentType === 1 && listQuestion !== null) ? 
-                                    listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
-                                        <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
-                                            <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {indexQuestion + currentPage}</Text>
-                                            </View>
-                                            <Text style={styles.questionContent}>{question.question}</Text>
-                                            {question.attachedFile &&
-                                                <View>
-                                                    <Text style={styles.textGray12}>Reference material:</Text>
-                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
-                                                        <Text>{question.nameFile}</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            }
-                                            <View style={styles.wrapFlex}>
-                                                <Text style={styles.textGray12}>Type of answer:</Text>
-                                                <Text style={styles.textBlack12}>{AssignmentItemAnswerType[question.assignmentItemAnswerType]}</Text>
-                                            </View>
-                                        </View>
-                                    ) :""
-                                }
-                                {(assignmentType === 2 && listQuestion !== null) && 
-                                    listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
-                                        <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
-                                            <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {indexQuestion + (currentPage - 1) * numberItem + 1}</Text>
-                                            </View>
-                                            <Text style={styles.questionContent}>{question.question}</Text>
-                                            {question.attachedFile && 
-                                                <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
-                                                    <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
-                                                </TouchableOpacity>
-                                            }
-                                            <View>
-                                                <Text style={styles.textGray12}>Choices:</Text>
-                                                {question.isMultipleAnswer === 0 ?
-                                                    question.items.map((item, indexChoice) => 
-                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <RadioBtn 
-                                                                selected={item.isCorrect === 1 ? true : false} 
-                                                                onPress={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
-                                                            />  
-                                                            <Text>{item.content}</Text>
-                                                        </View>
-                                                    )
-                                                    :
-                                                    question.items.map(item => 
-                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <CheckBox
-                                                                isChecked={item.isCorrect === 1 ? true : false}
-                                                                checkBoxColor={COLORS.secondMain}
-                                                                onClick={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
-                                                            />
-                                                            <Text>{item.content}</Text>
-                                                        </View>
-                                                    )
-                                                }
-                                            </View>
-                                        </View>
-                                    )
-                                }  
-                                
-                                {/* paginage */}
-                                <View style={styles.bottom}>
-                                    {getPagination().map(page => 
-                                        page !== "..." ? 
-                                        <TouchableOpacity 
-                                            style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
-                                            onPress={()=>setCurrentPage(page)}
-                                            key={page}
-                                        >
-                                            <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
+                <View style={styles.innerContent}>
+                    {(assignmentType === 1 && listQuestion !== null) ? 
+                        listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
+                            <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
+                                <View style={styles.headerQ}>
+                                    <Text style={styles.title}>Question {indexQuestion + currentPage}</Text>
+                                </View>
+                                <Text style={styles.questionContent}>{question.question}</Text>
+                                {question.attachedFile &&
+                                    <View>
+                                        <Text style={styles.textGray12}>Reference material:</Text>
+                                        <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
+                                            <Text>{question.nameFile}</Text>
                                         </TouchableOpacity>
+                                    </View>
+                                }
+                                <View>
+                                    <Text style={styles.textGray12}>Your answer:</Text>
+                                    {question.assignmentItemAnswerType === 1 ?                                       
+                                        <TextInput
+                                            style={[styles.inputLabelGray]}
+                                            placeholder="Your answer"
+                                            multiline={true}
+                                            value={""}
+                                            onChangeText={(v)=>{}}
+                                        />
                                         :
-                                        <View style={styles.wrapNumber} key={page}>
-                                            <Text style={styles.bottomNumber}>{page}</Text>
-                                        </View>
-                                    )}
+                                        <>
+                                        <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
+                                            <MaterialIcons name="upload-file" size={20} color="black" />
+                                            <Text>Attach file</Text>
+                                        </TouchableOpacity>
+                                        </>
+                                    }
                                 </View>
                             </View>
+                        ) :""
+                    }
+                    {(assignmentType === 2 && listQuestion !== null) && 
+                        listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
+                            <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
+                                <View style={styles.headerQ}>
+                                    <Text style={styles.title}>Question {indexQuestion + (currentPage - 1) * numberItem + 1}</Text>
+                                </View>
+                                <Text style={styles.questionContent}>{question.question}</Text>
+                                {question.attachedFile && 
+                                    <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                        <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
+                                    </TouchableOpacity>
+                                }
+                                <View>
+                                    <Text style={styles.textGray12}>Choices:</Text>
+                                    {question.isMultipleAnswer === 0 ?
+                                        question.items.map((item, indexChoice) => 
+                                            <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                <RadioBtn 
+                                                    selected={item.isCorrect === 1 ? true : false} 
+                                                    onPress={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
+                                                />  
+                                                <Text>{item.content}</Text>
+                                            </View>
+                                        )
+                                        :
+                                        question.items.map(item => 
+                                            <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                <CheckBox
+                                                    isChecked={item.isCorrect === 1 ? true : false}
+                                                    checkBoxColor={COLORS.secondMain}
+                                                    onClick={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
+                                                />
+                                                <Text>{item.content}</Text>
+                                            </View>
+                                        )
+                                    }
+                                </View>
+                            </View>
+                        )
+                    }  
+                    
+                    {/* paginage */}
+                    <View style={styles.bottom}>
+                        {getPagination().map(page => 
+                            page !== "..." ? 
+                            <TouchableOpacity 
+                                style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                                onPress={()=>setCurrentPage(page)}
+                                key={page}
+                            >
+                                <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
+                            </TouchableOpacity>
                             :
-                            <>
-                            
-                            </>
-                        }
-                        
+                            <View style={styles.wrapNumber} key={page}>
+                                <Text style={styles.bottomNumber}>{page}</Text>
+                            </View>
+                        )}
                     </View>
+                </View>
+                        
             </ScrollView>
             {loading &&
                 <View style={styles.wrapLoading}>
@@ -362,7 +390,8 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         padding: 8,
         marginBottom: 8,
-        gap: 4
+        gap: 4,
+        backgroundColor: "white"
     },
     headerQ:{
         flexDirection: "row",
@@ -414,16 +443,52 @@ const styles = StyleSheet.create({
     },
     bottomNumber:{
         fontWeight: "bold",
-        // color: "white",
         textAlign: "center",
         fontSize: 16
     },
     wrapNumber:{
         width: 32,
         height: 32,
-        // backgroundColor: COLORS.main,
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
+    },
+    inputLabelGray:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 8,
+        borderRadius: 4,
+        minHeight: 100,
+        textAlignVertical: "top"
+    },
+    btnText:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        marginVertical: 4,
+        gap: 4
+    },
+    wrapTime:{
+        ...commonStyles.shadow,
+        position: "absolute",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        zIndex: 1,
+        backgroundColor: COLORS.main30,
+        borderRadius: 4,
+        top: 16,
+        right: 8
+    },
+    textTime:{
+        fontSize: 16,
+        fontWeight: "bold"
     }
 })

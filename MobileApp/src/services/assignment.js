@@ -216,3 +216,25 @@ export const getAllTestCardOfStudent = async (idStudent)=>{
         console.log("Error GetAllTestCardOfStudent: ", error);
     })
 }
+
+export const getDetailAssignmentForStudent = async (idAssignment, idStudent)=>{
+    return await axios.get(baseUrl + "/GetDetailAssignmentForStudent?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetDetailAssignmentForStudent: ", error);
+    })
+}
+
+export const getDetailAssignmentItemForStudent = async (idAssignment)=>{
+    return await axios.get(baseUrl + "/GetDetailAssignmentItemForStudent?idAssignment=" + idAssignment)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error getDetailAssignmentItemForStudent: ", error);
+    })
+}
