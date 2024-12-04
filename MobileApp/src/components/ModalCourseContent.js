@@ -45,7 +45,7 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, getCourse})=>{
+export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, getCourse, selectLecture, setSelectLecture = ()=>{}})=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
@@ -61,7 +61,11 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
 
     const [longPressSection, setLongPressSection] = useState(false);
     const [selectSection, setSelectSection] = useState("");
-
+    const [selectObject, setSelectObject] = useState(selectLecture || {
+        idLecture: 0,
+        idSection: 0
+    });
+    
     useEffect(()=>{
         setLoading(true)
         setShowSections(content.map(item => (
@@ -103,6 +107,13 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
             setLoading(false)
         }
     }
+
+    const handleSelectLecture = (idSection, idLecture)=>{
+        setSelectObject({
+            idSection: idSection,
+            idLecture: idLecture
+        })
+    }
     return(
         <>
         {loading ?
@@ -117,14 +128,22 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                     return(
                         <View key={item.idSection} style={styles.wrapSectionLecture}>
                             <TouchableOpacity 
-                                style={styles.wrapSection} 
-                                onPress={()=>handleShowSection(item.idSection)}
-                                onLongPress={()=>{
-                                    setSelectSection({
-                                        idSection: item.idSection,
-                                        sectionName: item.sectionName
+                                style={[styles.wrapSection, selectObject.idSection === item.idSection && {backgroundColor: COLORS.main30}]} 
+                                onPress={()=>{
+                                    handleShowSection(item.idSection)
+                                    setSelectObject({
+                                        ...selectObject,
+                                        idSection: !checkIsShow ? item.idSection : 0,
                                     })
-                                    setLongPressSection(true)
+                                }}
+                                onLongPress={()=>{
+                                    if(role === 1){
+                                        setSelectSection({
+                                            idSection: item.idSection,
+                                            sectionName: item.sectionName
+                                        })
+                                        setLongPressSection(true)
+                                    }
                                 }}
                             >
                                 <Text style={[styles.section, {flex: 1}]} numberOfLines={1}>
@@ -142,18 +161,28 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                             </TouchableOpacity>
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                                 {item.lectures?.map(lec => 
-                                    <CardLecture data={lec} key={lec.idLecture} role={role} idCourse={idCourse}/>
+                                    <CardLecture 
+                                        data={lec} key={lec.idLecture} role={role} idCourse={idCourse} idSection={item.idSection}
+                                        idSelected={selectObject.idLecture} setSelected={handleSelectLecture}
+                                    />
                                 )}
                                 {role === 1 &&
                                     <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
-                                        <TouchableOpacity style={styles.addLec} onPress={()=>navigation.navigate("Create Lecture", {
-                                            idCourse: idCourse, 
-                                            nameCourse: nameCourse, 
-                                            idSection: item.idSection, 
-                                            nameSection: item.sectionName,
-                                            getCourse: getCourse,
+                                        <TouchableOpacity style={styles.addLec} onPress={()=>{
+                                            if(selectLecture){
+                                                setSelectObject({
+                                                    idSection: item.idSection,
+                                                })
+                                            }
+                                            navigation.navigate("Create Lecture", {
+                                                idCourse: idCourse, 
+                                                nameCourse: nameCourse, 
+                                                idSection: item.idSection, 
+                                                nameSection: item.sectionName,
+                                                getCourse: getCourse,
 
-                                        })}>
+                                            })
+                                        }}>
                                             <Entypo name="plus" size={14} color={COLORS.main} />
                                             <Text style={styles.addLecText}>Add new lecture</Text>
                                         </TouchableOpacity>
@@ -261,7 +290,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         columnGap: 4,
-        backgroundColor: COLORS.main30,
+        backgroundColor: COLORS.lightText,
         paddingHorizontal: 16,
         paddingVertical: 8,
         gap: 8

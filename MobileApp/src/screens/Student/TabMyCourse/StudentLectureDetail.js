@@ -18,12 +18,19 @@ export const StudentLectureDetail = ({route})=>{
     const [isOpenMenu, setIsOpentMenu] = useState(false)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
+    const [selectLecture, setSelectLecture] = useState({
+        idLecture: 0,
+        idSection: 0
+    });
 
     const fetchDetailLecture = async()=>{
         try {
             const response = await getLectureDetail(idLecture)
             if(response){
-                setData(response)
+                setData({
+                    ...response,
+                    timestamp: parseRelativeTime(response.relativeTime),
+                })
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -37,7 +44,7 @@ export const StudentLectureDetail = ({route})=>{
         const interval = setInterval(() => {
             setData({
                 ...data,
-                relativeTime: calculateRelativeTime(parseRelativeTime(data.relativeTime))
+                relativeTime: calculateRelativeTime(data.timestamp)
             })
         }, 60000); // Update every minute
         return () => clearInterval(interval);
@@ -153,7 +160,7 @@ export const StudentLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={2}/>
+                        <ModalCourseContent role={2} selectLecture={selectLecture} setSelectLecture={setSelectLecture}/>
                     </ScrollView>
                 </View>
             </Modal>

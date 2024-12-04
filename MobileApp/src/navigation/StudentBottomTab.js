@@ -66,6 +66,10 @@ const StackHomeScreen = ()=>{
                 name="Teachers of center"
                 component={ViewAllFromDetail}
             />
+            <StackHome.Screen
+                name="Detail Lecture"
+                component={StudentLectureDetail}
+            />
         </StackHome.Navigator>
     )
 }
