@@ -9,6 +9,7 @@ import { CardAssignment } from "../../../components/CardAssignment";
 import { Comments } from "../../../components/Comments";
 import { Video } from "expo-av";
 import { getLectureDetail } from "../../../services/lecture";
+import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture} = route?.params || {}
@@ -33,6 +34,13 @@ export const StudentLectureDetail = ({route})=>{
     
     useEffect(()=>{
         fetchDetailLecture()
+        const interval = setInterval(() => {
+            setData({
+                ...data,
+                relativeTime: calculateRelativeTime(parseRelativeTime(data.relativeTime))
+            })
+        }, 60000); // Update every minute
+        return () => clearInterval(interval);
     }, [])
 
     const openURL = (url) => {  

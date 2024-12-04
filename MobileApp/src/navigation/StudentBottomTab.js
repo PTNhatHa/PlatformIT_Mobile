@@ -24,6 +24,7 @@ import { StudentLectureDetail } from "../screens/Student/TabMyCourse/StudentLect
 import { StudentAllTest } from "../screens/Student/TabMyTest/StudentAllTest";
 import { StudentDetailAsgm } from "../screens/Student/TabMyTest/StudentDetailAsgm";
 import { StudentDoAsgm } from "../screens/Student/TabMyTest/StudentDoAsgm";
+import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
