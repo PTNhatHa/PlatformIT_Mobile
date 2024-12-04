@@ -8,13 +8,15 @@ import { useUser } from "../../../contexts/UserContext";
 import { getAssignmentInfo } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime } from "../../../utils/utils";
-import { RadioView } from "../../../components/RadioBtn";
+import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {assignmentItems, assignmentType} = route?.params || null
+    const {idAssignment} = route?.params || null
+    // console.log(idAssignment);
     const [loading, setLoading] = useState(true);
+    const [assignmentType, setAssignmentType] = useState(0);
     const {state} = useUser()
     const [selectFile, setSelectFile] = useState("")
     const [listQuestion, setListQuestion] = useState([])
@@ -22,13 +24,30 @@ export const StudentDoAsgm = ({route})=>{
     const [index, setIndex] = useState(1)
     const numberItem = 2
 
-    useEffect(()=>{
-        let listData = []
-        for(let i=0; i <= assignmentItems.length; i += numberItem){
-            const newData = assignmentItems.slice(i, i + numberItem)
-            listData.push(newData)
+    const fetchDetailAsgm = async()=>{
+        try {
+            const response = await getAssignmentInfo(idAssignment)
+            if(response){
+                setAssignmentType(response.assignmentType)
+                let listData = []
+                for(let i=0; i <= response.assignmentItems.length; i += numberItem){
+                    const newData = response.assignmentItems.slice(i, i + numberItem)
+                    listData.push(newData)
+                }
+                setListQuestion(listData)
+            } else {
+                Alert.alert("Error", "Please try again")
+                navigation.goBack()
+            }
+        } catch (error) {
+            console.log("Error fetch data: ", error);
+        } finally{
+            setLoading(false)
         }
-        setListQuestion(listData)
+    }
+
+    useEffect(()=>{
+        fetchDetailAsgm()
     }, [])
 
     const openURL = (url) => {  
@@ -78,18 +97,51 @@ export const StudentDoAsgm = ({route})=>{
         }
     }
         
+    const handleChangeChoice = (indexQuestion, indexChoice, value)=>{
+        const newQuestions = listQuestion.map((page, indexPage) =>{
+            if(indexPage + 1 === currentPage){
+                const newData = page.map((question, i) => {
+                    if(i === indexQuestion){
+                        const newItems = question.items.map((choice, iChoice)=>{
+                            if(iChoice === indexChoice){
+                                return{
+                                    ...choice,
+                                    "isCorrect": value
+                                }
+                            }
+                            if(value === 1 && question.isMultipleAnswer === 0){
+                                return{
+                                    ...choice,
+                                    "isCorrect": 0
+                                }
+                            }
+                            return choice
+                        })
+                        return{
+                            ...question,
+                            items: [...newItems]
+                        }
+                    }
+                    return question
+                })
+                return newData
+            }
+            return page
+        })
+        setListQuestion(newQuestions)
+    }
+
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
-                    <View style={styles.wrapContent}>
+                    <View>
                         {index === 1 ?
                             <View style={styles.innerContent}>
                                 {(assignmentType === 1 && listQuestion !== null) ? 
-                                    listQuestion[currentPage-1]?.map((question, index) =>     
+                                    listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
                                             <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + currentPage}</Text>
-                                                <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
+                                                <Text style={styles.title}>Question {indexQuestion + currentPage}</Text>
                                             </View>
                                             <Text style={styles.questionContent}>{question.question}</Text>
                                             {question.attachedFile &&
@@ -108,11 +160,10 @@ export const StudentDoAsgm = ({route})=>{
                                     ) :""
                                 }
                                 {(assignmentType === 2 && listQuestion !== null) && 
-                                    listQuestion[currentPage-1]?.map((question, index) =>     
+                                    listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                             <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>
-                                                <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
+                                                <Text style={styles.title}>Question {indexQuestion + (currentPage - 1) * numberItem + 1}</Text>
                                             </View>
                                             <Text style={styles.questionContent}>{question.question}</Text>
                                             {question.attachedFile && 
@@ -123,9 +174,12 @@ export const StudentDoAsgm = ({route})=>{
                                             <View>
                                                 <Text style={styles.textGray12}>Choices:</Text>
                                                 {question.isMultipleAnswer === 0 ?
-                                                    question.items.map(item => 
+                                                    question.items.map((item, indexChoice) => 
                                                         <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <RadioView selected={item.isCorrect === 1 ? true : false}/>  
+                                                            <RadioBtn 
+                                                                selected={item.isCorrect === 1 ? true : false} 
+                                                                onPress={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
+                                                            />  
                                                             <Text>{item.content}</Text>
                                                         </View>
                                                     )
@@ -135,7 +189,7 @@ export const StudentDoAsgm = ({route})=>{
                                                             <CheckBox
                                                                 isChecked={item.isCorrect === 1 ? true : false}
                                                                 checkBoxColor={COLORS.secondMain}
-                                                                onClick={()=>{}}
+                                                                onClick={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
                                                             />
                                                             <Text>{item.content}</Text>
                                                         </View>
@@ -150,11 +204,15 @@ export const StudentDoAsgm = ({route})=>{
                                 <View style={styles.bottom}>
                                     {getPagination().map(page => 
                                         page !== "..." ? 
-                                        <TouchableOpacity style={styles.wrapNumber} onPress={()=>setCurrentPage(page)}>
-                                            <Text style={styles.bottomNumber}>{page}</Text>
+                                        <TouchableOpacity 
+                                            style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                                            onPress={()=>setCurrentPage(page)}
+                                            key={page}
+                                        >
+                                            <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                                         </TouchableOpacity>
                                         :
-                                        <View style={styles.wrapNumber}>
+                                        <View style={styles.wrapNumber} key={page}>
                                             <Text style={styles.bottomNumber}>{page}</Text>
                                         </View>
                                     )}
@@ -296,7 +354,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.main,
     },
     innerContent:{
-        paddingHorizontal: 16
+        paddingVertical: 8
     },
     wrapQuestion:{
         borderRadius: 4,
@@ -356,14 +414,14 @@ const styles = StyleSheet.create({
     },
     bottomNumber:{
         fontWeight: "bold",
-        color: "white",
+        // color: "white",
         textAlign: "center",
         fontSize: 16
     },
     wrapNumber:{
         width: 32,
         height: 32,
-        backgroundColor: COLORS.main,
+        // backgroundColor: COLORS.main,
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",

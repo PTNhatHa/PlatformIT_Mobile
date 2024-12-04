@@ -228,8 +228,8 @@ export const TeacherDetailAsgm = ({route})=>{
                                 <View style={styles.bottom}>
                                     {getPagination().map(page => 
                                         page !== "..." ? 
-                                        <TouchableOpacity style={styles.wrapNumber} onPress={()=>setCurrentPage(page)}>
-                                            <Text style={styles.bottomNumber}>{page}</Text>
+                                        <TouchableOpacity style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} onPress={()=>setCurrentPage(page)}>
+                                            <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                                         </TouchableOpacity>
                                         :
                                         <View style={styles.wrapNumber}>
@@ -434,14 +434,14 @@ const styles = StyleSheet.create({
     },
     bottomNumber:{
         fontWeight: "bold",
-        color: "white",
+        // color: "white",
         textAlign: "center",
         fontSize: 16
     },
     wrapNumber:{
         width: 32,
         height: 32,
-        backgroundColor: COLORS.main,
+        // backgroundColor: COLORS.main,
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",

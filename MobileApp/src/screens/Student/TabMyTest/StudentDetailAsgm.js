@@ -88,8 +88,7 @@ export const StudentDetailAsgm = ({route})=>{
                             </View>
                             {isPastDue === 0 && isCompleted === 0 &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>{navigation.navigate("Do Assignment", {
-                                    assignmentItems: data.assignmentItems,
-                                    assignmentType: data.assignmentType
+                                    idAssignment: idAssignment
                                 })}}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
