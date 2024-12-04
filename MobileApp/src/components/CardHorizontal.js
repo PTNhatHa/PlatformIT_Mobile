@@ -108,8 +108,16 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
                 <View style={styles.wrapCost}>
                     {data.price !== null ?
                         <>
-                            <Text style={styles.costSale}>{data.price ? `${data.price}VND` : "Free"}</Text>
-                            {/* <Text style={styles.cost}>{data.price}</Text> */}
+                            <Text style={styles.costSale}>
+                                {data.discountedPrice ? data.discountedPrice.toLocaleString('vi-VN') : data.price.toLocaleString('vi-VN')}
+                                <Text style={{textDecorationLine: "underline"}}>đ</Text>    
+                            </Text>
+                            {data.discountedPrice && 
+                                <Text style={styles.cost}>
+                                    {data.price.toLocaleString('vi-VN')}
+                                    <Text style={{textDecorationLine: "underline"}}>đ</Text>  
+                                </Text>
+                            }
                         </>
                         :
                             <Text style={styles.costSale}>Free</Text>
@@ -364,7 +372,7 @@ const styles = StyleSheet.create({
     cost: {
         fontSize: 10,
         textDecorationLine: 'line-through',
-        color: COLORS.stroke
+        color: COLORS.stroke,
     },
     containerTecher:{
         padding: 12,

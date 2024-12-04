@@ -111,7 +111,22 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
                     <Text style={styles.dataText}>{data.centerName}</Text>
                 </View>
                 <View style={styles.wrapCost}>
-                    <Text style={styles.costSale}>{data.price ? `${data.price}VND` : "Free"}</Text>
+                    {data.price !== null ?
+                        <>
+                            <Text style={styles.costSale}>
+                                {data.discountedPrice ? data.discountedPrice.toLocaleString('vi-VN') : data.price.toLocaleString('vi-VN')}
+                                <Text style={{textDecorationLine: "underline"}}>đ</Text>    
+                            </Text>
+                            {data.discountedPrice && 
+                                <Text style={styles.cost}>
+                                    {data.price.toLocaleString('vi-VN')}
+                                    <Text style={{textDecorationLine: "underline"}}>đ</Text>  
+                                </Text>
+                            }
+                        </>
+                        :
+                            <Text style={styles.costSale}>Free</Text>
+                    }
                 </View>
             </View>
         </TouchableOpacity>
@@ -288,7 +303,7 @@ const styles = StyleSheet.create({
     },
     wrapCost:{
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-end",
         columnGap: 2,
         justifyContent: "flex-end",
     },
