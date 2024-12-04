@@ -10,7 +10,7 @@ export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introd
     formData.append('IdCourse', IdCourse)
     formData.append('IdSection', IdSection)
     formData.append('Title', Title)
-    formData.append('Introduction', Introduction)
+    formData.append('Introduction', Introduction === null ? "" : Introduction)
     formData.append('LectureVideo', LectureVideo)
     formData.append('MainMaterials', MainMaterials)
     // console.log('MainMaterials', MainMaterials);
@@ -32,7 +32,6 @@ export const addLecture = async (idCreatedBy, IdCourse, IdSection, Title, Introd
     })
 }
 
-
 export const getAllActiveLecturesOfCourse = async (idCourse)=>{
     return await axios.get(baseUrl + "/GetAllActiveLecturesOfCourse?idCourse=" + idCourse)
     .then(response => {
@@ -41,5 +40,16 @@ export const getAllActiveLecturesOfCourse = async (idCourse)=>{
     })
     .catch(error => {
         console.log("Error GetAllActiveLecturesOfCourse: ", error);
+    })
+}
+
+export const getLectureDetail = async (idLecture)=>{
+    return await axios.get(baseUrl + "/GetLectureDetail?idLecture=" + idLecture)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetLectureDetail: ", error);
     })
 }

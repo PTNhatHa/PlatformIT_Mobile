@@ -1,42 +1,96 @@
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
 import { Comments } from "../../../components/Comments";
+import { Video } from "expo-av";
+import { getLectureDetail } from "../../../services/lecture";
 
-export const StudentLectureDetail = ()=>{
-    const [index, setIndex] = useState(1) //1: Content, 2: Exercise, 3: Comment
+export const StudentLectureDetail = ({route})=>{
+    const {idLecture} = route?.params || {}
+    // console.log(idLecture);
+    const [index, setIndex] = useState(1)
     const [isOpenMenu, setIsOpentMenu] = useState(false)
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true);
+
+    const fetchDetailLecture = async()=>{
+        try {
+            const response = await getLectureDetail(idLecture)
+            if(response){
+                setData(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+    
+    useEffect(()=>{
+        fetchDetailLecture()
+    }, [])
+
+    const openURL = (url) => {  
+        Linking.canOpenURL(url)  
+        .then((supported) => {  
+            if (supported) {  
+            return Linking.openURL(url);  
+            } else {  
+            console.log("Can't open URL: " + url);  
+            }  
+        })  
+        .catch((err) => console.error('Error occurred', err));  
+    };  
+
     return(
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
-                    <Text style={styles.title}>Name Course</Text>
+                    <Text style={styles.title}>{data.courseTitle}</Text>
                     <TouchableOpacity onPress={()=>setIsOpentMenu(true)}>
                         <Entypo name="menu" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.main}>
-                    <View style={styles.wrapper}>
-                        {true &&
-                            <Image style={styles.contentVideo}/>
+                    <View style={styles.wrapperMainContent}>
+                        <View>
+                            <Text style={styles.title}>{data.lectureTitle}</Text>
+                            <Text style={styles.textGray12}>{data.relativeTime}</Text>
+                        </View>
+                        {data.videoMaterial &&
+                            <Video
+                                source={{ uri: data.videoMaterial.path }}
+                                style={styles.contentVideo}
+                                useNativeControls
+                                resizeMode="contain"
+                            />
                         }
-                        <Text style={styles.title}>Title Lecture</Text>
-                        <Text style={styles.textGray12}>13 hr.ago</Text>
+                        {data.mainMaterials?.length > 0 &&
+                            <View>
+                                <Text style={styles.textBlack16}>Materials</Text>
+                                <TouchableOpacity style={styles.wrapGray} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
+                                    <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
+                                </TouchableOpacity>                                
+                            </View>
+                        }
                     </View>
                     <View style={styles.nav}>
                         <TouchableOpacity onPress={()=>setIndex(1)}>
-                            <Text style={index === 1 ? styles.navTextActive : styles.navText}>Content</Text>
+                            <Text style={index === 1 ? styles.navTextActive : styles.navText}>Introduction</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>setIndex(2)}>
-                            <Text style={index === 2 ? styles.navTextActive : styles.navText}>Exercise</Text>
+                            <Text style={index === 2 ? styles.navTextActive : styles.navText}>Sup materials</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>setIndex(3)}>
-                            <Text style={index === 3 ? styles.navTextActive : styles.navText}>Comment</Text>
+                            <Text style={index === 3 ? styles.navTextActive : styles.navText}>Exercise</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>setIndex(4)}>
+                            <Text style={index === 4 ? styles.navTextActive : styles.navText}>Comment</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -44,33 +98,27 @@ export const StudentLectureDetail = ()=>{
                     {index === 1 &&
                         <View style={styles.wrapper}>
                             <View style={styles.wrapContent}>
-                                <Text style={styles.textBlack16}>Introduction</Text>
-                                <Text style={styles.textGray12}>
-                                    Body text for whatever you’d like to say. Add main takeaway points,quotes, anecdotes, or even a very very short story. 
-                                </Text>
+                                {data.lectureIntroduction &&
+                                    <Text style={styles.textGray12}>{data.lectureIntroduction}</Text>
+                                }
+                            </View>                           
+                        </View>
+                    }
+                    {index === 2 && data.supportMaterials?.length > 0 &&
+                        <View style={styles.wrapper}>
+                            <View style={styles.wrapContent}>
+                                {data.supportMaterials.map(sup => 
+                                    <TouchableOpacity style={styles.wrapGray} key={sup.idFile}  onPress={()=>openURL(sup?.path)}>
+                                        <Text numberOfLines={1}>{sup?.fileName}</Text>
+                                    </TouchableOpacity>  
+                                    ) 
+                                }
                             </View>
-                            {true &&
-                                <View style={styles.wrapContent}>
-                                    <Text style={styles.textBlack16}>Materials</Text>
-                                    <Text style={styles.textGray12}>
-                                        Body text for whatever you’d like to say. Add main takeaway points,quotes, anecdotes, or even a very very short story. 
-                                    </Text>
-                                </View>
-                            }
-                            {true &&
-                                <View style={styles.wrapContent}>
-                                    <Text style={styles.textBlack16}>Supporting materials</Text>
-                                    <Text style={styles.textGray12}>
-                                        Body text for whatever you’d like to say. Add main takeaway points,quotes, anecdotes, or even a very very short story. 
-                                    </Text>
-                                </View>
-                            }
-                            
                         </View>
                     }
 
                     {/* Exercise */}
-                    {index === 2 &&
+                    {index === 3 &&
                         <View style={[styles.wrapper]}>
                             <CardAssignment isNoBoder={true}/>
                             <CardAssignment isNoBoder={true}/>
@@ -78,7 +126,7 @@ export const StudentLectureDetail = ()=>{
                     }
 
                     {/* Comment */}
-                    {index === 3 &&
+                    {index === 4 &&
                         <View style={[styles.wrapper]}>
                             <Comments/>
                         </View>
@@ -101,6 +149,11 @@ export const StudentLectureDetail = ()=>{
                     </ScrollView>
                 </View>
             </Modal>
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            }  
         </>
     )
 }
@@ -140,17 +193,22 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: COLORS.stroke
     },
+    wrapperMainContent: {
+        paddingHorizontal: 16,
+        marginTop: 16,
+        gap: 4
+    },
     wrapper: {
         paddingHorizontal: 16,
-        marginVertical: 16,
-        gap: 8
+        marginVertical: 0,
+        gap: 4
     },
     nav:{
         paddingHorizontal: 16,
         borderBottomWidth: 0.7,
         borderColor: COLORS.lightText,
         flexDirection: "row",
-        gap: 20
+        justifyContent: "space-between"
     },
     navText: {
         fontSize: 14,
@@ -185,5 +243,26 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         padding: 16,
         borderRadius: 8
-    }
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+    wrapGray:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flex: 1,
+        marginBottom: 4
+    },
 })
