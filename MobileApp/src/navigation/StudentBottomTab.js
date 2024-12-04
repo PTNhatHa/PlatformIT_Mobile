@@ -137,6 +137,9 @@ const StackMyTestScreen = ()=>{
             <StackMyTest.Screen
                 name="Do Assignment"
                 component={StudentDoAsgm}
+                options={{
+                    headerShown: false,
+                }}
             />
         </StackMyTest.Navigator>
     )

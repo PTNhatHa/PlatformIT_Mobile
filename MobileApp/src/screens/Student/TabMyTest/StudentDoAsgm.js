@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, BackHandler, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AssignmentItemAnswerType, COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -20,7 +20,7 @@ export const StudentDoAsgm = ({route})=>{
     const [selectFile, setSelectFile] = useState("")
     const [listQuestion, setListQuestion] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const numberItem = 2
+    const numberItem = 3
 
     const [duration, setDuration] = useState(initduration*60);
 
@@ -46,7 +46,7 @@ export const StudentDoAsgm = ({route})=>{
             const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
                 let listData = []
-                for(let i=0; i <= response.length; i += numberItem){
+                for(let i=0; i < response.length; i += numberItem){
                     const newData = response.slice(i, i + numberItem)
                     listData.push(newData)
                 }
@@ -112,7 +112,36 @@ export const StudentDoAsgm = ({route})=>{
         }
         }
     }
-        
+    
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert(
+                "Exit and Submit",
+                "Are you sure you want to exit now? All your current answers will be submitted.",
+                [
+                    {
+                        text: "Cancel",
+                        onPress: () => null,
+                        style: "cancel",
+                    },
+                    { text: "Submit", onPress: () => {
+                        navigation.goBack()
+                    } },
+                ]
+            );
+            return true; // Ngăn hành động mặc định (quay lại màn trước).
+        };
+
+        // Đăng ký sự kiện
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        // Gỡ bỏ sự kiện khi component bị unmount
+        return () => backHandler.remove();
+    }, []);
+
     const handleChangeChoice = (indexQuestion, indexChoice, value)=>{
         const newQuestions = listQuestion.map((page, indexPage) =>{
             if(indexPage + 1 === currentPage){
@@ -234,6 +263,9 @@ export const StudentDoAsgm = ({route})=>{
                         )
                     }  
                     
+                    <TouchableOpacity style={styles.btn}>
+                        <Text style={styles.textWhite14}>Submit</Text>
+                    </TouchableOpacity>
                     {/* paginage */}
                     <View style={styles.bottom}>
                         {getPagination().map(page => 
@@ -388,7 +420,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderWidth: 1,
         borderColor: COLORS.lightText,
-        padding: 8,
+        padding: 12,
         marginBottom: 8,
         gap: 4,
         backgroundColor: "white"
@@ -439,7 +471,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 8,
-        margin: 10
+        marginVertical: 10
     },
     bottomNumber:{
         fontWeight: "bold",
@@ -485,10 +517,23 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.main30,
         borderRadius: 4,
         top: 16,
-        right: 8
+        right: 16
     },
     textTime:{
         fontSize: 16,
         fontWeight: "bold"
-    }
+    },
+    btn:{
+        paddingHorizontal: 8,
+        paddingVertical: 6,
+        borderRadius: 4,
+        flex: 1,
+        alignItems: "center",
+        backgroundColor: COLORS.main
+    },
+    textWhite14:{
+        fontSize: 14,
+        color: "white",
+        fontWeight: "bold"
+    },
 })
