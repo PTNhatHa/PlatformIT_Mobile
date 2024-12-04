@@ -5,16 +5,18 @@ import { useEffect, useState } from "react"
 import { getAllCenterCards } from "../services/center"
 import { getAllTeacherCards } from "../services/user"
 import { getAllCourseCards } from "../services/course"
+import { useUser } from "../contexts/UserContext"
 
 export const Home = ({navigation})=>{
     const [loading, setLoading] = useState(true);
     const [dataCourse, setDataCourse] = useState([])
     const [dataCenter, setDataCenter] = useState([])
     const [dataTeacher, setDataTeacher] = useState([])
+    const {state} = useUser()
 
     const getAllCard = async ()=>{
         try {
-            const responseCourse = await getAllCourseCards()
+            const responseCourse = await getAllCourseCards( state.idRole === 3 ? state.idUser : null)
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
             setDataCourse(responseCourse)

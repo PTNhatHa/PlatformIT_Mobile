@@ -30,6 +30,7 @@ const initCourse=  {
 }
 export const CardHorizontalCourse = ({data = initCourse})=>{
     const navigation = useNavigation()
+    const {state} = useUser()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
         const cardWidth = 160-12*2
@@ -47,7 +48,9 @@ export const CardHorizontalCourse = ({data = initCourse})=>{
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} key={data.idCourse}>
             <View>
-                {true && <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />}
+                {((state.idRole === 4 && state.idUser === data.idTeacher) || (data.isEnrolled)) && 
+                    <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />
+                }
                 <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>
                 {data.isLimitedTime === 1 &&
                     <>
@@ -262,6 +265,7 @@ const initProfessional={
 }
 
 import { WebView } from 'react-native-webview';
+import { useUser } from "../contexts/UserContext";
 export const CardHorizontalProfessional = ({data = initProfessional})=>{
     const [selectImg, setSelectImg] = useState("")
     return(

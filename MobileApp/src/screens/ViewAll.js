@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllCourseCards } from "../services/course";
 import { formatDateTime } from "../utils/utils";
 import { CardAssignment } from "../components/CardAssignment";
+import { useUser } from "../contexts/UserContext";
 
 const ViewAllRender = ({data = [], type})=>{
     const [indexPage, setIndexPage] = useState(1)
@@ -111,6 +112,7 @@ const ViewAllRender = ({data = [], type})=>{
 }
 
 export const ScreenViewAll = ({route})=>{
+    const {state} = useUser()
     const initialTab = route.params?.initTab || 0
 
     const [loading, setLoading] = useState(true);
@@ -119,11 +121,6 @@ export const ScreenViewAll = ({route})=>{
     const [search, setSearch] = useState(null)
     const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [routes, setRoutes] = useState([
-        { key: 'first', title: 'Course' },
-        { key: 'second', title: 'Center' },
-        { key: 'third', title: 'Teacher' },
-      ])
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
     const [dataFilterCourse, setDataFilterCourse] = useState([]);
@@ -324,7 +321,7 @@ export const ScreenViewAll = ({route})=>{
 
     const getAllCard = async ()=>{
         try {
-            const responseCourse = await getAllCourseCards()
+            const responseCourse = await getAllCourseCards(state.idRole === 3 ? state.idUser : null)
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
             setInitCourse(responseCourse)

@@ -2,8 +2,12 @@ import axios from "axios"
 import { currentIP } from "../utils/constants"
 const baseUrl = "http://" + currentIP +":5000/api/Course"
 
-export const getAllCourseCards = async ()=>{
-    return await axios.get(baseUrl + "/GetAllCourseCards")
+export const getAllCourseCards = async (idStudent)=>{
+    let id = ""
+    if(idStudent){
+        id = "?idStudent=" + idStudent
+    }
+    return await axios.get(baseUrl + "/GetAllCourseCards" + id)
     .then(response => {
         // console.log(response.data);
         return response.data

@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import Entypo from '@expo/vector-icons/Entypo';
+import { useUser } from "../contexts/UserContext";
 
 const initCourse={
     "idCourse": 3,
@@ -28,6 +29,7 @@ const initCourse={
     ]
 }
 export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
+    const {state} = useUser()
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
     useEffect(()=>{
@@ -50,7 +52,9 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
             key={data.idCourse}    
         >
             <View>
-                {false && <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />}
+                {((state.idRole === 4 && state.idUser === data.idTeacher) || (data.isEnrolled))  && 
+                    <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />
+                }
                 <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>
                 {data.isLimitedTime === 1 &&
                     <>
