@@ -77,10 +77,10 @@ export const StudentLectureDetail = ({route})=>{
         setLoading(true)
         fetchDetailLecture()
         intervalRef.current = setInterval(() => {
-            setData({
-                ...data,
-                relativeTime: calculateRelativeTime(data.timestamp)
-            })
+            setData((prevData) => ({
+                ...prevData,
+                relativeTime: calculateRelativeTime(prevData.timestamp),
+            }))
         }, 60000);
         return () => clearInterval(intervalRef.current);
     }, [])

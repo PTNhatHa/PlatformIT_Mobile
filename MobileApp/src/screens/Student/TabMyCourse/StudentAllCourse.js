@@ -4,12 +4,23 @@ import { COLORS} from "../../../utils/constants";
 import { ViewAllFromDetail } from "../../ViewAllFromDetail";
 import { getAllCourseCardsByIdStudent } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
-export const StudentAllCourse = ()=>{
+export const StudentAllCourse = ({route})=>{
+    const navigation = useNavigation()
+    const idCourse = route?.params?.idCourse || null
     const {state, dispatch} = useUser()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
+    
+    useEffect(()=>{
+        if(idCourse !== null){
+            navigation.navigate("Detail My Course", {
+                idCourse: idCourse,
+                role: route?.params?.role
+            });
+        }
+    },[idCourse])
     
     const getAllCourseOfStudent = async()=>{
         try {
