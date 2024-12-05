@@ -28,7 +28,7 @@ const init = {
 }
 // Chỉ truyền idLecture vào thôi còn mấy kia getDetail trả thêm về
 export const TeacherLectureDetail = ({route})=>{
-    const {idLecture} = route?.params || init
+    const {idLecture, isLimitedTime, courseEndDate} = route?.params || init
     const navigation = useNavigation()
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [currentLecture, setCurrentLecture] = useState(idLecture)
@@ -334,10 +334,18 @@ export const TeacherLectureDetail = ({route})=>{
                             <CardAssignment isNoBoder={true}/>
                             <ButtonIconLightGreen 
                                 title={"Add new exercise"} icon={<Entypo name="plus" size={18} color={COLORS.main}/>}
-                                action={()=>navigation.navigate("Create Exercise", {
-                                    idCourse: idCourse, 
+                                action={()=>navigation.navigate("Create Test", {
+                                    idCourse: data.idCourse, 
                                     nameCourse: data.courseTitle,
-                                    isLimitedTime: data.registStartDate !== null ? 1 : 0
+                                    isLimitedTime: isLimitedTime === true ? 1 : 0,
+                                    courseEndDate: courseEndDate || "",
+                                    reload: ()=>{
+                                        fetchDetailLecture()
+                                    },
+                                    idSection: selectLecture.idSection, 
+                                    nameSection: selectLecture.sectionName, 
+                                    idLecture: selectLecture.idLecture, 
+                                    nameLecture: selectLecture.lectureTitle
                                 })}
                             />
                         </View>

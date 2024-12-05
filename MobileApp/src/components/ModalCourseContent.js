@@ -45,7 +45,11 @@ const initLecture = [
     },
 ]
 
-export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, getCourse, selectLecture, setSelectLecture = ()=>{}})=>{
+export const ModalCourseContent = ({
+    role=0, content=[], idCourse, nameCourse, getCourse, 
+    selectLecture, setSelectLecture = ()=>{}, 
+    isLimitedTime, courseEndDate
+})=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
@@ -183,11 +187,14 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                                 {item.lectures?.map(lec => 
                                     <CardLecture 
-                                        data={lec} key={lec.idLecture} role={role} idCourse={idCourse} section={{
+                                        data={lec} key={lec.idLecture} role={role} idCourse={idCourse} 
+                                        section={{
                                             idSection: item.idSection,
                                             sectionName: item.sectionName
                                         }}
                                         setSelected={handleSelectLecture} selectObject={selectObject}
+                                        isLimitedTime={isLimitedTime}
+                                        courseEndDate={courseEndDate}
                                     />
                                 )}
                                 {role === 1 &&

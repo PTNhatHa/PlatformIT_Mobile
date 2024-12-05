@@ -358,6 +358,8 @@ export const DetailCourse =({route})=>{
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
                             getCourse={getCourse}
+                            isLimitedTime={data.isLimitedTime}
+                            courseEndDate={data.courseEndDate}
                         />
                     </>
                 : selectBtn === 1 ?

@@ -38,8 +38,14 @@ export const TeacherAsgmCreate = ({route})=>{
         isLimitedTime: isLimitedTime,
         courseEndDate: courseEndDate,
     } : "")
-    const [selectSection, setSelectSection] = useState("")
-    const [selectLecture, setSelectLecture] = useState("")
+    const [selectSection, setSelectSection] = useState(idSection ? {
+        value: idSection,
+        label: nameSection
+    }: "")
+    const [selectLecture, setSelectLecture] = useState(idLecture ? {
+        value: idLecture,
+        label: nameLecture
+    }: "")
     const [type, setType] = useState(null)
     const [duration, setDuration] = useState("")
     const [startDate, setStartDate] = useState("")
@@ -239,7 +245,7 @@ export const TeacherAsgmCreate = ({route})=>{
             const current = listLectures.filter(item => item.idSection === selectSection.value)
             setListCurrentLectures(current)
         }
-        if(!isEdit){
+        if(!isEdit && !idLecture){
             setSelectLecture(null)
         }
     }, [selectSection])
@@ -670,10 +676,10 @@ export const TeacherAsgmCreate = ({route})=>{
         <>
             <View style={styles.container}>
                 <ScrollView contentContainerStyle={styles.inner}>
-                    {idCourse || isEdit &&
+                    {(idCourse || isEdit) &&
                         <>
                             <Text style={styles.title}>{nameCourse || selectCourse?.label}</Text>
-                            {idSection &&
+                            {/* {idSection &&
                                 <>
                                     <View style={styles.wrapFlex}>
                                         <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
@@ -684,8 +690,8 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
                                     </View>
                                 </>
-                            }
-                            {selectSection?.value !== "" &&
+                            } */}
+                            {selectSection?.value &&
                                 <>
                                     <View style={styles.wrapFlex}>
                                         <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
