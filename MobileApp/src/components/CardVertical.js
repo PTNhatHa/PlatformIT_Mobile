@@ -28,7 +28,7 @@ const initCourse={
       "Java"
     ]
 }
-export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
+export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false})=>{
     const {state} = useUser()
     const navigation = useNavigation()
     const [showTags, setShowTags] = useState([])
@@ -52,7 +52,7 @@ export const CardVirticalCourse = ({data = initCourse, role = 0})=>{
             key={data.idCourse}    
         >
             <View>
-                {((state.idRole === 4 && state.idUser === data.idTeacher) || (data.isEnrolled))  && 
+                {((state.idRole === 4 && state.idUser === data.idTeacher && !isUnPin) || (data.isEnrolled))  && 
                     <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />
                 }
                 <Image source={data.pathImg ? {uri: data.pathImg} : DefaultImg} style={styles.img}/>

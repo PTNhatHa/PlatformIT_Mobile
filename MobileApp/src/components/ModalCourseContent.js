@@ -49,7 +49,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
-    const [showSections, setShowSections] = useState(content.map(item => (
+    const [showSections, setShowSections] = useState(content?.map(item => (
         {
             idSection: item.idSection,
             isShow: false
@@ -61,9 +61,12 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
 
     const [longPressSection, setLongPressSection] = useState(false);
     const [selectSection, setSelectSection] = useState("");
+
     const [selectObject, setSelectObject] = useState(selectLecture || {
         idLecture: 0,
-        idSection: 0
+        lectureTitle: "",
+        idSection: 0,
+        sectionName: ""
     });
     
     useEffect(()=>{
@@ -108,11 +111,21 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
         }
     }
 
-    const handleSelectLecture = (idSection, idLecture)=>{
-        setSelectObject({
+    const handleSelectLecture = (idSection, sectionName, idLecture, lectureTitle)=>{
+        setSelectLecture({
+            idLecture: idLecture,
+            lectureTitle: lectureTitle,
             idSection: idSection,
-            idLecture: idLecture
+            sectionName: sectionName
         })
+        if(!selectLecture){
+            setSelectObject({
+                // idLecture: idLecture,
+                // lectureTitle: lectureTitle,
+                idSection: idSection,
+                sectionName: sectionName
+            })
+        }
     }
     return(
         <>
@@ -131,10 +144,18 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                                 style={[styles.wrapSection, selectObject.idSection === item.idSection && {backgroundColor: COLORS.main30}]} 
                                 onPress={()=>{
                                     handleShowSection(item.idSection)
-                                    setSelectObject({
-                                        ...selectObject,
-                                        idSection: !checkIsShow ? item.idSection : 0,
-                                    })
+                                    // setSelectLecture({
+                                    //     ...selectObject,
+                                    //     idSection: !checkIsShow ? item.idSection : 0,
+                                    //     sectionName: item.sectionName,
+                                    // })
+                                    if(!selectLecture){
+                                        setSelectObject({
+                                            // ...selectObject,
+                                            idSection: !checkIsShow ? item.idSection : 0,
+                                            sectionName: item.sectionName,
+                                        })
+                                    }
                                 }}
                                 onLongPress={()=>{
                                     if(role === 1){
@@ -162,16 +183,20 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
                                 {item.lectures?.map(lec => 
                                     <CardLecture 
-                                        data={lec} key={lec.idLecture} role={role} idCourse={idCourse} idSection={item.idSection}
-                                        idSelected={selectObject.idLecture} setSelected={handleSelectLecture}
+                                        data={lec} key={lec.idLecture} role={role} idCourse={idCourse} section={{
+                                            idSection: item.idSection,
+                                            sectionName: item.sectionName
+                                        }}
+                                        setSelected={handleSelectLecture} selectObject={selectObject}
                                     />
                                 )}
                                 {role === 1 &&
                                     <View style={{flexDirection: "row", justifyContent: "space-between", backgroundColor: "white"}}>
                                         <TouchableOpacity style={styles.addLec} onPress={()=>{
                                             if(selectLecture){
-                                                setSelectObject({
+                                                setSelectLecture({
                                                     idSection: item.idSection,
+                                                    nameSection: item.sectionName,
                                                 })
                                             }
                                             navigation.navigate("Create Lecture", {

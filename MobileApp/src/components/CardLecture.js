@@ -9,19 +9,22 @@ const initLecture = {
     "exerciseCount": 1,
     "createdDate": "2024-11-06T13:58:50.7138603+07:00"
   }
-export const CardLecture = ({data = initLecture, role=0, idSelected = 0, setSelected = ()=>{}, idSection})=>{
+export const CardLecture = ({data = initLecture, role=0, setSelected = ()=>{}, section, selectObject})=>{
     const navigation = useNavigation()
+    // console.log(selectObject);
     return(
         <TouchableOpacity 
             style={styles.container} key={data.idLecture} 
             onPress={()=>{
                 if(role !==0){
-                    setSelected(idSection, data.idLecture)
-                    navigation.navigate("Detail Lecture", {idLecture: data.idLecture})
+                    setSelected(section.idSection, section.sectionName, data.idLecture, data.lectureTitle)
+                    if(!selectObject.idLecture){
+                        navigation.navigate("Detail Lecture", {idLecture: data.idLecture})
+                    }
                 }
             }}
         >
-            <Text style={[styles.title, idSelected === data.idLecture && {color: COLORS.main}]}>{data.lectureTitle}</Text>
+            <Text style={[styles.title, selectObject.idLecture === data.idLecture && {color: COLORS.main}]}>{data.lectureTitle}</Text>
             {data.lectureIntroduction !== "null" && data.lectureIntroduction !== null &&
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>
             }           

@@ -2,7 +2,7 @@ import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TouchableOp
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
@@ -10,27 +10,37 @@ import { Comments } from "../../../components/Comments";
 import { Video } from "expo-av";
 import { getLectureDetail } from "../../../services/lecture";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
+import { getCourseContentStructure } from "../../../services/course";
+import { useUser } from "../../../contexts/UserContext";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture} = route?.params || {}
-    // console.log(idLecture);
+    const {state} = useUser()
     const [index, setIndex] = useState(1)
+    const [currentLecture, setCurrentLecture] = useState(idLecture)
     const [isOpenMenu, setIsOpentMenu] = useState(false)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
     const [selectLecture, setSelectLecture] = useState({
-        idLecture: 0,
-        idSection: 0
+        idLecture: idLecture,
+        lectureTitle: "",
+        idSection: 0,
+        sectionName: ""
     });
-
+    const [courseContent, setCourseContent] = useState([])
+    const intervalRef = useRef(null);
     const fetchDetailLecture = async()=>{
         try {
-            const response = await getLectureDetail(idLecture)
+            const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
                 setData({
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
-                })
+                })        
+                if(idLecture === currentLecture){
+                    fetchCourseContent(response)   
+                    setCurrentLecture(selectLecture.idLecture)     
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -38,17 +48,59 @@ export const StudentLectureDetail = ({route})=>{
             setLoading(false)
         }
     }
-    
+
+    const fetchCourseContent = async(response)=>{
+        try {
+            const content = await getCourseContentStructure(state.idUser, response.idCourse)
+            if(content){
+                setCourseContent(content.sectionStructures.map(section => {
+                    if(section.idSection === response.idSection){
+                        setSelectLecture({
+                            idLecture: currentLecture,
+                            lectureTitle: response.lectureTitle,
+                            idSection: section.idSection,
+                            sectionName: section.sectionName
+                        })
+                    }
+                    return{
+                        ...section,
+                        lectures: section.lectureStructures
+                    }
+                }))
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
     useEffect(()=>{
+        setLoading(true)
         fetchDetailLecture()
-        const interval = setInterval(() => {
+        intervalRef.current = setInterval(() => {
             setData({
                 ...data,
                 relativeTime: calculateRelativeTime(data.timestamp)
             })
-        }, 60000); // Update every minute
-        return () => clearInterval(interval);
+        }, 60000);
+        return () => clearInterval(intervalRef.current);
     }, [])
+
+    useEffect(()=>{
+        if(idLecture !== selectLecture.idLecture){
+            setLoading(true)
+            clearInterval(intervalRef.current)
+            fetchDetailLecture()
+            .then(() => {
+                intervalRef.current = setInterval(() => {
+                    // console.log(data.timestamp);
+                    // console.log(data.relativeTime);
+                    setData((prevData) => ({
+                        ...prevData,
+                        relativeTime: calculateRelativeTime(prevData.timestamp),
+                    }));
+                }, 6000);
+            });
+        }
+    }, [selectLecture])
 
     const openURL = (url) => {  
         Linking.canOpenURL(url)  
@@ -61,6 +113,20 @@ export const StudentLectureDetail = ({route})=>{
         })  
         .catch((err) => console.error('Error occurred', err));  
     };  
+
+    const handleSelectLecture = (v)=>{
+        setSelectLecture(v)
+        setIsOpentMenu(false)
+    }
+
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
 
     return(
         <>
@@ -160,7 +226,7 @@ export const StudentLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={2} selectLecture={selectLecture} setSelectLecture={setSelectLecture}/>
+                        <ModalCourseContent role={2} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}/>
                     </ScrollView>
                 </View>
             </Modal>

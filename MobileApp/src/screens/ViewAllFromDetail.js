@@ -218,7 +218,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                 <FlatList
                     data={currentData}
                     keyExtractor={(item) => item.idCourse}
-                    renderItem={({item}) => <CardVirticalCourse data={item} role={role}/>}
+                    renderItem={({item}) => <CardVirticalCourse data={item} role={role} isUnPin={true}/>}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
                 />

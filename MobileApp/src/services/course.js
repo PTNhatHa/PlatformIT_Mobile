@@ -119,3 +119,15 @@ export const getTestOfCourseStudent = async (idStudent, idCourse)=>{
         console.log("Error GetTestOfCourseStudent: ", error);
     })
 }
+
+export const getCourseContentStructure = async (idStudent, idCourse)=>{
+    // console.log(idStudent, idCourse);
+    return await axios.get(baseUrl + "/GetCourseContentStructure?idCourse=" + idCourse + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetCourseContentStructure: ", error);
+    })
+}
