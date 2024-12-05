@@ -238,3 +238,14 @@ export const getDetailAssignmentItemForStudent = async (idAssignment)=>{
         console.log("Error getDetailAssignmentItemForStudent: ", error);
     })
 }
+
+export const getExerciseOfLectureViaStudent = async (idLecture, idStudent)=>{
+    return await axios.get(baseUrl + "/GetExerciseOfLectureViaStudent?idLecture=" + idLecture + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetExerciseOfLectureViaStudent: ", error);
+    })
+}

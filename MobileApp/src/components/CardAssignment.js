@@ -172,25 +172,25 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
                     <View style={styles.wrapDetail}>
                         <View style={styles.content}>
-                            <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                            <Foundation name="page-edit" size={12} color={COLORS.main} />
                             <Text style={styles.dataText}>{typeAssignment[data.assignmentType] || "Unknown"}</Text>
                         </View>
                         {data.duration !== 0 && data.duration !== null &&
                             <View style={styles.content}>
-                                <Feather name="clock" size={11} color={COLORS.stroke} />
+                                <Feather name="clock" size={11} color={COLORS.main} />
                                 <Text style={styles.dataText}>{data.duration} min</Text>
                             </View>
                         }
                         {data.questionQuantity !== null &&
                             <View style={styles.content}>
-                                <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
+                                <FontAwesome6 name="circle-question" size={12} color={COLORS.main} />
                                 <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
                             </View>
                         }
                     </View>
                     {role === 1 && data.dueDate !== null &&
                         <View style={styles.content}>
-                            <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                            <FontAwesome6 name="calendar" size={12} color={COLORS.main} />
                             <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
                         </View>
                     }
@@ -239,25 +239,25 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             <Text style={styles.title}>{data.assignmentTitle || data.title}</Text>
                             <View style={styles.wrapDetail}>
                                 <View style={styles.content}>
-                                    <Foundation name="page-edit" size={12} color={COLORS.stroke} />
+                                    <Foundation name="page-edit" size={12} color={COLORS.main} />
                                     <Text style={styles.dataText}>{typeAssignment[data.assignmentType] || "Unknown"}</Text>
                                 </View>
                                 {data.duration !== 0 && data.duration !== null &&
                                     <View style={styles.content}>
-                                        <Feather name="clock" size={11} color={COLORS.stroke} />
+                                        <Feather name="clock" size={11} color={COLORS.main} />
                                         <Text style={styles.dataText}>{data.duration} min</Text>
                                     </View>
                                 }
                                 {data.questionQuantity !== null &&
                                     <View style={styles.content}>
-                                        <FontAwesome6 name="circle-question" size={12} color={COLORS.stroke} />
+                                        <FontAwesome6 name="circle-question" size={12} color={COLORS.main} />
                                         <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
                                     </View>
                                 }
                             </View>
                             {data.dueDate !== null &&
                                 <View style={styles.content}>
-                                    <FontAwesome6 name="calendar" size={12} color={COLORS.stroke} />
+                                    <FontAwesome6 name="calendar" size={12} color={COLORS.main} />
                                     <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
                                 </View>
                             }
@@ -267,10 +267,10 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                             </View>
                             <View style={[styles.content, {justifyContent: "flex-end"}]}>
                                 {data.isPublish !== null && isPastDue &&
-                                    <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
+                                    <TagNoColor label={data.isPublish === 1 ? "Publish" : "Unpublish"}/>
                                 }
                                 {data.isTest !== null &&
-                                    <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
+                                    <TagNoColor label={data.isTest === 1 ? "Test" : "Exercise"}/>
                                 }
                             </View>
 
@@ -325,11 +325,13 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
     },
     containerNoBoder: {
-        borderLeftWidth: 1,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderWidth: 1,
         borderColor: COLORS.lightText,
+        borderRadius: 4,
         marginBottom: 10,
-        backgroundColor: "white",
-        paddingLeft: 8
+        backgroundColor: COLORS.lightGray,
     },
     wrapContent:{
         gap: 2

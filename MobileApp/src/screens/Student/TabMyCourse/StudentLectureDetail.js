@@ -12,6 +12,7 @@ import { getLectureDetail } from "../../../services/lecture";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getCourseContentStructure } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
+import { getExerciseOfLectureViaStudent } from "../../../services/assignment";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture} = route?.params || {}
@@ -28,9 +29,11 @@ export const StudentLectureDetail = ({route})=>{
         sectionName: ""
     });
     const [courseContent, setCourseContent] = useState([])
+    const [exercises, setExercises] = useState([])
     const intervalRef = useRef(null);
 
     const fetchDetailLecture = async()=>{
+        setLoading(true)
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
@@ -51,6 +54,7 @@ export const StudentLectureDetail = ({route})=>{
     }
 
     const fetchCourseContent = async(response)=>{
+        setLoading(true)
         try {
             const content = await getCourseContentStructure(state.idUser, response.idCourse)
             if(content){
@@ -71,11 +75,29 @@ export const StudentLectureDetail = ({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }
+
+    const fetchExercise = async()=>{
+        setLoading(true)
+        try {
+            const response = await getExerciseOfLectureViaStudent(selectLecture.idLecture, state.idUser)
+            if(response){
+                setExercises(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
     useEffect(()=>{
         setLoading(true)
         fetchDetailLecture()
+        fetchExercise()
         intervalRef.current = setInterval(() => {
             setData((prevData) => ({
                 ...prevData,
@@ -90,10 +112,9 @@ export const StudentLectureDetail = ({route})=>{
             setLoading(true)
             clearInterval(intervalRef.current)
             fetchDetailLecture()
+            fetchExercise()
             .then(() => {
                 intervalRef.current = setInterval(() => {
-                    // console.log(data.timestamp);
-                    // console.log(data.relativeTime);
                     setData((prevData) => ({
                         ...prevData,
                         relativeTime: calculateRelativeTime(prevData.timestamp),
@@ -201,15 +222,14 @@ export const StudentLectureDetail = ({route})=>{
 
                     {/* Exercise */}
                     {index === 3 &&
-                        <View style={[styles.wrapper]}>
-                            <CardAssignment isNoBoder={true}/>
-                            <CardAssignment isNoBoder={true}/>
+                        <View style={[styles.wrapper2]}>
+                            {exercises.map(exercise => <CardAssignment data={exercise} isNoBoder={true}/>)}
                         </View>
                     }
 
                     {/* Comment */}
                     {index === 4 &&
-                        <View style={[styles.wrapper]}>
+                        <View style={[styles.wrapper2]}>
                             <Comments/>
                         </View>
                     }
@@ -283,6 +303,11 @@ const styles = StyleSheet.create({
     wrapper: {
         paddingHorizontal: 16,
         marginVertical: 0,
+        gap: 4
+    },
+    wrapper2: {
+        paddingHorizontal: 16,
+        marginVertical: 8,
         gap: 4
     },
     nav:{
