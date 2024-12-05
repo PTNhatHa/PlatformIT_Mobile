@@ -131,12 +131,12 @@ export const StudentLectureDetail = ({route})=>{
 
     return(
         <>
+            <TouchableOpacity style={styles.btnMenu} onPress={()=>setIsOpentMenu(true)}>
+                <Entypo name="menu" size={24} color="black" />
+            </TouchableOpacity>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
                     <Text style={styles.title}>{data.courseTitle}</Text>
-                    <TouchableOpacity onPress={()=>setIsOpentMenu(true)}>
-                        <Entypo name="menu" size={24} color="black" />
-                    </TouchableOpacity>
                 </View>
                 <View style={styles.main}>
                     <View style={styles.wrapperMainContent}>
@@ -346,5 +346,19 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         flex: 1,
         marginBottom: 4
+    },
+    btnMenu:{
+        ...commonStyles.shadow,
+        backgroundColor: COLORS.main30,
+        width: 50,
+        height: 50,
+        borderRadius: 90,
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        margin: 16,
+        zIndex: 1
     },
 })
