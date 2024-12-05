@@ -14,7 +14,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {idAssignment, assignmentType, initduration} = route?.params || null
+    const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer} = route?.params || null
     const [loading, setLoading] = useState(true);
     const {state} = useUser()
     const [selectFile, setSelectFile] = useState("")
@@ -29,11 +29,10 @@ export const StudentDoAsgm = ({route})=>{
             const timer = setInterval(() => {
                 setDuration((prev) => prev - 1);
             }, 1000);
-    
-            return () => clearInterval(timer); // Xóa timer khi component unmount
+            return () => clearInterval(timer);
         }
     }, [duration]);
-  
+
     // Hàm format thời gian (phút:giây)
     const formatTime = (time) => {
       const minutes = Math.floor(time / 60);
@@ -41,13 +40,26 @@ export const StudentDoAsgm = ({route})=>{
       return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]]; // Hoán đổi vị trí
+        }
+        return array;
+    }
+
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
+                let shuffledResponse = response
+                console.log(isShufflingQuestion);
+                if(isShufflingQuestion === 1){
+                    shuffledResponse = shuffle(response)
+                }
                 let listData = []
-                for(let i=0; i < response.length; i += numberItem){
-                    const newData = response.slice(i, i + numberItem)
+                for(let i=0; i < shuffledResponse.length; i += numberItem){
+                    const newData = shuffledResponse.slice(i, i + numberItem)
                     listData.push(newData)
                 }
                 setListQuestion(listData)
@@ -178,7 +190,7 @@ export const StudentDoAsgm = ({route})=>{
 
     return(
         <View style={styles.wrapContainer}>
-            {duration > 0 &&
+            {(!loading && duration > 0) &&
                 <View style={styles.wrapTime}>
                     <Text  style={styles.textTime}>{formatTime(duration)}</Text>
                 </View>

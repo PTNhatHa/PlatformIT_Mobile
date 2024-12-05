@@ -1,8 +1,8 @@
-import { Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
@@ -15,6 +15,8 @@ import { ButtonIconLightGreen } from "../../../components/Button";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
+import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
+import { getLectureDetail } from "../../../services/lecture";
 
 const init = {
     idLecture: 1,
@@ -30,13 +32,44 @@ export const TeacherLectureDetail = ({route})=>{
     const navigation = useNavigation()
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [isOpenMenu, setIsOpentMenu] = useState(false)
+    const [selectLecture, setSelectLecture] = useState({
+        idLecture: 0,
+        idSection: 0
+    });
 
-    const [lectureName, setLectureName] = useState()
-    const [intro, setIntro] = useState()
-    const [material, setMaterial] = useState(null)
-    const [supportMaterial, setSupportMaterial] = useState([])
-    const [idSupMaterial, setIdSupMaterial] = useState(1)
-    const [video, setVideo] = useState(null)
+    const [data, setData] = useState([])
+    const [loading, setLoading] = useState(true);
+
+    
+    const fetchDetailLecture = async()=>{
+        try {
+            const response = await getLectureDetail(idLecture)
+            if(response){
+                setData(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+    
+    useEffect(()=>{
+        fetchDetailLecture()
+    }, [])
+
+    const openURL = (url) => {  
+        Linking.canOpenURL(url)  
+        .then((supported) => {  
+            if (supported) {  
+            return Linking.openURL(url);  
+            } else {  
+            console.log("Can't open URL: " + url);  
+            }  
+        })  
+        .catch((err) => console.error('Error occurred', err));  
+    };  
+
     const pickFile = async(type = "*")=>{
         try{
             let result = await DocumentPicker.getDocumentAsync({
@@ -52,55 +85,49 @@ export const TeacherLectureDetail = ({route})=>{
     const onChangeMaterial= async()=>{
         const result = await pickFile()
         if(result){
-            setMaterial({
-                nameFile: result.name,
-                file: {
-                    uri: result.uri,
-                    name: result.name,
+            setData({
+                ...data,
+                mainMaterials: [{
+                    path: result.uri,
+                    fileName: result.name,
                     type: result.mimeType 
-                }
+                }]
             })
         }
     }
     const addSupportMaterial= async()=>{
         const result = await pickFile()
         if(result){
-            const newMaterial = [...supportMaterial, {
-                id: "id" + idSupMaterial.toString(),
-                nameFile: result.name,
-                file: {
-                    uri: result.uri,
-                    name: result.name,
-                    type: result.mimeType 
-                }
-            }]
-            setSupportMaterial(newMaterial)
-            setIdSupMaterial(idSupMaterial + 1)
+            setData({
+                ...data,
+                supportMaterials: [
+                    ...data.supportMaterials,
+                    {
+                        path: result.uri,
+                        fileName: result.name,
+                        type: result.mimeType 
+                    }
+                ]
+            })
         }
     }
-    const onChangeSupportMaterial= async(id, value)=>{
-        const newMaterial = supportMaterial.map(item => {
-            if(item.id === id){
-                return{
-                    ...item,
-                    nameFile: value
-                }
-            }
-            return item
+    const onDeleteSupportMaterial= async(index)=>{
+        const newMaterial = data.supportMaterials.filter((item, i) => index !== i)
+        setData({
+            ...data,
+            supportMaterials: newMaterial
         })
-        setSupportMaterial(newMaterial)
-    }
-    const onDeleteSupportMaterial= async(id,)=>{
-        const newMaterial = supportMaterial.filter(item => item.id !== id)
-        setSupportMaterial(newMaterial)
     }
     const onChangeVideo = async ()=>{
         const result = await pickFile("video")
         if(result){
-            setVideo({
-                uri: result.uri,
-                name: result.name,
-                type: result.mimeType 
+            setData({
+                ...data,
+                videoMaterial: {
+                    path: result.uri,
+                    fileName: result.name,
+                    type: result.mimeType 
+                }
             })
         }
     }
@@ -109,7 +136,7 @@ export const TeacherLectureDetail = ({route})=>{
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
-                    <Text style={styles.title}>Name Course</Text>
+                    <Text style={styles.title}>{data.courseTitle}</Text>
                     <TouchableOpacity onPress={()=>setIsOpentMenu(true)}>
                         <Entypo name="menu" size={24} color="black" />
                     </TouchableOpacity>
@@ -135,11 +162,21 @@ export const TeacherLectureDetail = ({route})=>{
 
                     {/* Information */}
                     {index === 1 &&
-                        <View style={styles.wrapper}>
-                            <TextInputLabelGray label={"Add to course"} value={"nameCourse"} editable={false}/>                            
-                            <TextInputLabelGray label={"Add to section"} value={"nameSection"} editable={false}/>                       
-                            <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
-                            <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro} multiline={true}/>                       
+                        <View style={styles.wrapper}>                    
+                            <TextInputLabelGray 
+                                placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
+                                onchangeText={(v)=>setData({
+                                    ...data,
+                                    lectureTitle: v
+                                })}
+                            />                            
+                            <TextInputLabelGray 
+                                placeholder={"Introduction"} label={"Introduction"} value={data.lectureIntroduction} multiline={true}
+                                onchangeText={(v)=>setData({
+                                    ...data,
+                                    lectureIntroduction: v
+                                })} 
+                            />                       
                             <View style={styles.wrapBtn}>
                                 <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
                                     <Text style={styles.textWhite14}>Save changes</Text>
@@ -157,8 +194,14 @@ export const TeacherLectureDetail = ({route})=>{
                             <View style={styles.containerGray}>
                                 <View style={styles.wrapFlex}>
                                     <Text style={styles.label}>Lecture video</Text>
-                                    {video &&
-                                        <TouchableOpacity onPress={()=>setVideo(null)} style={[styles.btnText]}>
+                                    {data.videoMaterial &&
+                                        <TouchableOpacity 
+                                            onPress={()=>setData({
+                                                ...data,
+                                                videoMaterial: null
+                                            })} 
+                                            style={[styles.btnText]}
+                                        >
                                             <MaterialIcons name="delete" size={20} color={COLORS.red} />
                                         </TouchableOpacity>
                                     }
@@ -166,9 +209,9 @@ export const TeacherLectureDetail = ({route})=>{
                                         <MaterialIcons name="upload-file" size={20} color="black" />
                                     </TouchableOpacity>
                                 </View>
-                                {video ? 
+                                {data.videoMaterial ? 
                                     <Video
-                                        source={{ uri: video.uri }}
+                                        source={{ uri: data.videoMaterial.path }}
                                         style={styles.contentVideo}
                                         useNativeControls
                                         resizeMode="contain"
@@ -179,23 +222,18 @@ export const TeacherLectureDetail = ({route})=>{
                             </View>                     
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Materials</Text>
-                                {material ?
+                                {data.mainMaterials?.length > 0 ?
                                     <View style={styles.wrapFlex}>
-                                        <View style={[styles.inputLabelGray]}>
-                                            <TextInput 
-                                                style={styles.inputText}
-                                                value={material.nameFile}
-                                                onChangeText={(v)=>setMaterial({
-                                                    ...material,
-                                                    nameFile: v
-                                                })}
-                                                placeholder={"Materials"}
-                                            />
-                                            {/* <TouchableOpacity onPress={()=>{}} style={{margin: 4}}>
-                                                <Entypo name="edit" size={18} color="black" />
-                                            </TouchableOpacity> */}
-                                        </View>
-                                        <TouchableOpacity onPress={()=>setMaterial(null)} style={{margin: 4}}>
+                                        <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
+                                            <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity 
+                                            onPress={()=>setData({
+                                                ...data,
+                                                mainMaterials: []
+                                            })}  
+                                            style={{margin: 4}}
+                                        >
                                             <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
@@ -208,18 +246,13 @@ export const TeacherLectureDetail = ({route})=>{
                             </View>                         
                             <View style={styles.containerGray}>
                                 <Text style={styles.label}>Supporting materials</Text>
-                                {supportMaterial.length > 0 &&
-                                    supportMaterial.map(item => 
-                                        <View style={[styles.wrapFlex, {marginBottom: 4}]} key={item.id}>
-                                            <View style={[styles.inputLabelGray]}>
-                                                <TextInput 
-                                                    style={styles.inputText}
-                                                    value={item.nameFile}
-                                                    onChangeText={(v)=>onChangeSupportMaterial(item.id, v)}
-                                                    placeholder={"Supporting materials"}
-                                                />
-                                            </View>
-                                            <TouchableOpacity onPress={()=>onDeleteSupportMaterial(item.id)} style={{margin: 4}}>
+                                {data.supportMaterials?.length > 0 &&
+                                    data.supportMaterials.map((item, index) => 
+                                        <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
+                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
+                                                <Text numberOfLines={1}>{item.fileName}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
                                                 <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                             </TouchableOpacity>
                                         </View>
@@ -233,7 +266,10 @@ export const TeacherLectureDetail = ({route})=>{
                                 <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
                                     <Text style={styles.textWhite14}>Save changes</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.btn]}>
+                                <TouchableOpacity style={[styles.btn]} onPress={()=>{
+                                    setLoading(true)
+                                    fetchDetailLecture()
+                                }}>
                                     <Text style={styles.textGray14}>Discard changes</Text>
                                 </TouchableOpacity>
                             </View>                        
@@ -276,10 +312,15 @@ export const TeacherLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={1}/>
+                        <ModalCourseContent role={1} selectLecture={selectLecture} setSelectLecture={setSelectLecture}/>
                     </ScrollView>
                 </View>
             </Modal>
+            {loading &&
+                <View style={styles.wrapLoading}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+            } 
         </>
     )
 }
@@ -445,5 +486,13 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
         marginVertical: 4,
         gap: 4
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     },
 })

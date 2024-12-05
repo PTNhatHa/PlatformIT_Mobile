@@ -90,7 +90,9 @@ export const StudentDetailAsgm = ({route})=>{
                                 <TouchableOpacity style={styles.btn} onPress={()=>{navigation.navigate("Do Assignment", {
                                     idAssignment: idAssignment,
                                     assignmentType: data.assignmentType,
-                                    initduration: data.duration
+                                    initduration: data.duration,
+                                    isShufflingQuestion: data.isShufflingQuestion,
+                                    isShufflingAnswer: data.isShufflingAnswer
                                 })}}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
