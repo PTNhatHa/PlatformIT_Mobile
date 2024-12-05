@@ -122,7 +122,8 @@ export const getTestOfCourseStudent = async (idStudent, idCourse)=>{
 
 export const getCourseContentStructure = async (idStudent, idCourse)=>{
     // console.log(idStudent, idCourse);
-    return await axios.get(baseUrl + "/GetCourseContentStructure?idCourse=" + idCourse + "&idStudent=" + idStudent)
+    const student = idStudent ? "&idStudent=" + idStudent : ""
+    return await axios.get(baseUrl + "/GetCourseContentStructure?idCourse=" + idCourse + student)
     .then(response => {
         // console.log(response.data);
         return response.data

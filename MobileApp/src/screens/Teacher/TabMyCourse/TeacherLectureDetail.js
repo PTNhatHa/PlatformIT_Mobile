@@ -2,7 +2,7 @@ import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TextInput, 
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
@@ -17,6 +17,7 @@ import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getLectureDetail } from "../../../services/lecture";
+import { getCourseContentStructure } from "../../../services/course";
 
 const init = {
     idLecture: 1,
@@ -28,24 +29,30 @@ const init = {
 // Chỉ truyền idLecture vào thôi còn mấy kia getDetail trả thêm về
 export const TeacherLectureDetail = ({route})=>{
     const {idLecture} = route?.params || init
-
     const navigation = useNavigation()
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
+    const [currentLecture, setCurrentLecture] = useState(idLecture)
     const [isOpenMenu, setIsOpentMenu] = useState(false)
     const [selectLecture, setSelectLecture] = useState({
-        idLecture: 0,
-        idSection: 0
+        idLecture: idLecture,
+        lectureTitle: "",
+        idSection: 0,
+        sectionName: ""
     });
 
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
-
+    const [courseContent, setCourseContent] = useState([])
     
     const fetchDetailLecture = async()=>{
         try {
-            const response = await getLectureDetail(idLecture)
+            const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
                 setData(response)
+                if(idLecture === currentLecture){
+                    fetchCourseContent(response)   
+                    setCurrentLecture(selectLecture.idLecture)     
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -53,10 +60,45 @@ export const TeacherLectureDetail = ({route})=>{
             setLoading(false)
         }
     }
-    
+    const fetchCourseContent = async(response)=>{
+        try {
+            const content = await getCourseContentStructure(null, response.idCourse)
+            if(content){
+                setCourseContent(content.sectionStructures.map(section => {
+                    if(section.idSection === response.idSection){
+                        setSelectLecture({
+                            idLecture: currentLecture,
+                            lectureTitle: response.lectureTitle,
+                            idSection: section.idSection,
+                            sectionName: section.sectionName
+                        })
+                    }
+                    return{
+                        ...section,
+                        lectures: section.lectureStructures
+                    }
+                }))
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
     useEffect(()=>{
+        setLoading(true)
         fetchDetailLecture()
     }, [])
+
+    useEffect(()=>{
+        if(idLecture !== selectLecture.idLecture){
+            setLoading(true)
+            fetchDetailLecture()            
+        }
+    }, [selectLecture])
+
+    const handleSelectLecture = (v)=>{
+        setSelectLecture(v)
+        setIsOpentMenu(false)
+    }
 
     const openURL = (url) => {  
         Linking.canOpenURL(url)  
@@ -132,14 +174,23 @@ export const TeacherLectureDetail = ({route})=>{
         }
     }
 
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
+
     return(
         <>
+            <TouchableOpacity style={styles.btnMenu} onPress={()=>setIsOpentMenu(true)}>
+                <Entypo name="menu" size={24} color="black" />
+            </TouchableOpacity>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
                     <Text style={styles.title}>{data.courseTitle}</Text>
-                    <TouchableOpacity onPress={()=>setIsOpentMenu(true)}>
-                        <Entypo name="menu" size={24} color="black" />
-                    </TouchableOpacity>
                 </View>
                 <View style={styles.main}>
                     <View style={styles.wrapper}>
@@ -312,7 +363,7 @@ export const TeacherLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={1} selectLecture={selectLecture} setSelectLecture={setSelectLecture}/>
+                        <ModalCourseContent role={1} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}/>
                     </ScrollView>
                 </View>
             </Modal>
@@ -494,5 +545,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+    },
+    btnMenu:{
+        ...commonStyles.shadow,
+        backgroundColor: COLORS.main30,
+        width: 50,
+        height: 50,
+        borderRadius: 90,
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        margin: 16,
+        zIndex: 1
     },
 })

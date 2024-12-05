@@ -218,10 +218,12 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                     )}
                 )}
                 {role === 1 &&
-                    <ButtonIconLightGreen 
-                        title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
-                        action={()=>setIsAddSection(true)}    
-                    />
+                    <View style={{marginVertical: 4}}>
+                        <ButtonIconLightGreen 
+                            title={"Add new section"} icon={<Entypo name="plus" size={14} color={COLORS.main} />}
+                            action={()=>setIsAddSection(true)}    
+                        />
+                    </View>
                 }
                 {isAddSection &&
                     <View style={styles.addSection}>

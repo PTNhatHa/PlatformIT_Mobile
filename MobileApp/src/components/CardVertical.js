@@ -48,7 +48,17 @@ export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false
     return(
         <TouchableOpacity 
             style={styles.container} 
-            onPress={role !== 0 ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
+            onPress={(role !== 0 || ((state.idRole === 4 && state.idUser === data.idTeacher && !isUnPin) || (data.isEnrolled))) ? 
+                ()=> 
+                    navigation.navigate("My Course", {
+                        screen: "My Course",
+                        params: {
+                            idCourse: data.idCourse,
+                            role: role
+                        }
+                    })
+                : 
+                ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})}
             key={data.idCourse}    
         >
             <View>

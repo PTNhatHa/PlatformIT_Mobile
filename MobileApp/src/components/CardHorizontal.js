@@ -46,7 +46,21 @@ export const CardHorizontalCourse = ({data = initCourse, role = 0})=>{
         setShowTags(selectTags)
     }, [data.tags])
     return(
-        <TouchableOpacity style={styles.container} onPress={role !== 0 ? ()=> navigation.navigate("Detail My Course", {idCourse: data.idCourse, role: role}) : ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} key={data.idCourse}>
+        <TouchableOpacity 
+            style={styles.container} 
+            onPress={(role !== 0 || ((state.idRole === 4 && state.idUser === data.idTeacher) || (data.isEnrolled))) ? 
+                ()=> 
+                    navigation.navigate("My Course", {
+                        screen: "My Course",
+                        params: {
+                            idCourse: data.idCourse,
+                            role: role
+                        }
+                    })
+                : 
+                ()=> navigation.navigate("Detail Course", {idCourse: data.idCourse})} 
+            key={data.idCourse}
+        >
             <View>
                 {((state.idRole === 4 && state.idUser === data.idTeacher) || (data.isEnrolled)) && 
                     <Entypo style={styles.pin} name="pin" size={16} color={COLORS.red} />

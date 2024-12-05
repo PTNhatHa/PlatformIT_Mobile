@@ -80,7 +80,7 @@ const StackMyCourseScreen = ()=>{
             }}
         >
             <StackMyCourse.Screen
-                name="MyCourse"
+                name="My Course"
                 component={TeacherAllCourse}
             />
             <StackMyCourse.Screen
