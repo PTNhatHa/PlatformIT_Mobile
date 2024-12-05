@@ -35,6 +35,33 @@ export const StudentDetailAsgm = ({route})=>{
         fetchDetailAsgm()
     }, [])
 
+    const handleStartAsgm = ()=>{
+        Alert.alert(
+            "Confirm Start Assignment",
+            "Are you sure you want to start this assignment?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> {
+                        navigation.navigate("Do Assignment", {
+                            idAssignment: idAssignment,
+                            assignmentType: data.assignmentType,
+                            initduration: data.duration,
+                            isShufflingQuestion: data.isShufflingQuestion,
+                            isShufflingAnswer: data.isShufflingAnswer
+                        })
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+        
+    }
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -87,13 +114,7 @@ export const StudentDetailAsgm = ({route})=>{
                                 }
                             </View>
                             {data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate) &&
-                                <TouchableOpacity style={styles.btn} onPress={()=>{navigation.navigate("Do Assignment", {
-                                    idAssignment: idAssignment,
-                                    assignmentType: data.assignmentType,
-                                    initduration: data.duration,
-                                    isShufflingQuestion: data.isShufflingQuestion,
-                                    isShufflingAnswer: data.isShufflingAnswer
-                                })}}>
+                                <TouchableOpacity style={styles.btn} onPress={()=>handleStartAsgm()}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
                             }
