@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator, TouchableWithoutFeedback, TextInput } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicator, TouchableWithoutFeedback, TextInput, ScrollView } from "react-native"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
@@ -134,7 +134,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                 <ActivityIndicator size="large" color="white" />
             </View>
             :
-                <>
+                <ScrollView showsVerticalScrollIndicator={false}>
                 {content?.length > 0 &&
                 content?.map((item)=>{
                     let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow
@@ -300,7 +300,7 @@ export const ModalCourseContent = ({role=0, content=[], idCourse, nameCourse, ge
                         </View>
                     </TouchableWithoutFeedback>
                 </Modal>
-            </>
+            </ScrollView>
         }  
         </>
     )

@@ -29,6 +29,7 @@ export const StudentLectureDetail = ({route})=>{
     });
     const [courseContent, setCourseContent] = useState([])
     const intervalRef = useRef(null);
+
     const fetchDetailLecture = async()=>{
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
@@ -97,7 +98,7 @@ export const StudentLectureDetail = ({route})=>{
                         ...prevData,
                         relativeTime: calculateRelativeTime(prevData.timestamp),
                     }));
-                }, 6000);
+                }, 60000);
             });
         }
     }, [selectLecture])
