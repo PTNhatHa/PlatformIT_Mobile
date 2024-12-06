@@ -25,6 +25,11 @@ export const TeacherDetailAsgm = ({route})=>{
     const [index, setIndex] = useState(1)
     const numberItem = 2
 
+    
+    const getPageData = () => {
+        return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
+    
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
@@ -32,12 +37,12 @@ export const TeacherDetailAsgm = ({route})=>{
                 setData(response)
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
-                let listData = []
-                for(let i=0; i <= response.assignmentItems.length; i += numberItem){
-                    const newData = response.assignmentItems.slice(i, i + numberItem)
-                    listData.push(newData)
-                }
-                setListQuestion(listData)
+                // let listData = []
+                // for(let i=0; i <= response.assignmentItems.length; i += numberItem){
+                //     const newData = response.assignmentItems.slice(i, i + numberItem)
+                //     listData.push(newData)
+                // }
+                setListQuestion(response.assignmentItems)
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -65,7 +70,7 @@ export const TeacherDetailAsgm = ({route})=>{
     };  
 
     const getPagination = () => {
-        const totalPages = listQuestion.length
+        const totalPages = Math.ceil(listQuestion.length / numberItem)
         if (totalPages <= 5) {
         // Show all pages if there are 5 or fewer
         return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -163,7 +168,7 @@ export const TeacherDetailAsgm = ({route})=>{
                         {index === 1 ?
                             <View style={styles.innerContent}>
                                 {(data.assignmentType === 1 && listQuestion !== null) ? 
-                                    listQuestion[currentPage-1]?.map((question, index) =>     
+                                    getPageData()?.map((question, index) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
                                             <View style={styles.headerQ}>
                                                 <Text style={styles.title}>Question {index + currentPage}</Text>
@@ -186,7 +191,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                     ) :""
                                 }
                                 {(data.assignmentType === 2 && listQuestion !== null) && 
-                                    listQuestion[currentPage-1]?.map((question, index) =>     
+                                    getPageData()?.map((question, index) =>     
                                         <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                             <View style={styles.headerQ}>
                                                 <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>

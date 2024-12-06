@@ -58,7 +58,7 @@ const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
             <View style={styles.wrapList}>
                 <ScrollView contentContainerStyle={styles.wrapList}>
                     {currentData.map(item => {
-                        let statusDate = status === 0 ? item.createdDate : status === 1 ? item.dueDate : item.submitedDate || ""
+                        let statusDate = status === 0 ? item.createdDate : status === 1 ? item.dueDate : item.submittedDate || ""
                         if(formatDateTime(statusDate) !== groupDate){
                             groupDate = formatDateTime(statusDate)
                             return(
@@ -164,6 +164,12 @@ export const StudentAllTest = ()=>{
     useEffect(()=>{
         getAllAsgm()
     }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            getAllAsgm()
+        }, [])
+    );
     
     const handleFilter = (initData, filterList)=>{
         let newData = [...initData] || []

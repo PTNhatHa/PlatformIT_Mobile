@@ -1,11 +1,12 @@
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import { CardHorizontalCenter, CardHorizontalCourse, CardHorizontalTeacher } from "../components/CardHorizontal"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { getAllCenterCards } from "../services/center"
 import { getAllTeacherCards } from "../services/user"
 import { getAllCourseCards } from "../services/course"
 import { useUser } from "../contexts/UserContext"
+import { useFocusEffect } from "@react-navigation/native"
 
 export const Home = ({navigation})=>{
     const [loading, setLoading] = useState(true);
@@ -33,7 +34,12 @@ export const Home = ({navigation})=>{
         getAllCard()
     }, [])
 
-    
+    useFocusEffect(
+        useCallback(() => {
+            getAllCard()
+        }, [])
+    );
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (

@@ -1,7 +1,7 @@
 import { ActivityIndicator, Alert, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { COLORS, typeAssignment } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
-import { formatDateTime } from "../utils/utils";
+import { formatDateTime, getTime } from "../utils/utils";
 import { useState } from "react";
 import { Tag, TagMain30, TagNoColor, TagRed } from "./Tag";
 import Foundation from '@expo/vector-icons/Foundation';
@@ -200,8 +200,8 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     </View>
                     {role === 2 && 
                         <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            {data.isSubmitted ?
-                                <Tag label={"Submited"}/>                                
+                            {data.isCompleted ?
+                                <Tag label={"Submited at " + getTime(data.submittedDate)}/>                                
                             : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
                                 <TagRed label={"Past due"}/>                    
                             : data.dueDate !== null ?

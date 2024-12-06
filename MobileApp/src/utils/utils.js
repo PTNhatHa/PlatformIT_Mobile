@@ -20,10 +20,32 @@ export const formatDateTime = (date, isTime = false) => {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false, // Sử dụng định dạng 24 giờ
+            timeZone: 'Asia/Ho_Chi_Minh', // Múi giờ Việt Nam
         };
     }
     return date ? date.toLocaleDateString('en-US', options) : '';
 };
+
+export const getTime = (date) => {
+    if(date === null) return ""
+    // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
+    if (typeof date === 'string') {
+        date = new Date(date);
+    }
+    
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+        return ''; // Trả về chuỗi rỗng nếu date không hợp lệ
+    }
+    // Định dạng ngày theo chuẩn của Mỹ
+    const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false, // Sử dụng định dạng 24 giờ
+        timeZone: 'Asia/Ho_Chi_Minh', // Múi giờ Việt Nam
+    };
+    return date ? date.toLocaleTimeString('en-US', options) : '';
+};
+
 export const validateEmail = (email) => {
     return String(email)
         .toLowerCase()

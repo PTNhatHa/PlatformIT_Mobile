@@ -19,6 +19,7 @@ export const StudentDetailAsgm = ({route})=>{
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
+            // console.log(response);
             if(response){
                 setData(response)
             } else {

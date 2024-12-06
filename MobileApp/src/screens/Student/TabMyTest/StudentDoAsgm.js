@@ -38,6 +38,7 @@ export const StudentDoAsgm = ({route})=>{
                 idStudent: state.idUser,
                 duration: totalTime,
                 assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
+                submittedDate: new Date(),
                 answers: listAnswers
             }
             const response = await submitQuizAssignment(result)
@@ -54,7 +55,7 @@ export const StudentDoAsgm = ({route})=>{
     }
 
     useEffect(() => {
-        if(totalTime === initduration*60 && initduration){
+        if(duration === 0 && initduration){
             Alert.alert(
                 "Submit",
                 "Time is up, please submit your assignment.",
@@ -70,21 +71,16 @@ export const StudentDoAsgm = ({route})=>{
         } else if (duration > 0) {
             const timer = setInterval(() => {
                 setDuration((prev) => prev - 1);
+                setTotalTime((prev) => prev + 1)
             }, 1000);
             return () => clearInterval(timer);
+        } else{
+            const totalDuration = setInterval(() => {
+                setTotalTime((prev) => prev + 1)
+            }, 1000);
+            return () => clearInterval(totalDuration);
         }
-        const totalDuration = setInterval(() => {
-            setTotalTime((prev) => prev + 1)
-        }, 1000);
-        return () => clearInterval(totalDuration);
     }, [duration]);
-
-    // // Hàm format thời gian (phút:giây)
-    // const formatTime = (time) => {
-    //   const minutes = Math.floor(time / 60);
-    //   const secs = time % 60;
-    //   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    // };
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -95,7 +91,6 @@ export const StudentDoAsgm = ({route})=>{
     }
 
     const getPageData = () => {
-        const start = currentPage * numberItem;
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
     };
 
@@ -104,8 +99,9 @@ export const StudentDoAsgm = ({route})=>{
             const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
                 let shuffledResponse = response
-                if(isShufflingQuestion === 1){
+                if(isShufflingQuestion === 1 || true){
                     shuffledResponse = shuffle(response)
+                    console.log(shuffledResponse);
                 }
                 setListQuestion([...shuffledResponse.map(question =>{
                     return{
@@ -213,9 +209,13 @@ export const StudentDoAsgm = ({route})=>{
     }, []);
 
     const handleChangeChoice = (idAssignmentItem, idMultipleAssignmentItem, value)=>{
-        const newQuestions = listQuestion.map((question) =>{
+        let newQuestions = listQuestion.map((question) =>{
             if(question.idAssignmentItem === idAssignmentItem){
+                let selectedCount = 0;
                 const newItems = question.items.map((choice)=>{
+                    if (choice.isCorrect === 1) {
+                        selectedCount++;
+                    }
                     if(choice.idMultipleAssignmentItem === idMultipleAssignmentItem){
                         return{
                             ...choice,
@@ -230,6 +230,19 @@ export const StudentDoAsgm = ({route})=>{
                     }
                     return choice
                 })
+                if (value === 1) {
+                    selectedCount++; // Tăng số lượng đã chọn khi giá trị mới được đặt là 1
+                }
+    
+                if (selectedCount > question.totalCorrect && question.isMultipleAnswer === 1) {
+                    // Tìm và reset câu đầu tiên có isCorrect === 1 thành 0
+                    for (let i = 0; i < newItems.length; i++) {
+                        if (newItems[i].isCorrect === 1) {
+                            newItems[i].isCorrect = 0;
+                            break;
+                        }
+                    }
+                }
                 return{
                     ...question,
                     items: [...newItems]
@@ -238,7 +251,7 @@ export const StudentDoAsgm = ({route})=>{
             return question
         })
         setListQuestion(newQuestions)
-    }
+    }     
 
     return(
         <View style={styles.wrapContainer}>
@@ -299,7 +312,7 @@ export const StudentDoAsgm = ({route})=>{
                                     </TouchableOpacity>
                                 }
                                 <View>
-                                    <Text style={styles.textGray12}>Choices:</Text>
+                                    <Text style={styles.textGray12}>Choices: {question.isMultipleAnswer === 1 && "(Select exactly " + question.totalCorrect + " correct answers)"}</Text>
                                     {question.isMultipleAnswer === 0 ?
                                         question.items.map((item) => 
                                             <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
