@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
 import { getAssignmentInfo, getDetailAssignmentForStudent } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
-import { formatDateTime } from "../../../utils/utils";
+import { formatDateTime, formatTime } from "../../../utils/utils";
 
 export const StudentDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -48,7 +48,9 @@ export const StudentDetailAsgm = ({route})=>{
                             assignmentType: data.assignmentType,
                             initduration: data.duration,
                             isShufflingQuestion: data.isShufflingQuestion,
-                            isShufflingAnswer: data.isShufflingAnswer
+                            isShufflingAnswer: data.isShufflingAnswer,
+                            dueDate: data.dueDate || data.courseEndDate || null,
+                            reload: fetchDetailAsgm
                         })
                     },
                     style: "destructive"
@@ -127,7 +129,7 @@ export const StudentDetailAsgm = ({route})=>{
                                     <>
                                         <View style={styles.wrapFlex}>
                                             <Text style={styles.textGray16}>Submitted at</Text>
-                                            <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate)}</Text>
+                                            <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate, true)}</Text>
                                         </View>
                                         <View style={styles.wrapFlex}>
                                             <Text style={styles.textGray16}>Status</Text>
@@ -143,7 +145,7 @@ export const StudentDetailAsgm = ({route})=>{
                                         </View>
                                         <View style={styles.wrapFlex}>
                                             <Text style={styles.textGray16}>Duration</Text>
-                                            <Text style={styles.textBlack16}>{data.resultDuration}</Text>
+                                            <Text style={styles.textBlack16}>{formatTime(data.resultDuration)} minutes</Text>
                                         </View>
                                     </>
                                 </View>

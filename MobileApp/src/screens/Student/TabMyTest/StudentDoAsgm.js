@@ -5,16 +5,16 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo, getDetailAssignmentItemForStudent } from "../../../services/assignment";
+import { getAssignmentInfo, getDetailAssignmentItemForStudent, submitQuizAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
-import { formatDateTime } from "../../../utils/utils";
+import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer} = route?.params || null
+    const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer, dueDate, reload} = route?.params || null
     const [loading, setLoading] = useState(true);
     const {state} = useUser()
     const [selectFile, setSelectFile] = useState("")
@@ -23,22 +23,68 @@ export const StudentDoAsgm = ({route})=>{
     const numberItem = 3
 
     const [duration, setDuration] = useState(initduration*60);
+    const [totalTime, setTotalTime] = useState(0);
+
+    const handleSubmitQuiz = async()=>{
+        try {
+            const listAnswers = listQuestion.map(question => {
+                return{
+                    idAssignmentItem: question.idAssignmentItem,
+                    selectedOptions: question.items.filter(item => item.isCorrect === 1).map(item => item.idMultipleAssignmentItem)
+                }
+            })
+            const result = {
+                idAssignment: idAssignment,
+                idStudent: state.idUser,
+                duration: totalTime,
+                assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
+                answers: listAnswers
+            }
+            const response = await submitQuizAssignment(result)
+            if(response){
+                Alert.alert("Submit assignment", response)
+                reload()
+                navigation.goBack()
+            } else{
+                Alert.alert("Warning", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error submit: ", error);
+        }
+    }
 
     useEffect(() => {
-        if (duration > 0) {
+        if(totalTime === initduration*60 && initduration){
+            Alert.alert(
+                "Submit",
+                "Time is up, please submit your assignment.",
+                [
+                    { text: "Submit", onPress: () => {
+                        if(typeAssignment === 2){
+                            handleSubmitQuiz()
+                        }
+                        navigation.goBack()
+                    } },
+                ]
+            );
+        } else if (duration > 0) {
             const timer = setInterval(() => {
                 setDuration((prev) => prev - 1);
             }, 1000);
             return () => clearInterval(timer);
         }
+        const totalDuration = setInterval(() => {
+            setTotalTime((prev) => prev + 1)
+        }, 1000);
+        return () => clearInterval(totalDuration);
     }, [duration]);
 
-    // Hàm format thời gian (phút:giây)
-    const formatTime = (time) => {
-      const minutes = Math.floor(time / 60);
-      const secs = time % 60;
-      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+    // // Hàm format thời gian (phút:giây)
+    // const formatTime = (time) => {
+    //   const minutes = Math.floor(time / 60);
+    //   const secs = time % 60;
+    //   return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    // };
 
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -48,21 +94,30 @@ export const StudentDoAsgm = ({route})=>{
         return array;
     }
 
+    const getPageData = () => {
+        const start = currentPage * numberItem;
+        return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
+
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
                 let shuffledResponse = response
-                console.log(isShufflingQuestion);
                 if(isShufflingQuestion === 1){
                     shuffledResponse = shuffle(response)
                 }
-                let listData = []
-                for(let i=0; i < shuffledResponse.length; i += numberItem){
-                    const newData = shuffledResponse.slice(i, i + numberItem)
-                    listData.push(newData)
-                }
-                setListQuestion(listData)
+                setListQuestion([...shuffledResponse.map(question =>{
+                    return{
+                        ...question,
+                        items: question.items.map(item=>{
+                            return{
+                                ...item,
+                                isCorrect: 0
+                            }
+                        })
+                    }
+                })])
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -91,7 +146,7 @@ export const StudentDoAsgm = ({route})=>{
     };  
 
     const getPagination = () => {
-        const totalPages = listQuestion.length
+        const totalPages = Math.ceil(listQuestion.length / numberItem);
         if (totalPages <= 5) {
         // Show all pages if there are 5 or fewer
         return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -137,6 +192,9 @@ export const StudentDoAsgm = ({route})=>{
                         style: "cancel",
                     },
                     { text: "Submit", onPress: () => {
+                        if(typeAssignment === 2){
+                            handleSubmitQuiz()
+                        }
                         navigation.goBack()
                     } },
                 ]
@@ -154,36 +212,30 @@ export const StudentDoAsgm = ({route})=>{
         return () => backHandler.remove();
     }, []);
 
-    const handleChangeChoice = (indexQuestion, indexChoice, value)=>{
-        const newQuestions = listQuestion.map((page, indexPage) =>{
-            if(indexPage + 1 === currentPage){
-                const newData = page.map((question, i) => {
-                    if(i === indexQuestion){
-                        const newItems = question.items.map((choice, iChoice)=>{
-                            if(iChoice === indexChoice){
-                                return{
-                                    ...choice,
-                                    "isCorrect": value
-                                }
-                            }
-                            if(value === 1 && question.isMultipleAnswer === 0){
-                                return{
-                                    ...choice,
-                                    "isCorrect": 0
-                                }
-                            }
-                            return choice
-                        })
+    const handleChangeChoice = (idAssignmentItem, idMultipleAssignmentItem, value)=>{
+        const newQuestions = listQuestion.map((question) =>{
+            if(question.idAssignmentItem === idAssignmentItem){
+                const newItems = question.items.map((choice)=>{
+                    if(choice.idMultipleAssignmentItem === idMultipleAssignmentItem){
                         return{
-                            ...question,
-                            items: [...newItems]
+                            ...choice,
+                            "isCorrect": value
                         }
                     }
-                    return question
+                    if(value === 1 && question.isMultipleAnswer === 0){
+                        return{
+                            ...choice,
+                            "isCorrect": 0
+                        }
+                    }
+                    return choice
                 })
-                return newData
+                return{
+                    ...question,
+                    items: [...newItems]
+                }
             }
-            return page
+            return question
         })
         setListQuestion(newQuestions)
     }
@@ -198,7 +250,7 @@ export const StudentDoAsgm = ({route})=>{
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.innerContent}>
                     {(assignmentType === 1 && listQuestion !== null) ? 
-                        listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
+                        getPageData()?.map((question, indexQuestion) =>     
                             <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
                                 <View style={styles.headerQ}>
                                     <Text style={styles.title}>Question {indexQuestion + currentPage}</Text>
@@ -235,7 +287,7 @@ export const StudentDoAsgm = ({route})=>{
                         ) :""
                     }
                     {(assignmentType === 2 && listQuestion !== null) && 
-                        listQuestion[currentPage-1]?.map((question, indexQuestion) =>     
+                        getPageData()?.map((question, indexQuestion) =>     
                             <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                 <View style={styles.headerQ}>
                                     <Text style={styles.title}>Question {indexQuestion + (currentPage - 1) * numberItem + 1}</Text>
@@ -249,11 +301,11 @@ export const StudentDoAsgm = ({route})=>{
                                 <View>
                                     <Text style={styles.textGray12}>Choices:</Text>
                                     {question.isMultipleAnswer === 0 ?
-                                        question.items.map((item, indexChoice) => 
+                                        question.items.map((item) => 
                                             <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
                                                 <RadioBtn 
                                                     selected={item.isCorrect === 1 ? true : false} 
-                                                    onPress={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
+                                                    onPress={()=>handleChangeChoice(question.idAssignmentItem, item.idMultipleAssignmentItem, item.isCorrect === 1 ? 0 : 1)}
                                                 />  
                                                 <Text>{item.content}</Text>
                                             </View>
@@ -264,7 +316,7 @@ export const StudentDoAsgm = ({route})=>{
                                                 <CheckBox
                                                     isChecked={item.isCorrect === 1 ? true : false}
                                                     checkBoxColor={COLORS.secondMain}
-                                                    onClick={()=>handleChangeChoice(indexQuestion, indexChoice, item.isCorrect === 1 ? 0 : 1)}
+                                                    onClick={()=>handleChangeChoice(question.idAssignmentItem, item.idMultipleAssignmentItem, item.isCorrect === 1 ? 0 : 1)}
                                                 />
                                                 <Text>{item.content}</Text>
                                             </View>
@@ -275,7 +327,7 @@ export const StudentDoAsgm = ({route})=>{
                         )
                     }  
                     
-                    <TouchableOpacity style={styles.btn}>
+                    <TouchableOpacity style={styles.btn} onPress={()=>handleSubmitQuiz()}>
                         <Text style={styles.textWhite14}>Submit</Text>
                     </TouchableOpacity>
                     {/* paginage */}

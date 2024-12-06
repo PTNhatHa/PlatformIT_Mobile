@@ -151,3 +151,10 @@ export const getMimeType = (fileName) => {
     };
     return mimeTypes[extension] || 'application/octet-stream';
 }
+
+// Hàm format thời gian (phút:giây)
+export const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const secs = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};

@@ -249,3 +249,14 @@ export const getExerciseOfLectureViaStudent = async (idLecture, idStudent)=>{
         console.log("Error GetExerciseOfLectureViaStudent: ", error);
     })
 }
+
+export const submitQuizAssignment = async (answer)=>{
+    return await axios.post(baseUrl + "/SubmitQuizAssignment", answer)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error SubmitQuizAssignment: ", error);
+    })
+}

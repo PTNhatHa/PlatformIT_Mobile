@@ -16,7 +16,14 @@ import { FilterAsgm } from './src/components/Filter';
 import { CustomSwitch } from './src/components/CustomSwitch';
 import { SelectCourseBox } from './src/components/TextInputField';
 import { StudentDetailAsgm } from './src/screens/Student/TabMyTest/StudentDetailAsgm';
-import { AttendanceIndicator } from './src/components/SubmittedCircle';
+import { SubmittedCircle } from './src/components/SubmittedCircle';
+import { COLORS } from './src/utils/constants';
+
+const data = [
+  { label: 'On Time', value: 25, color: COLORS.green }, // Xanh lá
+  { label: 'Late', value: 0, color: COLORS.yellow }, // Vàng
+  { label: 'Not Submitted', value: 30, color: COLORS.lightText }, // Đỏ
+];
 
 export default function App() {
   return (
@@ -24,7 +31,7 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <StudentLectureDetail/> */}
+          {/* <SubmittedCircle data={data}/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
