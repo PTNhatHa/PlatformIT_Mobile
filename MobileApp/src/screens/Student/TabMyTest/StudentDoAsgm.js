@@ -99,9 +99,9 @@ export const StudentDoAsgm = ({route})=>{
             const response = await getDetailAssignmentItemForStudent(idAssignment)
             if(response){
                 let shuffledResponse = response
-                if(isShufflingQuestion === 1 || true){
+                if(isShufflingQuestion){
                     shuffledResponse = shuffle(response)
-                    console.log(shuffledResponse);
+                    // console.log(shuffledResponse);
                 }
                 setListQuestion([...shuffledResponse.map(question =>{
                     return{

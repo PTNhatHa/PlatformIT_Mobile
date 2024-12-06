@@ -37,11 +37,6 @@ export const TeacherDetailAsgm = ({route})=>{
                 setData(response)
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
-                // let listData = []
-                // for(let i=0; i <= response.assignmentItems.length; i += numberItem){
-                //     const newData = response.assignmentItems.slice(i, i + numberItem)
-                //     listData.push(newData)
-                // }
                 setListQuestion(response.assignmentItems)
             } else {
                 Alert.alert("Error", "Please try again")
@@ -439,14 +434,12 @@ const styles = StyleSheet.create({
     },
     bottomNumber:{
         fontWeight: "bold",
-        // color: "white",
         textAlign: "center",
         fontSize: 16
     },
     wrapNumber:{
         width: 32,
         height: 32,
-        // backgroundColor: COLORS.main,
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",

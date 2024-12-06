@@ -260,3 +260,14 @@ export const submitQuizAssignment = async (answer)=>{
         console.log("Error SubmitQuizAssignment: ", error);
     })
 }
+
+export const getQuizAnswer = async (idAssignment, idStudent)=>{
+    return await axios.get(baseUrl + "/GetQuizAnswer?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetQuizAnswer: ", error);
+    })
+}
