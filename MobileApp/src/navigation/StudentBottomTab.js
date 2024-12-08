@@ -166,10 +166,10 @@ const StackAccountScreen = ()=>{
                 name="Your infomation"
                 component={StudentPI}
             />
-            <StackAccount.Screen
+            {/* <StackAccount.Screen
                 name="Change password"
                 component={ChangePassword}
-            />
+            /> */}
         </StackAccount.Navigator>
     )
 }

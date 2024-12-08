@@ -1,8 +1,15 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import { COLORS } from '../utils/constants';
 
-export const SubmittedCircle = ({ data }) => {
+const init = [
+    { label: 'On Time', value: 25, color: COLORS.green }, // Xanh lá
+    { label: 'Late', value: 0, color: COLORS.yellow }, // Vàng
+    { label: 'Not Submitted', value: 30, color: COLORS.lightText }, // Đỏ
+  ];
+
+export const SubmittedCircle = ({ data=init }) => {
     const radius = 30; // Bán kính vòng tròn
     const strokeWidth = 15; // Độ dày viền
     const circumference = 2 * Math.PI * radius; // Chu vi vòng tròn
@@ -12,7 +19,7 @@ export const SubmittedCircle = ({ data }) => {
     let startAngle = circumference / 4; // Xoay để bắt đầu từ hướng 12h
 
     return (
-        <Svg height="120" width="120" viewBox="0 0 120 120">
+        <Svg height="80" width="80" viewBox="0 0 80 80">
             {data.map((item, index) => {
                 const percentage = item.value / total;
                 const arcLength = percentage * circumference;
@@ -25,8 +32,8 @@ export const SubmittedCircle = ({ data }) => {
                 return (
                     <Circle
                         key={index}
-                        cx="60"
-                        cy="60"
+                        cx="40"
+                        cy="40"
                         r={radius}
                         stroke={item.color}
                         strokeWidth={strokeWidth}

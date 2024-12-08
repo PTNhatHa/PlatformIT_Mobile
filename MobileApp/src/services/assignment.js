@@ -45,7 +45,6 @@ export const createManualAssignment = async (
     })
 }
 
-
 export const createQuizAssignment = async (
     Title, IdCourse, IsTest, IdLecture, StartDate, DueDate, Duration,
     AssignmentType, IsPublish, IsShufflingQuestion, IsShufflingAnswer, ShowAnswer, 
@@ -269,5 +268,51 @@ export const getQuizAnswer = async (idAssignment, idStudent)=>{
     })
     .catch(error => {
         console.log("Error GetQuizAnswer: ", error);
+    })
+}
+
+export const submitManualAssignment = async (result)=>{
+    const formData = new FormData()
+    formData.append('IdAssignment', result.idAssignment)
+    formData.append('IdStudent', result.idStudent)
+    formData.append('Duration', result.duration)
+    formData.append('AssignmentResultStatus', result.assignmentResultStatus)
+    formData.append('SubmittedDate', result.submittedDate)
+
+    result.answers.forEach((answer, index)=>{
+        formData.append(`Answers[${index}].idAssignmentItem`, answer.idAssignmentItem)
+        if(answer.answer){
+            formData.append(`Answers[${index}].answer`, answer.answer)
+        }
+        if(answer.attachedFile){
+            formData.append(`Answers[${index}].attachedFile`, answer.attachedFile)
+        }
+    })
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value, "\n");
+    }
+    return await axios.post(baseUrl + "/SubmitManualAssignment", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error attachedFile: ", error.request);
+    })
+}
+
+
+export const getOverviewAssignment = async (idAssignment, idCourse)=>{
+    return await axios.get(baseUrl + "/GetOverviewAssignment?idAssignment=" + idAssignment + "&idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetOverviewAssignment: ", error);
     })
 }

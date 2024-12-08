@@ -29,7 +29,7 @@ export const StudentDetailAsgm = ({route})=>{
             const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
             if(response){
                 setData(response)
-                if(true){
+                if(response.assignmentType === 2){
                     const answers = await getQuizAnswer(idAssignment, state.idUser)
                     if(answers){
                         setListQuestion([...answers.map(question => {

@@ -1,20 +1,23 @@
 
-import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { AssignmentItemAnswerType, COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo } from "../../../services/assignment";
+import { getAssignmentInfo, getOverviewAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
+import { SubmittedCircle } from "../../../components/SubmittedCircle";
+import Feather from '@expo/vector-icons/Feather';
+import { CardStudentDetailAsgm } from "../../../components/CardStudent";
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {idAssignment, isPastDue, isCompleted} = route?.params || null
+    const {idAssignment, isPastDue, isCompleted} = route?.params || 0
     const [loading, setLoading] = useState(true);
     const {state} = useUser()
     const [data, setData] = useState({})
@@ -25,19 +28,50 @@ export const TeacherDetailAsgm = ({route})=>{
     const [index, setIndex] = useState(1)
     const numberItem = 2
 
-    
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [overviewData, setOverviewData] = useState({})
+    const [overviewCircle, setOverviewCircle] = useState([
+        { label: 'On Time', value: 0, color: COLORS.green }, // Xanh lá
+        { label: 'Late', value: 0, color: COLORS.yellow }, // Vàng
+        { label: 'Not Submitted', value: 0, color: COLORS.lightText }, // Đỏ
+    ])
+    const [currentPageStudent, setCurrentPageStudent] = useState(1)
+
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
+    const getPageDataStudent = () => {
+        return overviewData.submissions.slice((currentPage-1) * numberItem, currentPage * numberItem);
     };
     
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
+                // console.log(idAssignment, "--", response.idCourse);
                 setData(response)
                 const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
                 setTotalMark(totalMark)
                 setListQuestion(response.assignmentItems)
+                // Overview
+                const overView = await getOverviewAssignment(idAssignment, response.idCourse)
+                if(overView){
+                    setOverviewData(overView)
+                    setOverviewCircle([
+                        { label: 'On Time', 
+                            value: overView.submittedCount, 
+                            color: COLORS.green 
+                        },
+                        { label: 'Late', 
+                            value: overView.totalStudents -overView.submittedCount - overView.notSubmittedCount, 
+                            color: COLORS.yellow 
+                        },
+                        { label: 'Not Submitted', 
+                            value: overView.notSubmittedCount, 
+                            color: COLORS.lightText 
+                        },
+                    ])
+                }
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -48,6 +82,7 @@ export const TeacherDetailAsgm = ({route})=>{
             setLoading(false)
         }
     }
+
     useEffect(()=>{
         fetchDetailAsgm()
     }, [])
@@ -64,17 +99,17 @@ export const TeacherDetailAsgm = ({route})=>{
         .catch((err) => console.error('Error occurred', err));  
     };  
 
-    const getPagination = () => {
-        const totalPages = Math.ceil(listQuestion.length / numberItem)
+    const getPagination = (listData = [], indexPage = 1) => {
+        const totalPages = Math.ceil(listData.length / numberItem)
         if (totalPages <= 5) {
         // Show all pages if there are 5 or fewer
         return Array.from({ length: totalPages }, (_, index) => index + 1);
         } else {
         // Logic for more than 5 pages
-        if (currentPage <= 3) {
+        if (indexPage <= 3) {
             // Show first few pages if current page is near the start
             return [1, 2, 3, 4, "...", totalPages];
-        } else if (currentPage >= totalPages - 2) {
+        } else if (indexPage >= totalPages - 2) {
             // Show last few pages if current page is near the end
             return [
                 1,
@@ -89,9 +124,9 @@ export const TeacherDetailAsgm = ({route})=>{
             return [
                 1,
                 "...",
-                currentPage - 1,
-                currentPage,
-                currentPage + 1,
+                indexPage - 1,
+                indexPage,
+                indexPage + 1,
                 "...",
                 totalPages,
             ];
@@ -204,7 +239,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     question.items.map(item => 
                                                         <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
                                                             <RadioView selected={item.isCorrect === 1 ? true : false}/>  
-                                                            <Text>{item.content}</Text>
+                                                            <Text style={styles.widthFlex1}>{item.content}</Text>
                                                         </View>
                                                     )
                                                     :
@@ -215,7 +250,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                 checkBoxColor={COLORS.secondMain}
                                                                 onClick={()=>{}}
                                                             />
-                                                            <Text>{item.content}</Text>
+                                                            <Text style={styles.widthFlex1}>{item.content}</Text>
                                                         </View>
                                                     )
                                                 }
@@ -226,13 +261,17 @@ export const TeacherDetailAsgm = ({route})=>{
                                 
                                 {/* paginage */}
                                 <View style={styles.bottom}>
-                                    {getPagination().map(page => 
+                                    {getPagination(listQuestion, currentPage).map((page, index) => 
                                         page !== "..." ? 
-                                        <TouchableOpacity style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} onPress={()=>setCurrentPage(page)}>
+                                        <TouchableOpacity 
+                                            style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                                            onPress={()=>setCurrentPage(page)}
+                                            key={index}
+                                        >
                                             <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                                         </TouchableOpacity>
                                         :
-                                        <View style={styles.wrapNumber}>
+                                        <View style={styles.wrapNumber} key={index}>
                                             <Text style={styles.bottomNumber}>{page}</Text>
                                         </View>
                                     )}
@@ -240,7 +279,76 @@ export const TeacherDetailAsgm = ({route})=>{
                             </View>
                             :
                             <>
-                            
+                                <View style={[styles.container, styles.wrapTopOverview]}>
+                                    <View style={styles.wrapFlex}>
+                                        <SubmittedCircle data={overviewCircle}/>
+                                        <View>
+                                            <Text style={styles.textBBlack18}>{overviewData.totalStudents}</Text>
+                                            <Text style={styles.textGray12}>Attendees</Text>
+                                        </View>
+                                    </View>
+                                    <View style={[styles.wrapFlex, styles.wrapAlignRight]}>
+                                        <View style={styles.borderRight}>
+                                            <Text style={[styles.textBBlack18, styles.textAlignRight]}>{overviewData.notSubmittedCount}</Text>
+                                            <View style={styles.wrapFlex}>
+                                                <View style={styles.circleStatus}/>
+                                                <Text style={[styles.textGray12, styles.textAlignRight]}>Not submitted</Text>
+                                            </View>
+                                        </View>
+                                        {data.isPastDue === 1 &&
+                                            <View style={styles.borderRight}>
+                                                <Text style={[styles.textBBlack18, styles.textAlignRight]}>
+                                                    {overviewData.totalStudents - overviewData.notSubmittedCount - overviewData.submittedCount}
+                                                </Text>
+                                                <View style={styles.wrapFlex}>
+                                                    <View style={[styles.circleStatus, styles.bgYellow]}/>
+                                                    <Text style={[styles.textGray12, styles.textAlignRight]}>Late</Text>
+                                                </View>
+                                            </View>
+                                        }
+                                        <View style={styles.borderRight}>
+                                            <Text style={[styles.textBBlack18, styles.textAlignRight]}>{overviewData.submittedCount}</Text>
+                                            <View style={styles.wrapFlex}>
+                                                <View style={[styles.circleStatus, styles.bgGreen]}/>
+                                                <Text style={[styles.textGray12, styles.textAlignRight]}>Submitted</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                </View>
+                                <View style={styles.container}>
+                                    <View style={styles.wrapperSearch}>
+                                        <TextInput
+                                            value={"search"}
+                                            style={styles.input}
+                                            placeholder={"Search"}
+                                            onChangeText={(value)=>{}}
+                                        />
+                                        <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
+                                            <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.wrapList}>
+                                        <CardStudentDetailAsgm/>
+                                        <CardStudentDetailAsgm/>
+                                        {/* paginage */}
+                                        <View style={styles.bottom}>
+                                            {getPagination(overviewData.submissions, currentPageStudent).map((page, index) => 
+                                                page !== "..." ? 
+                                                <TouchableOpacity 
+                                                    style={[styles.wrapNumber, page === currentPageStudent && {backgroundColor: COLORS.main}]} 
+                                                    onPress={()=>setCurrentPageStudent(page)}
+                                                    key={index}
+                                                >
+                                                    <Text style={[styles.bottomNumber, page === currentPageStudent && {color: "white"}]}>{page}</Text>
+                                                </TouchableOpacity>
+                                                :
+                                                <View style={styles.wrapNumber} key={index}>
+                                                    <Text style={styles.bottomNumber}>{page}</Text>
+                                                </View>
+                                            )}
+                                        </View>
+                                    </View>
+                                </View>
                             </>
                         }
                         
@@ -304,6 +412,11 @@ const styles = StyleSheet.create({
     textBlack12:{
         fontSize: 12,
         color: "black",
+    },
+    textBBlack18:{
+        fontSize: 18,
+        color: "black",
+        fontWeight: "bold"
     },
     wrapFlex:{
         flexDirection: "row",
@@ -392,7 +505,7 @@ const styles = StyleSheet.create({
     },
     questionContent:{
         fontSize: 16,
-        fontWeight: "500"
+        fontWeight: "500",
     },
     wrapFile:{
         fontSize: 16,
@@ -443,5 +556,56 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
+    },
+    wrapAlignRight: {
+        justifyContent: "flex-end",
+        gap: 12,
+        
+    },
+    textAlignRight: {
+        textAlign: "right",
+    },
+    circleStatus:{
+        width: 16,
+        height: 16,
+        backgroundColor: COLORS.lightText,
+        borderRadius: 90
+    },
+    bgGreen: {
+        backgroundColor: COLORS.green
+    },
+    bgYellow: {
+        backgroundColor: COLORS.yellow
+    },
+    borderRight:{
+        borderRightWidth: 1,
+        paddingHorizontal: 8,
+        borderColor: COLORS.lightText
+    },
+    wrapTopOverview:{
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText,
+        gap: 8
+    },
+    wrapperSearch: {
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        width: "100%",
+        flexDirection: "row",
+        columnGap: 8,
+        alignItems: "center",
+    },
+    input:{
+        fontSize: 16,
+        width: "90%"
+    },
+    wrapList:{
+        marginVertical: 12,
+        gap: 8
+    },
+    widthFlex1:{
+        flex: 1
     }
 })

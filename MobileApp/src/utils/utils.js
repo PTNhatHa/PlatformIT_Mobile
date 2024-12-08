@@ -102,28 +102,6 @@ export const parseRelativeTime = (relativeTime) => {
     return now; // Default to current time if unrecognized format
 };
 
-// export const getFileTypeFromUrl = (url) => {
-//     if (!url) return null; // Trả về null nếu link không hợp lệ
-  
-//     const extension = url.split('.').pop().split('?')[0].toLowerCase(); // Lấy phần mở rộng
-//     const typeMap = {
-//       image: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'],
-//       video: ['mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm'],
-//       document: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt'],
-//       audio: ['mp3', 'wav', 'ogg', 'flac', 'aac'],
-//       archive: ['zip', 'rar', '7z', 'tar', 'gz'],
-//     };
-  
-//     // Duyệt qua typeMap để kiểm tra phần mở rộng
-//     for (const [type, extensions] of Object.entries(typeMap)) {
-//       if (extensions.includes(extension)) {
-//         return type; // Trả về loại file nếu tìm thấy
-//       }
-//     }
-  
-//     return 'unknown'; // Trả về 'unknown' nếu không tìm thấy
-//   }
-
 export const getMimeType = (fileName) => {
     const extension = fileName.split('.').pop();
     const mimeTypes = {

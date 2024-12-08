@@ -5,12 +5,13 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo, getDetailAssignmentItemForStudent, submitQuizAssignment } from "../../../services/assignment";
+import { getAssignmentInfo, getDetailAssignmentItemForStudent, submitManualAssignment, submitQuizAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as DocumentPicker from 'expo-document-picker';
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -19,6 +20,7 @@ export const StudentDoAsgm = ({route})=>{
     const {state} = useUser()
     const [selectFile, setSelectFile] = useState("")
     const [listQuestion, setListQuestion] = useState([])
+    const [manualAnswer, setManualAnswer] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 3
 
@@ -26,6 +28,7 @@ export const StudentDoAsgm = ({route})=>{
     const [totalTime, setTotalTime] = useState(0);
 
     const handleSubmitQuiz = async()=>{
+        setLoading(true)
         try {
             const listAnswers = listQuestion.map(question => {
                 return{
@@ -51,7 +54,60 @@ export const StudentDoAsgm = ({route})=>{
             }
         } catch (error) {
             console.log("Error submit: ", error);
+        } finally{
+            setLoading(false)
         }
+    }
+
+    const handleSubmitManual = async()=>{
+        console.log("zooo");
+        setLoading(true)
+        try {
+            const result = {
+                idAssignment: idAssignment,
+                idStudent: state.idUser,
+                duration: totalTime,
+                assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
+                submittedDate: new Date(),
+                answers: manualAnswer
+            }
+            const response = await submitManualAssignment(result)
+            console.log("response: ", response);
+            if(response){
+                Alert.alert("Submit assignment", response)
+                reload()
+                navigation.goBack()
+            } else{
+                Alert.alert("Warning", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error submit: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    const handleSubmit = ()=>{
+        Alert.alert(
+            "Submit",
+            "Are you sure you want to submit now? All your current answers will be submitted.",
+            [
+                {
+                    text: "Cancel",
+                    onPress: () => null,
+                    style: "cancel",
+                },
+                { text: "Submit", onPress: () => {
+                    if(assignmentType === 1){
+                        handleSubmitManual()
+                    }
+                    if(assignmentType === 2){
+                        handleSubmitQuiz()
+                    }
+                    navigation.goBack()
+                } },
+            ]
+        );
     }
 
     useEffect(() => {
@@ -61,7 +117,10 @@ export const StudentDoAsgm = ({route})=>{
                 "Time is up, please submit your assignment.",
                 [
                     { text: "Submit", onPress: () => {
-                        if(typeAssignment === 2){
+                        if(assignmentType === 1){
+                            handleSubmitManual()
+                        }
+                        if(assignmentType === 2){
                             handleSubmitQuiz()
                         }
                         navigation.goBack()
@@ -103,17 +162,30 @@ export const StudentDoAsgm = ({route})=>{
                     shuffledResponse = shuffle(response)
                     // console.log(shuffledResponse);
                 }
-                setListQuestion([...shuffledResponse.map(question =>{
-                    return{
-                        ...question,
-                        items: question.items.map(item=>{
-                            return{
-                                ...item,
-                                isCorrect: 0
-                            }
-                        })
-                    }
-                })])
+                if(assignmentType === 1){
+                    setListQuestion(response)
+                    setManualAnswer([...shuffledResponse.map(question =>{
+                        return{
+                            idAssignmentItem: question.idAssignmentItem,
+                            answer: "",
+                            attachedFile: ""
+                        }
+                    })])
+                }
+                if(assignmentType === 2){
+                    setListQuestion([...shuffledResponse.map(question =>{
+                        return{
+                            ...question,
+                            items: question.items.map(item=>{
+                                return{
+                                    ...item,
+                                    isCorrect: 0
+                                }
+                            })
+                        }
+                    })])
+                }
+                
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -126,6 +198,7 @@ export const StudentDoAsgm = ({route})=>{
     }
 
     useEffect(()=>{
+        // console.log("idAssignment: ", idAssignment);
         fetchDetailAsgm()
     }, [])
 
@@ -188,6 +261,9 @@ export const StudentDoAsgm = ({route})=>{
                         style: "cancel",
                     },
                     { text: "Submit", onPress: () => {
+                        if(typeAssignment === 1){
+                            handleSubmitManual()
+                        }
                         if(typeAssignment === 2){
                             handleSubmitQuiz()
                         }
@@ -253,6 +329,50 @@ export const StudentDoAsgm = ({route})=>{
         setListQuestion(newQuestions)
     }     
 
+    const pickFile = async(type = "*")=>{
+        try{
+            let result = await DocumentPicker.getDocumentAsync({
+                type: [type + '/*'],
+                copyToCacheDirectory: true,
+            })
+            return result.assets[0]
+        }
+        catch(error){
+            console.log("==>Error picking file: ", error);
+        }
+    }
+    const uploadFile = async(idAssignmentItem)=>{
+        const result = await pickFile()
+        if(result){
+            const updateAnswer = [...manualAnswer.map(answer =>{
+                if(answer.idAssignmentItem === idAssignmentItem){
+                    return{
+                        ...answer,
+                        attachedFile: {
+                            uri: result.uri,
+                            name: result.name,
+                            type: result.mimeType 
+                        }
+                    }
+                }
+                return answer
+            })]    
+            setManualAnswer(updateAnswer)
+        }
+
+    }
+    const textAnswer = (idAssignmentItem, value, field)=>{
+        const updateAnswer = [...manualAnswer.map(answer =>{
+            if(answer.idAssignmentItem === idAssignmentItem){
+                return{
+                    ...answer,
+                    [field]: value
+                }
+            }
+            return answer
+        })]    
+        setManualAnswer(updateAnswer)
+    }
     return(
         <View style={styles.wrapContainer}>
             {(!loading && duration > 0) &&
@@ -264,6 +384,8 @@ export const StudentDoAsgm = ({route})=>{
                 <View style={styles.innerContent}>
                     {(assignmentType === 1 && listQuestion !== null) ? 
                         getPageData()?.map((question, indexQuestion) =>     
+                            { const currentAnswer = manualAnswer.find(answer => answer.idAssignmentItem === question.idAssignmentItem)
+                            return (
                             <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
                                 <View style={styles.headerQ}>
                                     <Text style={styles.title}>Question {indexQuestion + currentPage}</Text>
@@ -284,19 +406,30 @@ export const StudentDoAsgm = ({route})=>{
                                             style={[styles.inputLabelGray]}
                                             placeholder="Your answer"
                                             multiline={true}
-                                            value={""}
-                                            onChangeText={(v)=>{}}
+                                            value={currentAnswer.answer}
+                                            onChangeText={(v)=>textAnswer(question.idAssignmentItem, v, "answer")}
                                         />
                                         :
                                         <>
-                                        <TouchableOpacity onPress={()=>{}} style={[styles.btnText]}>
-                                            <MaterialIcons name="upload-file" size={20} color="black" />
-                                            <Text>Attach file</Text>
-                                        </TouchableOpacity>
+                                        {currentAnswer.attachedFile ? 
+                                            <View style={styles.wrapFile}>
+                                                <TouchableOpacity style={{flex: 1}} onPress={()=>openURL(currentAnswer.attachedFile.uri)}>
+                                                    <Text>{currentAnswer.attachedFile.name}</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={()=>textAnswer(currentAnswer.idAssignmentItem, null, "attachedFile")} style={{margin: 4}}>
+                                                    <MaterialIcons name="delete" size={18} color="black" />
+                                                </TouchableOpacity>
+                                            </View>
+                                            :
+                                            <TouchableOpacity onPress={()=>uploadFile(currentAnswer.idAssignmentItem)} style={[styles.btnText]}>
+                                                <MaterialIcons name="upload-file" size={20} color="black" />
+                                                <Text>Attach file</Text>
+                                            </TouchableOpacity>
+                                        }
                                         </>
                                     }
                                 </View>
-                            </View>
+                            </View>)}
                         ) :""
                     }
                     {(assignmentType === 2 && listQuestion !== null) && 
@@ -340,7 +473,7 @@ export const StudentDoAsgm = ({route})=>{
                         )
                     }  
                     
-                    <TouchableOpacity style={styles.btn} onPress={()=>handleSubmitQuiz()}>
+                    <TouchableOpacity style={styles.btn} onPress={()=>handleSubmit()}>
                         <Text style={styles.textWhite14}>Submit</Text>
                     </TouchableOpacity>
                     {/* paginage */}

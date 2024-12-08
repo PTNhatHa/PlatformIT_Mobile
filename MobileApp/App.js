@@ -18,6 +18,8 @@ import { SelectCourseBox } from './src/components/TextInputField';
 import { StudentDetailAsgm } from './src/screens/Student/TabMyTest/StudentDetailAsgm';
 import { SubmittedCircle } from './src/components/SubmittedCircle';
 import { COLORS } from './src/utils/constants';
+import { TeacherDetailAsgm } from './src/screens/Teacher/TabMyAssignment/TeacherDetailAsgm';
+import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/CardStudent';
 
 const data = [
   { label: 'On Time', value: 25, color: COLORS.green }, // Xanh lá
@@ -32,6 +34,8 @@ export default function App() {
         <UserProvider>
           <SigninSignup/>
           {/* <SubmittedCircle data={data}/> */}
+          {/* <TeacherDetailAsgm/> */}
+          {/* <CardStudentDetailAsgm/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
