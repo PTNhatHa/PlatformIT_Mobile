@@ -195,7 +195,7 @@ export const StudentDetailAsgm = ({route})=>{
                                 <View style={styles.containerInner}>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Submitted at</Text>
-                                        <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate, true)}</Text>
+                                        <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate + "Z", true)}</Text>
                                     </View>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Status</Text>

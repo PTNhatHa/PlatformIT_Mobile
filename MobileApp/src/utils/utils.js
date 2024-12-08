@@ -23,7 +23,7 @@ export const formatDateTime = (date, isTime = false) => {
             timeZone: 'Asia/Ho_Chi_Minh', // Múi giờ Việt Nam
         };
     }
-    return date ? date.toLocaleDateString('en-US', options) : '';
+    return date ? date.toLocaleDateString('vi-VN', options) : '';
 };
 
 export const getTime = (date) => {
@@ -43,7 +43,7 @@ export const getTime = (date) => {
         hour12: false, // Sử dụng định dạng 24 giờ
         timeZone: 'Asia/Ho_Chi_Minh', // Múi giờ Việt Nam
     };
-    return date ? date.toLocaleTimeString('en-US', options) : '';
+    return date ? date.toLocaleTimeString('vi-VN', options) : '';
 };
 
 export const validateEmail = (email) => {

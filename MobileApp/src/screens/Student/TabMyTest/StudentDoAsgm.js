@@ -177,12 +177,19 @@ export const StudentDoAsgm = ({route})=>{
                     setListQuestion([...shuffledResponse.map(question =>{
                         return{
                             ...question,
-                            items: question.items.map(item=>{
-                                return{
-                                    ...item,
-                                    isCorrect: 0
-                                }
-                            })
+                            items: isShufflingAnswer ? shuffle([...question.items.map(item=>{
+                                        return{
+                                            ...item,
+                                            isCorrect: 0
+                                        }
+                                    })])
+                                    :
+                                    question.items.map(item=>{
+                                        return{
+                                            ...item,
+                                            isCorrect: 0
+                                        }
+                                    })
                         }
                     })])
                 }
@@ -454,7 +461,7 @@ export const StudentDoAsgm = ({route})=>{
                                                     selected={item.isCorrect === 1 ? true : false} 
                                                     onPress={()=>handleChangeChoice(question.idAssignmentItem, item.idMultipleAssignmentItem, item.isCorrect === 1 ? 0 : 1)}
                                                 />  
-                                                <Text>{item.content}</Text>
+                                                <Text style={styles.widthFlex1}>{item.content}</Text>
                                             </View>
                                         )
                                         :
@@ -465,7 +472,7 @@ export const StudentDoAsgm = ({route})=>{
                                                     checkBoxColor={COLORS.secondMain}
                                                     onClick={()=>handleChangeChoice(question.idAssignmentItem, item.idMultipleAssignmentItem, item.isCorrect === 1 ? 0 : 1)}
                                                 />
-                                                <Text>{item.content}</Text>
+                                                <Text style={styles.widthFlex1}>{item.content}</Text>
                                             </View>
                                         )
                                     }
@@ -747,4 +754,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold"
     },
+    widthFlex1:{
+        flex: 1
+    }
 })
