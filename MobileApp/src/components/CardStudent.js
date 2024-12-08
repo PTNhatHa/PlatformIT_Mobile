@@ -17,15 +17,21 @@ const initStudent={
     doneAsgm: 4,
     assignment: 10
 }
-export const CardStudentAttendance = ({data = initStudent})=>{
+export const CardStudentAttendance = ({data = initStudent, lectureCount, assignmentCount})=>{
     const navigation = useNavigation()
-    const progressLecture = data.learned/data.lectures*100 + "%"
-    const progressAsgm = data.doneAsgm/data.assignment*100 + "%"
+    let progressLecture = "100%"
+    let progressAsgm = "100%"
+    if(lectureCount > 0){
+        progressLecture = (data.finishedLectureCount/lectureCount*100) + "%"
+    }
+    if(assignmentCount > 0){
+        progressAsgm = (data.finishedAssignmentCount/assignmentCount*100) + "%"
+    }
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance")}>
-            <Image source={data.img || DefaultAva} style={styles.avata}/>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance")} key={data.idStudent}>
+            <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View>
-                <Text style={styles.title}>{data.fullname}</Text>
+                <Text style={styles.title}>{data.fullName}</Text>
                 <View style={styles.content}>
                     <Feather name="mail" size={14} color={COLORS.stroke} />
                     <Text style={styles.dataText}>{data.email}</Text>
@@ -35,14 +41,14 @@ export const CardStudentAttendance = ({data = initStudent})=>{
                     <View style={styles.wrapProgress}>
                         <View style={[styles.fullProgress, {width: progressLecture}]}/>
                     </View>
-                    <Text style={[styles.dataText, { width: 40, textAlign: "right"}]}>{data.learned}/{data.lectures}</Text>
+                    <Text style={[styles.dataText, { width: 40, textAlign: "right"}]}>{data.finishedLectureCount}/{lectureCount}</Text>
                 </View>
                 <View style={styles.content}>
                     <Text style={[styles.dataText, {width: 80}]}>Assignments</Text>
                     <View style={styles.wrapProgress}>
                         <View style={[styles.fullProgress, {width: progressAsgm}]}/>
                     </View>
-                    <Text style={[styles.dataText, { width: 40, textAlign: "right"}]}>{data.doneAsgm}/{data.assignment}</Text>
+                    <Text style={[styles.dataText, { width: 40, textAlign: "right"}]}>{data.finishedAssignmentCount}/{assignmentCount}</Text>
                 </View>
             </View>
         </TouchableOpacity>

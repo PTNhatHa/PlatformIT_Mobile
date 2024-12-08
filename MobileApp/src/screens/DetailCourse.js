@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { enrollCourse, getCourseDetail, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
+import { enrollCourse, getCourseDetail, getCourseProgress, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -47,6 +47,7 @@ export const DetailCourse =({route})=>{
     const [isChat, setIsChat] = useState(false)
     
     const [studentTest, setStudentTest] = useState([])
+    const [studentList, setStudentList] = useState([])
 
     const getCourse = async()=>{
         try {
@@ -85,6 +86,17 @@ export const DetailCourse =({route})=>{
         }
     }
 
+    const getAttendance = async()=>{
+        try {
+            const response = await getCourseProgress(idCourse)
+            if(response){
+                setStudentList(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
     const checkStudentIsEnrollCourse = async()=>{
         try {
             const response = await isEnrolledCourse(state.idUser, idCourse)
@@ -104,6 +116,7 @@ export const DetailCourse =({route})=>{
     useEffect(()=>{
         try {
             getCourse()
+            getAttendance()
             getNoti()
             const interval = setInterval(() => {
                 setListNoti((prevNotifications) =>
@@ -439,9 +452,9 @@ export const DetailCourse =({route})=>{
                     </>
                 : selectBtn === 3 ?
                     <View style={styles.wrapShow}>
-                        {/* {data.attendance?.map(item =>  */}
-                            <CardStudentAttendance/>
-                        {/* )} */}
+                        {studentList?.courseStudentProgress?.map(item => 
+                            <CardStudentAttendance data={item} lectureCount={studentList.lectureCount} assignmentCount={studentList.assignmentCount}/>
+                        )}
                     </View>
                 : 
                     <></>
