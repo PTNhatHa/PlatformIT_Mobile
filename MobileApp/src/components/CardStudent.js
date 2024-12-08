@@ -48,39 +48,40 @@ export const CardStudentAttendance = ({data = initStudent})=>{
         </TouchableOpacity>
     )
 }
-export const CardStudentDetailAsgm = ({data = initStudent})=>{
+export const CardStudentDetailAsgm = ({data = initStudent, isPastDue = 0})=>{
     const navigation = useNavigation()
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance")}>
-            <Image source={data.img || DefaultAva} style={styles.avata}/>
+            <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View style={styles.wrapFull}>
-                <Text style={styles.title}>{data.fullname}</Text>
-                {true &&
+                <Text style={styles.title}>{data.nameStudent}</Text>
+                {data.submittedDate &&
                     <View style={styles.content}>                    
                         <Text style={styles.dataText}>Submitted on: </Text>
-                        <Text style={styles.dataText}>{formatDateTime(new Date(), true)}</Text>
+                        <Text style={styles.dataText}>{formatDateTime(data.submittedDate, true)}</Text>
                     </View>
                 }
-                {true &&
+                {data.studentDuration &&
                     <View style={styles.content}>                    
                         <Text style={styles.dataText}>Duration: </Text>
-                        <Text style={styles.dataText}>{formatTime(1234)}</Text>
+                        <Text style={styles.dataText}>{formatTime(data.studentDuration)}</Text>
                     </View>
                 }
-                {true &&
+                {data.studentTotalMark &&
                     <View style={styles.content}>                    
                         <Text style={styles.dataText}>Mark: </Text>
-                        <Text style={styles.dataText}>{`25`}</Text>
+                        <Text style={styles.dataText}>{data.studentTotalMark}</Text>
                     </View>
                 }
-                {false ?
+                {(data.status === 1 || data.status === 3) ?
                     <View style={[styles.wrapTag, styles.bgGreen]}>
-                        <Text style={styles.textTag}>Submited</Text>
+                        <Text style={styles.textTag}>{isPastDue === 1 ? "On time" : "Submitted"}</Text>
                     </View>
-                    :
-                    <View style={[styles.wrapTag, styles.bgYellow]}>
-                        <Text style={styles.textTag}>Late</Text>
-                    </View>
+                    : data.status === 2 ?
+                        <View style={[styles.wrapTag, styles.bgYellow]}>
+                            <Text style={styles.textTag}>Late</Text>
+                        </View>
+                    :""
                 }
             </View>
         </TouchableOpacity>

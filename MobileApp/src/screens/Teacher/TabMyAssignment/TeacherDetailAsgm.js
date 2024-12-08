@@ -295,7 +295,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 <Text style={[styles.textGray12, styles.textAlignRight]}>Not submitted</Text>
                                             </View>
                                         </View>
-                                        {data.isPastDue === 1 &&
+                                        {(data.dueDate && data.courseEndDate && new Date() <= new Date(data.dueDate) && new Date(data.courseEndDate)) &&
                                             <View style={styles.borderRight}>
                                                 <Text style={[styles.textBBlack18, styles.textAlignRight]}>
                                                     {overviewData.totalStudents - overviewData.notSubmittedCount - overviewData.submittedCount}
@@ -310,7 +310,10 @@ export const TeacherDetailAsgm = ({route})=>{
                                             <Text style={[styles.textBBlack18, styles.textAlignRight]}>{overviewData.submittedCount}</Text>
                                             <View style={styles.wrapFlex}>
                                                 <View style={[styles.circleStatus, styles.bgGreen]}/>
-                                                <Text style={[styles.textGray12, styles.textAlignRight]}>Submitted</Text>
+                                                <Text style={[styles.textGray12, styles.textAlignRight]}>
+                                                    {(data.dueDate && data.courseEndDate && new Date() <= new Date(data.dueDate) && new Date(data.courseEndDate)) ? 
+                                                        "On time" : "Submitted"}
+                                                </Text>
                                             </View>
                                         </View>
                                     </View>
@@ -328,8 +331,9 @@ export const TeacherDetailAsgm = ({route})=>{
                                         </TouchableOpacity>
                                     </View>
                                     <View style={styles.wrapList}>
-                                        <CardStudentDetailAsgm/>
-                                        <CardStudentDetailAsgm/>
+                                        {getPageDataStudent().map(student=>
+                                            <CardStudentDetailAsgm data={student} key={student.idStudent}/>
+                                        )}
                                         {/* paginage */}
                                         <View style={styles.bottom}>
                                             {getPagination(overviewData.submissions, currentPageStudent).map((page, index) => 
