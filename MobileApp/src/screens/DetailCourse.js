@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
@@ -48,6 +48,10 @@ export const DetailCourse =({route})=>{
     
     const [studentTest, setStudentTest] = useState([])
     const [studentList, setStudentList] = useState([])
+    const [currentStudentList, setCurrentStudentList] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const numberItem = 2
+    const [isOpenModal, setIsOpenModal] = useState(false);
 
     const getCourse = async()=>{
         try {
@@ -91,11 +95,51 @@ export const DetailCourse =({route})=>{
             const response = await getCourseProgress(idCourse)
             if(response){
                 setStudentList(response)
+                setCurrentStudentList(response.courseStudentProgress)
             }
         } catch (error) {
             console.log("Error: ", error);
         }
     }
+
+    const getPagination = () => {
+        const totalPages = Math.ceil(currentStudentList.length / numberItem)
+        if (totalPages <= 5) {
+        // Show all pages if there are 5 or fewer
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+        } else {
+        // Logic for more than 5 pages
+        if (currentPage <= 3) {
+            // Show first few pages if current page is near the start
+            return [1, 2, 3, 4, "...", totalPages];
+        } else if (currentPage >= totalPages - 2) {
+            // Show last few pages if current page is near the end
+            return [
+                1,
+                "...",
+                totalPages - 3,
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        } else {
+            // Show current page in the middle with surrounding pages
+            return [
+                1,
+                "...",
+                currentPage - 1,
+                currentPage,
+                currentPage + 1,
+                "...",
+                totalPages,
+            ];
+        }
+        }
+    }
+
+    const getPageData = () => {
+        return currentStudentList.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
 
     const checkStudentIsEnrollCourse = async()=>{
         try {
@@ -452,9 +496,37 @@ export const DetailCourse =({route})=>{
                     </>
                 : selectBtn === 3 ?
                     <View style={styles.wrapShow}>
-                        {studentList?.courseStudentProgress?.map(item => 
+                        <View style={styles.wrapperSearch}>
+                            <TextInput
+                                value={"search"}
+                                style={styles.input}
+                                placeholder={"Search"}
+                                onChangeText={(value)=>{}}
+                            />
+                            <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
+                                <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
+                            </TouchableOpacity>
+                        </View>
+                        {getPageData().map(item => 
                             <CardStudentAttendance data={item} lectureCount={studentList.lectureCount} assignmentCount={studentList.assignmentCount}/>
                         )}
+                        {/* paginage */}
+                        <View style={styles.bottom}>
+                            {getPagination().map((page, index) => 
+                                page !== "..." ? 
+                                <TouchableOpacity 
+                                    style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                                    onPress={()=>setCurrentPage(page)}
+                                    key={index}
+                                >
+                                    <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
+                                </TouchableOpacity>
+                                :
+                                <View style={styles.wrapNumber} key={index}>
+                                    <Text style={styles.bottomNumber}>{page}</Text>
+                                </View>
+                            )}
+                        </View>
                     </View>
                 : 
                     <></>
@@ -711,6 +783,41 @@ const styles = StyleSheet.create({
     wrapFlex:{
         flexDirection: "row",
         justifyContent: "space-between"
-    }
+    },
+    bottom: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8,
+        margin: 10
+    },
+    bottomNumber:{
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 16
+    },
+    wrapNumber:{
+        width: 32,
+        height: 32,
+        borderRadius: 4,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    wrapperSearch: {
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+        width: "100%",
+        flexDirection: "row",
+        columnGap: 8,
+        alignItems: "center",
+        borderColor: COLORS.lightText,
+        borderWidth: 1
+    },
+    input:{
+        fontSize: 16,
+        width: "90%"
+    },
 })
 

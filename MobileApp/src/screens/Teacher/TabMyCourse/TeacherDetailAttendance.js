@@ -1,12 +1,12 @@
 import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Text, View } from "react-native"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DateTimePickerComponent } from "../../../components/DateTimePicker"
 import { ComboBox } from "../../../components/ComboBox"
 import { ButtonGreen, ButtonWhite } from "../../../components/Button"
 import Feather from '@expo/vector-icons/Feather';
 import { TouchableOpacity } from "react-native"
 import { TextInputLabel } from "../../../components/TextInputField"
-import { COLORS, commonStyles } from "../../../utils/constants"
+import { COLORS, commonStyles, Gender } from "../../../utils/constants"
 import { formatDateTime } from "../../../utils/utils"
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -15,6 +15,8 @@ import { ProgressCircle } from "../../../components/Progress"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { CardVirticalCourse } from "../../../components/CardVertical"
+import { getDetailStudent } from "../../../services/user"
+import DefaultAva from "../../../../assets/images/DefaultAva.png"
 
 const init = {
     "idUser": null,
@@ -36,7 +38,9 @@ const init = {
     "links": null,
     "qualificationModels": null
 }
-export const TeacherDetailAttendance = ({info = init})=>{
+export const TeacherDetailAttendance = ({route})=>{
+    const {idStudent, idCourse} = route?.params || {}
+    const [data, setData] = useState({})
     const [avata, setAvata] = useState({
         uri: info.avatar,
         name: 'avatar.png',
@@ -51,6 +55,19 @@ export const TeacherDetailAttendance = ({info = init})=>{
     const [isLoading, setIsLoading] = useState(false)
     const [indexTab, setIndexTab] = useState(1)
 
+    useEffect(()=>{
+        const fetchDetail = async()=>{
+            try {
+                const response = await getDetailStudent(idStudent, idCourse)
+                if(response){
+                    setData(response)
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            }
+        }
+        fetchDetail()
+    }, [])
     return(
         <ScrollView
             contentContainerStyle={styles.wrapPI}
@@ -82,24 +99,24 @@ export const TeacherDetailAttendance = ({info = init})=>{
                         <Text style={commonStyles.title}>Personal Infomation</Text>
                         <View style={styles.avataWrapper}>
                             <View style={styles.avataInner}>
-                                <Image style={styles.avataImage} source={{uri: avata.uri}}/>
+                                <Image style={styles.avataImage} source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva}/>
                             </View>
                         </View>
                         <View style={styles.body}>
-                            <TextInputLabel label={"Name"} value={name} isEditable={false}/>
-                            <TextInputLabel label={"Phone Number"} value={phoneNumber} isEditable={false}/>
-                            <TextInputLabel label={"Email"} value={email} isEditable={false}/>
-                            <TextInputLabel label={"Birthday"} value={formatDateTime(birthday)} isEditable={false}/>
-                            <TextInputLabel label={"Gender"} value={gender} isEditable={false}/>
-                            <TextInputLabel label={"Nationality"} value={nationality} isEditable={false}/>
+                            <TextInputLabel label={"Name"} value={data.fullName} isEditable={false}/>
+                            <TextInputLabel label={"Phone Number"} value={data.phoneNumber} isEditable={false}/>
+                            <TextInputLabel label={"Email"} value={data.email} isEditable={false}/>
+                            <TextInputLabel label={"Birthday"} value={formatDateTime(data.dob)} isEditable={false}/>
+                            <TextInputLabel label={"Gender"} value={Gender[data.gender] || ""} isEditable={false}/>
+                            <TextInputLabel label={"Nationality"} value={data.nationality} isEditable={false}/>
                         </View>
                     </View>
                 }
                 {indexTab === 2 &&
                     <View style={styles.PI}>
-                        <Text style={commonStyles.title}>Name Course</Text>
+                        <Text style={commonStyles.title}>{data.nameCurrentCourse}</Text>
                         <View style={styles.wrapProgress}>
-                            <ProgressCircle/>
+                            <ProgressCircle done={data.lectureProgress} all={data.lectureTotal}/>
                             <Text style={styles.nameProgress}>Lecture</Text>
                         </View>
                         <View style={styles.wrapProgress}>

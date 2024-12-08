@@ -277,3 +277,15 @@ export const isChatAvailable = async (idStudent, idTeacher)=>{
         console.log("Error isChatAvailable: ", error);
     })
 }
+
+export const getDetailStudent = async (idStudent, idCourse)=>{
+    const url = baseUrl + "/GetDetailStudent?idStudent=" + idStudent + "&idCourse=" + idCourse
+    return await axios.get(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetDetailStudent: ", error);
+    })
+}
