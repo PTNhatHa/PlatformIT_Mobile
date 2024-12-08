@@ -4,7 +4,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
-import { useUser } from "../../../contexts/UserContext";
+import { SET_INFO, useUser } from "../../../contexts/UserContext";
 import { getAssignmentInfo, getDetailAssignmentItemForStudent, submitManualAssignment, submitQuizAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
@@ -17,7 +17,7 @@ export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
     const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer, dueDate, reload} = route?.params || null
     const [loading, setLoading] = useState(true);
-    const {state} = useUser()
+    const {state, dispatch} = useUser()
     const [selectFile, setSelectFile] = useState("")
     const [listQuestion, setListQuestion] = useState([])
     const [manualAnswer, setManualAnswer] = useState([])
@@ -98,6 +98,7 @@ export const StudentDoAsgm = ({route})=>{
                     style: "cancel",
                 },
                 { text: "Submit", onPress: () => {
+                    dispatch({ type: SET_INFO, payload: { "isDoAsgm": false }})
                     if(assignmentType === 1){
                         handleSubmitManual()
                     }

@@ -13,6 +13,7 @@ const initialState = {
     idCenter: null, 
     idRole: 3, 
     avatar: defautAva,
+    isDoAsgm: false
 }
 
 // Định nghĩa Reducer

@@ -15,7 +15,7 @@ import { DetailTeacher } from "../screens/DetailTeacher";
 import { StudentAllCourse } from "../screens/Student/TabMyCourse/StudentAllCourse";
 import { NotificationScreen } from "../screens/Notification";
 import { useUser } from "../contexts/UserContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';
@@ -25,6 +25,8 @@ import { StudentAllTest } from "../screens/Student/TabMyTest/StudentAllTest";
 import { StudentDetailAsgm } from "../screens/Student/TabMyTest/StudentDetailAsgm";
 import { StudentDoAsgm } from "../screens/Student/TabMyTest/StudentDoAsgm";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { Alert } from "react-native";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -76,6 +78,7 @@ const StackHomeScreen = ()=>{
 
 const StackMyCourseScreen = ()=>{
     const StackMyCourse = createNativeStackNavigator()
+
     return(
         <StackMyCourse.Navigator
             screenOptions={{
@@ -93,6 +96,17 @@ const StackMyCourseScreen = ()=>{
             <StackMyCourse.Screen
                 name="Detail Lecture"
                 component={StudentLectureDetail}
+            />
+            <StackMyCourse.Screen
+                name="Detail Exercise"
+                component={StudentDetailAsgm}
+            />
+            <StackMyCourse.Screen
+                name="Do Assignment"
+                component={StudentDoAsgm}
+                options={{
+                    headerShown: false,
+                }}
             />
 
             <StackMyCourse.Screen
@@ -272,19 +286,72 @@ export const StudentBottomTab = ()=>{
                 headerShown: false
             })}
         >
-            <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }}/>
-            <Tab.Screen name="My Course" component={StackMyCourseScreen} />
-            <Tab.Screen name="My Test" component={StackMyTestScreen} />
+            <Tab.Screen name="HomeScreen" component={StackHomeScreen} options={{ tabBarLabel: "Home" }}
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
+            />
+            <Tab.Screen name="My Course" component={StackMyCourseScreen} 
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
+            />
+            <Tab.Screen name="My Test" component={StackMyTestScreen} 
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
+            />
             <Tab.Screen name="Noti" 
                 options={unReadNoti > 0 && { 
                     tabBarBadge: unReadNoti,
                     tabBarBadgeStyle: { backgroundColor: COLORS.main, color: 'white' }
                 }}
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
             >
                 {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
-            <Tab.Screen name="Chat" component={Home} />
-            <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
+            <Tab.Screen name="Chat" component={Home} 
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
+            />
+            <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}
+                listeners={() => ({
+                    tabPress: (e) => {                      
+                      if (state.isDoAsgm === true) {
+                        e.preventDefault(); // Ngăn người dùng chuyển tab
+                        Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
+                      }
+                    },
+                  })}
+            />
         </Tab.Navigator>
     )
 }

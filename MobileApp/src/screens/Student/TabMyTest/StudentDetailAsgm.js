@@ -4,7 +4,7 @@ import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
-import { useUser } from "../../../contexts/UserContext";
+import { SET_INFO, useUser } from "../../../contexts/UserContext";
 import { getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
@@ -15,7 +15,7 @@ export const StudentDetailAsgm = ({route})=>{
     const navigation = useNavigation()
     const {idAssignment, isPastDue, isCompleted} = route?.params || null
     const [loading, setLoading] = useState(true);
-    const {state} = useUser()
+    const {state, dispatch} = useUser()
     const [data, setData] = useState({})
 
     const [listQuestion, setListQuestion] = useState([])
@@ -108,6 +108,7 @@ export const StudentDetailAsgm = ({route})=>{
                 {
                     text: "Yes",
                     onPress: ()=> {
+                        dispatch({ type: SET_INFO, payload: { "isDoAsgm": true }})
                         navigation.navigate("Do Assignment", {
                             idAssignment: idAssignment,
                             assignmentType: data.assignmentType,
@@ -180,7 +181,8 @@ export const StudentDetailAsgm = ({route})=>{
                                     </>
                                 }
                             </View>
-                            {data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate) &&
+                            {((data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate))
+                                || (data.submittedDate === null && data.courseEndDate === null)) &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>handleStartAsgm()}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
@@ -199,8 +201,10 @@ export const StudentDetailAsgm = ({route})=>{
                                         <Text style={styles.textGray16}>Status</Text>
                                         {data.resultStatus === 1 ?
                                             <Text style={[styles.boxStatus, styles.boxGreen]}>On time</Text>
+                                            : data.resultStatus === 2 ?
+                                                <Text style={[styles.boxStatus, styles.boxYellow]}>Late</Text>
                                             :
-                                            <Text style={[styles.boxStatus, styles.boxYellow]}>Late</Text>
+                                                <Text style={[styles.boxStatus, styles.boxGreen]}>Submitted</Text>
                                         }
                                     </View>
                                     <View style={styles.wrapFlex}>

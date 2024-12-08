@@ -85,7 +85,7 @@ export const StudentLectureDetail = ({route})=>{
         try {
             const response = await getExerciseOfLectureViaStudent(selectLecture.idLecture, state.idUser)
             if(response){
-                setExercises(response)
+                setExercises([...response.filter(ex => ex.isPublish === 1)])
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -223,7 +223,9 @@ export const StudentLectureDetail = ({route})=>{
                     {/* Exercise */}
                     {index === 3 &&
                         <View style={[styles.wrapper2]}>
-                            {exercises.map(exercise => <CardAssignment data={exercise} isNoBoder={true}/>)}
+                            {exercises.map(exercise => 
+                                <CardAssignment data={exercise} isNoBoder={true} key={exercise.idAssignment} isStudentExercise={true}/>
+                            )}
                         </View>
                     }
 

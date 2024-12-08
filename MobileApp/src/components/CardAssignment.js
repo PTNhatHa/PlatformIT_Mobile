@@ -44,7 +44,10 @@ const initAssignment =     {
 //     "createdDate": "2024-11-20T11:23:31.7661598",
 //     "isPastDue": 0
 //   },
-export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}, isDetail = false})=>{
+export const CardAssignment = ({
+    data = initAssignment, role = 2, isNoBoder = false, isPastDue = false, getAllAsgm=()=>{}, isDetail = false,
+    isStudentExercise = false
+})=>{
     const navigation = useNavigation()
     const [longPress, setLongPress] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -152,15 +155,21 @@ export const CardAssignment = ({data = initAssignment, role = 2, isNoBoder = fal
                     if(role === 1 && !data.isPublish){
                         handelEdit()
                     }
-                    if(role === 2){
-                        navigation.navigate("Detail Test", { 
+                    if(role === 1 && data.isPublish){
+                        navigation.navigate("Detail Assignment", { 
                             idAssignment: data.idAssignment,
                             isPastDue: data.isPastDue,
                             isCompleted: data.isCompleted
                         })
                     }
-                    if(role === 1 && data.isPublish){
-                        navigation.navigate("Detail Assignment", { 
+                    if(isStudentExercise === true){
+                        navigation.navigate("Detail Exercise", { 
+                            idAssignment: data.idAssignment,
+                            isPastDue: data.isPastDue,
+                            isCompleted: data.isCompleted
+                        })
+                    } else if(role === 2){
+                        navigation.navigate("Detail Test", { 
                             idAssignment: data.idAssignment,
                             isPastDue: data.isPastDue,
                             isCompleted: data.isCompleted
