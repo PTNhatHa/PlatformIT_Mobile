@@ -130,6 +130,9 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                 const field = sortData.sortby
                 const aValue = a[field] || a["fullName"]
                 const bValue = b[field] || b["fullName"]
+                if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    return sortData?.sortway === 1 ? aValue - bValue : bValue - aValue;
+                }
                 if(sortData.sortway === 1){
                     //Asc
                     if(aValue === null) return -1

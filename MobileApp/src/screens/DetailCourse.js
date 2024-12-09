@@ -30,6 +30,7 @@ import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { ModalCourseContent } from "../components/ModalCourseContent"
 import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
 import { isChatAvailable } from "../services/user"
+import { FilterStudentProgress } from "../components/Filter"
 
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
@@ -52,6 +53,8 @@ export const DetailCourse =({route})=>{
     const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 5
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [search, setSearch] = useState("")
+    const [filterStudent, setFilterStudent] = useState([])
 
     const getCourse = async()=>{
         try {
@@ -228,6 +231,57 @@ export const DetailCourse =({route})=>{
             { cancelable: true }
         )
     }
+        
+    const handleFilter = (initData, filterList)=>{
+        let newData = [...initData] || []
+        if(filterList?.sortby !== null && filterList?.sortway !== null){
+            newData = newData?.sort((a,b) => {
+                const field = filterList?.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    return filterList?.sortway === 1 ? aValue - bValue : bValue - aValue;
+                }
+                if(filterList?.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    if(aValue === null && bValue === null) return 0
+                    return aValue.localeCompare(bValue)
+                }
+                if(filterList?.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    if(aValue === null && bValue === null) return 0
+                    return bValue.localeCompare(aValue)
+                }
+                return 0
+            })
+        }
+        return newData || []
+    }
+    const handleSearch =(initData, searchText)=>{
+        let newData = [...initData]
+        if(searchText !== null){
+            return newData.filter(item => {
+                return item.fullName?.toLowerCase().includes(searchText.toLowerCase()) ||
+                        item.email?.toLowerCase().includes(searchText.toLowerCase())
+            })
+        }
+        return []
+    }
+
+    useEffect(()=>{
+        if(search || filterStudent){
+            let result = studentList.courseStudentProgress ? [...studentList.courseStudentProgress] : []
+            if(filterStudent){
+                result = handleFilter(result, filterStudent)
+            }
+            result = handleSearch(result, search)
+            setCurrentStudentList(result)
+        }
+    }, [search, filterStudent])
 
     if (loading === true) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -499,10 +553,10 @@ export const DetailCourse =({route})=>{
                     <View style={styles.wrapShow}>
                         <View style={styles.wrapperSearch}>
                             <TextInput
-                                value={"search"}
+                                value={search}
                                 style={styles.input}
                                 placeholder={"Search"}
-                                onChangeText={(value)=>{}}
+                                onChangeText={(value)=>setSearch(value)}
                             />
                             <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                                 <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
@@ -564,6 +618,14 @@ export const DetailCourse =({route})=>{
                 <ActivityIndicator size="large" color="white" />
             </View>
         }
+        <Modal
+            visible={isOpenModal}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={()=>setIsOpenModal(false)}
+        >
+            <FilterStudentProgress dataFilter={filterStudent} setDataFilter={setFilterStudent} onPressCancel={()=>setIsOpenModal(false)}/>
+        </Modal>
         </>
     )
 }

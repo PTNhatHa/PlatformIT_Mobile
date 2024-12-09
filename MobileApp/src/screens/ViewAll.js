@@ -228,6 +228,9 @@ export const ScreenViewAll = ({route})=>{
                 const field = sortData.sortby
                 const aValue = a[field]
                 const bValue = b[field]
+                if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    return sortData?.sortway === 1 ? aValue - bValue : bValue - aValue;
+                }
                 if(sortData.sortway === 1){
                     //Asc
                     if(aValue === null) return -1

@@ -146,6 +146,9 @@ export const TeacherDetailAsgm = ({route})=>{
                 const field = filterList?.sortby
                 const aValue = a[field]
                 const bValue = b[field]
+                if (typeof aValue === 'number' && typeof bValue === 'number') {
+                    return filterList?.sortway === 1 ? aValue - bValue : bValue - aValue;
+                }
                 if(filterList?.sortway === 1){
                     //Asc
                     if(aValue === null) return -1

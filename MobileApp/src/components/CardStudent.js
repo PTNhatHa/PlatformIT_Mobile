@@ -60,7 +60,7 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
 export const CardStudentDetailAsgm = ({data = initStudent, isPastDue = 0})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance")}>
+        <TouchableOpacity style={styles.container} onPress={()=> {}}>
             <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View style={styles.wrapFull}>
                 <Text style={styles.title}>{data.nameStudent}</Text>
