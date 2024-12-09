@@ -282,7 +282,8 @@ const styles = StyleSheet.create({
     },
     infoText: {
         fontSize: 14,
-        color: "white"
+        color: "white",
+        textAlign: "justify"
     },
     
     wrapInfo: {

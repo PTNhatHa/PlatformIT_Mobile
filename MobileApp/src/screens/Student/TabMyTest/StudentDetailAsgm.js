@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { SET_INFO, useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
+import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
@@ -30,9 +30,9 @@ export const StudentDetailAsgm = ({route})=>{
             if(response){
                 setData(response)
                 if(response.assignmentType === 2){
-                    const answers = await getQuizAnswer(idAssignment, state.idUser)
+                    const answers = await getAssignmentAnswer(idAssignment, state.idUser)
                     if(answers){
-                        setListQuestion([...answers.map(question => {
+                        setListQuestion([...answers.detailQuestionResponses.map(question => {
                             return{
                                 ...question,
                                 items: question.items.map(item => {
@@ -195,7 +195,7 @@ export const StudentDetailAsgm = ({route})=>{
                                 <View style={styles.containerInner}>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Submitted at</Text>
-                                        <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate, true)}</Text>
+                                        <Text style={styles.textBlack16}>{formatDateTime(data.submittedDate, true, true)}</Text>
                                     </View>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Status</Text>
@@ -209,7 +209,7 @@ export const StudentDetailAsgm = ({route})=>{
                                     </View>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Marks</Text>
-                                        <Text style={styles.textBlack16}>{data.totalMark}</Text>
+                                        <Text style={styles.textBlack16}>{data.totalMark}/{data.assignmentMark}</Text>
                                     </View>
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Duration</Text>
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     },
     questionContent:{
         fontSize: 16,
-        fontWeight: "500"
+        fontWeight: "500",
     },
     questionImg:{
         backgroundColor: COLORS.lightGray,

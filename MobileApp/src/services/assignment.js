@@ -238,14 +238,15 @@ export const getDetailAssignmentItemForStudent = async (idAssignment)=>{
     })
 }
 
-export const getExerciseOfLectureViaStudent = async (idLecture, idStudent)=>{
-    return await axios.get(baseUrl + "/GetExerciseOfLectureViaStudent?idLecture=" + idLecture + "&idStudent=" + idStudent)
+export const GetExerciseOfLecture = async (idLecture, idStudent)=>{
+    const urlStudent = idStudent ? "&idStudent=" + idStudent : ""
+    return await axios.get(baseUrl + "/GetExerciseOfLecture?idLecture=" + idLecture + urlStudent)
     .then(response => {
         // console.log(response.data);
         return response.data
     })
     .catch(error => {
-        console.log("Error GetExerciseOfLectureViaStudent: ", error);
+        console.log("Error GetExerciseOfLecture: ", error);
     })
 }
 
@@ -260,14 +261,14 @@ export const submitQuizAssignment = async (answer)=>{
     })
 }
 
-export const getQuizAnswer = async (idAssignment, idStudent)=>{
-    return await axios.get(baseUrl + "/GetQuizAnswer?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+export const getAssignmentAnswer = async (idAssignment, idStudent)=>{
+    return await axios.get(baseUrl + "/GetAssignmentAnswer?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
     .then(response => {
         // console.log(response.data);
         return response.data
     })
     .catch(error => {
-        console.log("Error GetQuizAnswer: ", error);
+        console.log("Error GetAssignmentAnswer: ", error);
     })
 }
 

@@ -180,7 +180,7 @@ export const DetailCourse =({route})=>{
         } finally{
             setLoading(false)
         }
-    }, [])
+    }, [idCourse])
 
     const addNoti = async()=>{
         if(!notiContent){
@@ -309,10 +309,7 @@ export const DetailCourse =({route})=>{
                                 <Tag label={item} key={item}/>  
                             )}                    
                         </View>
-                    }
-                    {data.introduction && 
-                        <Text style={styles.infoText}>{data.introduction}</Text>
-                    }
+                    }                    
                     <View style={styles.inforContent}>
                         <Feather name="clock" size={16} color="white" />
                         <Text style={styles.infoText}>
@@ -370,7 +367,13 @@ export const DetailCourse =({route})=>{
                     }
                 </View>
             </View>
-
+            {data.introduction && 
+                <View style={styles.wrapperGray}>
+                    <Text style={styles.titleContentCard}>Introduction</Text>
+                    <Text style={styles.infoText}>{data.introduction}</Text>
+                </View>
+            }
+            
             <View style={styles.wrapMiniCard}>
                 {/* Teacher */}
                 {role !== 1 &&
@@ -643,6 +646,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#4D768A",
         borderRadius: 8
     },
+    wrapperGray: {
+        padding: 12,
+        marginHorizontal: 16,
+        rowGap: 10,
+        backgroundColor: COLORS.secondMain,
+        borderRadius: 8,
+        marginTop: 8
+    },
     inforContent:{
         flexDirection: "row",
         columnGap: 4,
@@ -655,7 +666,8 @@ const styles = StyleSheet.create({
     },
     infoText: {
         fontSize: 14,
-        color: "white"
+        color: "white",
+        textAlign: "justify"
     },
     costSale:{
         fontSize: 16,
@@ -803,7 +815,8 @@ const styles = StyleSheet.create({
     dataText:{
         color: "white",
         flexWrap: "wrap",
-        width: 300,
+        width: 290,
+        textAlign: "justify"
     },
     wrapLoading:{
         position: "absolute", 

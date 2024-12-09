@@ -12,7 +12,7 @@ import { getLectureDetail } from "../../../services/lecture";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getCourseContentStructure } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
-import { getExerciseOfLectureViaStudent } from "../../../services/assignment";
+import { GetExerciseOfLecture, getExerciseOfLectureViaStudent } from "../../../services/assignment";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture} = route?.params || {}
@@ -83,7 +83,7 @@ export const StudentLectureDetail = ({route})=>{
     const fetchExercise = async()=>{
         setLoading(true)
         try {
-            const response = await getExerciseOfLectureViaStudent(selectLecture.idLecture, state.idUser)
+            const response = await GetExerciseOfLecture(selectLecture.idLecture, state.idUser)
             if(response){
                 setExercises([...response.filter(ex => ex.isPublish === 1)])
             }

@@ -51,7 +51,7 @@ export default SignIn = ({navigation}) => {
     const [email, setEmail] = useState("")
     const [errorEmail, setErrorEmail] = useState(null)
     const [isDone, setIsDone] = useState(false)
-    const [isRemember, setIsRemember] = useState(false)
+    const [isRemember, setIsRemember] = useState(true)
     const handleOnchangeEmail = (v)=>{
         setEmail(v)
         setErrorEmail(null)

@@ -53,7 +53,7 @@ export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false
                     if(role !== 0){
                         navigation.navigate("Detail Course", {
                             idCourse: data.idCourse,
-                            role: role
+                            role: role,
                         })
                     } else{
                         navigation.navigate("My Course", {

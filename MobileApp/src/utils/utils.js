@@ -1,10 +1,10 @@
 import { Linking } from "react-native";
 
-export const formatDateTime = (date, isTime = false) => {
+export const formatDateTime = (date, isTime = false, isNoZ = false) => {
     if(date === null) return ""
     // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
     if (typeof date === 'string') {
-        date = new Date(date + "Z");
+        date = new Date(date + (!isNoZ ? "Z" : ""));
     }
     
     if (!(date instanceof Date) || isNaN(date.getTime())) {

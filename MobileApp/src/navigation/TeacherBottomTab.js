@@ -132,6 +132,10 @@ const StackMyCourseScreen = ()=>{
                 name="Teachers of center"
                 component={ViewAllFromDetail}
             />
+            <StackMyCourse.Screen
+                name="Courses of student"
+                component={ViewAllFromDetail}
+            />
         </StackMyCourse.Navigator>
     )
 }

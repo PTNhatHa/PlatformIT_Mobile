@@ -27,6 +27,18 @@ export const StudentDoAsgm = ({route})=>{
     const [duration, setDuration] = useState(initduration*60);
     const [totalTime, setTotalTime] = useState(0);
 
+    // Lấy thời gian hiện tại theo múi giờ Việt Nam  
+    const options = {  
+        timeZone: 'Asia/Ho_Chi_Minh',  
+        year: 'numeric',  
+        month: '2-digit',  
+        day: '2-digit',  
+        hour: '2-digit',  
+        minute: '2-digit',  
+        second: '2-digit',  
+        hour12: false // Để sử dụng định dạng 24 giờ  
+    };  
+
     const handleSubmitQuiz = async()=>{
         setLoading(true)
         try {
@@ -36,14 +48,21 @@ export const StudentDoAsgm = ({route})=>{
                     selectedOptions: question.items.filter(item => item.isCorrect === 1).map(item => item.idMultipleAssignmentItem)
                 }
             })
+            const dateVN = new Date().toLocaleString('en-CA', {  
+                timeZone: 'Asia/Ho_Chi_Minh',  
+                hour12: false,  
+            }).replace(', ', 'T');;  
+
+            console.log(dateVN); 
             const result = {
                 idAssignment: idAssignment,
                 idStudent: state.idUser,
                 duration: totalTime,
                 assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
-                submittedDate: new Date(),
+                submittedDate: dateVN,
                 answers: listAnswers
             }
+            console.log(result);
             const response = await submitQuizAssignment(result)
             if(response){
                 Alert.alert("Submit assignment", response)

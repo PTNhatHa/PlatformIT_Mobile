@@ -2,7 +2,7 @@ import { ActivityIndicator, Alert, Image, Modal, ScrollView, StyleSheet, Text, V
 import { useEffect, useState } from "react"
 import { DateTimePickerComponent } from "../../../components/DateTimePicker"
 import { ComboBox } from "../../../components/ComboBox"
-import { ButtonGreen, ButtonWhite } from "../../../components/Button"
+import { ButtonGreen, ButtonIconLightGreen, ButtonWhite } from "../../../components/Button"
 import Feather from '@expo/vector-icons/Feather';
 import { TouchableOpacity } from "react-native"
 import { TextInputLabel } from "../../../components/TextInputField"
@@ -17,6 +17,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { CardVirticalCourse } from "../../../components/CardVertical"
 import { getDetailStudent } from "../../../services/user"
 import DefaultAva from "../../../../assets/images/DefaultAva.png"
+import { useNavigation } from "@react-navigation/native"
 
 const init = {
     "idUser": null,
@@ -39,19 +40,9 @@ const init = {
     "qualificationModels": null
 }
 export const TeacherDetailAttendance = ({route})=>{
+    const navigation = useNavigation()
     const {idStudent, idCourse} = route?.params || {}
     const [data, setData] = useState({})
-    const [avata, setAvata] = useState({
-        uri: info.avatar,
-        name: 'avatar.png',
-        type: 'image/png' 
-    })
-    const [name, setName] = useState(info.fullName)
-    const [phoneNumber, setPhoneNumber] = useState(info.phoneNumber)
-    const [email, setEmail] = useState(info.email)
-    const [birthday, setBirthday] = useState(new Date(info.dob))
-    const [gender, setGender] = useState(info.gender === 0 ? "Male" : info.gender === 1 ? "Female" :  "Other")
-    const [nationality, setNationality] = useState(info.nationality)
     const [isLoading, setIsLoading] = useState(false)
     const [indexTab, setIndexTab] = useState(1)
 
@@ -120,17 +111,23 @@ export const TeacherDetailAttendance = ({route})=>{
                             <Text style={styles.nameProgress}>Lecture</Text>
                         </View>
                         <View style={styles.wrapProgress}>
-                            <ProgressCircle/>
+                            <ProgressCircle done={data.exerciseProgress + data.testProgress} all={data.exerciseTotal + data.testTotal}/>
                             <Text style={styles.nameProgress}>Assignment</Text>
                         </View>
                     </View>
                 }
                 {indexTab === 3 &&
-                    <>
-                        <CardVirticalCourse/>
-                        <CardVirticalCourse/>
-                        <CardVirticalCourse/>
-                    </>
+                    <View style={styles.wrapList}>
+                        <ButtonIconLightGreen 
+                            title={"See all"} 
+                            icon={<MaterialIcons name="open-in-new" size={16} color={COLORS.main} />}
+                            action={()=> navigation.navigate("Courses of student", {initData: data.courses, index: 1, namePage: data.fullName})}
+                        />
+                        {data.courses.slice(0, 5).map(course =>
+                            <CardVirticalCourse data={course} key={course.idCourse}/>
+                        )}
+                        <Text style={styles.more}>...</Text>
+                    </View>
                 }
             </>
 
@@ -229,5 +226,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         color: COLORS.main
+    },
+    more: {
+        textAlign: "center",
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    wrapList:{
+        gap: 10,
+        minHeight: 510
     }
 })
