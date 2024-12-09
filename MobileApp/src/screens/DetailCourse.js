@@ -50,7 +50,7 @@ export const DetailCourse =({route})=>{
     const [studentList, setStudentList] = useState([])
     const [currentStudentList, setCurrentStudentList] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const numberItem = 2
+    const numberItem = 5
     const [isOpenModal, setIsOpenModal] = useState(false);
 
     const getCourse = async()=>{
@@ -494,7 +494,8 @@ export const DetailCourse =({route})=>{
                             )}
                         </View>
                     </>
-                : selectBtn === 3 ?
+                : selectBtn === 3 ? 
+                    // Attendance
                     <View style={styles.wrapShow}>
                         <View style={styles.wrapperSearch}>
                             <TextInput
@@ -508,7 +509,10 @@ export const DetailCourse =({route})=>{
                             </TouchableOpacity>
                         </View>
                         {getPageData().map(item => 
-                            <CardStudentAttendance data={item} lectureCount={studentList.lectureCount} assignmentCount={studentList.assignmentCount}/>
+                            <CardStudentAttendance 
+                                data={item} lectureCount={studentList.lectureCount} assignmentCount={studentList.assignmentCount}
+                                key={item.idStudent} idCourse={idCourse}
+                            />
                         )}
                         {/* paginage */}
                         <View style={styles.bottom}>

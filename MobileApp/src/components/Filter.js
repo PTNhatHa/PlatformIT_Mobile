@@ -522,7 +522,6 @@ export const FilterTeacher = ({
     )
 }
 
-
 export const FilterAsgm = ({
     dataFilter=[], setDataFilter=()=>{},
     isPastdue = false,
@@ -534,7 +533,7 @@ export const FilterAsgm = ({
     const [sortby2, setsortby2] = useState(dataFilter?.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
-        { label: "Name", value: "createdDate"},
+        { label: "Name", value: "title"},
         { label: "Create date", value: "createdDate"},
         { label: "Start date", value: "startDate"},
         { label: "Due date", value: "dueDate"},
@@ -670,6 +669,185 @@ export const FilterAsgm = ({
                         </View>                                                         
                     </View>
 
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    )
+}
+
+export const FilterStudentOverview = ({
+    dataFilter=[], setDataFilter=()=>{},
+    isPastdue = false,
+    onPressCancel,
+})=>{
+    // Sort
+    const [sortby1, setsortby1] = useState(dataFilter?.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataFilter?.sortway || 0)
+    const listSortby1 = [
+        { label: "None", value: 0},
+        { label: "Name", value: "nameStudent"},
+        { label: "Submitted date", value: "submittedDate"},
+        { label: "Mark", value: "studentTotalMark"},
+        { label: "Duration", value: "studentDuration"},
+    ]
+    const listSortby2 = [
+        { label: "None", value: 0},
+        { label: "Asc", value: 1},
+        { label: "Des", value: 2},
+    ]
+
+    // Filter
+    const [status, setStatus] = useState(dataFilter?.status || "All")
+    const clearAll = ()=>{
+        setsortby1(0)
+        setsortby2(0)
+        setStatus("All")
+        setDataFilter({
+            sortby: 0,
+            sortway: 0,
+            status: "All"
+        })
+        onPressCancel()
+    }
+
+    const handleSave =()=>{
+        setDataFilter({
+            sortby: sortby1,
+            sortway: sortby2,
+            status: status
+        })
+        onPressCancel()
+    }
+
+    return(
+        <TouchableWithoutFeedback>
+            <View style={stylesFilter.wrapFilter}>
+                <View style={stylesFilter.innerFilter}>
+                    {/* Sort */}
+                    <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
+                        <AntDesign name="close" size={24} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
+                        <View style={stylesFilter.field}>
+                            <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby1}
+                                    onValueChange={(v)=> setsortby1(v)}
+                                    value={sortby1}
+                                />
+                            </View>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby2}
+                                    onValueChange={(v)=> setsortby2(v)}
+                                    value={sortby2}
+                                />
+                            </View>
+                        </View>                                                         
+                    </View>
+
+                    {/* Filter */}
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Filter</Text>
+                        <View style={stylesFilter.field2}>
+                            <Text style={stylesFilter.smallTitle}>Status</Text>
+                            {!isPastdue ?
+                                <View style={stylesFilter.field}>
+                                    <RadioBtn label="All" selected={status === "All"} onPress={()=>setStatus("All")}/>
+                                    <RadioBtn label="Submitted" selected={status === "Submitted"} onPress={()=>setStatus("Submitted")}/>
+                                    <RadioBtn label="Not submitted" selected={status === "Not submitted"} onPress={()=>setStatus("Not submitted")}/>
+                                </View>
+                                :
+                                <>
+                                    <View style={stylesFilter.field}>
+                                        <RadioBtn label="All" selected={status === "All"} onPress={()=>setStatus("All")}/>                                  
+                                    </View>
+                                    <View style={stylesFilter.field}>                                        
+                                        <RadioBtn label="Late" selected={status === "Late"} onPress={()=>setStatus("Late")}/>
+                                        <RadioBtn label="On time" selected={status === "On time"} onPress={()=>setStatus("On time")}/>
+                                        <RadioBtn label="Not submitted" selected={status === "Not submitted"} onPress={()=>setStatus("Not submitted")}/>
+                                    </View>
+                                </>
+                            }
+                        </View>
+                        <View style={stylesFilter.bottom}>
+                            <ButtonWhite title={"Clear"} action={clearAll}/>
+                            <ButtonGreen title={"Save"} action={handleSave}/>
+                        </View>                                                         
+                    </View>
+
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    )
+}
+
+export const FilterStudentProgress = ({
+    dataFilter=[], setDataFilter=()=>{},
+    onPressCancel,
+})=>{
+    // Sort
+    const [sortby1, setsortby1] = useState(dataFilter?.sortby || 0)
+    const [sortby2, setsortby2] = useState(dataFilter?.sortway || 0)
+    const listSortby1 = [
+        { label: "None", value: 0},
+        { label: "Name", value: "fullName"},
+        { label: "Finish assignment", value: "finishedAssignmentCount"},
+        { label: "Finish lecture", value: "finishedLectureCount"},
+    ]
+    const listSortby2 = [
+        { label: "None", value: 0},
+        { label: "Asc", value: 1},
+        { label: "Des", value: 2},
+    ]
+    const clearAll = ()=>{
+        setsortby1(0)
+        setsortby2(0)
+        onPressCancel()
+    }
+
+    const handleSave =()=>{
+        setDataFilter({
+            sortby: sortby1,
+            sortway: sortby2,
+        })
+        onPressCancel()
+    }
+
+    return(
+        <TouchableWithoutFeedback>
+            <View style={stylesFilter.wrapFilter}>
+                <View style={stylesFilter.innerFilter}>
+                    {/* Sort */}
+                    <TouchableOpacity style={stylesFilter.btnClose} onPress={onPressCancel}>
+                        <AntDesign name="close" size={24} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <View style={stylesFilter.container}>
+                        <Text style={[commonStyles.title, { fontSize: 24}]}>Sort</Text>
+                        <View style={stylesFilter.field}>
+                            <Text style={stylesFilter.smallTitle}>Sort by</Text>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby1}
+                                    onValueChange={(v)=> setsortby1(v)}
+                                    value={sortby1}
+                                />
+                            </View>
+                            <View style={stylesFilter.comboBox}>
+                                <RNPickerSelect
+                                    items={listSortby2}
+                                    onValueChange={(v)=> setsortby2(v)}
+                                    value={sortby2}
+                                />
+                            </View>
+                        </View>      
+                        <View style={stylesFilter.bottom}>
+                            <ButtonWhite title={"Clear"} action={clearAll}/>
+                            <ButtonGreen title={"Save"} action={handleSave}/>
+                        </View>                                                    
+                    </View>
                 </View>
             </View>
         </TouchableWithoutFeedback>

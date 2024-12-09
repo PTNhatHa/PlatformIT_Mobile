@@ -14,6 +14,7 @@ import CheckBox from "react-native-check-box";
 import { SubmittedCircle } from "../../../components/SubmittedCircle";
 import Feather from '@expo/vector-icons/Feather';
 import { CardStudentDetailAsgm } from "../../../components/CardStudent";
+import { FilterStudentOverview } from "../../../components/Filter";
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -26,7 +27,7 @@ export const TeacherDetailAsgm = ({route})=>{
     const [listQuestion, setListQuestion] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [index, setIndex] = useState(1)
-    const numberItem = 2
+    const numberItem = 5
 
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [overviewData, setOverviewData] = useState({})
@@ -36,12 +37,15 @@ export const TeacherDetailAsgm = ({route})=>{
         { label: 'Not Submitted', value: 0, color: COLORS.lightText }, // Đỏ
     ])
     const [currentPageStudent, setCurrentPageStudent] = useState(1)
+    const [currentOverview, setCurrentOverview] = useState([])
+    const [search, setSearch] = useState("")
+    const [filterStudent, setFilterStudent] = useState([])
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
     };
     const getPageDataStudent = () => {
-        return overviewData.submissions.slice((currentPage-1) * numberItem, currentPage * numberItem);
+        return currentOverview.slice((currentPageStudent-1) * numberItem, currentPageStudent * numberItem);
     };
     
     const fetchDetailAsgm = async()=>{
@@ -57,6 +61,7 @@ export const TeacherDetailAsgm = ({route})=>{
                 const overView = await getOverviewAssignment(idAssignment, response.idCourse)
                 if(overView){
                     setOverviewData(overView)
+                    setCurrentOverview(overView.submissions)
                     setOverviewCircle([
                         { label: 'On Time', 
                             value: overView.submittedCount, 
@@ -133,7 +138,68 @@ export const TeacherDetailAsgm = ({route})=>{
         }
         }
     }
-        
+    
+    const handleFilter = (initData, filterList)=>{
+        let newData = [...initData] || []
+        if(filterList?.sortby !== null && filterList?.sortway !== null){
+            newData = newData?.sort((a,b) => {
+                const field = filterList?.sortby
+                const aValue = a[field]
+                const bValue = b[field]
+                if(filterList?.sortway === 1){
+                    //Asc
+                    if(aValue === null) return -1
+                    if(bValue === null) return 1
+                    if(aValue === null && bValue === null) return 0
+                    return aValue.localeCompare(bValue)
+                }
+                if(filterList?.sortway === 2){
+                    //Desc
+                    if(aValue === null) return 1
+                    if(bValue === null) return -1
+                    if(aValue === null && bValue === null) return 0
+                    return bValue.localeCompare(aValue);
+                }
+                return 0
+            })
+        }
+        // status
+        newData = newData?.filter(item =>{
+            if(filterList.status === "Not submitted"){
+                return item.status === null
+            }
+            if(filterList.status === "Submitted" || filterList.status === "On time"){
+                return item.status === 1 || item.status === 3
+            }
+            if(filterList.status === "Late"){
+                return item.status === 2
+            }
+            return item
+        })
+        return newData || []
+    }
+    const handleSearch =(initData, searchText)=>{
+        let newData = [...initData]
+        if(searchText !== null){
+            return newData.filter(item => {
+                return item.nameStudent?.toLowerCase().includes(searchText.toLowerCase()) ||
+                        formatDateTime(new Date(item.submittedDate), true).includes(searchText)
+            })
+        }
+        return []
+    }
+
+    useEffect(()=>{
+        if(index === 2){
+            let result = overviewData.submissions ? [...overviewData.submissions] : []
+            if(filterStudent){
+                result = handleFilter(result, filterStudent)
+            }
+            result = handleSearch(result, search)
+            setCurrentOverview(result)
+        }
+    }, [search, filterStudent])
+
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -295,7 +361,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 <Text style={[styles.textGray12, styles.textAlignRight]}>Not submitted</Text>
                                             </View>
                                         </View>
-                                        {(data.dueDate && data.courseEndDate && new Date() <= new Date(data.dueDate) && new Date(data.courseEndDate)) &&
+                                        {((data.dueDate && new Date() > new Date(data.dueDate)) || (data.courseEndDate  && new Date() > new Date(data.courseEndDate))) &&
                                             <View style={styles.borderRight}>
                                                 <Text style={[styles.textBBlack18, styles.textAlignRight]}>
                                                     {overviewData.totalStudents - overviewData.notSubmittedCount - overviewData.submittedCount}
@@ -311,7 +377,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                             <View style={styles.wrapFlex}>
                                                 <View style={[styles.circleStatus, styles.bgGreen]}/>
                                                 <Text style={[styles.textGray12, styles.textAlignRight]}>
-                                                    {(data.dueDate && data.courseEndDate && new Date() <= new Date(data.dueDate) && new Date(data.courseEndDate)) ? 
+                                                    {((data.dueDate && new Date() > new Date(data.dueDate)) || (data.courseEndDate  && new Date() > new Date(data.courseEndDate))) ? 
                                                         "On time" : "Submitted"}
                                                 </Text>
                                             </View>
@@ -321,10 +387,10 @@ export const TeacherDetailAsgm = ({route})=>{
                                 <View style={styles.container}>
                                     <View style={styles.wrapperSearch}>
                                         <TextInput
-                                            value={"search"}
+                                            value={search}
                                             style={styles.input}
                                             placeholder={"Search"}
-                                            onChangeText={(value)=>{}}
+                                            onChangeText={(value)=>setSearch(value)}
                                         />
                                         <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
                                             <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
@@ -332,11 +398,11 @@ export const TeacherDetailAsgm = ({route})=>{
                                     </View>
                                     <View style={styles.wrapList}>
                                         {getPageDataStudent().map(student=>
-                                            <CardStudentDetailAsgm data={student} key={student.idStudent}/>
+                                            <CardStudentDetailAsgm data={student} key={student.idStudent} isPastDue={((data.dueDate && new Date() > new Date(data.dueDate)) || (data.courseEndDate  && new Date() > new Date(data.courseEndDate)))}/>
                                         )}
                                         {/* paginage */}
                                         <View style={styles.bottom}>
-                                            {getPagination(overviewData.submissions, currentPageStudent).map((page, index) => 
+                                            {getPagination(currentOverview, currentPageStudent).map((page, index) => 
                                                 page !== "..." ? 
                                                 <TouchableOpacity 
                                                     style={[styles.wrapNumber, page === currentPageStudent && {backgroundColor: COLORS.main}]} 
@@ -375,6 +441,14 @@ export const TeacherDetailAsgm = ({route})=>{
                     </TouchableOpacity>
                     <Image source={{uri: selectFile}} style={styles.selectImg}/>
                 </View>
+            </Modal>
+            <Modal
+                visible={isOpenModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={()=>setIsOpenModal(false)}
+            >
+                <FilterStudentOverview dataFilter={filterStudent} setDataFilter={setFilterStudent} onPressCancel={()=>setIsOpenModal(false)}/>
             </Modal>
         </View>
     )

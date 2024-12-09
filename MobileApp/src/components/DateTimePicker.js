@@ -26,6 +26,7 @@ export const DateTimePickerComponent = ({
                         style={styles.input}
                         value={value ? formatDateTime(new Date(value)) : null}
                         editable={false}
+                        placeholder='Pick a date'
                     />
                     <TouchableOpacity onPress={()=>setShow(true)}>
                         <Feather name="calendar" size={20} color={isChoose?"black":COLORS.lightText} />
@@ -47,12 +48,13 @@ const styles = StyleSheet.create({
     container: {
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        paddingVertical: 8,
-        minWidth: 130,
+        // paddingVertical: 8,
+        // minWidth: 130,
     },
     input:{
         fontSize: 16,
-        color: "black"
+        color: "black",
+        flex: 1
     },
     error:{
         color: "#C00F0C"

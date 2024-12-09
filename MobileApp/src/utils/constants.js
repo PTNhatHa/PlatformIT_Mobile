@@ -65,3 +65,5 @@ export const AssignmentItemAnswerType = {
     1: "Text",
     2: "Attach file",
 }
+
+//1: On time, 2: Late, 3: Submitted

@@ -17,7 +17,7 @@ const initStudent={
     doneAsgm: 4,
     assignment: 10
 }
-export const CardStudentAttendance = ({data = initStudent, lectureCount, assignmentCount})=>{
+export const CardStudentAttendance = ({data = initStudent, lectureCount, assignmentCount, idCourse})=>{
     const navigation = useNavigation()
     let progressLecture = "100%"
     let progressAsgm = "100%"
@@ -28,7 +28,10 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
         progressAsgm = (data.finishedAssignmentCount/assignmentCount*100) + "%"
     }
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance")} key={data.idStudent}>
+        <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance", {
+            idStudent: data.idStudent, 
+            idCourse: idCourse
+        })} key={data.idStudent}>
             <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View>
                 <Text style={styles.title}>{data.fullName}</Text>
