@@ -154,8 +154,7 @@ export const CardAssignment = ({
                 onPress={()=> {
                     if(role === 1 && !data.isPublish){
                         handelEdit()
-                    }
-                    if(role === 1 && data.isPublish){
+                    } else if(role === 1 && data.isPublish){
                         navigation.navigate("Detail Assignment", { 
                             idAssignment: data.idAssignment,
                             isPastDue: data.isPastDue,

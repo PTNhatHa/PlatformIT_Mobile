@@ -107,6 +107,14 @@ const StackMyCourseScreen = ()=>{
                 name="Create Exercise"
                 component={TeacherAsgmCreate}
             />
+            <StackMyCourse.Screen
+                name="Edit Assignment"
+                component={TeacherAsgmCreate}
+            />
+            <StackMyCourse.Screen
+                name="Detail Assignment"
+                component={TeacherDetailAsgm}
+            />
 
             <StackMyCourse.Screen
                 name="Detail Course"

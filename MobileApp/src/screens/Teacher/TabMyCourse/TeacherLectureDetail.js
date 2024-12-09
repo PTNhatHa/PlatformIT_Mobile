@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getLectureDetail } from "../../../services/lecture";
 import { getCourseContentStructure } from "../../../services/course";
+import { GetExerciseOfLecture } from "../../../services/assignment";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const init = {
     idLecture: 1,
@@ -43,6 +45,9 @@ export const TeacherLectureDetail = ({route})=>{
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
     const [courseContent, setCourseContent] = useState([])
+    const [isEditMode, setIsEditMode] = useState(false)
+    const [exercises, setExercises] = useState([])
+    const [isOpenSetting, setIsOpentSetting] = useState(false)
     
     const fetchDetailLecture = async()=>{
         try {
@@ -83,9 +88,23 @@ export const TeacherLectureDetail = ({route})=>{
             console.log("Error: ", error);
         }
     }
+    const fetchExercise = async()=>{
+        setLoading(true)
+        try {
+            const response = await GetExerciseOfLecture(selectLecture.idLecture)
+            if(response){
+                setExercises([...response])
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
     useEffect(()=>{
         setLoading(true)
         fetchDetailLecture()
+        fetchExercise()
     }, [])
 
     useEffect(()=>{
@@ -188,96 +207,92 @@ export const TeacherLectureDetail = ({route})=>{
             <TouchableOpacity style={styles.btnMenu} onPress={()=>setIsOpentMenu(true)}>
                 <Entypo name="menu" size={24} color="black" />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.btnSetting} onPress={()=>setIsOpentSetting(!isOpenSetting)}>
+                <Ionicons name="settings-sharp" size={24} color="black" />
+            </TouchableOpacity>
+            {isOpenSetting &&
+                <>
+                    <TouchableOpacity style={[styles.btnSetting, styles.btnEdit, isEditMode && styles.btnActive]} onPress={()=>setIsEditMode(!isEditMode)}>
+                        <MaterialIcons name="mode-edit" size={24} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.btnSetting, styles.btnDelete]} onPress={()=>{}}>
+                        <MaterialIcons name="delete" size={24} color="black" />
+                    </TouchableOpacity>
+                </>
+            }
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
                     <Text style={styles.title}>{data.courseTitle}</Text>
-                </View>
+                </View>                
                 <View style={styles.main}>
                     <View style={styles.wrapper}>
-                        <Text style={styles.title}>Edit lecture</Text>
-                    </View>
-                    <View style={styles.nav}>
-                        <TouchableOpacity onPress={()=>setIndex(1)}>
-                            <Text style={index === 1 ? styles.navTextActive : styles.navText}>Information</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>setIndex(2)}>
-                            <Text style={index === 2 ? styles.navTextActive : styles.navText}>Content</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>setIndex(3)}>
-                            <Text style={index === 3 ? styles.navTextActive : styles.navText}>Exercise</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>setIndex(4)}>
-                            <Text style={index === 4 ? styles.navTextActive : styles.navText}>Comment</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {/* Information */}
-                    {index === 1 &&
-                        <View style={styles.wrapper}>                    
-                            <TextInputLabelGray 
-                                placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
-                                onchangeText={(v)=>setData({
-                                    ...data,
-                                    lectureTitle: v
-                                })}
-                            />                            
-                            <TextInputLabelGray 
-                                placeholder={"Introduction"} label={"Introduction"} value={data.lectureIntroduction} multiline={true}
-                                onchangeText={(v)=>setData({
-                                    ...data,
-                                    lectureIntroduction: v
-                                })} 
-                            />                       
-                            <View style={styles.wrapBtn}>
-                                <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
-                                    <Text style={styles.textWhite14}>Save changes</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.btn]}>
-                                    <Text style={styles.textGray14}>Delete this lecture</Text>
-                                </TouchableOpacity>
-                            </View>                           
+                        <View>
+                            <Text style={styles.title}>{isEditMode ? "Edit lecture" : data.lectureTitle}</Text>
+                            {isEditMode ?                                 
+                                <View style={styles.wrapBtn}>
+                                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
+                                        <Text style={styles.textWhite14}>Save changes</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.btn]} onPress={()=>{
+                                        setLoading(true)
+                                        fetchDetailLecture()
+                                    }}>
+                                        <Text style={styles.textGray14}>Discard changes</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                :
+                                <>
+                                
+                                </>
+                            }
                         </View>
-                    }
-
-                    {/* Content */}
-                    {index === 2 &&
-                        <View style={styles.wrapper}>
-                            <View style={styles.containerGray}>
-                                <View style={styles.wrapFlex}>
-                                    <Text style={styles.label}>Lecture video</Text>
-                                    {data.videoMaterial &&
-                                        <TouchableOpacity 
-                                            onPress={()=>setData({
-                                                ...data,
-                                                videoMaterial: null
-                                            })} 
-                                            style={[styles.btnText]}
-                                        >
-                                            <MaterialIcons name="delete" size={20} color={COLORS.red} />
-                                        </TouchableOpacity>
-                                    }
+                        {isEditMode && <TextInputLabelGray 
+                            placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
+                            onchangeText={(v)=>setData({
+                                ...data,
+                                lectureTitle: v
+                            })}
+                        />}
+                        <View style={styles.containerGray}>
+                            <View style={styles.wrapFlex}>
+                            {isEditMode && <Text style={styles.label}>Lecture video</Text>}
+                                {(data.videoMaterial && isEditMode) &&
+                                    <TouchableOpacity 
+                                        onPress={()=>setData({
+                                            ...data,
+                                            videoMaterial: null
+                                        })} 
+                                        style={[styles.btnText]}
+                                    >
+                                        <MaterialIcons name="delete" size={20} color={COLORS.red} />
+                                    </TouchableOpacity>
+                                }
+                                {isEditMode &&
                                     <TouchableOpacity onPress={()=>onChangeVideo()} style={[styles.btnText]}>
                                         <MaterialIcons name="upload-file" size={20} color="black" />
                                     </TouchableOpacity>
-                                </View>
-                                {data.videoMaterial ? 
-                                    <Video
-                                        source={{ uri: data.videoMaterial.path }}
-                                        style={styles.contentVideo}
-                                        useNativeControls
-                                        resizeMode="contain"
-                                    />
-                                    :
-                                    <Image source={DefaultImg} style={styles.contentVideo}/>
                                 }
-                            </View>                     
-                            <View style={styles.containerGray}>
-                                <Text style={styles.label}>Materials</Text>
-                                {data.mainMaterials?.length > 0 ?
-                                    <View style={styles.wrapFlex}>
-                                        <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
-                                            <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
-                                        </TouchableOpacity>
+                            </View>
+                            {data.videoMaterial ? 
+                                <Video
+                                    source={{ uri: data.videoMaterial.path }}
+                                    style={styles.contentVideo}
+                                    useNativeControls
+                                    resizeMode="contain"
+                                />
+                                : isEditMode ?
+                                    <Image source={DefaultImg} style={styles.contentVideo}/>
+                                :""
+                            }
+                        </View>                     
+                        <View style={styles.containerGray}>
+                            {isEditMode && <Text style={styles.label}>Materials</Text>}
+                            {data.mainMaterials?.length > 0 ?
+                                <View style={styles.wrapFlex}>
+                                    <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
+                                        <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
+                                    </TouchableOpacity>
+                                    {isEditMode && 
                                         <TouchableOpacity 
                                             onPress={()=>setData({
                                                 ...data,
@@ -287,54 +302,89 @@ export const TeacherLectureDetail = ({route})=>{
                                         >
                                             <MaterialIcons name="delete" size={24} color={COLORS.red} />
                                         </TouchableOpacity>
-                                    </View>
-                                    :
+                                    }
+                                </View>
+                                : isEditMode ? 
                                     <TouchableOpacity onPress={()=>onChangeMaterial()} style={[styles.btnText]}>
                                         <MaterialIcons name="upload-file" size={20} color="black" />
                                         <Text>Attach file</Text>
                                     </TouchableOpacity>
-                                }
-                            </View>                         
+                                : ""
+                            }
+                        </View>  
+                    </View>
+                    <View style={styles.nav}>
+                        <TouchableOpacity onPress={()=>setIndex(1)}>
+                            <Text style={index === 1 ? styles.navTextActive : styles.navText}>Introduction</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>setIndex(2)}>
+                            <Text style={index === 2 ? styles.navTextActive : styles.navText}>Sup materials</Text>
+                        </TouchableOpacity>
+                        {!isEditMode &&
+                            <>
+                                <TouchableOpacity onPress={()=>setIndex(3)}>
+                                    <Text style={index === 3 ? styles.navTextActive : styles.navText}>Exercise</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={()=>setIndex(4)}>
+                                    <Text style={index === 4 ? styles.navTextActive : styles.navText}>Comment</Text>
+                                </TouchableOpacity>
+                            </>
+                        }
+                    </View>
+
+                    {/* Information */}
+                    {index === 1 &&
+                        <View style={styles.wrapper}> 
+                            {isEditMode ?
+                                <TextInputLabelGray 
+                                    placeholder={"Introduction"} label={"Introduction"} value={data.lectureIntroduction} multiline={true}
+                                    onchangeText={(v)=>setData({
+                                        ...data,
+                                        lectureIntroduction: v
+                                    })} 
+                                /> 
+                                :
+                                <Text style={styles.textGray12}>{data.lectureIntroduction}</Text>                              
+                            }                                                   
+                                                      
+                        </View>
+                    }
+
+                    {/* Content */}
+                    {index === 2 &&
+                        <View style={styles.wrapper}>
+                                                   
                             <View style={styles.containerGray}>
-                                <Text style={styles.label}>Supporting materials</Text>
+                                {isEditMode && <Text style={styles.label}>Supporting materials</Text>}                                
                                 {data.supportMaterials?.length > 0 &&
                                     data.supportMaterials.map((item, index) => 
                                         <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
                                             <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
                                                 <Text numberOfLines={1}>{item.fileName}</Text>
                                             </TouchableOpacity>
-                                            <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
-                                                <MaterialIcons name="delete" size={24} color={COLORS.red} />
-                                            </TouchableOpacity>
+                                            {isEditMode && 
+                                                <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
+                                                    <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                                </TouchableOpacity>
+                                            }
                                         </View>
                                 )}
-                                <TouchableOpacity onPress={()=>addSupportMaterial()} style={[styles.btnText]}>
-                                    <MaterialIcons name="upload-file" size={20} color="black" />
-                                    <Text>Attach file</Text>
-                                </TouchableOpacity>
-                            </View>    
-                            <View style={styles.wrapBtn}>
-                                <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
-                                    <Text style={styles.textWhite14}>Save changes</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.btn]} onPress={()=>{
-                                    setLoading(true)
-                                    fetchDetailLecture()
-                                }}>
-                                    <Text style={styles.textGray14}>Discard changes</Text>
-                                </TouchableOpacity>
-                            </View>                        
+                                {isEditMode && 
+                                    <TouchableOpacity onPress={()=>addSupportMaterial()} style={[styles.btnText]}>
+                                        <MaterialIcons name="upload-file" size={20} color="black" />
+                                        <Text>Attach file</Text>
+                                    </TouchableOpacity>
+                                }
+                            </View>                                                       
                         </View>
                     }
 
                     {/* Exercise */}
-                    {index === 3 &&
+                    {(index === 3 && !isEditMode) &&
                         <View style={styles.wrapper}>
-                            <CardAssignment isNoBoder={true}/>
-                            <CardAssignment isNoBoder={true}/>
                             <ButtonIconLightGreen 
                                 title={"Add new exercise"} icon={<Entypo name="plus" size={18} color={COLORS.main}/>}
-                                action={()=>navigation.navigate("Create Test", {
+                                action={()=>navigation.navigate("Create Exercise", {
                                     idCourse: data.idCourse, 
                                     nameCourse: data.courseTitle,
                                     isLimitedTime: isLimitedTime === true ? 1 : 0,
@@ -348,11 +398,14 @@ export const TeacherLectureDetail = ({route})=>{
                                     nameLecture: selectLecture.lectureTitle
                                 })}
                             />
+                            {exercises.map(exercise => 
+                                <CardAssignment role={1} isDetail={true} data={exercise} isNoBoder={true} key={exercise.idAssignment} isStudentExercise={true}/>
+                            )}
                         </View>
                     }
 
                     {/* Comment */}
-                    {index === 4 &&
+                    {(index === 4 && !isEditMode) &&
                         <View style={[styles.wrapper]}>
                             <Comments/>
                         </View>
@@ -375,6 +428,7 @@ export const TeacherLectureDetail = ({route})=>{
                     </ScrollView>
                 </View>
             </Modal>
+            
             {loading &&
                 <View style={styles.wrapLoading}>
                     <ActivityIndicator size="large" color="white" />
@@ -398,6 +452,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: "bold",
+        flex: 1
     },
     main: {
         ...commonStyles.shadow,
@@ -427,7 +482,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.7,
         borderColor: COLORS.lightText,
         flexDirection: "row",
-        gap: 20
+        gap: 16
     },
     navText: {
         fontSize: 14,
@@ -568,4 +623,30 @@ const styles = StyleSheet.create({
         margin: 16,
         zIndex: 1
     },
+    btnSetting:{
+        ...commonStyles.shadow,
+        backgroundColor: COLORS.main30,
+        width: 50,
+        height: 50,
+        borderRadius: 90,
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        bottom: 60,
+        right: 0,
+        margin: 16,
+        zIndex: 1
+    },
+    btnEdit:{
+        bottom: 120,
+        backgroundColor: COLORS.lightText,
+    },
+    btnDelete:{
+        bottom: 180,
+        backgroundColor: COLORS.lightText,
+    },
+    btnActive:{
+        backgroundColor: "#F8E9AC"
+    }
+
 })
