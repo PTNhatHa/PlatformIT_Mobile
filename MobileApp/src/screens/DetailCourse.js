@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { enrollCourse, getCourseDetail, getCourseProgress, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
+import { enrollCourse, getCourseDetail, getCourseProgress, getCourseProgressByIdStudent, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -31,6 +31,7 @@ import { ModalCourseContent } from "../components/ModalCourseContent"
 import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
 import { isChatAvailable } from "../services/user"
 import { FilterStudentProgress } from "../components/Filter"
+import { ProgressCircle } from "../components/Progress"
 
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
@@ -55,6 +56,8 @@ export const DetailCourse =({route})=>{
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [search, setSearch] = useState("")
     const [filterStudent, setFilterStudent] = useState([])
+
+    const [progress, setProgress] = useState({})
 
     const getCourse = async()=>{
         try {
@@ -153,6 +156,11 @@ export const DetailCourse =({route})=>{
                 const testOfStudent = await getTestOfCourseStudent(state.idUser, idCourse)
                 if(testOfStudent){
                     setStudentTest(testOfStudent)
+                }
+                // Progress
+                const progress = await getCourseProgressByIdStudent(idCourse, state.idUser)
+                if(progress){
+                    setProgress(progress)
                 }
             }
         } catch (error) {
@@ -475,6 +483,11 @@ export const DetailCourse =({route})=>{
                             <Text style={selectBtn === 3 ? styles.selectBtn : styles.normalBtn}>Attendance</Text>
                         </TouchableOpacity>
                     }
+                    {role === 2 &&
+                        <TouchableOpacity style={styles.boardBtn} onPress={()=>setSelectBtn(4)}>
+                            <Text style={selectBtn === 4 ? styles.selectBtn : styles.normalBtn}>Progress</Text>
+                        </TouchableOpacity>
+                    }
                 </View>
                 {selectBtn === 0 ?
                     <>
@@ -589,8 +602,18 @@ export const DetailCourse =({route})=>{
                             )}
                         </View>
                     </View>
-                : 
-                    <></>
+                : selectBtn === 4 ? 
+                    <>
+                        <View style={styles.wrapProgress}>
+                            <ProgressCircle done={progress.courseStudentProgress[0].finishedLectureCount} all={progress.lectureCount}/>
+                            <Text style={styles.nameProgress}>Lecture</Text>
+                        </View>
+                        <View style={styles.wrapProgress}>
+                            <ProgressCircle done={progress.courseStudentProgress[0].finishedAssignmentCount} all={progress.assignmentCount}/>
+                            <Text style={styles.nameProgress}>Assignment</Text>
+                        </View>
+                    </>
+                    :""
                 }
             </View>     
         </ScrollView>
@@ -897,6 +920,15 @@ const styles = StyleSheet.create({
     input:{
         fontSize: 16,
         width: "90%"
+    },
+    wrapProgress:{
+        alignItems: "center",
+        marginVertical: 16
+    },
+    nameProgress:{
+        fontSize: 20,
+        fontWeight: "bold",
+        color: COLORS.main
     },
 })
 

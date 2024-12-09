@@ -3,11 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { COLORS } from '../utils/constants';
 
-export const ProgressCircle = ({done = 7, all = 10})=>{
+export const ProgressCircle = ({done = 0, all = 0})=>{
     const radius = 70; // Bán kính
     const strokeWidth = 18; // Độ dày của viền
     const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (done/all * circumference);
+    const strokeDashoffset = circumference - (done/(all === 0 ? 1 : all) * circumference);
 
     return (
         <View style={styles.container}>
