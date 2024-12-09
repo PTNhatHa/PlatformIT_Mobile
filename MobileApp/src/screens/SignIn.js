@@ -4,7 +4,7 @@ import BoyIT from "../../assets/images/BoyIT.png";
 import { ButtonBlu } from "../components/Button";
 import { TextInputIcon} from "../components/TextInputField";
 import { COLORS } from "../utils/constants";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { signinApi } from "../services/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SET_INFO, useUser } from "../contexts/UserContext";
@@ -16,6 +16,8 @@ import { forgotPassword, getAvaImg, getUserInfo } from "../services/user";
 
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
+import CheckBox from "react-native-check-box";
+import { useFocusEffect } from "@react-navigation/native";
 WebBrowser.maybeCompleteAuthSession();
 
 const { width, height } = Dimensions.get('window');
@@ -49,6 +51,7 @@ export default SignIn = ({navigation}) => {
     const [email, setEmail] = useState("")
     const [errorEmail, setErrorEmail] = useState(null)
     const [isDone, setIsDone] = useState(false)
+    const [isRemember, setIsRemember] = useState(false)
     const handleOnchangeEmail = (v)=>{
         setEmail(v)
         setErrorEmail(null)
@@ -79,16 +82,27 @@ export default SignIn = ({navigation}) => {
         }
     }
 
+    const loadUserData = async()=>{
+        const oldUser = await AsyncStorage.getItem('username')
+        const oldPass = await AsyncStorage.getItem('password')
+        setUsername(oldUser)
+        setPassword(oldPass)
+    }
     useEffect(()=>{
-        const loadUserData = async()=>{
-            const oldUser = await AsyncStorage.getItem('username')
-            const oldPass = await AsyncStorage.getItem('password')
-            setUsername(oldUser)
-            setPassword(oldPass)
-        }
         loadUserData()
     }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            loadUserData()
+        }, [])
+    );
+
     const handleSignin = async ()=>{
+        if(!username || !password){
+            setError("Fill all!")
+            return
+        }
         try{
             setLoading(true);
             setError(null)
@@ -100,8 +114,8 @@ export default SignIn = ({navigation}) => {
                 if(response.status === 2){
                     setError("Your account has been deactivated.")
                 } else{
-                    await AsyncStorage.setItem('username', username)
-                    await AsyncStorage.setItem('password', password)
+                    await AsyncStorage.setItem('username', isRemember ? username : "")
+                    await AsyncStorage.setItem('password', isRemember ? password : "")
                     const ava = await getAvaImg(response.idUser)
                     if(ava){
                         userInfo = {
@@ -135,7 +149,9 @@ export default SignIn = ({navigation}) => {
             setLoading(false);
         }
     }
-
+    useEffect(()=>{
+        setError("")
+    }, [username, password])
     return(
         <>
             <View style={styles.container}>
@@ -178,6 +194,12 @@ export default SignIn = ({navigation}) => {
                             onchangeText={setPassword}
                             error={error}
                             isPassword={true}
+                        />
+                        <CheckBox
+                            isChecked={isRemember}
+                            onClick={()=>setIsRemember(!isRemember)}
+                            checkBoxColor={COLORS.secondMain}
+                            rightText="Remember me"
                         />
                         <TouchableOpacity onPress={()=>setIsForgot(true)}>
                             <Text style={styles.textGray}>Forgot your password?</Text>
