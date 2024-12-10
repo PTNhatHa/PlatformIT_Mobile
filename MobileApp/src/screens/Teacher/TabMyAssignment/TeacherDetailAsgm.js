@@ -6,9 +6,9 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo, getOverviewAssignment } from "../../../services/assignment";
+import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getOverviewAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
-import { formatDateTime } from "../../../utils/utils";
+import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import { SubmittedCircle } from "../../../components/SubmittedCircle";
@@ -43,12 +43,18 @@ export const TeacherDetailAsgm = ({route})=>{
     const [search, setSearch] = useState("")
     const [filterStudent, setFilterStudent] = useState([])
     const [isChangeSetting, setIsChangeSetting] = useState(false)
+    const [currentStudent, setCurrentStudent] = useState(null)
+    const [currentStudentAnswer, setCurrentStudentAnswer] = useState(null)
+    const [currentPageStudentAnswer, setCurrentPageStudentAnswer] = useState(1)
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
     };
     const getPageDataStudent = () => {
         return currentOverview.slice((currentPageStudent-1) * numberItem, currentPageStudent * numberItem);
+    };
+    const getPageDataStudentAnswer = () => {
+        return currentStudentAnswer.slice((currentPageStudentAnswer-1) * numberItem, currentPageStudentAnswer * numberItem);
     };
     
     const fetchDetailAsgm = async()=>{
@@ -79,7 +85,7 @@ export const TeacherDetailAsgm = ({route})=>{
                             color: COLORS.lightText 
                         },
                     ])
-                }
+                }                
             } else {
                 Alert.alert("Error", "Please try again")
                 navigation.goBack()
@@ -205,6 +211,43 @@ export const TeacherDetailAsgm = ({route})=>{
             setCurrentOverview(result)
         }
     }, [search, filterStudent])
+
+    const getStudentAnswer = async(idStudent)=>{
+        setLoading(true)
+        try {
+            // Student Answer
+            const detail = await getDetailAssignmentForStudent(idAssignment, idStudent)
+            if(detail){
+                setCurrentStudent(prev => {
+                    return{
+                        ...prev,
+                        ...detail
+                    }
+                })
+                const answers = await getAssignmentAnswer(idAssignment, idStudent)
+                if(answers){
+                    if(data.assignmentType === 2){
+                        setCurrentStudentAnswer([...answers.detailQuestionResponses.map(question => {
+                            return{
+                                ...question,
+                                items: question.items.map(item => {
+                                    return{
+                                        ...item,
+                                        isSelected: question.selectedOptions.includes(item.idMultipleAssignmentItem),
+                                        isCorect: question.correctOptions.includes(item.idMultipleAssignmentItem),
+                                    }
+                                })
+                            }
+                        })])
+                    }
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
 
     return(
         <View style={styles.wrapContainer}>
@@ -402,41 +445,149 @@ export const TeacherDetailAsgm = ({route})=>{
                                         </View>
                                     </View>
                                 </View>
-                                <View style={styles.container}>
-                                    <View style={styles.wrapperSearch}>
-                                        <TextInput
-                                            value={search}
-                                            style={styles.input}
-                                            placeholder={"Search"}
-                                            onChangeText={(value)=>setSearch(value)}
-                                        />
-                                        <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
-                                            <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View style={styles.wrapList}>
-                                        {getPageDataStudent().map(student=>
-                                            <CardStudentDetailAsgm data={student} key={student.idStudent} isPastDue={((data.dueDate && new Date() > new Date(data.dueDate)) || (data.courseEndDate  && new Date() > new Date(data.courseEndDate)))}/>
-                                        )}
-                                        {/* paginage */}
-                                        <View style={styles.bottom}>
-                                            {getPagination(currentOverview, currentPageStudent).map((page, index) => 
-                                                page !== "..." ? 
-                                                <TouchableOpacity 
-                                                    style={[styles.wrapNumber, page === currentPageStudent && {backgroundColor: COLORS.main}]} 
-                                                    onPress={()=>setCurrentPageStudent(page)}
-                                                    key={index}
-                                                >
-                                                    <Text style={[styles.bottomNumber, page === currentPageStudent && {color: "white"}]}>{page}</Text>
-                                                </TouchableOpacity>
-                                                :
-                                                <View style={styles.wrapNumber} key={index}>
-                                                    <Text style={styles.bottomNumber}>{page}</Text>
-                                                </View>
+                                
+                                {!currentStudentAnswer ?
+                                    <View style={styles.container}>
+                                        <View style={styles.wrapperSearch}>
+                                            <TextInput
+                                                value={search}
+                                                style={styles.input}
+                                                placeholder={"Search"}
+                                                onChangeText={(value)=>setSearch(value)}
+                                            />
+                                            <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
+                                                <Feather name="sliders" size={24} color={COLORS.stroke}  style={{ transform: [{ rotate: '-90deg' }] }}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <View style={styles.wrapList}>
+                                            {getPageDataStudent().map(student=>
+                                                <CardStudentDetailAsgm 
+                                                    data={student} key={student.idStudent} 
+                                                    isPastDue={((data.dueDate && new Date() > new Date(data.dueDate)) || (data.courseEndDate  && new Date() > new Date(data.courseEndDate)))}
+                                                    onPress={()=>{
+                                                            if(!student.status){
+                                                                Alert.alert("Noti", "This student has not submitted the assignment yet.")
+                                                            } else {
+                                                                getStudentAnswer(student.idStudent)
+                                                                setCurrentStudent({
+                                                                    idStudent: student.idStudent,
+                                                                    nameStudent: student.nameStudent
+                                                                })
+                                                            }
+                                                        }
+                                                    }
+                                                />
                                             )}
+                                            {/* paginage */}
+                                            <View style={styles.bottom}>
+                                                {getPagination(currentOverview, currentPageStudent).map((page, index) => 
+                                                    page !== "..." ? 
+                                                    <TouchableOpacity 
+                                                        style={[styles.wrapNumber, page === currentPageStudent && {backgroundColor: COLORS.main}]} 
+                                                        onPress={()=>setCurrentPageStudent(page)}
+                                                        key={index}
+                                                    >
+                                                        <Text style={[styles.bottomNumber, page === currentPageStudent && {color: "white"}]}>{page}</Text>
+                                                    </TouchableOpacity>
+                                                    :
+                                                    <View style={styles.wrapNumber} key={index}>
+                                                        <Text style={styles.bottomNumber}>{page}</Text>
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
+                                    :
+                                    <>
+                                        <View style={styles.container}>
+                                            <TouchableOpacity style={styles.wrapFlex} onPress={()=>{
+                                                setCurrentStudent(null)
+                                                setCurrentStudentAnswer(null)    
+                                            }}>
+                                                <AntDesign name="left" size={18} color="black" />
+                                                <Text style={styles.textBlack16}>Answer sheet</Text>
+                                            </TouchableOpacity>
+                                            <View style={styles.wrapDetail}>
+                                                <Text style={styles.textBBlack18}>{currentStudent.nameStudent}</Text>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray16}>Submitted at</Text>
+                                                    <Text style={styles.textBlack16}>{formatDateTime(currentStudent.submittedDate, true, true)}</Text>
+                                                </View>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray16}>Status</Text>
+                                                    {currentStudent.resultStatus === 1 ?
+                                                        <Text style={[styles.boxStatus, styles.boxGreen]}>On time</Text>
+                                                        : currentStudent.resultStatus === 2 ?
+                                                            <Text style={[styles.boxStatus, styles.boxYellow]}>Late</Text>
+                                                        :
+                                                            <Text style={[styles.boxStatus, styles.boxGreen]}>Submitted</Text>
+                                                    }
+                                                </View>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray16}>Marks</Text>
+                                                    <Text style={styles.textBlack16}>{currentStudent.totalMark}/{currentStudent.assignmentMark}</Text>
+                                                </View>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray16}>Duration</Text>
+                                                    <Text style={styles.textBlack16}>{formatTime(currentStudent.resultDuration)} minutes</Text>
+                                                </View> 
+                                            </View>
+                                            {getPageDataStudentAnswer()?.map((question, index) =>     
+                                                <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
+                                                    <View style={styles.headerQ}>
+                                                        <Text style={styles.title}>Question {index + (currentPageStudentAnswer - 1) * numberItem + 1}</Text>
+                                                        <Text style={styles.textGray12}>{question.studentMark}/{question.questionMark} mark</Text>
+                                                    </View>
+                                                    <Text style={styles.questionContent}>{question.question}</Text>
+                                                    {question.attachedFile && 
+                                                        <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                                            <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
+                                                        </TouchableOpacity>
+                                                    }
+                                                    <View>
+                                                        <Text style={styles.textGray12}>Choices:</Text>
+                                                        {question.isMultipleAnswer === 0 ?
+                                                            question.items.map(item => 
+                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                    <RadioView selected={item.isSelected}/>  
+                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                </View>
+                                                            )
+                                                            :
+                                                            question.items.map(item => 
+                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                    <CheckBox
+                                                                        isChecked={item.isSelected}
+                                                                        checkBoxColor={COLORS.secondMain}
+                                                                        onClick={()=>{}}
+                                                                    />
+                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                </View>
+                                                            )
+                                                        }
+                                                    </View>
+                                                </View>
+                                            )}   
+                                            {/* paginage */}
+                                            <View style={styles.bottom}>
+                                                {getPagination(currentStudentAnswer, currentPageStudentAnswer).map((page, index) => 
+                                                    page !== "..." ? 
+                                                    <TouchableOpacity 
+                                                        style={[styles.wrapNumber, page === currentPageStudentAnswer && {backgroundColor: COLORS.main}]} 
+                                                        onPress={()=>setCurrentPageStudentAnswer(page)}
+                                                        key={index}
+                                                    >
+                                                        <Text style={[styles.bottomNumber, page === currentPageStudentAnswer && {color: "white"}]}>{page}</Text>
+                                                    </TouchableOpacity>
+                                                    :
+                                                    <View style={styles.wrapNumber} key={index}>
+                                                        <Text style={styles.bottomNumber}>{page}</Text>
+                                                    </View>
+                                                )}
+                                            </View>        
+                                        </View>
+                                    </>
+                                }
                             </>
                         }
                         
@@ -503,6 +654,9 @@ const styles = StyleSheet.create({
     container:{
         padding: 16,
     },
+    containerHorizontal:{
+        paddingHorizontal: 16,
+    },
     wrapContent:{
         ...commonStyles.shadow,
         backgroundColor: "white",
@@ -541,7 +695,7 @@ const styles = StyleSheet.create({
     wrapFlex:{
         flexDirection: "row",
         alignItems: "center",
-        gap: 4
+        gap: 4,
     },
     wrapDetail:{
         marginVertical: 4,
@@ -757,5 +911,15 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
+    },
+    boxColorGreen:{
+        backgroundColor: "#B2E0C8",
+    },
+    boxColorRed:{
+        backgroundColor: "#E6B1B0",
+    },
+    boxChoice:{
+        flex: 1,
+        borderRadius: 2
     },
 })

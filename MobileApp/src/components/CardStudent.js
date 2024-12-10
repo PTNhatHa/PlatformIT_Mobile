@@ -57,10 +57,10 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
         </TouchableOpacity>
     )
 }
-export const CardStudentDetailAsgm = ({data = initStudent, isPastDue = 0})=>{
+export const CardStudentDetailAsgm = ({data = initStudent, isPastDue = 0, onPress=()=>{}})=>{
     const navigation = useNavigation()
     return(
-        <TouchableOpacity style={styles.container} onPress={()=> {}}>
+        <TouchableOpacity style={styles.container} onPress={()=>onPress()}>
             <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
             <View style={styles.wrapFull}>
                 <Text style={styles.title}>{data.nameStudent}</Text>
