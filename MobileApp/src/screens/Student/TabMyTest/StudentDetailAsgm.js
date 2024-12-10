@@ -409,6 +409,7 @@ const styles = StyleSheet.create({
     questionContent:{
         fontSize: 16,
         fontWeight: "500",
+        textAlign: "justify"
     },
     questionImg:{
         backgroundColor: COLORS.lightGray,

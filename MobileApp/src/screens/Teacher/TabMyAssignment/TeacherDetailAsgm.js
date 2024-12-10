@@ -17,6 +17,7 @@ import { CardStudentDetailAsgm } from "../../../components/CardStudent";
 import { FilterStudentOverview } from "../../../components/Filter";
 import { CustomSwitch } from "../../../components/CustomSwitch";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { TextInputLabelGray } from "../../../components/TextInputField";
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -225,7 +226,11 @@ export const TeacherDetailAsgm = ({route})=>{
                     }
                 })
                 const answers = await getAssignmentAnswer(idAssignment, idStudent)
+                console.log(answers);
                 if(answers){
+                    if(data.assignmentType === 1){
+                        setCurrentStudentAnswer([...answers.detailQuestionResponses])
+                    }
                     if(data.assignmentType === 2){
                         setCurrentStudentAnswer([...answers.detailQuestionResponses.map(question => {
                             return{
@@ -405,7 +410,8 @@ export const TeacherDetailAsgm = ({route})=>{
                                 </View>
                             </View>
                             :
-                            <>                                 
+                            <>                            
+                                {/* Overview */}
                                 <View style={[styles.container, styles.wrapTopOverview]}>
                                     <View style={styles.wrapFlex}>
                                         <SubmittedCircle data={overviewCircle}/>
@@ -500,13 +506,18 @@ export const TeacherDetailAsgm = ({route})=>{
                                     :
                                     <>
                                         <View style={styles.container}>
-                                            <TouchableOpacity style={styles.wrapFlex} onPress={()=>{
-                                                setCurrentStudent(null)
-                                                setCurrentStudentAnswer(null)    
-                                            }}>
-                                                <AntDesign name="left" size={18} color="black" />
-                                                <Text style={styles.textBlack16}>Answer sheet</Text>
-                                            </TouchableOpacity>
+                                            <View style={styles.wrapFlexJustify}>
+                                                <TouchableOpacity style={styles.wrapFlex} onPress={()=>{
+                                                    setCurrentStudent(null)
+                                                    setCurrentStudentAnswer(null)    
+                                                }}>
+                                                    <AntDesign name="left" size={18} color="black" />
+                                                    <Text style={styles.textBlack16}>Answer sheet</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity style={styles.btnBorderGray} onPress={()=>{}}>
+                                                    <Text style={styles.textWhite14}>Save Grade</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                             <View style={styles.wrapDetail}>
                                                 <Text style={styles.textBBlack18}>{currentStudent.nameStudent}</Text>
                                                 <View style={styles.wrapFlex}>
@@ -532,42 +543,73 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     <Text style={styles.textBlack16}>{formatTime(currentStudent.resultDuration)} minutes</Text>
                                                 </View> 
                                             </View>
+
                                             {getPageDataStudentAnswer()?.map((question, index) =>     
                                                 <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                                     <View style={styles.headerQ}>
                                                         <Text style={styles.title}>Question {index + (currentPageStudentAnswer - 1) * numberItem + 1}</Text>
-                                                        <Text style={styles.textGray12}>{question.studentMark}/{question.questionMark} mark</Text>
+                                                        <Text style={styles.textGray12}>{ question.studentMark && `${question.studentMark}/`}{question.questionMark} mark</Text>
                                                     </View>
                                                     <Text style={styles.questionContent}>{question.question}</Text>
-                                                    {question.attachedFile && 
-                                                        <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
-                                                            <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
-                                                        </TouchableOpacity>
+                                                    {data.assignmentType === 1 ?
+                                                        <>
+                                                            {/* Manual */}
+                                                            {question.attachedFile &&
+                                                                <View>
+                                                                    <Text style={styles.textGray12}>Reference material:</Text>
+                                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
+                                                                        <Text>{question.nameFile}</Text>
+                                                                    </TouchableOpacity>
+                                                                </View>
+                                                            }
+                                                            <View>
+                                                                <Text style={styles.textGray12}>Answer:</Text>
+                                                                <Text style={styles.inputLabelGray}>Answer......</Text>
+                                                                <View style={[styles.topBorder]}>   
+                                                                    <View style={styles.width50}>
+                                                                        <TextInputLabelGray 
+                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={question.studentMark} 
+                                                                            onchangeText={(v)=>{}}
+                                                                        />
+                                                                    </View>                                                             
+                                                                </View>  
+                                                            </View>
+                                                        </>
+                                                        :
+                                                        <>
+                                                            {/* Quiz */}
+                                                            {question.attachedFile && 
+                                                                <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                                                    <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
+                                                                </TouchableOpacity>
+                                                            }
+                                                            <View>
+                                                                <Text style={styles.textGray12}>Choices:</Text>
+                                                                {question.isMultipleAnswer === 0 ?
+                                                                    question.items.map(item => 
+                                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                            <RadioView selected={item.isSelected}/>  
+                                                                            <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                        </View>
+                                                                    )
+                                                                    :
+                                                                    question.items.map(item => 
+                                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                            <CheckBox
+                                                                                isChecked={item.isSelected}
+                                                                                checkBoxColor={COLORS.secondMain}
+                                                                                onClick={()=>{}}
+                                                                            />
+                                                                            <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                        </View>
+                                                                    )
+                                                                }
+                                                            </View>
+                                                        </>                                                        
                                                     }
-                                                    <View>
-                                                        <Text style={styles.textGray12}>Choices:</Text>
-                                                        {question.isMultipleAnswer === 0 ?
-                                                            question.items.map(item => 
-                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                                    <RadioView selected={item.isSelected}/>  
-                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
-                                                                </View>
-                                                            )
-                                                            :
-                                                            question.items.map(item => 
-                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                                    <CheckBox
-                                                                        isChecked={item.isSelected}
-                                                                        checkBoxColor={COLORS.secondMain}
-                                                                        onClick={()=>{}}
-                                                                    />
-                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
-                                                                </View>
-                                                            )
-                                                        }
-                                                    </View>
                                                 </View>
                                             )}   
+
                                             {/* paginage */}
                                             <View style={styles.bottom}>
                                                 {getPagination(currentStudentAnswer, currentPageStudentAnswer).map((page, index) => 
@@ -697,6 +739,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 4,
     },
+    wrapFlexJustify:{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
     wrapDetail:{
         marginVertical: 4,
     },
@@ -768,7 +815,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         padding: 8,
-        marginBottom: 8,
+        marginVertical: 4,
         gap: 4
     },
     headerQ:{
@@ -780,6 +827,7 @@ const styles = StyleSheet.create({
     questionContent:{
         fontSize: 16,
         fontWeight: "500",
+        textAlign: "justify"
     },
     wrapFile:{
         fontSize: 16,
@@ -921,5 +969,34 @@ const styles = StyleSheet.create({
     boxChoice:{
         flex: 1,
         borderRadius: 2
+    },
+    inputLabelGray:{
+        fontSize: 16,
+        color: "black",
+        backgroundColor: COLORS.lightGray,
+        paddingHorizontal: 8,
+        paddingVertical: 8,
+        borderRadius: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flex: 1,
+    },
+    topBorder:{
+        borderTopWidth: 1,
+        borderColor: COLORS.lightText,
+        marginTop: 8,
+        paddingTop: 4,
+    },
+    width50:{
+        width: "50%"
+    },
+    btnBorderGray:{
+        paddingHorizontal: 8,
+        paddingVertical: 6,
+        borderRadius: 4,
+        alignItems: "center",
+        borderWidth: 1,
+        backgroundColor: COLORS.main
     },
 })

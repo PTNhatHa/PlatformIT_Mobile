@@ -678,19 +678,7 @@ export const TeacherAsgmCreate = ({route})=>{
                 <ScrollView contentContainerStyle={styles.inner}>
                     {(idCourse || isEdit) &&
                         <>
-                            <Text style={styles.title}>{nameCourse || selectCourse?.label}</Text>
-                            {/* {idSection &&
-                                <>
-                                    <View style={styles.wrapFlex}>
-                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
-                                        <Text style={[styles.title, {fontSize: 14}]}>{nameSection}</Text>
-                                    </View>
-                                    <View style={styles.wrapFlex}>
-                                        <AntDesign name="right" size={14} color="black" style={{width: 18}}/>
-                                        <Text style={[styles.title, {fontSize: 14}]}>{nameLecture}</Text>
-                                    </View>
-                                </>
-                            } */}
+                            <Text style={styles.title}>{nameCourse || selectCourse?.label}</Text>                            
                             {selectSection?.value &&
                                 <>
                                     <View style={styles.wrapFlex}>
