@@ -226,7 +226,6 @@ export const TeacherDetailAsgm = ({route})=>{
                     }
                 })
                 const answers = await getAssignmentAnswer(idAssignment, idStudent)
-                console.log(answers);
                 if(answers){
                     if(data.assignmentType === 1){
                         setCurrentStudentAnswer([...answers.detailQuestionResponses])
@@ -514,9 +513,11 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     <AntDesign name="left" size={18} color="black" />
                                                     <Text style={styles.textBlack16}>Answer sheet</Text>
                                                 </TouchableOpacity>
-                                                <TouchableOpacity style={styles.btnBorderGray} onPress={()=>{}}>
-                                                    <Text style={styles.textWhite14}>Save Grade</Text>
-                                                </TouchableOpacity>
+                                                {data.assignmentType === 1 &&
+                                                    <TouchableOpacity style={styles.btnBorderGray} onPress={()=>{}}>
+                                                        <Text style={styles.textWhite14}>Save Grade</Text>
+                                                    </TouchableOpacity>
+                                                }
                                             </View>
                                             <View style={styles.wrapDetail}>
                                                 <Text style={styles.textBBlack18}>{currentStudent.nameStudent}</Text>
