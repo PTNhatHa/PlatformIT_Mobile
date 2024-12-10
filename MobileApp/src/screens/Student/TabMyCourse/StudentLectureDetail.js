@@ -111,8 +111,8 @@ export const StudentLectureDetail = ({route})=>{
         if(idLecture !== selectLecture.idLecture){
             setLoading(true)
             clearInterval(intervalRef.current)
-            fetchDetailLecture()
             fetchExercise()
+            fetchDetailLecture()
             .then(() => {
                 intervalRef.current = setInterval(() => {
                     setData((prevData) => ({

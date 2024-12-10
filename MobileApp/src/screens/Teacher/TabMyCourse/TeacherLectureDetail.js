@@ -48,12 +48,16 @@ export const TeacherLectureDetail = ({route})=>{
     const [isEditMode, setIsEditMode] = useState(false)
     const [exercises, setExercises] = useState([])
     const [isOpenSetting, setIsOpentSetting] = useState(false)
-    
+    const intervalRef = useRef(null);
+
     const fetchDetailLecture = async()=>{
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
-                setData(response)
+                setData({
+                    ...response,
+                    timestamp: parseRelativeTime(response.relativeTime),
+                })
                 if(idLecture === currentLecture){
                     fetchCourseContent(response)   
                     setCurrentLecture(selectLecture.idLecture)     
@@ -105,12 +109,29 @@ export const TeacherLectureDetail = ({route})=>{
         setLoading(true)
         fetchDetailLecture()
         fetchExercise()
+        intervalRef.current = setInterval(() => {
+            setData((prevData) => ({
+                ...prevData,
+                relativeTime: calculateRelativeTime(prevData.timestamp),
+            }))
+        }, 60000);
+        return () => clearInterval(intervalRef.current);
     }, [])
 
     useEffect(()=>{
         if(idLecture !== selectLecture.idLecture){
             setLoading(true)
-            fetchDetailLecture()            
+            clearInterval(intervalRef.current)
+            fetchExercise()    
+            fetchDetailLecture()        
+            .then(() => {
+                intervalRef.current = setInterval(() => {
+                    setData((prevData) => ({
+                        ...prevData,
+                        relativeTime: calculateRelativeTime(prevData.timestamp),
+                    }));
+                }, 60000);
+            });
         }
     }, [selectLecture])
 
@@ -242,17 +263,19 @@ export const TeacherLectureDetail = ({route})=>{
                                 </View>
                                 :
                                 <>
-                                
+                                    <Text style={styles.textGray12}>{data.relativeTime}</Text>
                                 </>
                             }
                         </View>
-                        {isEditMode && <TextInputLabelGray 
-                            placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
-                            onchangeText={(v)=>setData({
-                                ...data,
-                                lectureTitle: v
-                            })}
-                        />}
+                        {isEditMode && 
+                            <TextInputLabelGray 
+                                placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
+                                onchangeText={(v)=>setData({
+                                    ...data,
+                                    lectureTitle: v
+                                })}
+                            />
+                        }
                         <View style={styles.containerGray}>
                             <View style={styles.wrapFlex}>
                             {isEditMode && <Text style={styles.label}>Lecture video</Text>}
