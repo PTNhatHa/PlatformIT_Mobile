@@ -289,9 +289,9 @@ export const submitManualAssignment = async (result)=>{
             formData.append(`Answers[${index}].attachedFile`, answer.attachedFile)
         }
     })
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value, "\n");
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(key, value, "\n");
+    // }
     return await axios.post(baseUrl + "/SubmitManualAssignment", formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -302,7 +302,7 @@ export const submitManualAssignment = async (result)=>{
         return response.data
     })
     .catch(error => {
-        console.log("Error attachedFile: ", error.request);
+        console.log("submitManualAssignment: ", error.request);
     })
 }
 

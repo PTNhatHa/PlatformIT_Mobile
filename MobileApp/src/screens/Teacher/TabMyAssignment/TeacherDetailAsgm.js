@@ -1,5 +1,5 @@
 
-import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native"
 import { AssignmentItemAnswerType, COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -15,6 +15,8 @@ import { SubmittedCircle } from "../../../components/SubmittedCircle";
 import Feather from '@expo/vector-icons/Feather';
 import { CardStudentDetailAsgm } from "../../../components/CardStudent";
 import { FilterStudentOverview } from "../../../components/Filter";
+import { CustomSwitch } from "../../../components/CustomSwitch";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -40,6 +42,7 @@ export const TeacherDetailAsgm = ({route})=>{
     const [currentOverview, setCurrentOverview] = useState([])
     const [search, setSearch] = useState("")
     const [filterStudent, setFilterStudent] = useState([])
+    const [isChangeSetting, setIsChangeSetting] = useState(false)
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
@@ -265,67 +268,79 @@ export const TeacherDetailAsgm = ({route})=>{
                             </TouchableOpacity>                            
                         </View>
                         {index === 1 ?
-                            <View style={styles.innerContent}>
-                                {(data.assignmentType === 1 && listQuestion !== null) ? 
-                                    getPageData()?.map((question, index) =>     
-                                        <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
-                                            <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + currentPage}</Text>
-                                                <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
-                                            </View>
-                                            <Text style={styles.questionContent}>{question.question}</Text>
-                                            {question.attachedFile &&
-                                                <View>
-                                                    <Text style={styles.textGray12}>Reference material:</Text>
-                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
-                                                        <Text>{question.nameFile}</Text>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            }
-                                            <View style={styles.wrapFlex}>
-                                                <Text style={styles.textGray12}>Type of answer:</Text>
-                                                <Text style={styles.textBlack12}>{AssignmentItemAnswerType[question.assignmentItemAnswerType]}</Text>
-                                            </View>
+                            <View style={styles.innerContent}>                                
+                                {(data.assignmentType === 1 && listQuestion !== null) && 
+                                    <>
+                                        <View style={styles.wrapSwitch}>
+                                            <CustomSwitch label={"Question Shuffling"} value={data.isShufflingQuestion} onChangeText={()=>{}}/>   
                                         </View>
-                                    ) :""
+                                        {getPageData()?.map((question, index) =>     
+                                            <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
+                                                <View style={styles.headerQ}>
+                                                    <Text style={styles.title}>Question {index + currentPage}</Text>
+                                                    <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
+                                                </View>
+                                                <Text style={styles.questionContent}>{question.question}</Text>
+                                                {question.attachedFile &&
+                                                    <View>
+                                                        <Text style={styles.textGray12}>Reference material:</Text>
+                                                        <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
+                                                            <Text>{question.nameFile}</Text>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                }
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray12}>Type of answer:</Text>
+                                                    <Text style={styles.textBlack12}>{AssignmentItemAnswerType[question.assignmentItemAnswerType]}</Text>
+                                                </View>
+                                            </View>
+                                        )}
+                                    </>
                                 }
                                 {(data.assignmentType === 2 && listQuestion !== null) && 
-                                    getPageData()?.map((question, index) =>     
-                                        <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
-                                            <View style={styles.headerQ}>
-                                                <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>
-                                                <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
-                                            </View>
-                                            <Text style={styles.questionContent}>{question.question}</Text>
-                                            {question.attachedFile && 
-                                                <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
-                                                    <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
-                                                </TouchableOpacity>
-                                            }
-                                            <View>
-                                                <Text style={styles.textGray12}>Choices:</Text>
-                                                {question.isMultipleAnswer === 0 ?
-                                                    question.items.map(item => 
-                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <RadioView selected={item.isCorrect === 1 ? true : false}/>  
-                                                            <Text style={styles.widthFlex1}>{item.content}</Text>
-                                                        </View>
-                                                    )
-                                                    :
-                                                    question.items.map(item => 
-                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                            <CheckBox
-                                                                isChecked={item.isCorrect === 1 ? true : false}
-                                                                checkBoxColor={COLORS.secondMain}
-                                                                onClick={()=>{}}
-                                                            />
-                                                            <Text style={styles.widthFlex1}>{item.content}</Text>
-                                                        </View>
-                                                    )
-                                                }
-                                            </View>
+                                    <>
+                                        <View style={styles.wrapSwitch}>
+                                            <TouchableOpacity onPress={()=>setIsChangeSetting(true)}>
+                                                <MaterialIcons name="menu" size={24} color="black" />
+                                            </TouchableOpacity>
                                         </View>
-                                    )
+                                        {getPageData()?.map((question, index) =>     
+                                            <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
+                                                <View style={styles.headerQ}>
+                                                    <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>
+                                                    <Text style={styles.textGray12}>{question.mark} {question.mark > 1 ? "marks" : "mark"}</Text>
+                                                </View>
+                                                <Text style={styles.questionContent}>{question.question}</Text>
+                                                {question.attachedFile && 
+                                                    <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                                        <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
+                                                    </TouchableOpacity>
+                                                }
+                                                <View>
+                                                    <Text style={styles.textGray12}>Choices:</Text>
+                                                    {question.isMultipleAnswer === 0 ?
+                                                        question.items.map(item => 
+                                                            <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                <RadioView selected={item.isCorrect === 1 ? true : false}/>  
+                                                                <Text style={styles.widthFlex1}>{item.content}</Text>
+                                                            </View>
+                                                        )
+                                                        :
+                                                        question.items.map(item => 
+                                                            <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                <CheckBox
+                                                                    isChecked={item.isCorrect === 1 ? true : false}
+                                                                    checkBoxColor={COLORS.secondMain}
+                                                                    onClick={()=>{}}
+                                                                />
+                                                                <Text style={styles.widthFlex1}>{item.content}</Text>
+                                                            </View>
+                                                        )
+                                                    }
+                                                </View>
+                                            </View>
+                                        )}
+                                    </>
                                 }  
                                 
                                 {/* paginage */}
@@ -347,7 +362,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                 </View>
                             </View>
                             :
-                            <>
+                            <>                                 
                                 <View style={[styles.container, styles.wrapTopOverview]}>
                                     <View style={styles.wrapFlex}>
                                         <SubmittedCircle data={overviewCircle}/>
@@ -452,6 +467,30 @@ export const TeacherDetailAsgm = ({route})=>{
                 onRequestClose={()=>setIsOpenModal(false)}
             >
                 <FilterStudentOverview dataFilter={filterStudent} setDataFilter={setFilterStudent} onPressCancel={()=>setIsOpenModal(false)}/>
+            </Modal>
+            <Modal
+                visible={isChangeSetting}
+                transparent={true}
+                animationType="fade"
+            >
+                <TouchableWithoutFeedback onPress={() => setIsChangeSetting(false)}>
+                    <View style={styles.modalWrapper}>
+                        <View style={styles.openModal}>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Question Shuffling</Text>
+                                <CustomSwitch value={data.isShufflingQuestion} onChangeText={()=>{}}/>  
+                            </View>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Answer Shuffling</Text>
+                                <CustomSwitch value={data.isShufflingAnswer} onChangeText={()=>{}}/>  
+                            </View>
+                            <View style={styles.btnOpenModal}>
+                                <Text>Show answer on submit</Text>
+                                <CustomSwitch value={data.showAnswer} onChangeText={()=>{}}/>  
+                            </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
             </Modal>
         </View>
     )
@@ -688,5 +727,35 @@ const styles = StyleSheet.create({
     },
     widthFlex1:{
         flex: 1
-    }
+    },
+    wrapSwitch:{
+        alignSelf: "flex-end", 
+        marginVertical: 8
+    },
+
+    modalWrapper: {
+        position: "absolute",
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        width: "100%",
+        height: "100%",
+        padding: 16,
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 8
+    },
+    openModal: {
+        backgroundColor: "white",
+        width: "100%",
+        borderRadius: 8,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    btnOpenModal:{
+        borderColor: COLORS.lightText,
+        width: "100%",
+        padding: 20,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
 })

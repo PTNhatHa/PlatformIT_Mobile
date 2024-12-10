@@ -51,9 +51,8 @@ export const StudentDoAsgm = ({route})=>{
             const dateVN = new Date().toLocaleString('en-CA', {  
                 timeZone: 'Asia/Ho_Chi_Minh',  
                 hour12: false,  
-            }).replace(', ', 'T');;  
+            }).replace(', ', 'T') 
 
-            console.log(dateVN); 
             const result = {
                 idAssignment: idAssignment,
                 idStudent: state.idUser,
@@ -65,9 +64,22 @@ export const StudentDoAsgm = ({route})=>{
             console.log(result);
             const response = await submitQuizAssignment(result)
             if(response){
-                Alert.alert("Submit assignment", response)
-                reload()
-                navigation.goBack()
+                // Alert.alert("Submit assignment", response)
+                // reload()
+                // navigation.goBack()
+                Alert.alert(
+                    "Submit assignment", 
+                    response, 
+                    [
+                      {
+                        text: "OK", 
+                        onPress: () => {
+                          reload();
+                          navigation.goBack();
+                        }
+                      }
+                    ]
+                  );
             } else{
                 Alert.alert("Warning", "Please try again.")
             }
@@ -82,20 +94,38 @@ export const StudentDoAsgm = ({route})=>{
         console.log("zooo");
         setLoading(true)
         try {
+            const dateVN = new Date().toLocaleString('en-CA', {  
+                timeZone: 'Asia/Ho_Chi_Minh',  
+                hour12: false,  
+            }).replace(', ', 'T') 
+
             const result = {
                 idAssignment: idAssignment,
                 idStudent: state.idUser,
                 duration: totalTime,
                 assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
-                submittedDate: new Date(),
+                submittedDate: dateVN,
                 answers: manualAnswer
             }
             const response = await submitManualAssignment(result)
             console.log("response: ", response);
             if(response){
-                Alert.alert("Submit assignment", response)
-                reload()
-                navigation.goBack()
+                // Alert.alert("Submit assignment", response)
+                // reload()
+                // navigation.goBack()
+                Alert.alert(
+                    "Submit assignment", 
+                    response, 
+                    [
+                      {
+                        text: "OK", 
+                        onPress: () => {
+                          reload();
+                          navigation.goBack();
+                        }
+                      }
+                    ]
+                  );
             } else{
                 Alert.alert("Warning", "Please try again.")
             }
@@ -183,12 +213,18 @@ export const StudentDoAsgm = ({route})=>{
                     // console.log(shuffledResponse);
                 }
                 if(assignmentType === 1){
-                    setListQuestion(response)
+                    setListQuestion(shuffledResponse)
                     setManualAnswer([...shuffledResponse.map(question =>{
-                        return{
-                            idAssignmentItem: question.idAssignmentItem,
-                            answer: "",
-                            attachedFile: ""
+                        if(question.assignmentItemAnswerType === 1){
+                            return{
+                                idAssignmentItem: question.idAssignmentItem,
+                                answer: "",
+                            }
+                        } else {
+                            return{
+                                idAssignmentItem: question.idAssignmentItem,
+                                attachedFile: ""
+                            }
                         }
                     })])
                 }

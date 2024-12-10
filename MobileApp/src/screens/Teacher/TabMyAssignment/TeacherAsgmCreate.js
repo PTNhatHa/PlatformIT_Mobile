@@ -820,7 +820,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                 type.value === 1 ?
                                     <>
                                         <View style={{alignSelf: "flex-end", marginVertical: 8}}>
-                                            <CustomSwitch label={"Question Shuffling"}value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
+                                            <CustomSwitch label={"Question Shuffling"} value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
                                         </View>
                                         {questions.map((item, index) => (item.assignmentItemStatus !== 0) &&
                                             <View style={styles.wrapContent} key={index}>
@@ -1002,7 +1002,6 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <Text>Show answer on submit</Text>
                                 <CustomSwitch value={isShowAnswer} onChangeText={setIsShowAnswer}/>  
                             </View>
-                            
                         </View>
                     </View>
                 </TouchableWithoutFeedback>
