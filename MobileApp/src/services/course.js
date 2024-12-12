@@ -154,3 +154,14 @@ export const getCourseProgressByIdStudent = async (idCourse, idStudent)=>{
         console.log("Error GetCourseProgressByIdStudent: ", error);
     })
 }
+
+export const getSectionDetail = async (idCourse)=>{
+    return await axios.get(baseUrl + "/GetSectionDetail?idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetSectionDetail: ", error);
+    })
+}

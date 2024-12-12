@@ -17,7 +17,7 @@ import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getLectureDetail } from "../../../services/lecture";
-import { getCourseContentStructure } from "../../../services/course";
+import { getCourseContentStructure, getSectionDetail } from "../../../services/course";
 import { GetExerciseOfLecture } from "../../../services/assignment";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -211,6 +211,21 @@ export const TeacherLectureDetail = ({route})=>{
                     type: result.mimeType 
                 }
             })
+        }
+    }
+
+    const reloadListSection = async()=>{
+        setLoading(true)
+        try {
+            console.log(data.idCourse);
+            const response = await getSectionDetail(data.idCourse)
+            if(response){
+                setCourseContent(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -447,7 +462,10 @@ export const TeacherLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={1} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}/>
+                        <ModalCourseContent 
+                            role={1} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}
+                            getCourse={reloadListSection} idCourse={data.idCourse}
+                        />
                     </ScrollView>
                 </View>
             </Modal>

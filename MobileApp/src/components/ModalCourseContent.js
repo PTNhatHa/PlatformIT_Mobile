@@ -98,7 +98,7 @@ export const ModalCourseContent = ({
     }
 
     const handleAddSection = async()=>{
-        setLoading(true)
+        // setLoading(true)
         try {
             const response = await addSection(newSection, idCourse, state.idUser)
             if(response){
@@ -110,8 +110,6 @@ export const ModalCourseContent = ({
             }
         } catch (error) {
             console.log("Error: ", error);
-        } finally{
-            setLoading(false)
         }
     }
 
