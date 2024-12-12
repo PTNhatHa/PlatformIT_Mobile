@@ -47,6 +47,8 @@ export const TeacherDetailAsgm = ({route})=>{
     const [currentStudent, setCurrentStudent] = useState(null)
     const [currentStudentAnswer, setCurrentStudentAnswer] = useState(null)
     const [currentPageStudentAnswer, setCurrentPageStudentAnswer] = useState(1)
+    const [gradingManual, setGradingManual] = useState({})
+    const [errorMark, setErrorMark] = useState([])
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
@@ -229,6 +231,21 @@ export const TeacherDetailAsgm = ({route})=>{
                 if(answers){
                     if(data.assignmentType === 1){
                         setCurrentStudentAnswer([...answers.detailQuestionResponses])
+                        setGradingManual({
+                            idAssignmentResult: answers.idAssignmentResult,
+                            manualItems: [...answers.detailQuestionResponses.map(item => {
+                                return{
+                                    idAssignmentResultItem: item.idAssignmentResultItem,
+                                    mark: item.studentMark
+                                }
+                            })]
+                        })
+                        setErrorMark([...answers.detailQuestionResponses.map(item => {
+                            return{
+                                idAssignmentResultItem: item.idAssignmentResultItem,
+                                error: ""
+                            }
+                        })])
                     }
                     if(data.assignmentType === 2){
                         setCurrentStudentAnswer([...answers.detailQuestionResponses.map(question => {
@@ -253,6 +270,43 @@ export const TeacherDetailAsgm = ({route})=>{
         }
     }
 
+    const onChangeMark = (idAssignmentResultItem, value, questionMark)=>{
+        if(value > questionMark){
+            const listMark = [...errorMark?.map((error) => {
+                if(error.idAssignmentResultItem === idAssignmentResultItem){                    
+                    return{
+                        ...error,
+                        error: "The mark must be less than " + questionMark
+                    }
+                }
+                return error
+            })]
+            setErrorMark(listMark)
+        } else{
+            const listMark = [...errorMark?.map((error) => {
+                if(error.idAssignmentResultItem === idAssignmentResultItem){                    
+                    return{
+                        ...error,
+                        error: ""
+                    }
+                }
+                return error
+            })]
+            setErrorMark(listMark)
+        }
+        setGradingManual({
+            ...gradingManual,
+            manualItems: gradingManual?.manualItems?.map(item =>{
+                if(item.idAssignmentResultItem === idAssignmentResultItem){
+                    return{
+                        ...item,
+                        mark: value
+                    }
+                }
+                return item
+            })
+        })
+    }
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -545,7 +599,14 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 </View> 
                                             </View>
 
-                                            {getPageDataStudentAnswer()?.map((question, index) =>     
+                                            {getPageDataStudentAnswer()?.map((question, index) => {    
+                                                let currentMark
+                                                let error
+                                                if(data.assignmentType === 1){
+                                                    currentMark = gradingManual?.manualItems?.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
+                                                    error = errorMark.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
+                                                }
+                                                return (
                                                 <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                                     <View style={styles.headerQ}>
                                                         <Text style={styles.title}>Question {index + (currentPageStudentAnswer - 1) * numberItem + 1}</Text>
@@ -565,14 +626,25 @@ export const TeacherDetailAsgm = ({route})=>{
                                                             }
                                                             <View>
                                                                 <Text style={styles.textGray12}>Answer:</Text>
-                                                                <Text style={styles.inputLabelGray}>Answer......</Text>
-                                                                <View style={[styles.topBorder]}>   
-                                                                    <View style={styles.width50}>
+                                                                {question.answerText && 
+                                                                    <Text style={styles.inputLabelGray}>{question.answerText}</Text>
+                                                                }
+                                                                {question.answerAttachedFile &&
+                                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.answerAttachedFile)}>
+                                                                        <Text>{question.answerAttachedFile}</Text>
+                                                                    </TouchableOpacity>
+                                                                }
+
+                                                                <View style={[styles.topBorder, styles.wrapFlex]}>   
+                                                                    <View style={styles.width30}>
                                                                         <TextInputLabelGray 
-                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={question.studentMark} 
-                                                                            onchangeText={(v)=>{}}
+                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark} 
+                                                                            onchangeText={(v)=>onChangeMark(question.idAssignmentResultItem, v, question.questionMark)}
                                                                         />
-                                                                    </View>                                                             
+                                                                    </View>    
+                                                                    <View style={styles.textBot}>
+                                                                        {error && <Text style={styles.textError}>{error.error}</Text>}    
+                                                                    </View>                                                         
                                                                 </View>  
                                                             </View>
                                                         </>
@@ -609,7 +681,8 @@ export const TeacherDetailAsgm = ({route})=>{
                                                         </>                                                        
                                                     }
                                                 </View>
-                                            )}   
+                                                )
+                                            })}   
 
                                             {/* paginage */}
                                             <View style={styles.bottom}>
@@ -989,8 +1062,8 @@ const styles = StyleSheet.create({
         marginTop: 8,
         paddingTop: 4,
     },
-    width50:{
-        width: "50%"
+    width30:{
+        width: "30%"
     },
     btnBorderGray:{
         paddingHorizontal: 8,
@@ -1000,4 +1073,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         backgroundColor: COLORS.main
     },
+    textBot: {
+        alignSelf: "flex-end"
+    },
+    textError:{
+        color: COLORS.red
+    }
 })

@@ -21,20 +21,14 @@ import { COLORS } from './src/utils/constants';
 import { TeacherDetailAsgm } from './src/screens/Teacher/TabMyAssignment/TeacherDetailAsgm';
 import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/CardStudent';
 
-const data = [
-  { label: 'On Time', value: 25, color: COLORS.green }, // Xanh lá
-  { label: 'Late', value: 0, color: COLORS.yellow }, // Vàng
-  { label: 'Not Submitted', value: 30, color: COLORS.lightText }, // Đỏ
-];
-
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          {/* <SigninSignup/> */}
+          <SigninSignup/>
           {/* <FilterStudentProgress/> */}
-          <Comments/>
+          {/* <Comments/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
