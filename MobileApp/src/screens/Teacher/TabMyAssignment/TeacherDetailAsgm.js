@@ -6,7 +6,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getOverviewAssignment } from "../../../services/assignment";
+import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getOverviewAssignment, gradingManualAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
@@ -307,6 +307,44 @@ export const TeacherDetailAsgm = ({route})=>{
             })
         })
     }
+
+    const saveGrade = async()=>{
+        const check = errorMark.find(item => item.error !== "")
+        if(check){
+            Alert.alert("Warning", "Please fix all the error.")
+        } else{
+            Alert.alert(
+                "Save grade",
+                "Are you sure you want to save this entered mark?",
+                [
+                    {
+                        text: "Yes",
+                        onPress: async ()=> {
+                            setLoading(true)
+                            try {
+                                const response = await gradingManualAssignment(state.idUser, gradingManual)
+                                if(response){
+                                    Alert.alert("Done", response)
+                                    getStudentAnswer(currentStudent.idStudent)
+                                }
+                            } catch (error) {
+                                console.log("Error: ", error);
+                            } finally{
+                                setLoading(false)
+                            }
+                        },
+                        style: "destructive"
+                    },
+                    {
+                        text: "No",
+                        style: "cancel"
+                    },
+                ],
+                { cancelable: true }
+            )
+        }
+        
+    }
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -568,7 +606,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     <Text style={styles.textBlack16}>Answer sheet</Text>
                                                 </TouchableOpacity>
                                                 {data.assignmentType === 1 &&
-                                                    <TouchableOpacity style={styles.btnBorderGray} onPress={()=>{}}>
+                                                    <TouchableOpacity style={styles.btnBorderGray} onPress={()=>saveGrade()}>
                                                         <Text style={styles.textWhite14}>Save Grade</Text>
                                                     </TouchableOpacity>
                                                 }
@@ -638,7 +676,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                 <View style={[styles.topBorder, styles.wrapFlex]}>   
                                                                     <View style={styles.width30}>
                                                                         <TextInputLabelGray 
-                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark} 
+                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark.toString()} 
                                                                             onchangeText={(v)=>onChangeMark(question.idAssignmentResultItem, v, question.questionMark)}
                                                                         />
                                                                     </View>    

@@ -306,7 +306,6 @@ export const submitManualAssignment = async (result)=>{
     })
 }
 
-
 export const getOverviewAssignment = async (idAssignment, idCourse)=>{
     return await axios.get(baseUrl + "/GetOverviewAssignment?idAssignment=" + idAssignment + "&idCourse=" + idCourse)
     .then(response => {
@@ -315,5 +314,16 @@ export const getOverviewAssignment = async (idAssignment, idCourse)=>{
     })
     .catch(error => {
         console.log("Error GetOverviewAssignment: ", error);
+    })
+}
+
+export const gradingManualAssignment = async (idUpdatedBy, gradingManual)=>{
+    return await axios.post(baseUrl + "/GradingManualAssignment?idUpdatedBy=" + idUpdatedBy, gradingManual)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GradingManualAssignment: ", error);
     })
 }
