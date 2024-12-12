@@ -54,6 +54,7 @@ export default SignUp = ({navigation}) => {
         setPassword(v)
         setErrorPassword(null)
         if(!v) setErrorPassword("Require!")
+        if(v.length < 5) setErrorPassword("The password must be at least 5 characters long.")
     }
     const handleCofirm = (v)=>{
         setConfirmPassword(v)
