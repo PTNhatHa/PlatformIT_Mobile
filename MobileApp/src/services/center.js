@@ -2,7 +2,6 @@ import axios from "axios"
 import { currentIP } from "../utils/constants"
 const baseUrl = "http://" + currentIP +":5000/api/Center"
 
-
 export const getAllCenterCards = async ()=>{
     return await axios.get(baseUrl + "/GetAllCenterCards")
     .then(response => {

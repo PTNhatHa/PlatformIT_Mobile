@@ -232,7 +232,7 @@ export const StudentLectureDetail = ({route})=>{
                     {/* Comment */}
                     {index === 4 &&
                         <View style={[styles.wrapper2]}>
-                            <Comments/>
+                            <Comments idLecture={selectLecture.idLecture}/>
                         </View>
                     }
                 </View>
