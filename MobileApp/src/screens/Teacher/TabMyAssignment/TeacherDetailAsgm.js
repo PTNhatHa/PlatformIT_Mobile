@@ -676,7 +676,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                 <View style={[styles.topBorder, styles.wrapFlex]}>   
                                                                     <View style={styles.width30}>
                                                                         <TextInputLabelGray 
-                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark.toString()} 
+                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark?.toString()} 
                                                                             onchangeText={(v)=>onChangeMark(question.idAssignmentResultItem, v, question.questionMark)}
                                                                         />
                                                                     </View>    

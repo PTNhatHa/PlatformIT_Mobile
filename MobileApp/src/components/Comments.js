@@ -1,4 +1,4 @@
-import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonWhite } from "./Button"
@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { useUser } from "../contexts/UserContext"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { addComment, getAllCommentOfLecture } from "../services/comment"
+import { determineFileType } from "../utils/utils"
 
 const init = [
     {
@@ -29,8 +30,10 @@ export const Comments = ({idLecture})=>{
     const [listSubCmt, setListSubCmt] = useState(null)
     const [listIsShow, setListIsShow] = useState({})
     const [listShowMore, setListShowMore] = useState({})
+    const [loading, setLoading] = useState(true);
 
     const addNewCmt = async()=>{
+        setLoading(true)
         try {
             const comment = {
                 idLecture: idLecture,
@@ -39,19 +42,21 @@ export const Comments = ({idLecture})=>{
                 idCommentRef: null,
                 content: newCmt
             }
-            console.log("newCmt: ", comment);
             const response = await addComment(comment)
-            console.log(response);
             if(response){
-                
+                setNewCmt(null)
+                getAllCmt()
             } else{
                 Alert.alert("Error", "Please try again.")
             }
         } catch (error) {
             console.log("Error: ", error);
+        } finally {
+            setLoading(false)
         }
     }
     const getAllCmt = async()=>{
+        setLoading(true)
         try {
             const response = await getAllCommentOfLecture(idLecture)
             if(response){
@@ -76,28 +81,29 @@ export const Comments = ({idLecture})=>{
                         }
                     }
                     if(cmt.idCommentRef !== null && sub[cmt.idCommentRef]){
-                        const nameRep = main.find(item => item.idComment === cmt.idCommentRef).fullName
+                        const nameRep = main.find(item => item.idComment === cmt.idCommentRef && item.idUser !== cmt.idUser).fullName || ""
                         sub[cmt.idCommentRef].push({
                             ...cmt,
                             nameRep: nameRep
                         })
                     } else if(cmt.idCommentRef !== null){
                         Object.keys(sub).forEach(key => {
-                            if (sub[key].some(item => item.idComment === cmt.idCommentRef)) {
+                            const findSub = sub[key].find(item => item.idComment === cmt.idCommentRef)
+                            if (findSub) {
                                 sub[key].push({
                                     ...cmt,
-                                    nameRep: item.fullName
+                                    nameRep: findSub.idUser !== cmt.idUser ? findSub.fullName : ""                                    
                                 });
                             }
                         });
                     }
-                });
+                });                
                 setListMainCmt(main.sort(
                     (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
                   ))
                 Object.keys(sub).forEach((key) => {
                     sub[key].sort(
-                        (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+                        (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
                     );
                 });
                 setListSubCmt(sub)
@@ -106,18 +112,29 @@ export const Comments = ({idLecture})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
+        } finally {
+            setLoading(false)
         }
     }
     useEffect(()=>{
         getAllCmt()
     },[])
 
+    
+    if (loading) {
+        // Render màn hình chờ khi dữ liệu đang được tải
+        return (
+            <View style={styles.wrapLoading}>
+                <ActivityIndicator size="large" color={COLORS.main} />
+            </View>
+        );
+    }
     return(
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.wrapInputCmt}>
                     <View style={styles.wrapCmt}>
-                        <Image source={DefaultAva} style={styles.avata}/>
+                        <Image source={determineFileType(state.avatar) === "Image" ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avata}/>
                         <TextInput 
                             style={[styles.textInput, newCmt && {borderColor: COLORS.main}]}
                             placeholder="Comment"
@@ -163,25 +180,26 @@ export const Comments = ({idLecture})=>{
                             </View>                   
                         </TouchableOpacity>
                         {listSubCmt[mainCmt.idComment]?.length > 0 &&
-                            listSubCmt[mainCmt.idComment].map(subCmt =>
-                                <View style={styles.wrapInnerCmt} key={subCmt.idComment}>
-                                    <TouchableOpacity style={styles.btnViewReply} onPress={()=>setListIsShow({
-                                        ...listIsShow,
-                                        [mainCmt.idComment] : !listIsShow[mainCmt.idComment]
-                                    })}>
-                                        {listIsShow[mainCmt.idComment] ? 
-                                            <AntDesign name="up" size={16} color={COLORS.main} />
-                                            :
-                                            <AntDesign name="down" size={16} color={COLORS.main} />
-                                        }
-                                        <Text style={styles.textMain14}>
-                                            {listSubCmt[mainCmt.idComment].length} 
-                                            {listSubCmt[mainCmt.idComment].length > 1 ? " replies" : " reply"}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    {/* Reply cmt */}
-                                    {listIsShow[mainCmt.idComment] &&
-                                    <View style={styles.wrapList}>
+                        <>                            
+                            <View style={styles.wrapInnerCmt}>
+                                <TouchableOpacity style={styles.btnViewReply} onPress={()=>setListIsShow({
+                                    ...listIsShow,
+                                    [mainCmt.idComment] : !listIsShow[mainCmt.idComment]
+                                })}>
+                                    {listIsShow[mainCmt.idComment] ? 
+                                        <AntDesign name="up" size={16} color={COLORS.main} />
+                                        :
+                                        <AntDesign name="down" size={16} color={COLORS.main} />
+                                    }
+                                    <Text style={styles.textMain14}>
+                                        {listSubCmt[mainCmt.idComment].length} 
+                                        {listSubCmt[mainCmt.idComment].length > 1 ? " replies" : " reply"}
+                                    </Text>
+                                </TouchableOpacity>
+                                {/* Reply cmt */}
+                                {listIsShow[mainCmt.idComment] &&
+                                    listSubCmt[mainCmt.idComment].map(subCmt =>
+                                    <View style={styles.wrapList} key={subCmt.idComment}>
                                         <TouchableOpacity 
                                             style={styles.wrapCmt}
                                             onPress={()=>setListShowMore({
@@ -200,15 +218,16 @@ export const Comments = ({idLecture})=>{
                                                     numberOfLines={listShowMore[subCmt.idComment] ? 0 : 2} 
                                                     ellipsizeMode="tail"
                                                 > 
-                                                    <Text style={styles.boldMain}>@{subCmt.nameRep} </Text>
+                                                    {subCmt.nameRep && <Text style={styles.boldMain}>@{subCmt.nameRep} </Text>}
                                                     {subCmt.content}
                                                 </Text>
                                             </View>                   
                                         </TouchableOpacity>                            
                                     </View>
-                                    }
-                                </View>
-                            )
+                                    )
+                                }
+                            </View>
+                        </>
                         }
                     </View>
                 )}                              
@@ -234,7 +253,7 @@ const styles = StyleSheet.create({
     textInput: {
         borderBottomWidth: 1,
         borderColor: COLORS.lightText,
-        width: "100%"
+        width: "100%",
     },
     wrapNameTime: {
         flexDirection: "row",
@@ -306,5 +325,13 @@ const styles = StyleSheet.create({
     },
     maxWidth:{
         maxWidth: 255
+    },
+    wrapLoading:{
+        position: "absolute", 
+        width: "100%",
+        height: "100%",
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        backgroundColor: 'rgba(117, 117, 117, 0.9)',
     }
 })
