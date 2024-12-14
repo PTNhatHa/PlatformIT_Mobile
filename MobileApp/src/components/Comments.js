@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native"
 import { useEffect, useRef, useState } from "react"
 import { useUser } from "../contexts/UserContext"
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { addComment, getAllCommentOfLecture } from "../services/comment"
+import { addComment, deleteComment, getAllCommentOfLecture } from "../services/comment"
 import { determineFileType } from "../utils/utils"
 import Entypo from '@expo/vector-icons/Entypo';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
@@ -143,6 +143,39 @@ export const Comments = ({idLecture, idTeacher})=>{
         }
     }
     
+    const handelDelete = (idComment)=>{
+        Alert.alert(
+            "Confirm delete comment",
+            "Are you sure you want to delete this comment?",
+            [
+                {
+                    text: "Yes",
+                    onPress: ()=> deleteCmt(idComment),
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )        
+    }
+    const deleteCmt = async(idComment)=>{
+        setLoading(true)
+        try {
+            const response = await deleteComment(idComment, state.idUser)
+            if(response){
+                setNewCmt(null)
+                getAllCmt()
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
+            setLoading(false)
+        }    
+    }
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
@@ -302,10 +335,9 @@ export const Comments = ({idLecture, idTeacher})=>{
 const styles = StyleSheet.create({
     innerMain:{
         height: 400,
-        paddingHorizontal: 16,
         marginVertical: 8,
+        marginHorizontal: 16,
         gap: 4,
-        zIndex: 9
     },
     container: {
         gap: 12
@@ -395,7 +427,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     maxWidth:{
-        maxWidth: 228
+        maxWidth: 255
     },
     wrapLoading:{
         position: "absolute", 
