@@ -48,7 +48,7 @@ const initLecture = [
 export const ModalCourseContent = ({
     role=0, content=[], idCourse, nameCourse, getCourse, 
     selectLecture, setSelectLecture = ()=>{}, 
-    isLimitedTime, courseEndDate
+    isLimitedTime, courseEndDate, idTeacher
 })=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
@@ -193,6 +193,7 @@ export const ModalCourseContent = ({
                                         setSelected={handleSelectLecture} selectObject={selectObject}
                                         isLimitedTime={isLimitedTime}
                                         courseEndDate={courseEndDate}
+                                        idTeacher={idTeacher}
                                     />
                                 )}
                                 {role === 1 &&

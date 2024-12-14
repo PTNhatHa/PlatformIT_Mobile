@@ -15,7 +15,7 @@ import { useUser } from "../../../contexts/UserContext";
 import { GetExerciseOfLecture, getExerciseOfLectureViaStudent } from "../../../services/assignment";
 
 export const StudentLectureDetail = ({route})=>{
-    const {idLecture} = route?.params || {}
+    const {idLecture, idTeacher} = route?.params || {}
     const {state} = useUser()
     const [index, setIndex] = useState(1)
     const [currentLecture, setCurrentLecture] = useState(idLecture)
@@ -231,9 +231,7 @@ export const StudentLectureDetail = ({route})=>{
 
                     {/* Comment */}
                     {index === 4 &&
-                        <View style={[styles.wrapper2]}>
-                            <Comments idLecture={selectLecture.idLecture}/>
-                        </View>
+                        <Comments idLecture={selectLecture.idLecture} idTeacher={idTeacher}/>
                     }
                 </View>
             </ScrollView>

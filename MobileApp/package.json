@@ -44,7 +44,9 @@
     "react-native-video": "^6.7.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.2",
-    "undefined": "expo-auth-session/providers/google"
+    "undefined": "expo-auth-session/providers/google",
+    "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.16.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2"

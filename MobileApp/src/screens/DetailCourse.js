@@ -516,6 +516,7 @@ export const DetailCourse =({route})=>{
 
                             isLimitedTime={data.isLimitedTime}
                             courseEndDate={data.courseEndDate}
+                            idTeacher={data.idTeacher}
                         />
                     </>
                 : selectBtn === 1 ?

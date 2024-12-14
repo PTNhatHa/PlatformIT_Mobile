@@ -1,13 +1,17 @@
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonWhite } from "./Button"
 import { TouchableOpacity } from "react-native"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useUser } from "../contexts/UserContext"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { addComment, getAllCommentOfLecture } from "../services/comment"
 import { determineFileType } from "../utils/utils"
+import Entypo from '@expo/vector-icons/Entypo';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const init = [
     {
@@ -23,42 +27,27 @@ const init = [
     }
 ]
 
-export const Comments = ({idLecture})=>{
+export const Comments = ({idLecture, idTeacher})=>{
     const {state, dispatch} = useUser()
-    const [newCmt, setNewCmt] = useState(null)
+    const [newCmt, setNewCmt] = useState({
+        idLecture: null,
+        idSender: state.idUser,
+        idReceiver: null,
+        idCommentRef: null,
+        content: "",
+        nameRep: null
+    })
     const [listMainCmt, setListMainCmt] = useState(null)
     const [listSubCmt, setListSubCmt] = useState(null)
     const [listIsShow, setListIsShow] = useState({})
     const [listShowMore, setListShowMore] = useState({})
     const [loading, setLoading] = useState(true);
+    const textInputRef = useRef(null)
 
-    const addNewCmt = async()=>{
-        setLoading(true)
-        try {
-            const comment = {
-                idLecture: idLecture,
-                idSender: state.idUser,
-                idReceiver: null,
-                idCommentRef: null,
-                content: newCmt
-            }
-            const response = await addComment(comment)
-            if(response){
-                setNewCmt(null)
-                getAllCmt()
-            } else{
-                Alert.alert("Error", "Please try again.")
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-        } finally {
-            setLoading(false)
-        }
-    }
     const getAllCmt = async()=>{
         setLoading(true)
         try {
-            const response = await getAllCommentOfLecture(idLecture)
+            const response = await getAllCommentOfLecture(idLecture || 1)
             if(response){
                 let sub = {}
                 let show = {}
@@ -81,10 +70,8 @@ export const Comments = ({idLecture})=>{
                         }
                     }
                     if(cmt.idCommentRef !== null && sub[cmt.idCommentRef]){
-                        const nameRep = main.find(item => item.idComment === cmt.idCommentRef && item.idUser !== cmt.idUser).fullName || ""
                         sub[cmt.idCommentRef].push({
                             ...cmt,
-                            nameRep: nameRep
                         })
                     } else if(cmt.idCommentRef !== null){
                         Object.keys(sub).forEach(key => {
@@ -120,6 +107,41 @@ export const Comments = ({idLecture})=>{
         getAllCmt()
     },[])
 
+    const handleAddReply = (idReceiver, idCommentRef, nameRep)=>{
+        setNewCmt({
+            idLecture: idLecture,
+            idSender: state.idUser,
+            idReceiver: idReceiver,
+            idCommentRef: idCommentRef,
+            content: "",
+            nameRep: idReceiver === state.idUser ? "Yourself" : nameRep
+        })
+        textInputRef.current?.focus()
+    }
+
+    const addNewCmt = async()=>{
+        setLoading(true)
+        try {
+            const comment = {
+                idLecture: idLecture,
+                idSender: state.idUser,
+                idReceiver: newCmt.idReceiver ? (newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver) : idTeacher,
+                idCommentRef: newCmt.idCommentRef,
+                content: newCmt.content
+            }
+            const response = await addComment(comment)
+            if(response){
+                setNewCmt(null)
+                getAllCmt()
+            } else{
+                Alert.alert("Error", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
+            setLoading(false)
+        }
+    }
     
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -131,29 +153,8 @@ export const Comments = ({idLecture})=>{
     }
     return(
         <>
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={styles.wrapInputCmt}>
-                    <View style={styles.wrapCmt}>
-                        <Image source={determineFileType(state.avatar) === "Image" ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avata}/>
-                        <TextInput 
-                            style={[styles.textInput, newCmt && {borderColor: COLORS.main}]}
-                            placeholder="Comment"
-                            value={newCmt}
-                            onChangeText={(v)=>setNewCmt(v)}
-                        />
-                    </View>
-                    {newCmt &&
-                        <View style={styles.wrapBtn}>
-                            <TouchableOpacity style={styles.btn}>
-                                <Text style={styles.textGray14}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>addNewCmt()}>
-                                <Text style={styles.textWhite14}>Comment</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
-                </View>
-
+        <View style={styles.innerMain}>
+            <ScrollView contentContainerStyle={styles.container} nestedScrollEnabled>               
                 {/* Main cmt */}
                 {listMainCmt?.map(mainCmt =>
                     <View style={styles.wrapBoxCmt} key={mainCmt.idComment}>
@@ -179,6 +180,18 @@ export const Comments = ({idLecture})=>{
                                 </Text>
                             </View>                   
                         </TouchableOpacity>
+                        <View style={{flexDirection: "row"}}>
+                            <TouchableOpacity style={styles.btnReply} onPress={()=>handleAddReply(mainCmt.idUser, mainCmt.idComment, mainCmt.fullName)}>
+                                <Entypo name="reply" size={14} color={COLORS.lightText} style={styles.flippedIcon}/>
+                                <Text style={styles.textGray12}>Reply</Text>
+                            </TouchableOpacity>
+                            {mainCmt.idUser === state.idUser &&
+                                <TouchableOpacity style={styles.btnDelete}>
+                                    <MaterialIcons name="delete" size={14} color={COLORS.lightText} />
+                                    <Text style={styles.textGray12}>Delete</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
                         {listSubCmt[mainCmt.idComment]?.length > 0 &&
                         <>                            
                             <View style={styles.wrapInnerCmt}>
@@ -221,8 +234,20 @@ export const Comments = ({idLecture})=>{
                                                     {subCmt.nameRep && <Text style={styles.boldMain}>@{subCmt.nameRep} </Text>}
                                                     {subCmt.content}
                                                 </Text>
-                                            </View>                   
-                                        </TouchableOpacity>                            
+                                            </View>             
+                                        </TouchableOpacity>   
+                                        <View style={{flexDirection: "row"}}>
+                                            <TouchableOpacity style={styles.btnReply} onPress={()=>handleAddReply(subCmt.idUser, subCmt.idComment, subCmt.fullName)}>
+                                                <Entypo name="reply" size={14} color={COLORS.lightText} style={styles.flippedIcon}/>
+                                                <Text style={styles.textGray12}>Reply</Text>
+                                            </TouchableOpacity>
+                                            {subCmt.idUser === state.idUser &&
+                                                <TouchableOpacity style={styles.btnDelete}>
+                                                    <MaterialIcons name="delete" size={14} color={COLORS.lightText} />
+                                                    <Text style={styles.textGray12}>Delete</Text>
+                                                </TouchableOpacity>
+                                            }
+                                        </View>                   
                                     </View>
                                     )
                                 }
@@ -232,10 +257,56 @@ export const Comments = ({idLecture})=>{
                     </View>
                 )}                              
             </ScrollView>
+        </View>
+        {/* New Comment */}
+        <View style={styles.wrapNewCmt}>
+            <View style={styles.wrapCmt}>
+                <Image source={determineFileType(state.avatar) === "Image" ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avata}/>
+                <View style={{flex: 1}}>
+                    {newCmt?.idCommentRef &&
+                        <View style={styles.wrapFlex}>
+                            <Entypo name="reply" size={14} color="black" style={styles.flippedIcon}/>
+                            <Text style={styles.textGray12}>
+                                Reply to
+                                <Text style={styles.boldMain}> @{newCmt.nameRep}</Text>
+                            </Text>
+                        </View>
+                    }
+                    <TextInput 
+                        style={[styles.textAddCmt]}
+                        placeholder="Comment"
+                        value={newCmt?.content || ""}
+                        onChangeText={(v)=>setNewCmt({
+                            ...newCmt,
+                            content: v
+                        })}
+                        multiline={true}
+                        ref={textInputRef}
+                    />
+                </View>
+            </View>                
+            {newCmt?.content &&
+                <View style={styles.wrapBtn}>
+                    <TouchableOpacity style={styles.btn} onPress={()=>setNewCmt(null)}>
+                        <Text style={styles.textGray14}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>addNewCmt()}>
+                        <Text style={styles.textWhite14}>Comment</Text>
+                    </TouchableOpacity>
+                </View>
+            }
+        </View>
         </>
     )
 }
 const styles = StyleSheet.create({
+    innerMain:{
+        height: 400,
+        paddingHorizontal: 16,
+        marginVertical: 8,
+        gap: 4,
+        zIndex: 9
+    },
     container: {
         gap: 12
     },
@@ -248,7 +319,7 @@ const styles = StyleSheet.create({
     wrapCmt: {
         flexDirection: "row",
         alignItems: "flex-start",
-        gap: 8
+        gap: 8,
     },
     textInput: {
         borderBottomWidth: 1,
@@ -324,7 +395,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     maxWidth:{
-        maxWidth: 255
+        maxWidth: 228
     },
     wrapLoading:{
         position: "absolute", 
@@ -333,5 +404,39 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
-    }
+    },
+    wrapNewCmt: {
+        backgroundColor: COLORS.lightGray,
+        flex: 1,
+        borderRadius: 4,
+        gap: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 8
+    },
+    flippedIcon: {
+        transform: [{ scaleX: -1 }],
+        alignSelf: "flex-start"
+    },
+    wrapFlex:{
+        flexDirection: "row",
+        gap: 4,
+        alignItems: "center"
+    },
+    textAddCmt:{
+        borderBottomWidth: 1,
+        borderColor: COLORS.lightText,
+        flex: 1
+    },
+    btnReply:{
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 2,
+        marginLeft: 36,
+    },
+    btnDelete:{
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 2,        
+        marginLeft: 8,
+    },
 })
