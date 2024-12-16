@@ -165,3 +165,14 @@ export const getSectionDetail = async (idCourse)=>{
         console.log("Error GetSectionDetail: ", error);
     })
 }
+
+export const updateSection = async (idSection, newSectionName, idUpdatedBy)=>{
+    return await axios.post(baseUrl + "/UpdateSection?idSection=" + idSection + "&newSectionName=" + newSectionName + "&idUpdatedBy=" + idUpdatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error UpdateSection: ", error);
+    })
+}

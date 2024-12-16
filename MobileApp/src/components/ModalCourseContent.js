@@ -8,9 +8,10 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabel } from "./TextInputField";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
-import { addSection } from "../services/course";
+import { addSection, updateSection } from "../services/course";
 import { useUser } from "../contexts/UserContext";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { inactiveSection } from "../services/lecture";
 
 const initLecture = [
     {
@@ -129,6 +130,32 @@ export const ModalCourseContent = ({
             })
         }
     }
+    
+    const handleEditSection = async()=>{
+        try {
+            const response = await updateSection(selectSection.idSection, newSection, state.idUser)
+            if(response){
+                setLongPressSection(false)
+                getCourse()
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+    
+    const handleDeleteSection = async()=>{
+        try {
+            const response = await inactiveSection(selectSection.idSection, state.idUser)
+            console.log(response);
+            if(response){
+                setLongPressSection(false)
+                getCourse()
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
     return(
         <>
         {loading ?
@@ -194,6 +221,7 @@ export const ModalCourseContent = ({
                                         isLimitedTime={isLimitedTime}
                                         courseEndDate={courseEndDate}
                                         idTeacher={idTeacher}
+                                        reload={getCourse}
                                     />
                                 )}
                                 {role === 1 &&
@@ -278,7 +306,7 @@ export const ModalCourseContent = ({
                                     }}>
                                         <FontAwesome name="close" size={24} color={COLORS.stroke} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={()=>handleEditSection()}>
                                         <FontAwesome name="check" size={24} color="black" />
                                     </TouchableOpacity>
                                 </View>
@@ -300,7 +328,7 @@ export const ModalCourseContent = ({
                                     <Text>Edit name section</Text>
                                     <Entypo name="edit" size={20} color="black" />
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.btnSelectSection}>
+                                <TouchableOpacity style={styles.btnSelectSection} onPress={()=>handleDeleteSection()}>
                                     <Text>Delete section</Text>
                                     <MaterialIcons name="delete" size={20} color="black" />
                                 </TouchableOpacity>

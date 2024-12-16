@@ -9,7 +9,11 @@ const initLecture = {
     "exerciseCount": 1,
     "createdDate": "2024-11-06T13:58:50.7138603+07:00"
   }
-export const CardLecture = ({data = initLecture, role=0, setSelected = ()=>{}, section, selectObject, isLimitedTime, courseEndDate, idTeacher})=>{
+export const CardLecture = ({
+    data = initLecture, role=0, setSelected = ()=>{}, 
+    section, selectObject, isLimitedTime, courseEndDate, idTeacher,
+    reload
+})=>{
     const navigation = useNavigation()
     // console.log(selectObject);
     return(
@@ -23,7 +27,8 @@ export const CardLecture = ({data = initLecture, role=0, setSelected = ()=>{}, s
                             idLecture: data.idLecture,
                             isLimitedTime: isLimitedTime, 
                             courseEndDate: courseEndDate,
-                            idTeacher: idTeacher
+                            idTeacher: idTeacher,
+                            reload: reload
                         })
                     }
                 }

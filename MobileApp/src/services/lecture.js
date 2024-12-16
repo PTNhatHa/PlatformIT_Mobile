@@ -53,3 +53,25 @@ export const getLectureDetail = async (idLecture)=>{
         console.log("Error GetLectureDetail: ", error);
     })
 }
+
+export const inactiveSection = async (idSection, idCreatedBy)=>{
+    return await axios.post(baseUrl + "/InactiveSection?idSection=" + idSection + "&idCreatedBy=" + idCreatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error InactiveSection: ", error);
+    })
+}
+
+export const inactiveLecture = async (idLecture, idCreatedBy)=>{
+    return await axios.post(baseUrl + "/InactiveLecture?idLecture=" + idLecture + "&idCreatedBy=" + idCreatedBy)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error InactiveLecture: ", error);
+    })
+}

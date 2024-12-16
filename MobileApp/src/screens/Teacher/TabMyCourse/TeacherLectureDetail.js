@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
@@ -16,10 +16,11 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
-import { getLectureDetail } from "../../../services/lecture";
+import { getLectureDetail, inactiveLecture } from "../../../services/lecture";
 import { getCourseContentStructure, getSectionDetail } from "../../../services/course";
 import { GetExerciseOfLecture } from "../../../services/assignment";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useUser } from "../../../contexts/UserContext";
 
 const init = {
     idLecture: 1,
@@ -30,7 +31,8 @@ const init = {
 }
 // Chỉ truyền idLecture vào thôi còn mấy kia getDetail trả thêm về
 export const TeacherLectureDetail = ({route})=>{
-    const {idLecture, isLimitedTime, courseEndDate} = route?.params || init
+    const {state} = useUser()
+    const {idLecture, isLimitedTime, courseEndDate, reload} = route?.params || init
     const navigation = useNavigation()
     const [index, setIndex] = useState(1) //1: Information, 2: Content, 3: Exercise, 4: Comment
     const [currentLecture, setCurrentLecture] = useState(idLecture)
@@ -229,6 +231,35 @@ export const TeacherLectureDetail = ({route})=>{
         }
     }
 
+    const handleDeleteLecture = ()=>{
+        Alert.alert(
+            "Confirm Delete Lecture",
+            "Are you sure you want to delete this lecture?",
+            [
+                {
+                    text: "Yes",
+                    onPress: async()=> {
+                        try {
+                            const response = await inactiveLecture(idLecture, state.idUser)
+                            if(response){
+                                reload()
+                                navigation.goBack()
+                            }
+                        } catch (error) {
+                            console.log("Error: ", error);
+                        }
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+    }
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
@@ -251,7 +282,7 @@ export const TeacherLectureDetail = ({route})=>{
                     <TouchableOpacity style={[styles.btnSetting, styles.btnEdit, isEditMode && styles.btnActive]} onPress={()=>setIsEditMode(!isEditMode)}>
                         <MaterialIcons name="mode-edit" size={24} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.btnSetting, styles.btnDelete]} onPress={()=>{}}>
+                    <TouchableOpacity style={[styles.btnSetting, styles.btnDelete]} onPress={()=>handleDeleteLecture()}>
                         <MaterialIcons name="delete" size={24} color="black" />
                     </TouchableOpacity>
                 </>
