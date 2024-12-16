@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react"
 import { useUser } from "../contexts/UserContext"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { addComment, deleteComment, getAllCommentOfLecture } from "../services/comment"
-import { determineFileType } from "../utils/utils"
+import { calculateRelativeTime, determineFileType, parseRelativeTime } from "../utils/utils"
 import Entypo from '@expo/vector-icons/Entypo';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -30,7 +30,7 @@ const init = [
 export const Comments = ({idLecture, idTeacher})=>{
     const {state, dispatch} = useUser()
     const [newCmt, setNewCmt] = useState({
-        idLecture: null,
+        idLecture: idLecture,
         idSender: state.idUser,
         idReceiver: null,
         idCommentRef: null,
@@ -61,9 +61,12 @@ export const Comments = ({idLecture, idTeacher})=>{
                     if(cmt.idCommentRef === null){
                         sub = {
                             ...sub,
-                            [cmt.idComment] : []
+                            [cmt.idComment] : [],
                         }
-                        main.push(cmt)
+                        main.push({
+                            ...cmt,                            
+                            timestamp: parseRelativeTime(cmt.relativeTime),
+                        })
                         show = {
                             ...show,
                             [cmt.idComment] : true
@@ -72,6 +75,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                     if(cmt.idCommentRef !== null && sub[cmt.idCommentRef]){
                         sub[cmt.idCommentRef].push({
                             ...cmt,
+                            timestamp: parseRelativeTime(cmt.relativeTime),
                         })
                     } else if(cmt.idCommentRef !== null){
                         Object.keys(sub).forEach(key => {
@@ -79,7 +83,8 @@ export const Comments = ({idLecture, idTeacher})=>{
                             if (findSub) {
                                 sub[key].push({
                                     ...cmt,
-                                    nameRep: findSub.idUser !== cmt.idUser ? findSub.fullName : ""                                    
+                                    nameRep: findSub.idUser !== cmt.idUser ? findSub.fullName : "",
+                                    timestamp: parseRelativeTime(cmt.relativeTime),                                    
                                 });
                             }
                         });
@@ -104,7 +109,27 @@ export const Comments = ({idLecture, idTeacher})=>{
         }
     }
     useEffect(()=>{
+        console.log(idLecture);
         getAllCmt()
+        const interval = setInterval(() => {
+            setListMainCmt((prevMain)=>
+                prevMain.map(main => ({
+                    ...main,
+                    relativeTime: calculateRelativeTime(main.timestamp),
+                }))
+            )
+            setListSubCmt((prevListSubCmt) => {
+                const updatedListSubCmt = {};
+                Object.keys(prevListSubCmt).forEach((key) => {
+                    updatedListSubCmt[key] = prevListSubCmt[key].map((prevSub) => ({
+                        ...prevSub,
+                        relativeTime: calculateRelativeTime(prevSub.timestamp),
+                    }));
+                });
+                return updatedListSubCmt;
+            });
+        }, 60000); // Update every minute
+        return () => clearInterval(interval);
     },[])
 
     const handleAddReply = (idReceiver, idCommentRef, nameRep)=>{
@@ -125,7 +150,7 @@ export const Comments = ({idLecture, idTeacher})=>{
             const comment = {
                 idLecture: idLecture,
                 idSender: state.idUser,
-                idReceiver: newCmt.idReceiver ? (newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver) : idTeacher,
+                idReceiver: state.idRole === 4 ? null : (newCmt.idReceiver ? (newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver) : idTeacher),
                 idCommentRef: newCmt.idCommentRef,
                 content: newCmt.content
             }
