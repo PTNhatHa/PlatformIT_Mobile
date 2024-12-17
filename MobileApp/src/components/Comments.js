@@ -76,6 +76,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                         sub[cmt.idCommentRef].push({
                             ...cmt,
                             timestamp: parseRelativeTime(cmt.relativeTime),
+                            commentRefName: ""
                         })
                     } else if(cmt.idCommentRef !== null){
                         Object.keys(sub).forEach(key => {
@@ -83,7 +84,6 @@ export const Comments = ({idLecture, idTeacher})=>{
                             if (findSub) {
                                 sub[key].push({
                                     ...cmt,
-                                    nameRep: findSub.idUser !== cmt.idUser ? findSub.fullName : "",
                                     timestamp: parseRelativeTime(cmt.relativeTime),                                    
                                 });
                             }
@@ -288,7 +288,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                                                     numberOfLines={listShowMore[subCmt.idComment] ? 0 : 2} 
                                                     ellipsizeMode="tail"
                                                 > 
-                                                    {subCmt.nameRep && <Text style={styles.boldMain}>@{subCmt.nameRep} </Text>}
+                                                    {subCmt.commentRefName && <Text style={styles.boldMain}>@{subCmt.commentRefName} </Text>}
                                                     {subCmt.content}
                                                 </Text>
                                             </View>             
