@@ -77,6 +77,52 @@ export const TeacherAsgmCreate = ({route})=>{
         { label: "Text", value: 1 },
         { label: "Attach file", value: 2 },
     ]
+    const [questionCode, setQuestionCode] = useState({
+        problem: "",
+        language: 1,
+        example: [
+            {
+                input: "a",
+                output: "1"
+            },
+            {
+                input: "b",
+                output: "2"
+            },
+        ],
+        testCase: [
+            {
+                input: "aa",
+                output: "11"
+            },
+            {
+                input: "bb",
+                output: "22"
+            },
+        ],
+        isPastTestCase: true,
+        isLimitTime: false,
+        limitTime: 2,
+        isLimitMemory: true,
+        limitMemory: 0.2,
+        isShowOnSubmission: false
+    })
+    const [teacherCode, setTeacherCode] = useState({
+        code: "",
+        language: 1,
+        testCase: [
+            {
+                input: "",
+                output: ""
+            },
+        ],
+        isPastTestCase: true,
+        isLimitTime: false,
+        limitTime: 2,
+        isLimitMemory: false,
+        limitMemory: 0.2,
+    })
+    
 
     const fetchAsgm = async()=>{
         setLoading(true)
@@ -673,6 +719,46 @@ export const TeacherAsgmCreate = ({route})=>{
         })
     }
 
+    const handleChangeCode = (v, field, index, subField)=>{
+        let newCode
+        if(subField){
+            newCode = {
+                ...questionCode,
+                [field]: questionCode[field].map((sub, i)=>{
+                    if(index === i){
+                        return{
+                            ...sub,
+                            [subField]: v
+                        }
+                    }
+                    return sub
+                })
+            }
+        }else{
+            newCode = {
+                ...questionCode,
+                [field]: v
+            }
+        }
+        setQuestionCode(newCode)
+    }
+    const handleDeleteCode = (field, index)=>{
+        const newCode = {
+            ...questionCode,
+            [field]: questionCode[field].filter((sub, i)=> i !== index)
+        }
+        setQuestionCode(newCode)
+    }
+    const handleAddCode = (field)=>{
+        const newCode = {
+            ...questionCode,
+            [field]: [...questionCode[field], {
+                input: "",
+                output: ""
+            }]
+        }
+        setQuestionCode(newCode)
+    }
     return(
         <>
             <View style={styles.container}>
@@ -954,11 +1040,11 @@ export const TeacherAsgmCreate = ({route})=>{
                                             </View>
                                         )}
                                     </>   
-                                :
+                                : type.value === 3 ?
                                 <>
                                     {/* CODE */}
                                     <View style={{alignSelf: "flex-end", marginVertical: 8}}>
-                                        <CustomSwitch label={"Show test cases on submission"} value={isShowAnswer} onChangeText={setIsShowAnswer}/>   
+                                        <CustomSwitch label={"Show test cases on submission"} value={questionCode.isShowOnSubmission} onChangeText={()=>{}}/>   
                                     </View>
                                     <View style={styles.wrapContent}>
                                         <Text style={styles.title}>Question</Text>
@@ -968,15 +1054,15 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 style={[styles.inputLabelGray, styles.minHeight]}
                                                 placeholder="Problem"
                                                 multiline={true}
-                                                value={""}
-                                                onChangeText={(v)=>{}}
+                                                value={questionCode.problem}
+                                                onChangeText={(v)=>handleChangeCode(v, "problem")}
                                             />
                                         </View>
                                         <View>
                                             <Text style={styles.textGray14}>Language</Text>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
-                                                value={type} onchangeText={handleChangeType} 
+                                                value={questionCode.language} onchangeText={()=>handleChangeCode(v, "language")} 
                                                 listSelect={[]}
                                             />
                                         </View>
@@ -985,15 +1071,23 @@ export const TeacherAsgmCreate = ({route})=>{
                                             <View>
                                                 {/* Row */}
                                                 <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                    <Text style={styles.indexWidth}></Text>
                                                     <Text style={styles.wrapRowText}>Input</Text>
                                                     <Text style={styles.wrapRowText}>Output</Text>
+                                                    <Text style={styles.indexWidth}></Text>
                                                 </View>
-                                                <View style={styles.wrapRow}>
-                                                    <Text style={styles.wrapRowText}>...</Text>
-                                                    <Text style={styles.wrapRowText}>...</Text>
-                                                </View>
-                                                <TouchableOpacity>
-                                                    <Text style={styles.wrapRowText}>Add a record</Text>
+                                                {questionCode.example ? questionCode?.example?.map((ex, indexEx) => 
+                                                    <View style={styles.wrapRow} key={indexEx}>
+                                                        <Text style={styles.indexWidth}>{indexEx + 1}</Text>
+                                                        <TextInput style={styles.wrapRowText} value={ex.input} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "input")}/>
+                                                        <TextInput style={styles.wrapRowText} value={ex.output} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "output")}/>
+                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("example", indexEx)}>
+                                                            <MaterialIcons name="delete" size={16} color="black" style={{alignSelf: "center"}}/>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                ) : ""}
+                                                <TouchableOpacity onPress={()=>handleAddCode("example")}>
+                                                    <Text style={styles.wrapRowText}>+ Add a record</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
@@ -1008,54 +1102,62 @@ export const TeacherAsgmCreate = ({route})=>{
                                                     <Text style={styles.indexWidth}></Text>
                                                     <Text style={styles.wrapRowText}>Input</Text>
                                                     <Text style={styles.wrapRowText}>Output</Text>
+                                                    <Text style={styles.indexWidth}></Text>
                                                 </View>
-                                                <View style={styles.wrapRow}>
-                                                    <Text style={styles.indexWidth}>1</Text>
-                                                    <Text style={styles.wrapRowText}>...</Text>
-                                                    <Text style={styles.wrapRowText}>...</Text>
-                                                </View>
-                                                <TouchableOpacity>
-                                                    <Text style={styles.wrapRowText}>Add a test case</Text>
+                                                {questionCode.testCase?.map((test, indexTest) => 
+                                                    <View style={styles.wrapRow} key={indexTest}>
+                                                        <Text style={styles.indexWidth}>{indexTest + 1}</Text>
+                                                        <TextInput style={styles.wrapRowText} value={test.input} onChangeText={(v)=>handleChangeCode(v, "testCase", indexTest, "input")}/>
+                                                        <TextInput style={styles.wrapRowText} value={test.output} onChangeText={(v)=>handleChangeCode(v, "testCase", indexTest, "output")}/>
+                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("testCase", indexTest)}>
+                                                            <MaterialIcons name="delete" size={16} color="black" style={{alignSelf: "center"}}/>
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                )}
+                                                <TouchableOpacity onPress={()=>handleAddCode("testCase")}>
+                                                    <Text style={styles.wrapRowText}>+ Add a test case</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
                                         <View>
                                             <Text style={styles.textGray14}>Scoring rules</Text>
                                             <CheckBox
-                                                isChecked={false}
-                                                onClick={()=>{}}
+                                                isChecked={questionCode.isPastTestCase}
+                                                onClick={()=>handleChangeCode(!questionCode.isPastTestCase, "isPastTestCase")}
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Pass test cases"
                                             />
                                             <CheckBox
-                                                isChecked={false}
-                                                onClick={()=>{}}
+                                                isChecked={questionCode.isLimitTime}
+                                                onClick={()=>handleChangeCode(!questionCode.isLimitTime, "isLimitTime")}
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Performance on time"
                                             />
-                                            {true &&
+                                            {questionCode.isLimitTime &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
-                                                        placeholder="Time limit"
-                                                        value={""}
-                                                        onChangeText={(v)=>{}}
+                                                        placeholder="Time limit (second)"
+                                                        value={questionCode.limitTime}
+                                                        onChangeText={(v)=>handleChangeCode(v, "limitTime")}
+                                                        keyboardType={"numeric"}
                                                     />
                                                 </View>
                                             }
                                             <CheckBox
-                                                isChecked={false}
-                                                onClick={()=>{}}
+                                                isChecked={questionCode.isLimitMemory}
+                                                onClick={()=>handleChangeCode(!questionCode.isLimitMemory, "isLimitMemory")}
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Perfomance on memory"
                                             />
-                                            {true &&
+                                            {questionCode.isLimitMemory &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
-                                                        placeholder="Memory limit"
-                                                        value={""}
-                                                        onChangeText={(v)=>{}}
+                                                        placeholder="Memory limit (MB)"
+                                                        value={questionCode.limitMemory}
+                                                        onChangeText={(v)=>handleChangeCode(v, "limitMemory")}
+                                                        keyboardType={"numeric"}
                                                     />
                                                 </View>
                                             }
@@ -1069,7 +1171,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 style={[styles.inputLabelGray, styles.minHeight]}
                                                 placeholder="Your code"
                                                 multiline={true}
-                                                value={""}
+                                                value={teacherCode.code}
                                                 onChangeText={(v)=>{}}
                                             />
                                         </View>
@@ -1077,7 +1179,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             <Text style={styles.textGray14}>Language</Text>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
-                                                value={type} onchangeText={handleChangeType} 
+                                                value={teacherCode.language} onchangeText={()=>{}} 
                                                 listSelect={[]}
                                             />
                                         </View>
@@ -1109,7 +1211,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             <Text style={styles.textWhite14}>Run code</Text>
                                         </TouchableOpacity>
                                     </View>
-                                </>
+                                </> : ""
                             :""
                             }
                         </>
@@ -1373,7 +1475,7 @@ const styles = StyleSheet.create({
         marginLeft: 34
     },
     minHeight: {
-        minHeight: 200,
+        height: 200,
         textAlignVertical: "top"
     },
     indexWidth:{
@@ -1381,6 +1483,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         textAlign: "center",
-        paddingVertical: 4
+        paddingVertical: 4,
+        justifyContent: "center"
     }
 })
