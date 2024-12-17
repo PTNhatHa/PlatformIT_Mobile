@@ -759,6 +759,13 @@ export const TeacherAsgmCreate = ({route})=>{
         }
         setQuestionCode(newCode)
     }
+    const handleChangeTeacherCode = (v, field)=>{
+        const newCode = {
+            ...questionCode,
+            [field]: v
+        }
+        setTeacherCode(newCode)
+    }
     return(
         <>
             <View style={styles.container}>
@@ -1168,18 +1175,18 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View>
                                             <Text style={styles.textGray14}>Your code</Text>
                                             <TextInput
-                                                style={[styles.inputLabelGray, styles.minHeight]}
+                                                style={[styles.minHeight, styles.textCode]}
                                                 placeholder="Your code"
                                                 multiline={true}
                                                 value={teacherCode.code}
-                                                onChangeText={(v)=>{}}
+                                                onChangeText={(v)=>handleChangeTeacherCode(v, "code")}
                                             />
                                         </View>
                                         <View>
                                             <Text style={styles.textGray14}>Language</Text>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
-                                                value={teacherCode.language} onchangeText={()=>{}} 
+                                                value={teacherCode.language} onchangeText={()=>handleChangeTeacherCode(v, "language")} 
                                                 listSelect={[]}
                                             />
                                         </View>
@@ -1485,5 +1492,15 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingVertical: 4,
         justifyContent: "center"
-    }
+    },
+    textCode: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+        fontFamily: 'monospace',
+        backgroundColor: '#fff',
+      },
 })
