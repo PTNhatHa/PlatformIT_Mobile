@@ -13,6 +13,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { deleteAssignment, publishAssignment } from "../services/assignment";
 import { useUser } from "../contexts/UserContext";
 import { useNavigation } from "@react-navigation/native";
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 const initAssignment =     {
     "idAssignment": 12,
@@ -207,26 +208,38 @@ export const CardAssignment = ({
                         {data.nameLecture && <Text style={styles.dataText}>Lecture: {data.nameLecture}</Text>}
                     </View>
                     {role === 2 && 
-                        <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            {data.isCompleted ?
-                                <Tag label={"Submited at " + getTime(data.submittedDate)}/>                                
-                            : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
-                                <TagRed label={"Past due"}/>                    
-                            : data.dueDate !== null ?
-                                <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
-                            :""
-                            }
-                        </View>
+                        <>                            
+                            <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                                {data.isCompleted ?
+                                    <Tag label={"Submited at " + getTime(data.submittedDate)}/>                                
+                                    : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
+                                    <TagRed label={"Past due"}/>                    
+                                    : data.dueDate !== null ?
+                                    <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
+                                    :""
+                                }
+                            </View>
+                        </>
                     }
                     {role === 1 && 
-                        <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                            {(isPastDue || isDetail) &&
-                                <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
-                            }
-                            {data.isTest !== null && !isDetail &&
-                                <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
-                            }
-                        </View>
+                        <>                            
+                            <View style={[styles.content, {justifyContent: "flex-end"}]}>
+                                {data.isPublish === 1 &&
+                                    <>
+                                        <FontAwesome5 name="user-alt" size={12} color={COLORS.main} />
+                                        <Text style={styles.textNumber}>
+                                            {data.numberOfSubmittedStudent}/{data.numberOfStudent}
+                                        </Text>
+                                    </>
+                                }
+                                {(isPastDue || isDetail) &&
+                                    <TagNoColor label={data.isPublish ? "Publish" : "Unpublish"}/>
+                                }
+                                {data.isTest !== null && !isDetail &&
+                                    <TagNoColor label={data.isTest ? "Test" : "Exercise"}/>
+                                }
+                            </View>
+                        </>
                     }
                     {role === 0 && data.dueDate !== null &&
                         <TagNoColor label={"Due: " + formatDateTime(data.dueDate, true)}/>  
@@ -406,4 +419,9 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.1)',
     },
+    textNumber:{
+        color: COLORS.main,
+        fontSize: 12,
+        fontWeight: "bold"
+    }
 })
