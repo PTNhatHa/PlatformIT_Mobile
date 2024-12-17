@@ -107,7 +107,7 @@ export const TextInputSelectBox = ({
     return(
         <>
             <View style={styles.containerGray}>
-                <Text style={styles.label}>{label}</Text>
+                {label && <Text style={styles.label}>{label}</Text>}
                 <View style={[styles.inputLabelBox]}>
                     {isDisable ? 
                         <>

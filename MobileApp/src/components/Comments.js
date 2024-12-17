@@ -109,7 +109,6 @@ export const Comments = ({idLecture, idTeacher})=>{
         }
     }
     useEffect(()=>{
-        console.log(idLecture);
         getAllCmt()
         const interval = setInterval(() => {
             setListMainCmt((prevMain)=>

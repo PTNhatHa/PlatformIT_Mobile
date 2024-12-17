@@ -266,6 +266,7 @@ export const TeacherAsgmCreate = ({route})=>{
     const handleChangeType = (v)=>{
         setType(v)
         setQuestions([])
+        setTotalQuestion(0)
     }
 
     useEffect(()=>{
@@ -693,7 +694,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             }
                         </>
                     }
-                    <Text style={styles.textGray14}>{totalQuestion} {totalQuestion > 1 ? "questions" : "question"} |   {totalMark} mark</Text>
+                    {totalQuestion > 0 && <Text style={styles.textGray14}>{totalQuestion} {totalQuestion > 1 ? "questions" : "question"} |   {totalMark} mark</Text>}
                     {error &&
                         <Text style={styles.error}>{error}</Text>
                     }
@@ -953,13 +954,168 @@ export const TeacherAsgmCreate = ({route})=>{
                                             </View>
                                         )}
                                     </>   
-                                :""
+                                :
+                                <>
+                                    {/* CODE */}
+                                    <View style={{alignSelf: "flex-end", marginVertical: 8}}>
+                                        <CustomSwitch label={"Show test cases on submission"} value={isShowAnswer} onChangeText={setIsShowAnswer}/>   
+                                    </View>
+                                    <View style={styles.wrapContent}>
+                                        <Text style={styles.title}>Question</Text>
+                                        <View>
+                                            <Text style={styles.textGray14}>Problem</Text>
+                                            <TextInput
+                                                style={[styles.inputLabelGray, styles.minHeight]}
+                                                placeholder="Problem"
+                                                multiline={true}
+                                                value={""}
+                                                onChangeText={(v)=>{}}
+                                            />
+                                        </View>
+                                        <View>
+                                            <Text style={styles.textGray14}>Language</Text>
+                                            <TextInputSelectBox 
+                                                placeholder={"Select a language"} 
+                                                value={type} onchangeText={handleChangeType} 
+                                                listSelect={[]}
+                                            />
+                                        </View>
+                                        <View>
+                                            <Text style={styles.textGray14}>Example</Text>
+                                            <View>
+                                                {/* Row */}
+                                                <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                    <Text style={styles.wrapRowText}>Input</Text>
+                                                    <Text style={styles.wrapRowText}>Output</Text>
+                                                </View>
+                                                <View style={styles.wrapRow}>
+                                                    <Text style={styles.wrapRowText}>...</Text>
+                                                    <Text style={styles.wrapRowText}>...</Text>
+                                                </View>
+                                                <TouchableOpacity>
+                                                    <Text style={styles.wrapRowText}>Add a record</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.wrapContent}>
+                                        <Text style={styles.title}>Test Cases and Scoring Rules</Text>                                        
+                                        <View>
+                                            <Text style={styles.textGray14}>Test case</Text>
+                                            <View>
+                                                {/* Row */}
+                                                <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                    <Text style={styles.indexWidth}></Text>
+                                                    <Text style={styles.wrapRowText}>Input</Text>
+                                                    <Text style={styles.wrapRowText}>Output</Text>
+                                                </View>
+                                                <View style={styles.wrapRow}>
+                                                    <Text style={styles.indexWidth}>1</Text>
+                                                    <Text style={styles.wrapRowText}>...</Text>
+                                                    <Text style={styles.wrapRowText}>...</Text>
+                                                </View>
+                                                <TouchableOpacity>
+                                                    <Text style={styles.wrapRowText}>Add a test case</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                        <View>
+                                            <Text style={styles.textGray14}>Scoring rules</Text>
+                                            <CheckBox
+                                                isChecked={false}
+                                                onClick={()=>{}}
+                                                checkBoxColor={COLORS.secondMain}
+                                                rightText="Pass test cases"
+                                            />
+                                            <CheckBox
+                                                isChecked={false}
+                                                onClick={()=>{}}
+                                                checkBoxColor={COLORS.secondMain}
+                                                rightText="Performance on time"
+                                            />
+                                            {true &&
+                                                <View style={styles.paddingCheck}>
+                                                    <TextInput
+                                                        style={[styles.inputLabelGray]}
+                                                        placeholder="Time limit"
+                                                        value={""}
+                                                        onChangeText={(v)=>{}}
+                                                    />
+                                                </View>
+                                            }
+                                            <CheckBox
+                                                isChecked={false}
+                                                onClick={()=>{}}
+                                                checkBoxColor={COLORS.secondMain}
+                                                rightText="Perfomance on memory"
+                                            />
+                                            {true &&
+                                                <View style={styles.paddingCheck}>
+                                                    <TextInput
+                                                        style={[styles.inputLabelGray]}
+                                                        placeholder="Memory limit"
+                                                        value={""}
+                                                        onChangeText={(v)=>{}}
+                                                    />
+                                                </View>
+                                            }
+                                        </View>
+                                    </View>
+                                    <View style={styles.wrapContent}>
+                                        <Text style={styles.title}>Testing with your code</Text>
+                                        <View>
+                                            <Text style={styles.textGray14}>Your code</Text>
+                                            <TextInput
+                                                style={[styles.inputLabelGray, styles.minHeight]}
+                                                placeholder="Your code"
+                                                multiline={true}
+                                                value={""}
+                                                onChangeText={(v)=>{}}
+                                            />
+                                        </View>
+                                        <View>
+                                            <Text style={styles.textGray14}>Language</Text>
+                                            <TextInputSelectBox 
+                                                placeholder={"Select a language"} 
+                                                value={type} onchangeText={handleChangeType} 
+                                                listSelect={[]}
+                                            />
+                                        </View>
+                                        {true &&
+                                            <View>
+                                                <Text style={styles.textGray14}>Result</Text>
+                                                <View>
+                                                    {/* Row */}
+                                                    <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                        <Text style={styles.wrapRowText}>Test case</Text>
+                                                        <Text style={styles.wrapRowText}>Result</Text>
+                                                    </View>
+                                                    <View style={styles.wrapRow}>
+                                                        <Text style={styles.wrapRowText}>...</Text>
+                                                        <Text style={styles.wrapRowText}>...</Text>
+                                                    </View>
+                                                </View>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray14}>Time</Text>
+                                                    <Text style={styles.textBlack16}>0.2s</Text>
+                                                </View>
+                                                <View style={styles.wrapFlex}>
+                                                    <Text style={styles.textGray14}>Memory</Text>
+                                                    <Text style={styles.textBlack16}>0.2KB</Text>
+                                                </View>
+                                            </View>
+                                        }
+                                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>{}}>
+                                            <Text style={styles.textWhite14}>Run code</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </>
                             :""
                             }
                         </>
                     }
                 </ScrollView>
-                {selectBtn === 1 &&
+                {selectBtn === 1 && type.value !== 3 &&
                     <TouchableOpacity style={styles.btnPlus} onPress={()=>addQuestion()}>
                         <Entypo name="plus" size={28} color="black" />
                     </TouchableOpacity>
@@ -1097,6 +1253,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         flex: 1,
+        maxHeight: 200
     },
     btnText:{
         fontSize: 16,
@@ -1196,5 +1353,34 @@ const styles = StyleSheet.create({
     line:{
         width: 1,
         backgroundColor: COLORS.lightText
+    },
+    wrapRow:{
+        flexDirection: "row",
+        justifyContent: "space-between",        
+        width: "100%"
+    },
+    wrapRowText:{
+        flex: 1,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4
+    },
+    bgLightGray:{
+        backgroundColor: COLORS.lightGray
+    },
+    paddingCheck:{
+        marginLeft: 34
+    },
+    minHeight: {
+        minHeight: 200,
+        textAlignVertical: "top"
+    },
+    indexWidth:{
+        width: 40,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4
     }
 })
