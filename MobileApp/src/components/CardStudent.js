@@ -5,6 +5,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime, formatTime } from "../utils/utils";
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { Tag } from "./Tag";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const initStudent={
     idUser: 1,
@@ -32,8 +33,13 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
             idStudent: data.idStudent, 
             idCourse: idCourse
         })} key={data.idStudent}>
-            <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
-            <View>
+            <View style={{gap: 4}}>
+                <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
+                <TouchableOpacity style={styles.btn}>
+                    <Ionicons name="chatbubble-outline" size={12} color={COLORS.main} />
+                </TouchableOpacity>
+            </View>
+            <View style={{gap: 2}}>
                 <Text style={styles.title}>{data.fullName}</Text>
                 <View style={styles.content}>
                     <Feather name="mail" size={14} color={COLORS.stroke} />
@@ -159,6 +165,13 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.yellow,
     },
     wrapFull:{
+        flex: 1
+    },
+    btn:{
+        backgroundColor: COLORS.main30,
+        borderRadius: 4,
+        alignItems: "center",
+        justifyContent: "center",
         flex: 1
     }
 })
