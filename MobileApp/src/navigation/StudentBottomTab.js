@@ -27,6 +27,7 @@ import { StudentDoAsgm } from "../screens/Student/TabMyTest/StudentDoAsgm";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Alert } from "react-native";
+import { ChatBoard } from "../screens/ChatBoard";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -161,6 +162,22 @@ const StackMyTestScreen = ()=>{
                 }}
             />
         </StackMyTest.Navigator>
+    )
+}
+
+const StackChatScreen = ()=>{
+    const StackChat = createNativeStackNavigator()
+    return(
+        <StackChat.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackChat.Screen
+                name="Chat"
+                component={ChatBoard}
+            />
+        </StackChat.Navigator>
     )
 }
 
@@ -332,7 +349,7 @@ export const StudentBottomTab = ()=>{
             >
                 {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
-            <Tab.Screen name="Chat" component={Home} 
+            <Tab.Screen name="Chat" component={StackChatScreen} 
                 listeners={() => ({
                     tabPress: (e) => {                      
                       if (state.isDoAsgm === true) {

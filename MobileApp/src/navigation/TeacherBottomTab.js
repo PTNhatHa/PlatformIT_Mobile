@@ -26,6 +26,7 @@ import { TeacherAllAssignment } from "../screens/Teacher/TabMyAssignment/Teacher
 import { TeacherAsgmCreate } from "../screens/Teacher/TabMyAssignment/TeacherAsgmCreate";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { TeacherDetailAsgm } from "../screens/Teacher/TabMyAssignment/TeacherDetailAsgm";
+import { ChatBoard } from "../screens/ChatBoard";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -173,6 +174,22 @@ const StackAssigmentScreen = ()=>{
                 component={TeacherDetailAsgm}
             />
         </StackAssigmentScreen.Navigator>
+    )
+}
+
+const StackChatScreen = ()=>{
+    const StackChat = createNativeStackNavigator()
+    return(
+        <StackChat.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackChat.Screen
+                name="Chat"
+                component={ChatBoard}
+            />
+        </StackChat.Navigator>
     )
 }
 
@@ -369,7 +386,7 @@ export const TeacherBottomTab = ()=>{
             >
                 {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
-            <Tab.Screen name="Chat" component={Home} />
+            <Tab.Screen name="Chat" component={StackChatScreen} />
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
         </Tab.Navigator>
     )

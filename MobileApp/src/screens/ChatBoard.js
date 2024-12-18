@@ -1,52 +1,115 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
 import { COLORS, commonStyles } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import DefaultImg from "../../assets/images/DefaultImg.png"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
 import { useNavigation } from "@react-navigation/native";
-
-// {
-//     "idNotification": 6,
-//     "senderAvatar": null,
-//     "idSender": 9,
-//     "idQualification": 14,
-//     "content": "Your qualification: IELTS has been approved.",
-//     "isRead": 0,
-//     "notificationType": 1,
-//     "idCourse": null,
-//     "relativeTime": "8 days ago"
-//   },
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const ChatBoard = (props)=>{
     const navigation = useNavigation()
     const {state} = useUser()
-    const [currentIdChat, setCurrentIdChat] = useState(1)
     const [listChat, setListChat] = useState([
         {
             idUser: 1,
             fullName: "NhatHa",
             ava: "",
+            nameLastChat: "NhatHa",
             message: "aaaaaaa",
             relativeTime: "1 day agos",
             isRead: false
         },
         {
             idUser: 2,
-            fullName: "NhatHa",
+            fullName: "Hyy",
             ava: "",
-            message: "aaaaaaa",
+            nameLastChat: null,
+            message: "aduuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu uuuu uuuuummm mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
             relativeTime: "1 day agos",
             isRead: true
         },
         {
-            idUser: 2,
+            idUser: 3,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 4,
             fullName: "NhatHa",
             ava: "",
+            nameLastChat: "NhatHa",
             message: "aaaaaaa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 5,
+            fullName: "Hyy",
+            ava: "",
+            nameLastChat: null,
+            message: "noi ",
+            relativeTime: "1 day agos",
+            isRead: true
+        },
+        {
+            idUser: 6,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 7,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 8,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 9,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 10,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
+            relativeTime: "1 day agos",
+            isRead: false
+        },
+        {
+            idUser: 11,
+            fullName: "Taho",
+            ava: "",
+            nameLastChat: "Taho",
+            message: "woa",
             relativeTime: "1 day agos",
             isRead: false
         },
@@ -78,43 +141,58 @@ export const ChatBoard = (props)=>{
     }
 
     return(
-        <>
-            <View style={styles.header}>
-                <Text style={commonStyles.title}>Conversation</Text>
+        <View style={styles.wrapContainer}>
+            <View style={styles.wrapperSearch}>
+                <MaterialIcons name="search" size={20} color="black" />
+                <TextInput
+                    value={"search"}
+                    style={styles.input}
+                    placeholder={"Search"}
+                />
             </View>
             <FlatList
                 data={listChat}
                 renderItem={({item}) => 
                     <TouchableOpacity 
-                        style={[styles.container, (currentIdChat === item.idUser) && styles.bgBox]} 
-                        onPress={()=>handleReadNoti(item.idNotification)}
+                        style={styles.container} 
+                        onPress={()=>{}}
                     >
-                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : DefaultImg}/>
-                        <View style={{flexDirection: "column", flex: 1}}>
+                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : DefaultAva}/>
+                        <View style={styles.wrapContent}>
                             <Text style={styles.title}>{item.fullName}</Text>
-                            <Text style={ !item.isRead ? styles.dataMess : styles.dataMessActive}>{item.message}</Text>
-                            <Text style={ !item.isRead ? styles.dataMess : styles.dataMessActive}>{item.relativeTime}</Text>
+                            <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]} numberOfLines={1} ellipsizeMode="tail">
+                                {item.nameLastChat === item.fullName ? item.fullName : "You"}: {item.message}
+                            </Text>
                         </View>
+                        <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]}>{item.relativeTime}</Text>
                     </TouchableOpacity>
                 }
-                keyExtractor={item => item.idNotification}
+                keyExtractor={item => item.idUser}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}    
             />
-        </>
+        </View>
     )
 }
 
 
 const styles = StyleSheet.create({
+    wrapContainer:{
+        backgroundColor: "white"
+    },
     container: {
-        padding: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         flexDirection: "row",
         columnGap: 10,
+        alignItems: "center"
+    },
+    wrapContent:{
+        flex: 1,
     },
     title:{
         fontSize: 16,
         fontWeight: "bold",
-        color: COLORS.stroke
+        color: "Black"
     },
     dataDate: {
         fontSize: 12,
@@ -123,9 +201,9 @@ const styles = StyleSheet.create({
     dataMess: {
         fontSize: 12,
         color: COLORS.stroke,
+        flexWrap: "wrap",
     },
     dataMessActive: {
-        fontSize: 12,
         color: "black",
         fontWeight: "bold"
     },
@@ -151,7 +229,20 @@ const styles = StyleSheet.create({
         gap: 4,
         alignItems: "center"
     },
-    bgBox: {
-        backgroundColor: "#ECF2F2",
-    }
+    wrapperSearch: {
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 2,
+        flexDirection: "row",
+        columnGap: 8,
+        alignItems: "center",
+        marginHorizontal: 16,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    input:{
+        fontSize: 16,
+        width: "90%"
+    },
 })
