@@ -190,6 +190,7 @@ export const Comments = ({idLecture, idTeacher})=>{
         try {
             const response = await deleteComment(idComment, state.idUser)
             if(response){
+                Alert.alert("Done", response)
                 setNewCmt(null)
                 getAllCmt()
             }
@@ -243,7 +244,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                                 <Text style={styles.textGray12}>Reply</Text>
                             </TouchableOpacity>
                             {mainCmt.idUser === state.idUser &&
-                                <TouchableOpacity style={styles.btnDelete}>
+                                <TouchableOpacity style={styles.btnDelete} onPress={()=>handelDelete(mainCmt.idComment)}>
                                     <MaterialIcons name="delete" size={14} color={COLORS.lightText} />
                                     <Text style={styles.textGray12}>Delete</Text>
                                 </TouchableOpacity>
@@ -299,7 +300,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                                                 <Text style={styles.textGray12}>Reply</Text>
                                             </TouchableOpacity>
                                             {subCmt.idUser === state.idUser &&
-                                                <TouchableOpacity style={styles.btnDelete}>
+                                                <TouchableOpacity style={styles.btnDelete} onPress={()=>handelDelete(subCmt.idComment)}>
                                                     <MaterialIcons name="delete" size={14} color={COLORS.lightText} />
                                                     <Text style={styles.textGray12}>Delete</Text>
                                                 </TouchableOpacity>
@@ -359,7 +360,7 @@ export const Comments = ({idLecture, idTeacher})=>{
 const styles = StyleSheet.create({
     innerMain:{
         height: 400,
-        marginVertical: 8,
+        marginTop: 8,
         marginHorizontal: 16,
         gap: 4,
     },
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     maxWidth:{
-        maxWidth: 255
+        maxWidth: 235
     },
     wrapLoading:{
         position: "absolute", 

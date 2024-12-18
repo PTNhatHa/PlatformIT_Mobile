@@ -25,12 +25,13 @@ export const getAllCommentOfLecture = async (lectureId)=>{
 }
 
 export const deleteComment = async (idComment, idUpdatedBy)=>{
-    return await axios.post(baseUrl + "/DeleteComment?idComment=" + idComment + "&idUpdatedBy=" + idUpdatedBy)
+    console.log(idComment, "--", idUpdatedBy);
+    return await axios.delete(baseUrl + "/DeleteComment?idComment=" + idComment + "&idUpdatedBy=" + idUpdatedBy)
     .then(response => {
         // console.log(response.data);
         return response.data
     })
     .catch(error => {
-        console.log("Error DeleteComment: ", error);
+        console.log("Error DeleteComment: ", error.response);
     })
 }

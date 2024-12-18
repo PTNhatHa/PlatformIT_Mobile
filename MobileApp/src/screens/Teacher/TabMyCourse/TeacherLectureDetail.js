@@ -475,9 +475,7 @@ export const TeacherLectureDetail = ({route})=>{
 
                     {/* Comment */}
                     {(index === 4 && !isEditMode) &&
-                        <View style={[styles.wrapper]}>
-                            <Comments idLecture={selectLecture.idLecture} idTeacher={state.idUser}/>
-                        </View>
+                        <Comments idLecture={selectLecture.idLecture} idTeacher={state.idUser}/>
                     }
                 </View>
             </ScrollView>
