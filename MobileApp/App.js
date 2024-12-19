@@ -21,14 +21,16 @@ import { COLORS } from './src/utils/constants';
 import { TeacherDetailAsgm } from './src/screens/Teacher/TabMyAssignment/TeacherDetailAsgm';
 import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/CardStudent';
 import { ChatBoard } from './src/screens/ChatBoard';
+import { ChatBox } from './src/screens/ChatBox';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
+          {/* <SigninSignup/> */}
           {/* <ChatBoard/> */}
+          <ChatBox/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
