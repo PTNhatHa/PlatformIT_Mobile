@@ -122,7 +122,12 @@ export const DetailTeacher =({route})=>{
                 </View>
                 {console.log("isChat: ", isChat)}
                 {isChat &&
-                    <TouchableOpacity style={styles.wrapperPro} onPress={()=> navigation.navigate("Detail Center", {idCenter : data.idCenter})}>
+                    <TouchableOpacity style={styles.wrapperPro} onPress={()=>navigation.navigate("Chat", {
+                        screen: "ChatBoard",
+                        params: {
+                            idTeacher: idTeacher
+                        }
+                    })}>
                         <View style={[styles.contentCard, {justifyContent: "center", alignItems: "center"}]}>
                             <Text style={styles.titleContentCard}>Contact</Text>
                             <Ionicons name="chatbubble-outline" size={24} color="white" />

@@ -28,6 +28,7 @@ import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Alert } from "react-native";
 import { ChatBoard } from "../screens/ChatBoard";
+import { ChatBox } from "../screens/ChatBox";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -174,8 +175,13 @@ const StackChatScreen = ()=>{
             }}
         >
             <StackChat.Screen
-                name="Chat"
+                name="ChatBoard"
                 component={ChatBoard}
+            />
+            <StackChat.Screen
+                name="ChatBox"
+                component={ChatBox}
+                options={{ headerShown: false }}
             />
         </StackChat.Navigator>
     )
@@ -197,10 +203,6 @@ const StackAccountScreen = ()=>{
                 name="Your infomation"
                 component={StudentPI}
             />
-            {/* <StackAccount.Screen
-                name="Change password"
-                component={ChangePassword}
-            /> */}
         </StackAccount.Navigator>
     )
 }

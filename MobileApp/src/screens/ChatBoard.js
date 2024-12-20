@@ -10,7 +10,9 @@ import { changeReadStatus, readAllNotification } from "../services/notification"
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-export const ChatBoard = (props)=>{
+export const ChatBoard = ({route})=>{
+    const idTeacher = route.params?.idTeacher || 0
+    const idStudent = route.params?.idStudent || 0
     const navigation = useNavigation()
     const {state} = useUser()
     const [listChat, setListChat] = useState([
@@ -20,96 +22,6 @@ export const ChatBoard = (props)=>{
             ava: "",
             nameLastChat: "NhatHa",
             message: "aaaaaaa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 2,
-            fullName: "Hyy",
-            ava: "",
-            nameLastChat: null,
-            message: "aduuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu uuuu uuuuummm mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
-            relativeTime: "1 day agos",
-            isRead: true
-        },
-        {
-            idUser: 3,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 4,
-            fullName: "NhatHa",
-            ava: "",
-            nameLastChat: "NhatHa",
-            message: "aaaaaaa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 5,
-            fullName: "Hyy",
-            ava: "",
-            nameLastChat: null,
-            message: "noi ",
-            relativeTime: "1 day agos",
-            isRead: true
-        },
-        {
-            idUser: 6,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 7,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 8,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 9,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 10,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-        {
-            idUser: 11,
-            fullName: "Taho",
-            ava: "",
-            nameLastChat: "Taho",
-            message: "woa",
             relativeTime: "1 day agos",
             isRead: false
         },
@@ -128,8 +40,13 @@ export const ChatBoard = (props)=>{
     }
 
     useEffect(()=>{
-
-    }, [])
+        if(idStudent || idTeacher){
+            navigation.navigate("ChatBox", {
+                idStudent: idStudent,
+                idTeacher: idTeacher
+            })
+        }
+    }, [idStudent, idTeacher])
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải

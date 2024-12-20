@@ -35,7 +35,16 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
         })} key={data.idStudent}>
             <View style={{gap: 4}}>
                 <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
-                <TouchableOpacity style={styles.btn}>
+                <TouchableOpacity style={styles.btn} 
+                    onPress={()=>{
+                    console.log("data.idStudent: ", data.idStudent);    
+                    navigation.navigate("Chat", {
+                        screen: "ChatBoard",
+                        params: {
+                            idStudent: data.idStudent
+                        }
+                    })}
+                }>
                     <Ionicons name="chatbubble-outline" size={12} color={COLORS.main} />
                 </TouchableOpacity>
             </View>

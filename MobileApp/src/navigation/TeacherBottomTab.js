@@ -27,6 +27,7 @@ import { TeacherAsgmCreate } from "../screens/Teacher/TabMyAssignment/TeacherAsg
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { TeacherDetailAsgm } from "../screens/Teacher/TabMyAssignment/TeacherDetailAsgm";
 import { ChatBoard } from "../screens/ChatBoard";
+import { ChatBox } from "../screens/ChatBox";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -186,8 +187,13 @@ const StackChatScreen = ()=>{
             }}
         >
             <StackChat.Screen
-                name="Chat"
+                name="ChatBoard"
                 component={ChatBoard}
+            />
+            <StackChat.Screen
+                name="ChatBox"
+                component={ChatBox}
+                options={{ headerShown: false }}
             />
         </StackChat.Navigator>
     )
@@ -307,45 +313,6 @@ export const TeacherBottomTab = ()=>{
             connection.stop().then(() => console.log('SignalR connection stopped.'));
         };
     }, []);
-
-    // useEffect(() => {
-    //     // Create connection to the SignalR hub
-    //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl('http://' + currentIP +':5000/notificationHub')  // Ensure the URL matches your backend
-    //         .build();
-
-    //     // Start the connection
-    //     connection.start()
-    //         .then(() => {
-    //             console.log('Connected to SignalR')
-
-    //             // Subscribe to the "UpdateNotifications" event
-    //             connection.on('UpdateNotifications', (updatedNotifications) => {
-    //                 console.log('UpdateNotifications event triggered'); // Kiểm tra sự kiện có kích hoạt
-    //                 console.log('Received notifications:', updatedNotifications); // Kiểm tra dữ liệu nhận được
-    //                 let notiUnRead = 0
-    //                 if(updatedNotifications){
-    //                     updatedNotifications.forEach(item => {
-    //                         if(item.isRead === 0){
-    //                             notiUnRead +=1
-    //                         }
-    //                     });
-    //                     setAllNoti(updatedNotifications)
-    //                 }
-    //                 setUnReadNoti(notiUnRead)
-    //             });
-    //         })
-    //         .catch(err => console.error('SignalR Connection Error: ', err));
-
-    //     // Check close
-    //     connection.onclose((error) => {
-    //         console.error("SignalR connection closed:", error);
-    //     });
-    //     // Clean up the connection when component unmounts
-    //     return () => {
-    //         connection.stop();
-    //     };
-    // }, []);
 
     return(
         <Tab.Navigator

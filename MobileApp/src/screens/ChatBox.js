@@ -10,13 +10,23 @@ import { changeReadStatus, readAllNotification } from "../services/notification"
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { sendMessage } from "../services/message";
 
-export const ChatBox = (props)=>{
+export const ChatBox = ({route})=>{
+    const idTeacher = route.params?.idTeacher || null
+    const idStudent = route.params?.idStudent || null
     const navigation = useNavigation()
     const {state} = useUser()
     const [listMessage, setListMessage] = useState([])
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
+    const [newMessage, setNewMessage] = useState({
+        idSender: state.idUser,
+        idReceiver: idStudent || idTeacher,
+        content: "",
+        createdBy: state.idUser
+    })
+
     const handleRefresh = async ()=>{
         setRefreshing(true)
         try {
@@ -43,71 +53,9 @@ export const ChatBox = (props)=>{
                 nameLastChat: "NhatHa",
                 message: "aaaaaaa",
                 relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
+                isRead: false,
+                createDate: new Date()
+            },       
             {
                 idUser: 1,
                 fullName: "NhatHa",
@@ -116,7 +64,7 @@ export const ChatBox = (props)=>{
                 message: "aaaaaaa",
                 relativeTime: "1 day agos",
                 isRead: false
-            },
+            },       
             {
                 idUser: 2,
                 fullName: "NhatHa",
@@ -125,135 +73,25 @@ export const ChatBox = (props)=>{
                 message: "aaaaaaa",
                 relativeTime: "1 day agos",
                 isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: true
-            },
+            },       
+                 
         ])
     },[])
+
+    const handleSendMessage = async()=>{
+        setLoading(true)
+        try {
+            const response = await sendMessage(newMessage)
+            if(response){
+                // reload
+                Alert.alert("Done", "Done")
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -272,47 +110,56 @@ export const ChatBox = (props)=>{
                 </TouchableOpacity>
                 <Text style={commonStyles.title}>Name</Text>
             </View>
-            <ScrollView contentContainerStyle={styles.wrapBox} ref={scrollViewRef} >
-                {listMessage.length > 0 &&
-                    listMessage.map((mess, index) => {
-                        if(mess.idUser === 1){
-                            if((mess.idUser !== listMessage[index + 1]?.idUser || index === 0)){
-                                return(
-                                    <View key={index} style={styles.wrapFlex}>
-                                        <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
-                                        <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
-                                            {mess.message}
-                                        </Text>                        
-                                    </View>
-                                )
-                            } else{
-                                return(
-                                    <View key={index} style={[styles.wrapFlex, styles.subMess]}>
-                                        <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
-                                            {mess.message}
-                                        </Text>                        
-                                    </View>
-                                )
-                            }
-                        } else{
-                            return(
-                                <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
-                                    <Text style={[styles.dataMess, styles.dataMyMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopRight, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomRight]}>
-                                        {mess.message}
-                                    </Text>                        
-                                </View>
-                            )
+            <View style={styles.containerMess}>
+                <View>
+
+                    <ScrollView contentContainerStyle={styles.wrapBox} ref={scrollViewRef} >
+                        {listMessage.length > 0 &&
+                            listMessage.map((mess, index) => {
+                                if(mess.idUser === 1){
+                                    if((mess.idUser !== listMessage[index + 1]?.idUser)){
+                                        return(
+                                            <View key={index} style={styles.wrapFlex}>
+                                                <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
+                                                <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
+                                                    {mess.message}
+                                                </Text>                        
+                                            </View>
+                                        )
+                                    } else{
+                                        return(
+                                            <View key={index} style={[styles.wrapFlex, styles.subMess]}>
+                                                <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
+                                                    {mess.message}
+                                                </Text>                        
+                                            </View>
+                                        )
+                                    }
+                                } else{
+                                    return(
+                                        <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
+                                            <Text style={[styles.dataMess, styles.dataMyMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopRight, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomRight]}>
+                                                {mess.message}
+                                            </Text>                        
+                                        </View>
+                                    )
+                                }
+                            })
                         }
-                    })
-                }
-            </ScrollView>
+                    </ScrollView>
+                </View>
+            </View>
             <View style={styles.wrapperSearch}>
                 <TextInput
-                    value={""}
+                    value={newMessage}
                     style={styles.input}
                     placeholder={"Aa"}
+                    onChangeText={(v)=>setNewMessage({
+                        ...newMessage,
+                        content: v
+                    })}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>handleSendMessage()}>
                     <FontAwesome name="send-o" size={24} color="black" />
                 </TouchableOpacity>
             </View>
@@ -403,7 +250,7 @@ const styles = StyleSheet.create({
     wrapBox:{
         marginHorizontal: 16,
         paddingVertical: 16,
-        gap: 2
+        gap: 2,
     },
     myMess:{
         alignSelf: "flex-end",
@@ -422,5 +269,10 @@ const styles = StyleSheet.create({
     },
     subMess:{
         marginLeft: 43
+    },
+    containerMess:{
+        flex: 1, // Đảm bảo container chiếm hết không gian còn lại
+        borderWidth: 1,
+        justifyContent: 'flex-end' // Đảm bảo nội dung trong ScrollView nằm sát dưới
     }
 })
