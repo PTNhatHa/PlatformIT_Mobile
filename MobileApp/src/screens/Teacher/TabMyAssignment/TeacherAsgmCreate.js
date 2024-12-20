@@ -1196,21 +1196,23 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 <View>
                                                     {/* Row */}
                                                     <View style={[styles.wrapRow, styles.bgLightGray]}>
-                                                        <Text style={styles.wrapRowText}>Test case</Text>
-                                                        <Text style={styles.wrapRowText}>Result</Text>
+                                                        <Text style={styles.wrapRowText}></Text>
+                                                        <Text style={styles.wrapRowText}>Pass test case</Text>
+                                                        <Text style={styles.wrapRowText}>Time         (s)</Text>
+                                                        <Text style={styles.wrapRowText}>Memory (MB)</Text>
                                                     </View>
                                                     <View style={styles.wrapRow}>
-                                                        <Text style={styles.wrapRowText}>...</Text>
-                                                        <Text style={styles.wrapRowText}>...</Text>
+                                                        <Text style={styles.wrapRowText}>case 1</Text>
+                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>Pass</Text>
+                                                        <Text style={[styles.wrapRowText, false ? styles.textGreen : styles.textRed]}>0.2</Text>
+                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.1</Text>
                                                     </View>
-                                                </View>
-                                                <View style={styles.wrapFlex}>
-                                                    <Text style={styles.textGray14}>Time</Text>
-                                                    <Text style={styles.textBlack16}>0.2s</Text>
-                                                </View>
-                                                <View style={styles.wrapFlex}>
-                                                    <Text style={styles.textGray14}>Memory</Text>
-                                                    <Text style={styles.textBlack16}>0.2KB</Text>
+                                                    <View style={styles.wrapRow}>
+                                                        <Text style={styles.wrapRowText}>case 2</Text>
+                                                        <Text style={[styles.wrapRowText, false ? styles.textGreen : styles.textRed]}>Fail</Text>
+                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.2</Text>
+                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.1</Text>
+                                                    </View>
                                                 </View>
                                             </View>
                                         }
@@ -1473,7 +1475,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: COLORS.lightText,
         textAlign: "center",
-        paddingVertical: 4
+        paddingVertical: 4,
+        textAlignVertical: "center",
     },
     bgLightGray:{
         backgroundColor: COLORS.lightGray
@@ -1497,10 +1500,18 @@ const styles = StyleSheet.create({
         flex: 1,
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 8,
+        borderRadius: 4,
         padding: 10,
         fontSize: 16,
         fontFamily: 'monospace',
         backgroundColor: '#fff',
-      },
+    },
+    textGreen:{
+        color: COLORS.green,
+        fontWeight: "bold"
+    },
+    textRed:{
+        color: COLORS.red,
+        fontWeight: "bold"
+    }
 })
