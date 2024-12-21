@@ -28,6 +28,7 @@ import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { TeacherDetailAsgm } from "../screens/Teacher/TabMyAssignment/TeacherDetailAsgm";
 import { ChatBoard } from "../screens/ChatBoard";
 import { ChatBox } from "../screens/ChatBox";
+import { getAllUserConversations } from "../services/message";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -178,7 +179,7 @@ const StackAssigmentScreen = ()=>{
     )
 }
 
-const StackChatScreen = ()=>{
+const StackChatScreen = ({getUnReadMessage})=>{
     const StackChat = createNativeStackNavigator()
     return(
         <StackChat.Navigator
@@ -188,7 +189,12 @@ const StackChatScreen = ()=>{
         >
             <StackChat.Screen
                 name="ChatBoard"
-                component={ChatBoard}
+                component={(props) => (
+                    <ChatBoard 
+                        {...props} 
+                        getUnReadMessage={getUnReadMessage}
+                    />
+                )}
             />
             <StackChat.Screen
                 name="ChatBox"
@@ -228,6 +234,7 @@ export const TeacherBottomTab = ()=>{
     const {state} = useUser()
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
+    const [unReadMess, setUnReadMess]= useState(0)
 
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
@@ -250,8 +257,31 @@ export const TeacherBottomTab = ()=>{
         setUnReadNoti(notiUnRead)
     }
 
+    const getUnReadMessage = async()=>{
+        try {
+            const response = await getAllUserConversations(state.idUser)
+            // console.log("response: ", response);
+            let messUnRead = 0
+            if(response){
+                response.forEach(item => {
+                    if(item.isRead === 0){
+                        messUnRead +=1
+                    }
+                });
+                
+            }
+            console.log("messUnRead: ", messUnRead);
+            setUnReadMess(messUnRead)
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
     useEffect(()=>{
         getNoti()
+        getUnReadMessage()
         const interval = setInterval(() => {
             setAllNoti((prevNotifications) =>
               prevNotifications.map((notification) => ({
@@ -353,7 +383,17 @@ export const TeacherBottomTab = ()=>{
             >
                 {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
-            <Tab.Screen name="Chat" component={StackChatScreen} />
+            <Tab.Screen name="Chat"
+                options={unReadMess > 0 && { 
+                    tabBarBadge: unReadMess,
+                    tabBarBadgeStyle: { backgroundColor: COLORS.main, color: 'white' }
+                }}
+            >
+                {props => <StackChatScreen 
+                    {...props} 
+                    getUnReadMessage={getUnReadMessage} // Truyền hàm vào StackChatScreen
+                />}
+            </Tab.Screen>
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}/>
         </Tab.Navigator>
     )

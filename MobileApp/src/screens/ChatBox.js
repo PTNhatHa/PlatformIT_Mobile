@@ -26,14 +26,29 @@ export const ChatBox = ({route})=>{
         content: "",
         createdBy: state.idUser
     })
+    const [receiverName, setReceiverName] = useState({
+        name: "",
+        avatar: ""
+    })
 
     const getMessages = async()=>{
         setLoading(true)
         try {
-            const response = await getConversation(state.idUser, idStudent || idTeacher)
-            // console.log(response);
+            const response = await getConversation(state.idUser, idStudent || idTeacher)            
             if(response){
                 setListMessage(response)
+                setReceiverName(response[0].idSender !== state.idUser ? 
+                    {
+                        name: response[0].senderName,
+                        avatar: response[0].senderAvatar
+                    }
+                    :
+                    {
+                        name: response[0].receiverName,
+                        avatar: response[0].receiverAvatar
+                    }
+                    
+                )
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -93,7 +108,8 @@ export const ChatBox = ({route})=>{
                 <TouchableOpacity onPress={()=>navigation.goBack()}>
                     <AntDesign name="arrowleft" size={24} color={COLORS.main} />
                 </TouchableOpacity>
-                <Text style={commonStyles.title}>Name</Text>
+                <Image style={styles.img} source={receiverName.avatar ? { uri: receiverName.avatar} : DefaultAva}/>
+                <Text style={commonStyles.title}>{receiverName.name}</Text>
             </View>
             <View style={styles.containerMess}>
                 <View>
@@ -203,7 +219,8 @@ const styles = StyleSheet.create({
         flexDirection: "row", 
         alignItems: "center",
         backgroundColor: "white", 
-        padding: 16
+        padding: 16,
+        gap: 8
     },
     btn: {
         paddingVertical: 8,
@@ -255,8 +272,7 @@ const styles = StyleSheet.create({
         marginLeft: 43
     },
     containerMess:{
-        flex: 1, // Đảm bảo container chiếm hết không gian còn lại
-        borderWidth: 1,
-        justifyContent: 'flex-end' // Đảm bảo nội dung trong ScrollView nằm sát dưới
+        flex: 1,
+        justifyContent: 'flex-end'
     }
 })

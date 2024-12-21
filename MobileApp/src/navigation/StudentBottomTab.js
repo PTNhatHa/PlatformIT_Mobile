@@ -29,6 +29,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Alert } from "react-native";
 import { ChatBoard } from "../screens/ChatBoard";
 import { ChatBox } from "../screens/ChatBox";
+import { getAllUserConversations } from "../services/message";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -166,7 +167,7 @@ const StackMyTestScreen = ()=>{
     )
 }
 
-const StackChatScreen = ()=>{
+const StackChatScreen = ({getUnReadMessage})=>{
     const StackChat = createNativeStackNavigator()
     return(
         <StackChat.Navigator
@@ -176,7 +177,12 @@ const StackChatScreen = ()=>{
         >
             <StackChat.Screen
                 name="ChatBoard"
-                component={ChatBoard}
+                component={(props) => (
+                    <ChatBoard 
+                        {...props} 
+                        getUnReadMessage={getUnReadMessage}
+                    />
+                )}
             />
             <StackChat.Screen
                 name="ChatBox"
@@ -212,6 +218,7 @@ export const StudentBottomTab = ()=>{
     const {state} = useUser()
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
+    const [unReadMess, setUnReadMess]= useState(0)
 
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
@@ -231,6 +238,26 @@ export const StudentBottomTab = ()=>{
             setAllNoti(newNoti)
         }
         setUnReadNoti(notiUnRead)
+    }
+
+    const getUnReadMessage = async()=>{
+        try {
+            const response = await getAllUserConversations(state.idUser)
+            let messUnRead = 0
+            if(response){
+                response.forEach(item => {
+                    if(item.isRead === 0){
+                        messUnRead +=1
+                    }
+                });
+                
+            }
+            setUnReadMess(messUnRead)
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -266,16 +293,20 @@ export const StudentBottomTab = ()=>{
 
     useEffect(()=>{
         getNoti()
+        getUnReadMessage()
         const interval = setInterval(() => {
             setAllNoti((prevNotifications) =>
               prevNotifications.map((notification) => ({
                 ...notification,
                 relativeTime: calculateRelativeTime(notification.timestamp),
               }))
-            );
+            )            
         }, 60000); // Update every minute
         return () => clearInterval(interval);
     }, [])
+
+    // Conversation
+
 
     return(
         <Tab.Navigator
@@ -351,16 +382,26 @@ export const StudentBottomTab = ()=>{
             >
                 {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
-            <Tab.Screen name="Chat" component={StackChatScreen} 
+            <Tab.Screen 
+                name="Chat" 
+                options={unReadMess > 0 && { 
+                    tabBarBadge: unReadMess,
+                    tabBarBadgeStyle: { backgroundColor: COLORS.main, color: 'white' }
+                }}
                 listeners={() => ({
                     tabPress: (e) => {                      
-                      if (state.isDoAsgm === true) {
+                    if (state.isDoAsgm === true) {
                         e.preventDefault(); // Ngăn người dùng chuyển tab
                         Alert.alert("Warning", "You cannot switch tabs while doing an assignment!");
-                      }
+                    }
                     },
-                  })}
-            />
+                })}
+            >
+                {props => <StackChatScreen 
+                    {...props} 
+                    getUnReadMessage={getUnReadMessage} // Truyền hàm vào StackChatScreen
+                />}
+            </Tab.Screen>
             <Tab.Screen name="AccountScreen" component={StackAccountScreen} options={{ tabBarLabel: "Account" }}
                 listeners={() => ({
                     tabPress: (e) => {                      

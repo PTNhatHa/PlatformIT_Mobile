@@ -38,3 +38,15 @@ export const getAllUserConversations = async (IdcurrentUser)=>{
         console.log("Error GetAllUserConversations: ", error.response);
     })
 }
+
+export const updateReadStatus = async (idUser, IdcurrentUser)=>{
+    const url = baseUrl + "/UpdateReadStatus?idUser=" + idUser + "&idCurrentUser=" + IdcurrentUser
+    return await axios.post(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error UpdateReadStatus: ", error.response);
+    })
+}

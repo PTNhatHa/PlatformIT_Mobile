@@ -9,9 +9,10 @@ import DefaultAva from "../../assets/images/DefaultAva.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { getAllUserConversations } from "../services/message";
+import { getAllUserConversations, updateReadStatus } from "../services/message";
+import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 
-export const ChatBoard = ({route})=>{
+export const ChatBoard = ({route, getUnReadMessage})=>{
     const idTeacher = route?.params?.idTeacher || 0
     const idStudent = route?.params?.idStudent || 0
     const navigation = useNavigation()
@@ -25,7 +26,13 @@ export const ChatBoard = ({route})=>{
         try {
             const response = await getAllUserConversations(state.idUser)
             if(response){
-                setListChat(response)
+                const newMess = response.map(mess => {
+                    return{
+                        ...mess,
+                        timestamp: parseRelativeTime(mess.relativeTime),
+                    }
+                })
+                setListChat(newMess)
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -36,7 +43,17 @@ export const ChatBoard = ({route})=>{
 
     useEffect(()=>{
         getAllConversation()
+        const interval = setInterval(() => {
+            setListChat((prevMessage) =>
+              prevMessage.map((mess) => ({
+                ...mess,
+                relativeTime: calculateRelativeTime(mess.timestamp),
+              }))
+            )
+        }, 60000); // Update every minute
+        return () => clearInterval(interval);
     }, [])
+
     const handleRefresh = async ()=>{
         setRefreshing(true)
         try {
@@ -56,6 +73,29 @@ export const ChatBoard = ({route})=>{
             })
         }
     }, [idStudent, idTeacher])
+
+    const handleReadMess = async(idUser, isRead)=>{
+        try {
+            if(isRead === 0){
+                const response = await updateReadStatus(idUser, state.idUser)
+                if(response){
+                    getUnReadMessage()
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            if(state.idRole === 3){
+                navigation.navigate("ChatBox", {
+                    idTeacher: idUser
+                })
+            } else{
+                navigation.navigate("ChatBox", {
+                    idStudent: idUser
+                })
+            }
+        }
+    }
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -81,28 +121,18 @@ export const ChatBoard = ({route})=>{
                 renderItem={({item}) => 
                     <TouchableOpacity 
                         style={styles.container} 
-                        onPress={()=>{
-                            if(state.idRole === 3){
-                                navigation.navigate("ChatBox", {
-                                    idTeacher: item.userId
-                                })
-                            } else{
-                                navigation.navigate("ChatBox", {
-                                    idStudent: item.userId
-                                })
-                            }
-                        }}
+                        onPress={()=>handleReadMess(item.userId, item.isRead)}
                         key={item.userId}
                     >
                         <Image style={styles.img} source={item.avatar ? { uri: item.avatar} : DefaultAva}/>
                         <View style={styles.wrapContent}>
                             <Text style={styles.title}>{item.name}</Text>
-                            <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]} numberOfLines={1} ellipsizeMode="tail">
+                            <Text style={[styles.dataMess, item.isRead === 0 && styles.dataMessActive]} numberOfLines={1} ellipsizeMode="tail">
                                 {/* {item.nameLastChat === item.name ? item.name : "You"}:  */}
                                 {item.lastMessage}
                             </Text>
                         </View>
-                        <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]}>{item.relativeTime}</Text>
+                        <Text style={[styles.dataMess, item.isRead === 0 && styles.dataMessActive]}>{item.relativeTime}</Text>
                     </TouchableOpacity>
                 }
                 keyExtractor={item => item.userId}
