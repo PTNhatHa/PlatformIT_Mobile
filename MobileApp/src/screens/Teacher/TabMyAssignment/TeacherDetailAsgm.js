@@ -6,7 +6,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { useUser } from "../../../contexts/UserContext";
-import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getOverviewAssignment, gradingManualAssignment } from "../../../services/assignment";
+import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getOverviewAssignment, gradingManualAssignment, updateAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
@@ -345,6 +345,29 @@ export const TeacherDetailAsgm = ({route})=>{
         }
         
     }
+
+    const handleChangeSetting = async(value, field)=>{
+        setLoading(true)
+        setIsChangeSetting(false)
+        try {
+            const newData = {
+                ...data,
+                [field]: value === false ? 0 : 1
+            }
+            console.log("newData: ", newData);
+            const response = await updateAssignment(state.idUser, newData)
+            if(response){
+                // Alert.alert("response", response)
+                setData(newData)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+            setIsChangeSetting(true)
+        }
+    }
+    
     return(
         <View style={styles.wrapContainer}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -411,7 +434,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                 {(data.assignmentType === 1 && listQuestion !== null) && 
                                     <>
                                         <View style={styles.wrapSwitch}>
-                                            <CustomSwitch label={"Question Shuffling"} value={data.isShufflingQuestion} onChangeText={()=>{}}/>   
+                                            <CustomSwitch label={"Question Shuffling"} value={data.isShufflingQuestion} onChangeText={(v)=>handleChangeSetting(v, "isShufflingQuestion")}/>   
                                         </View>
                                         {getPageData()?.map((question, index) =>     
                                             <View style={styles.wrapQuestion} key={question.idAssignmentItem}>
@@ -783,15 +806,15 @@ export const TeacherDetailAsgm = ({route})=>{
                         <View style={styles.openModal}>
                             <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
                                 <Text>Question Shuffling</Text>
-                                <CustomSwitch value={data.isShufflingQuestion} onChangeText={()=>{}}/>  
+                                <CustomSwitch value={data.isShufflingQuestion} onChangeText={(v)=>handleChangeSetting(v, "isShufflingQuestion")}/>  
                             </View>
                             <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
                                 <Text>Answer Shuffling</Text>
-                                <CustomSwitch value={data.isShufflingAnswer} onChangeText={()=>{}}/>  
+                                <CustomSwitch value={data.isShufflingAnswer} onChangeText={(v)=>handleChangeSetting(v, "isShufflingAnswer")}/>  
                             </View>
                             <View style={styles.btnOpenModal}>
                                 <Text>Show answer on submit</Text>
-                                <CustomSwitch value={data.showAnswer} onChangeText={()=>{}}/>  
+                                <CustomSwitch value={data.showAnswer} onChangeText={(v)=>handleChangeSetting(v, "showAnswer")}/>  
                             </View>
                         </View>
                     </View>

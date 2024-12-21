@@ -198,17 +198,17 @@ export const TeacherAllAssignment = ()=>{
         }
         // Type
         newData = newData?.filter(item =>{
-            if(filterList.type === "Test"){
+            if(filterList?.type === "Test"){
                 return item.isTest === 1
             }
-            if(filterList.type === "Exercise"){
+            if(filterList?.type === "Exercise"){
                 return item.isTest === 0
             }
             return item
         })
         // format
         newData = newData?.filter(item =>{
-            if(filterList.format !== "All"){
+            if(filterList?.format !== "All"){
                 return item.assignmentType === filterList.format
             }
             return item

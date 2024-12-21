@@ -11,8 +11,8 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export const ChatBoard = ({route})=>{
-    const idTeacher = route.params?.idTeacher || 0
-    const idStudent = route.params?.idStudent || 0
+    const idTeacher = route?.params?.idTeacher || 0
+    const idStudent = route?.params?.idStudent || 0
     const navigation = useNavigation()
     const {state} = useUser()
     const [listChat, setListChat] = useState([

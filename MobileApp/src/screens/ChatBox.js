@@ -13,8 +13,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { sendMessage } from "../services/message";
 
 export const ChatBox = ({route})=>{
-    const idTeacher = route.params?.idTeacher || null
-    const idStudent = route.params?.idStudent || null
+    const idTeacher = route?.params?.idTeacher || null
+    const idStudent = route?.params?.idStudent || null
     const navigation = useNavigation()
     const {state} = useUser()
     const [listMessage, setListMessage] = useState([])

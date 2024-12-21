@@ -154,10 +154,10 @@ export const updateAssignment = async (updatedBy, updateData)=>{
     // console.log("updateData: ", updateData.assignmentItems);
     const formData = new FormData()
     formData.append('IdAssignment', updateData.idAssignment)
-    formData.append('Title', updateData.title)
-    formData.append('StartDate', updateData.startDate)
-    formData.append('DueDate', updateData.dueDate)
-    formData.append('Duration', updateData.duration)
+    formData.append('Title', updateData.title || "")
+    formData.append('StartDate', updateData.startDate || "")
+    formData.append('DueDate', updateData.dueDate || "")
+    formData.append('Duration', updateData.duration || "")
     formData.append('IsPublish', updateData.isPublish)
     formData.append('IsShufflingQuestion', updateData.isShufflingQuestion)
     formData.append('IsShufflingAnswer', updateData.isShufflingAnswer)
@@ -168,17 +168,17 @@ export const updateAssignment = async (updatedBy, updateData)=>{
         formData.append(`AssignmentItems[${index}].idAssignmentItem`, question.idAssignmentItem);
         formData.append(`AssignmentItems[${index}].question`, question.question);
         formData.append(`AssignmentItems[${index}].mark`, question.mark);
-        formData.append(`AssignmentItems[${index}].explanation`, question.explanation);
-        formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer);
+        formData.append(`AssignmentItems[${index}].explanation`, question.explanation || "");
+        formData.append(`AssignmentItems[${index}].isMultipleAnswer`, question.isMultipleAnswer || 0);
         if(question.attachedFile) {
             formData.append(`AssignmentItems[${index}].attachedFile`, question.attachedFile);
         }
-        formData.append(`AssignmentItems[${index}].isDeletedFile`, question.isDeletedFile);
-        formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType);
+        formData.append(`AssignmentItems[${index}].isDeletedFile`, question.isDeletedFile || 0);
+        formData.append(`AssignmentItems[${index}].assignmentItemAnswerType`, question.assignmentItemAnswerType || "");
         formData.append(`AssignmentItems[${index}].assignmentItemStatus`, question.assignmentItemStatus);
     
-        question.items.forEach((item, indexItem)=>{
-            formData.append(`AssignmentItems[${index}].items[${indexItem}].idMultipleAssignmentItem`, item.idMultipleAssignmentItem);
+        question.items?.forEach((item, indexItem)=>{
+            formData.append(`AssignmentItems[${index}].items[${indexItem}].idMultipleAssignmentItem`, item.idMultipleAssignmentItem || 0);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].content`, item.content);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].isCorrect`, item.isCorrect);
             formData.append(`AssignmentItems[${index}].items[${indexItem}].multipleAssignmentItemStatus`, item.multipleAssignmentItemStatus);
