@@ -9,25 +9,34 @@ import DefaultAva from "../../assets/images/DefaultAva.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAllUserConversations } from "../services/message";
 
 export const ChatBoard = ({route})=>{
     const idTeacher = route?.params?.idTeacher || 0
     const idStudent = route?.params?.idStudent || 0
     const navigation = useNavigation()
     const {state} = useUser()
-    const [listChat, setListChat] = useState([
-        {
-            idUser: 1,
-            fullName: "NhatHa",
-            ava: "",
-            nameLastChat: "NhatHa",
-            message: "aaaaaaa",
-            relativeTime: "1 day agos",
-            isRead: false
-        },
-    ])
+    const [listChat, setListChat] = useState([])
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
+
+    const getAllConversation = async()=>{
+        setLoading(true)
+        try {
+            const response = await getAllUserConversations(state.idUser)
+            if(response){
+                setListChat(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getAllConversation()
+    }, [])
     const handleRefresh = async ()=>{
         setRefreshing(true)
         try {
@@ -72,19 +81,31 @@ export const ChatBoard = ({route})=>{
                 renderItem={({item}) => 
                     <TouchableOpacity 
                         style={styles.container} 
-                        onPress={()=>{}}
+                        onPress={()=>{
+                            if(state.idRole === 3){
+                                navigation.navigate("ChatBox", {
+                                    idTeacher: item.userId
+                                })
+                            } else{
+                                navigation.navigate("ChatBox", {
+                                    idStudent: item.userId
+                                })
+                            }
+                        }}
+                        key={item.userId}
                     >
-                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : DefaultAva}/>
+                        <Image style={styles.img} source={item.avatar ? { uri: item.avatar} : DefaultAva}/>
                         <View style={styles.wrapContent}>
-                            <Text style={styles.title}>{item.fullName}</Text>
+                            <Text style={styles.title}>{item.name}</Text>
                             <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]} numberOfLines={1} ellipsizeMode="tail">
-                                {item.nameLastChat === item.fullName ? item.fullName : "You"}: {item.message}
+                                {/* {item.nameLastChat === item.name ? item.name : "You"}:  */}
+                                {item.lastMessage}
                             </Text>
                         </View>
                         <Text style={[styles.dataMess, item.isRead && styles.dataMessActive]}>{item.relativeTime}</Text>
                     </TouchableOpacity>
                 }
-                keyExtractor={item => item.idUser}
+                keyExtractor={item => item.userId}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}    
             />
         </View>

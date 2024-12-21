@@ -10,7 +10,7 @@ import { changeReadStatus, readAllNotification } from "../services/notification"
 import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { sendMessage } from "../services/message";
+import { getConversation, sendMessage } from "../services/message";
 
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
@@ -18,7 +18,7 @@ export const ChatBox = ({route})=>{
     const navigation = useNavigation()
     const {state} = useUser()
     const [listMessage, setListMessage] = useState([])
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false)
     const [newMessage, setNewMessage] = useState({
         idSender: state.idUser,
@@ -27,10 +27,24 @@ export const ChatBox = ({route})=>{
         createdBy: state.idUser
     })
 
+    const getMessages = async()=>{
+        setLoading(true)
+        try {
+            const response = await getConversation(state.idUser, idStudent || idTeacher)
+            // console.log(response);
+            if(response){
+                setListMessage(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
     const handleRefresh = async ()=>{
         setRefreshing(true)
         try {
-
+            getMessages()
         } catch (error) {
             console.log("Error refresh");
         } finally{
@@ -45,37 +59,7 @@ export const ChatBox = ({route})=>{
     }, [listMessage]);
 
     useEffect(()=>{
-        setListMessage([
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false,
-                createDate: new Date()
-            },       
-            {
-                idUser: 1,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },       
-            {
-                idUser: 2,
-                fullName: "NhatHa",
-                ava: "",
-                nameLastChat: "NhatHa",
-                message: "aaaaaaa",
-                relativeTime: "1 day agos",
-                isRead: false
-            },       
-                 
-        ])
+        getMessages()
     },[])
 
     const handleSendMessage = async()=>{
@@ -84,7 +68,8 @@ export const ChatBox = ({route})=>{
             const response = await sendMessage(newMessage)
             if(response){
                 // reload
-                Alert.alert("Done", "Done")
+                // Alert.alert("Done", "Done")
+                getMessages()
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -112,25 +97,24 @@ export const ChatBox = ({route})=>{
             </View>
             <View style={styles.containerMess}>
                 <View>
-
                     <ScrollView contentContainerStyle={styles.wrapBox} ref={scrollViewRef} >
                         {listMessage.length > 0 &&
                             listMessage.map((mess, index) => {
-                                if(mess.idUser === 1){
-                                    if((mess.idUser !== listMessage[index + 1]?.idUser)){
+                                if(mess.idSender !== state.idUser){
+                                    if((mess.idSender !== listMessage[index + 1]?.idSender)){
                                         return(
                                             <View key={index} style={styles.wrapFlex}>
                                                 <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
-                                                <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
-                                                    {mess.message}
+                                                <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomLeft]}>
+                                                    {mess.content}
                                                 </Text>                        
                                             </View>
                                         )
                                     } else{
                                         return(
                                             <View key={index} style={[styles.wrapFlex, styles.subMess]}>
-                                                <Text style={[styles.dataMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopLeft, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomLeft]}>
-                                                    {mess.message}
+                                                <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomLeft]}>
+                                                    {mess.content}
                                                 </Text>                        
                                             </View>
                                         )
@@ -138,8 +122,8 @@ export const ChatBox = ({route})=>{
                                 } else{
                                     return(
                                         <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
-                                            <Text style={[styles.dataMess, styles.dataMyMess, (mess.idUser === listMessage[index - 1]?.idUser) && styles.nonRadiusTopRight, (mess.idUser === listMessage[index + 1]?.idUser) && styles.nonRadiusBottomRight]}>
-                                                {mess.message}
+                                            <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomRight]}>
+                                                {mess.content}
                                             </Text>                        
                                         </View>
                                     )
