@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { getConversation, sendMessage } from "../services/message";
+import { formatDateTime, getTime } from "../utils/utils";
 
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
@@ -116,32 +117,44 @@ export const ChatBox = ({route})=>{
                     <ScrollView contentContainerStyle={styles.wrapBox} ref={scrollViewRef} >
                         {listMessage.length > 0 &&
                             listMessage.map((mess, index) => {
+                                const isShowDateTimePrev = !listMessage[index - 1] || (new Date(mess.createdDate) - new Date(listMessage[index - 1]?.createdDate)) / 60000 > 15
+                                const isShowDateTimeNext = !listMessage[index + 1] || (new Date(listMessage[index + 1]?.createdDate) - new Date(mess.createdDate)) / 60000 > 15
+                                const isToday = formatDateTime(mess.createdDate) === formatDateTime(new Date())
                                 if(mess.idSender !== state.idUser){
-                                    if((mess.idSender !== listMessage[index + 1]?.idSender)){
+                                    if((mess.idSender !== listMessage[index + 1]?.idSender || isShowDateTimeNext)){
                                         return(
-                                            <View key={index} style={styles.wrapFlex}>
-                                                <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
-                                                <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomLeft]}>
-                                                    {mess.content}
-                                                </Text>                        
-                                            </View>
+                                            <>                                                
+                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                                <View key={index} style={styles.wrapFlex}>
+                                                    <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
+                                                    <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
+                                                        {mess.content}
+                                                    </Text>                        
+                                                </View>
+                                            </>
                                         )
                                     } else{
                                         return(
-                                            <View key={index} style={[styles.wrapFlex, styles.subMess]}>
-                                                <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomLeft]}>
-                                                    {mess.content}
-                                                </Text>                        
-                                            </View>
+                                            <>
+                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                                <View key={index} style={[styles.wrapFlex, styles.subMess]}>
+                                                    <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
+                                                        {mess.content}
+                                                    </Text>                        
+                                                </View>
+                                            </>
                                         )
                                     }
                                 } else{
                                     return(
-                                        <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
-                                            <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender) && styles.nonRadiusBottomRight]}>
-                                                {mess.content}
-                                            </Text>                        
-                                        </View>
+                                        <>
+                                            {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                            <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
+                                                <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomRight]}>
+                                                    {mess.content}
+                                                </Text>                        
+                                            </View>
+                                        </>
                                     )
                                 }
                             })
@@ -247,6 +260,7 @@ const styles = StyleSheet.create({
     wrapFlex: {
         flexDirection: "row",
         gap: 8,
+        alignItems: "flex-end"
     },
     wrapBox:{
         marginHorizontal: 16,
@@ -274,5 +288,11 @@ const styles = StyleSheet.create({
     containerMess:{
         flex: 1,
         justifyContent: 'flex-end'
+    },
+    textDateTime:{
+        textAlign: "center",
+        fontSize: 12,
+        color: COLORS.stroke,
+        marginVertical: 16,
     }
 })
