@@ -75,3 +75,14 @@ export const inactiveLecture = async (idLecture, idCreatedBy)=>{
         console.log("Error InactiveLecture: ", error);
     })
 }
+
+export const getLectureInfoForCmtNoti = async (idLecture)=>{
+    return await axios.get(baseUrl + "/GetLectureInfoForCmtNoti?idLecture=" + idLecture)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetLectureInfoForCmtNoti: ", error);
+    })
+}

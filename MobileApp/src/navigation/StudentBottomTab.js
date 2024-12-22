@@ -30,6 +30,7 @@ import { Alert } from "react-native";
 import { ChatBoard } from "../screens/ChatBoard";
 import { ChatBox } from "../screens/ChatBox";
 import { getAllUserConversations } from "../services/message";
+import { CommentNoti } from "../screens/CommentNoti";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -190,6 +191,33 @@ const StackChatScreen = ({getUnReadMessage})=>{
                 options={{ headerShown: false }}
             />
         </StackChat.Navigator>
+    )
+}
+
+const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
+    const StackNoti = createNativeStackNavigator()
+    return(
+        <StackNoti.Navigator
+            screenOptions={{
+                headerTintColor: COLORS.main
+            }}
+        >
+            <StackNoti.Screen
+                name="NotiBoard"
+                component={(props) => (
+                    <NotificationScreen 
+                        {...props} 
+                        allNoti={allNoti} 
+                        setUnReadNoti={setUnReadNoti} 
+                        getNoti={getNoti}
+                    />
+                )}
+            />
+            <StackNoti.Screen
+                name="Comment"
+                component={CommentNoti}
+            />
+        </StackNoti.Navigator>
     )
 }
 
@@ -380,7 +408,7 @@ export const StudentBottomTab = ()=>{
                     },
                   })}
             >
-                {props => <NotificationScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
+                {props => <StackNotiScreen allNoti={allNoti} setUnReadNoti={setUnReadNoti} getNoti={getNoti}/>}
             </Tab.Screen>
             <Tab.Screen 
                 name="Chat" 

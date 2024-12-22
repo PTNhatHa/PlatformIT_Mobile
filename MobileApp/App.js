@@ -22,6 +22,7 @@ import { TeacherDetailAsgm } from './src/screens/Teacher/TabMyAssignment/Teacher
 import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/CardStudent';
 import { ChatBoard } from './src/screens/ChatBoard';
 import { ChatBox } from './src/screens/ChatBox';
+import { CommentNoti } from './src/screens/CommentNoti';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           {/* <ChatBoard/> */}
           {/* <ChatBox/> */}
           {/* <TeacherAsgmCreate/> */}
+          {/* <CommentNoti/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

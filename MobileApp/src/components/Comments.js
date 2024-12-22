@@ -319,7 +319,7 @@ export const Comments = ({idLecture, idTeacher})=>{
         {/* New Comment */}
         <View style={styles.wrapNewCmt}>
             <View style={styles.wrapCmt}>
-                <Image source={determineFileType(state.avatar) === "Image" ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avata}/>
+                <Image source={state.avatar ? {uri: state.avatar.toString()} : DefaultAva} style={styles.avata}/>
                 <View style={{flex: 1}}>
                     {newCmt?.idCommentRef &&
                         <View style={styles.wrapFlex}>
@@ -359,7 +359,7 @@ export const Comments = ({idLecture, idTeacher})=>{
 }
 const styles = StyleSheet.create({
     innerMain:{
-        height: 400,
+        height: 420,
         marginTop: 8,
         marginHorizontal: 16,
         gap: 4,

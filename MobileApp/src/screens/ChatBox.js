@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     },
     wrapBox:{
         marginHorizontal: 16,
-        paddingVertical: 16,
+        paddingTop: 16,
         gap: 2,
     },
     myMess:{

@@ -78,6 +78,13 @@ export const NotificationScreen = (props)=>{
                 }
             })
         }
+        if(goal.notificationType === 4){
+            // COMMENT
+            navigation.navigate("Comment", {
+                idLecture: goal.idLecture,
+                idComment: goal.idComment
+            })
+        }
     }
 
     const handleConfirm = ()=>{
