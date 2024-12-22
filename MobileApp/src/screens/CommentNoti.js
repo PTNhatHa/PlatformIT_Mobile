@@ -49,7 +49,7 @@ export const CommentNoti = ({route})=>{
                     </View>
                 </View>
                 <View style={styles.main}>
-                    <Comments idLecture={detail.idLecture} idTeacher={detail.idTeacher}/>
+                    <Comments idLecture={detail.idLecture} idTeacher={detail.idTeacher} idComment={idComment}/>
                 </View>
             </ScrollView>
         </View>

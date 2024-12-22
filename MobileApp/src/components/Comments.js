@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
+import { ActivityIndicator, Alert, Image, InteractionManager, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonWhite } from "./Button"
@@ -27,7 +27,7 @@ const init = [
     }
 ]
 
-export const Comments = ({idLecture, idTeacher})=>{
+export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
     const {state, dispatch} = useUser()
     const [newCmt, setNewCmt] = useState({
         idLecture: idLecture,
@@ -201,6 +201,31 @@ export const Comments = ({idLecture, idTeacher})=>{
         }    
     }
 
+    // Scroll to comment
+    const scrollViewRef = useRef(null);
+    const itemPositions = useRef({});
+    const [isRendered, setIsRendered] = useState(false); // Theo dõi trạng thái render
+
+    const handleLayout = (idCmt, event) => {
+        const { y } = event.nativeEvent.layout;
+        itemPositions.current[idCmt] = y;
+    };
+
+    const scrollToComment = (idCmt) => {
+        const yPosition = itemPositions.current[idCmt];
+        if (yPosition !== undefined) {
+            scrollViewRef.current?.scrollTo({ y: yPosition, animated: true });
+        }
+    };
+
+    useEffect(() => {
+        console.log(idComment);
+        if (isRendered) {
+            // Gọi logic sau khi render hoàn tất
+            scrollToComment(idComment);
+        }
+    }, [isRendered, idComment]); // Kích hoạt khi `isRendered` thay đổi
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
@@ -212,10 +237,10 @@ export const Comments = ({idLecture, idTeacher})=>{
     return(
         <>
         <View style={styles.innerMain}>
-            <ScrollView contentContainerStyle={styles.container} nestedScrollEnabled>               
+            <ScrollView contentContainerStyle={styles.container} nestedScrollEnabled ref={scrollViewRef} onContentSizeChange={() => setIsRendered(true)}>               
                 {/* Main cmt */}
                 {listMainCmt?.map(mainCmt =>
-                    <View style={styles.wrapBoxCmt} key={mainCmt.idComment}>
+                    <View style={[styles.wrapBoxCmt, idComment === mainCmt.idComment && styles.activeCmt]} key={mainCmt.idComment} onLayout={(event) => handleLayout(mainCmt.idComment, event)}>
                         <TouchableOpacity 
                             style={styles.wrapCmt}
                             onPress={()=>setListShowMore({
@@ -270,7 +295,7 @@ export const Comments = ({idLecture, idTeacher})=>{
                                 {/* Reply cmt */}
                                 {listIsShow[mainCmt.idComment] &&
                                     listSubCmt[mainCmt.idComment].map(subCmt =>
-                                    <View style={styles.wrapList} key={subCmt.idComment}>
+                                    <View style={[styles.wrapList, idComment === subCmt.idComment && styles.activeCmt]} key={subCmt.idComment} onLayout={(event) => handleLayout(subCmt.idComment, event)}>
                                         <TouchableOpacity 
                                             style={styles.wrapCmt}
                                             onPress={()=>setListShowMore({
@@ -361,7 +386,7 @@ const styles = StyleSheet.create({
     innerMain:{
         height: 420,
         marginTop: 8,
-        marginHorizontal: 16,
+        // marginHorizontal: 16,
         gap: 4,
     },
     container: {
@@ -437,7 +462,8 @@ const styles = StyleSheet.create({
         color: COLORS.main
     },
     wrapBoxCmt:{
-        gap: 4
+        gap: 4,
+        paddingHorizontal: 16,
     },
     wrapInnerCmt:{        
         marginLeft: 38
@@ -495,5 +521,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 2,        
         marginLeft: 8,
+    },
+    activeCmt: {
+        backgroundColor: "#ECF2F2"
     },
 })
