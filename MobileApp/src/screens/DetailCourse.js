@@ -73,7 +73,6 @@ export const DetailCourse =({route})=>{
                     const check = await isChatAvailable(state.idUser, response.idTeacher)
                     if(check === true){
                         setIsChat(true)
-
                     }
                 }
             }

@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { getConversation, sendMessage } from "../services/message";
 import { formatDateTime, getTime } from "../utils/utils";
+import { isChatAvailable } from "../services/user";
 
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
@@ -31,6 +32,8 @@ export const ChatBox = ({route})=>{
         name: "",
         avatar: ""
     })
+    const scrollViewRef = useRef(null);
+    const [isChat, setIsChat] = useState(true)
 
     const getMessages = async()=>{
         setLoading(true)
@@ -57,18 +60,15 @@ export const ChatBox = ({route})=>{
             setLoading(false)
         }
     }
-    const handleRefresh = async ()=>{
-        setRefreshing(true)
+
+    const checkIsChat = async()=>{
         try {
-            getMessages()
+            const response = await isChatAvailable(idStudent || state.idUser, idTeacher || state.idUser)
+            setIsChat(response)
         } catch (error) {
-            console.log("Error refresh");
-        } finally{
-            setRefreshing(false)
+            console.log("Error: ", error);
         }
     }
-
-    const scrollViewRef = useRef(null);
 
     useEffect(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -76,6 +76,7 @@ export const ChatBox = ({route})=>{
 
     useEffect(()=>{
         getMessages()
+        checkIsChat()
     },[])
 
     const handleSendMessage = async()=>{
@@ -83,8 +84,6 @@ export const ChatBox = ({route})=>{
         try {
             const response = await sendMessage(newMessage)
             if(response){
-                // reload
-                // Alert.alert("Done", "Done")
                 getMessages()
             }
         } catch (error) {
@@ -123,7 +122,7 @@ export const ChatBox = ({route})=>{
                                 if(mess.idSender !== state.idUser){
                                     if((mess.idSender !== listMessage[index + 1]?.idSender || isShowDateTimeNext)){
                                         return(
-                                            <>                                                
+                                            <View key={mess.idMessage}>                                                
                                                 {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={styles.wrapFlex}>
                                                     <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
@@ -131,38 +130,40 @@ export const ChatBox = ({route})=>{
                                                         {mess.content}
                                                     </Text>                        
                                                 </View>
-                                            </>
+                                            </View>
                                         )
                                     } else{
                                         return(
-                                            <>
+                                            <View key={mess.idMessage}>
                                                 {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={[styles.wrapFlex, styles.subMess]}>
                                                     <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
                                                         {mess.content}
                                                     </Text>                        
                                                 </View>
-                                            </>
+                                            </View>
                                         )
                                     }
                                 } else{
                                     return(
-                                        <>
+                                        <View key={mess.idMessage}>
                                             {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
                                             <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
                                                 <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomRight]}>
                                                     {mess.content}
                                                 </Text>                        
                                             </View>
-                                        </>
+                                        </View>
                                     )
                                 }
                             })
                         }
+                        {!isChat && <Text style={styles.textDateTime}>You can't chat now.</Text>}
                     </ScrollView>
                 </View>
             </View>
-            <View style={styles.wrapperSearch}>
+            {isChat && 
+            <View style={styles.wrapperNewMessage}>
                 <TextInput
                     value={newMessage}
                     style={styles.input}
@@ -176,6 +177,7 @@ export const ChatBox = ({route})=>{
                     <FontAwesome name="send-o" size={24} color="black" />
                 </TouchableOpacity>
             </View>
+            }
         </View>
     )
 }
@@ -241,7 +243,7 @@ const styles = StyleSheet.create({
         gap: 4,
         alignItems: "center"
     },
-    wrapperSearch: {
+    wrapperNewMessage: {
         backgroundColor: COLORS.lightGray,
         borderRadius: 8,
         paddingHorizontal: 16,
