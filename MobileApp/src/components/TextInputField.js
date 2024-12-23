@@ -131,7 +131,7 @@ export const TextInputSelectBox = ({
                 </View>
                 {isOpenBox &&
                     <View style={styles.wrapList}>
-                        <ScrollView >
+                        <ScrollView nestedScrollEnabled>
                             {currentList?.map(item => 
                                 <TouchableOpacity key={item?.value} onPress={()=>{
                                     if(index !== null){
@@ -324,13 +324,13 @@ const styles = StyleSheet.create({
         color: "black"
     },
     label: {
-        fontSize: 10,
+        fontSize: 14,
         color: COLORS.stroke
     },
 
     containerGray: {
         columnGap: 8,
-        flex: 1
+        flex: 1,
     },
     inputLabelGray:{
         fontSize: 14,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
         width: "90%"
     },
     wrapList:{
-        maxHeight: 300,
+        maxHeight: 200,
         position: "absolute",
         backgroundColor: COLORS.lightGray,
         borderWidth: 1,

@@ -17,6 +17,7 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { getAllActiveLanguage } from "../../../services/codeExecution"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -108,21 +109,19 @@ export const TeacherAsgmCreate = ({route})=>{
         isShowOnSubmission: false
     })
     const [teacherCode, setTeacherCode] = useState({
-        code: "",
-        language: 1,
-        testCase: [
+        sourceCode: "",
+        language: {
+            label: "",
+            value: 0
+        },
+        testCases: [
             {
                 input: "",
-                output: ""
+                expectedOutput: ""
             },
         ],
-        isPastTestCase: true,
-        isLimitTime: false,
-        limitTime: 2,
-        isLimitMemory: false,
-        limitMemory: 0.2,
     })
-    
+    const [listLanguage, setLanguage] = useState(null)    
 
     const fetchAsgm = async()=>{
         setLoading(true)
@@ -309,10 +308,29 @@ export const TeacherAsgmCreate = ({route})=>{
         }
     }, [startDate, dueDate])
 
+    const getAllLanguage = async()=>{
+        try {
+            const response = await getAllActiveLanguage()
+            if(response){
+                setLanguage([...response.map(item => {
+                    return{
+                        value: item.idLanguage,
+                        label: item.languageName,                        
+                    }
+                })])
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
     const handleChangeType = (v)=>{
         setType(v)
         setQuestions([])
         setTotalQuestion(0)
+        if(type?.value === 3 && !listLanguage){
+            getAllLanguage()
+        }
     }
 
     useEffect(()=>{
@@ -899,7 +917,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         :
                         <>
                             {questions && type ?
-                                type.value === 1 ?
+                                type?.value === 1 ?
                                     <>
                                         <View style={{alignSelf: "flex-end", marginVertical: 8}}>
                                             <CustomSwitch label={"Question Shuffling"} value={isShufflingQuestion} onChangeText={setIsShufflingQuestion}/>   
@@ -953,7 +971,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             </View>
                                         )}
                                     </> 
-                                : type.value === 2 ?
+                                : type?.value === 2 ?
                                     <>
                                         <View style={{alignSelf: "flex-end", marginVertical: 8}}>
                                             <TouchableOpacity onPress={()=>setIsOpenModal(true)}>
@@ -1047,7 +1065,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                             </View>
                                         )}
                                     </>   
-                                : type.value === 3 ?
+                                : type?.value === 3 ?
                                 <>
                                     {/* CODE */}
                                     <View style={{alignSelf: "flex-end", marginVertical: 8}}>
@@ -1066,11 +1084,11 @@ export const TeacherAsgmCreate = ({route})=>{
                                             />
                                         </View>
                                         <View>
-                                            <Text style={styles.textGray14}>Language</Text>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
                                                 value={questionCode.language} onchangeText={()=>handleChangeCode(v, "language")} 
-                                                listSelect={[]}
+                                                listSelect={listLanguage}
+                                                label={"Language"}
                                             />
                                         </View>
                                         <View>
@@ -1178,16 +1196,16 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 style={[styles.minHeight, styles.textCode]}
                                                 placeholder="Your code"
                                                 multiline={true}
-                                                value={teacherCode.code}
-                                                onChangeText={(v)=>handleChangeTeacherCode(v, "code")}
+                                                value={teacherCode.sourceCode}
+                                                onChangeText={(v)=>handleChangeTeacherCode(v, "sourceCode")}
                                             />
                                         </View>
                                         <View>
-                                            <Text style={styles.textGray14}>Language</Text>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
                                                 value={teacherCode.language} onchangeText={()=>handleChangeTeacherCode(v, "language")} 
-                                                listSelect={[]}
+                                                listSelect={listLanguage}
+                                                label={"Language"}
                                             />
                                         </View>
                                         {true &&
@@ -1226,7 +1244,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         </>
                     }
                 </ScrollView>
-                {selectBtn === 1 && type.value !== 3 &&
+                {selectBtn === 1 && type?.value !== 3 && type &&
                     <TouchableOpacity style={styles.btnPlus} onPress={()=>addQuestion()}>
                         <Entypo name="plus" size={28} color="black" />
                     </TouchableOpacity>
@@ -1330,7 +1348,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         padding: 16,
         borderRadius: 8,
-        marginVertical: 8,
+        marginBottom: 32,
         gap: 8,
         zIndex: -1,
     },
