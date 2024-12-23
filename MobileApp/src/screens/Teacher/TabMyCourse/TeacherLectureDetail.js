@@ -40,7 +40,7 @@ export const TeacherLectureDetail = ({route})=>{
     const [selectLecture, setSelectLecture] = useState({
         idLecture: idLecture,
         lectureTitle: "",
-        idSection: 0,
+        idSection: null,
         sectionName: ""
     });
 
@@ -60,38 +60,22 @@ export const TeacherLectureDetail = ({route})=>{
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
                 })
-                if(idLecture === currentLecture){
-                    fetchCourseContent(response)   
-                    setCurrentLecture(selectLecture.idLecture)     
+                if(!selectLecture.idSection){
+                    setSelectLecture({
+                        idLecture: idLecture,
+                        lectureTitle: "",
+                        idSection: response.idSection,
+                        sectionName: ""
+                    })
+                }
+                if(currentLecture !== selectLecture.idLecture){
+                    setCurrentLecture(selectLecture.idLecture)
                 }
             }
         } catch (error) {
             console.log("Error: ", error);
         } finally{
             setLoading(false)
-        }
-    }
-    const fetchCourseContent = async(response)=>{
-        try {
-            const content = await getCourseContentStructure(null, response.idCourse)
-            if(content){
-                setCourseContent(content.sectionStructures.map(section => {
-                    if(section.idSection === response.idSection){
-                        setSelectLecture({
-                            idLecture: currentLecture,
-                            lectureTitle: response.lectureTitle,
-                            idSection: section.idSection,
-                            sectionName: section.sectionName
-                        })
-                    }
-                    return{
-                        ...section,
-                        lectures: section.lectureStructures
-                    }
-                }))
-            }
-        } catch (error) {
-            console.log("Error: ", error);
         }
     }
     const fetchExercise = async()=>{
@@ -121,10 +105,9 @@ export const TeacherLectureDetail = ({route})=>{
     }, [])
 
     useEffect(()=>{
-        if(idLecture !== selectLecture.idLecture){
+        if(currentLecture !== selectLecture.idLecture){
             setLoading(true)
             clearInterval(intervalRef.current)
-            fetchExercise()    
             fetchDetailLecture()        
             .then(() => {
                 intervalRef.current = setInterval(() => {
@@ -134,12 +117,14 @@ export const TeacherLectureDetail = ({route})=>{
                     }));
                 }, 60000);
             });
+            fetchExercise() 
+            setLoading(false)
         }
     }, [selectLecture])
 
     const handleSelectLecture = (v)=>{
         setSelectLecture(v)
-        setIsOpentMenu(false)
+        setIsOpentMenu(false) 
     }
 
     const openURL = (url) => {  
@@ -213,21 +198,6 @@ export const TeacherLectureDetail = ({route})=>{
                     type: result.mimeType 
                 }
             })
-        }
-    }
-
-    const reloadListSection = async()=>{
-        setLoading(true)
-        try {
-            console.log(data.idCourse);
-            const response = await getSectionDetail(data.idCourse)
-            if(response){
-                setCourseContent(response)
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-        } finally {
-            setLoading(false)
         }
     }
 
@@ -493,7 +463,7 @@ export const TeacherLectureDetail = ({route})=>{
                         </TouchableOpacity>
                         <ModalCourseContent 
                             role={1} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}
-                            getCourse={reloadListSection} idCourse={data.idCourse}
+                            idCourse={data.idCourse}
                         />
                     </ScrollView>
                 </View>

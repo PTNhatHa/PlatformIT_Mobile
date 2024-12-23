@@ -129,7 +129,7 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
             });
         }, 60000); // Update every minute
         return () => clearInterval(interval);
-    },[])
+    },[idLecture])
 
     const handleAddReply = (idReceiver, idCommentRef, nameRep)=>{
         setNewCmt({

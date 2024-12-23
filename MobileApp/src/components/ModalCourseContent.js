@@ -8,7 +8,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabel } from "./TextInputField";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { useNavigation } from "@react-navigation/native";
-import { addSection, updateSection } from "../services/course";
+import { addSection, getCourseContentStructure, updateSection } from "../services/course";
 import { useUser } from "../contexts/UserContext";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { inactiveSection } from "../services/lecture";
@@ -47,19 +47,13 @@ const initLecture = [
 ]
 
 export const ModalCourseContent = ({
-    role=0, content=[], idCourse, nameCourse, getCourse, 
+    role=0, idCourse, nameCourse,
     selectLecture, setSelectLecture = ()=>{}, 
-    isLimitedTime, courseEndDate, idTeacher
 })=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const navigation = useNavigation()
-    const [showSections, setShowSections] = useState(content?.map(item => (
-        {
-            idSection: item.idSection,
-            isShow: false
-        }
-    )) || [])
+    const [showSections, setShowSections] = useState([])
     const [isAddSection, setIsAddSection] = useState(false);
     const [newSection, setNewSection] = useState("");
     const [isEditSection, setIsEditSection] = useState(false);
@@ -73,17 +67,30 @@ export const ModalCourseContent = ({
         idSection: 0,
         sectionName: ""
     });
-    
-    useEffect(()=>{
+    const [data, setData] = useState([])
+    const getListSection = async()=>{
         setLoading(true)
-        setShowSections(content.map(item => (
-            {
-                idSection: item.idSection,
-                isShow: false
+        try {
+            const response = await getCourseContentStructure(role === 3 ? state.idUser : null, idCourse)
+            if(response){
+                setData(response)
+                setShowSections(response.sectionStructures.map(item => (
+                    {
+                        idSection: item.idSection,
+                        isShow: false
+                    }
+                )) || [])
             }
-        )) || [])
-        setLoading(false)
-    }, [content])
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        getListSection()
+    }, [])
 
     const handleShowSection = (idSection)=>{
         const newShow = showSections.map(item => {
@@ -105,7 +112,9 @@ export const ModalCourseContent = ({
             if(response){
                 Alert.alert("Add New Section", response)
                 setIsAddSection(false)
-                getCourse()
+                // getCourse()
+                getListSection()
+
             } else {
                 Alert.alert("Error", "Please try again.")
             }
@@ -136,7 +145,8 @@ export const ModalCourseContent = ({
             const response = await updateSection(selectSection.idSection, newSection, state.idUser)
             if(response){
                 setLongPressSection(false)
-                getCourse()
+                // getCourse()
+                getListSection()
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -149,7 +159,8 @@ export const ModalCourseContent = ({
             console.log(response);
             if(response){
                 setLongPressSection(false)
-                getCourse()
+                // getCourse()
+                getListSection()
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -158,14 +169,14 @@ export const ModalCourseContent = ({
 
     return(
         <>
-        {loading ?
+        {/* {loading ?
             <View style={styles.wrapLoading}>
                 <ActivityIndicator size="large" color="white" />
             </View>
-            :
+            : */}
                 <ScrollView showsVerticalScrollIndicator={false}>
-                {content?.length > 0 &&
-                content?.map((item)=>{
+                {data && data?.sectionStructures?.length > 0 &&
+                data?.sectionStructures?.map((item)=>{
                     let checkIsShow = showSections.find(section => section.idSection === item.idSection)?.isShow
                     return(
                         <View key={item.idSection} style={styles.wrapSectionLecture}>
@@ -210,7 +221,7 @@ export const ModalCourseContent = ({
                                 }
                             </TouchableOpacity>
                             <View style={[styles.wrapShow, {height: checkIsShow? "auto" : 0}]}>
-                                {item.lectures?.map(lec => 
+                                {item.lectureStructures?.map(lec => 
                                     <CardLecture 
                                         data={lec} key={lec.idLecture} role={role} idCourse={idCourse} 
                                         section={{
@@ -218,10 +229,10 @@ export const ModalCourseContent = ({
                                             sectionName: item.sectionName
                                         }}
                                         setSelected={handleSelectLecture} selectObject={selectObject}
-                                        isLimitedTime={isLimitedTime}
-                                        courseEndDate={courseEndDate}
-                                        idTeacher={idTeacher}
-                                        reload={getCourse}
+                                        isLimitedTime={data.isLimitedTime}
+                                        courseEndDate={data.courseEndDate}
+                                        idTeacher={data.idTeacher}
+                                        reload={getListSection}
                                     />
                                 )}
                                 {role === 1 &&
@@ -238,7 +249,7 @@ export const ModalCourseContent = ({
                                                 nameCourse: nameCourse, 
                                                 idSection: item.idSection, 
                                                 nameSection: item.sectionName,
-                                                getCourse: getCourse,
+                                                getCourse: getListSection,
 
                                             })
                                         }}>
@@ -337,7 +348,7 @@ export const ModalCourseContent = ({
                     </TouchableWithoutFeedback>
                 </Modal>
             </ScrollView>
-        }  
+        {/* }   */}
         </>
     )
 }

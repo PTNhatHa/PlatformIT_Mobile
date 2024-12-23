@@ -36,6 +36,7 @@ import { ProgressCircle } from "../components/Progress"
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
     const idCourse = route.params?.idCourse || 0
+    // console.log(idCourse);
     const initRole = route.params?.role || 0 //0: guest, 1: teacher, 2: student
     const [role, setRole] = useState(initRole)
     const [data, setData] = useState([])
@@ -58,14 +59,12 @@ export const DetailCourse =({route})=>{
     const [filterStudent, setFilterStudent] = useState([])
 
     const [progress, setProgress] = useState({})
-    const [listSection, setListSection] = useState([])
 
     const getCourse = async()=>{
         try {
             const response = await getCourseDetail(idCourse)
             if(response){
                 setData(response)
-                setListSection(response.sectionsWithCourses)
                 if(state.idRole === 4 && response.idTeacher === state.idUser) setRole(1)
                 if(state.idRole === 3){
                     checkStudentIsEnrollCourse()
@@ -292,20 +291,7 @@ export const DetailCourse =({route})=>{
         }
     }, [search, filterStudent])
 
-    const reloadListSection = async()=>{
-        setLoading(true)
-        try {
-            const response = await getSectionDetail(idCourse)
-            if(response){
-                setListSection(response)
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-        } finally {
-            setLoading(false)
-        }
-    }
-    if (loading === true) {
+    if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
             <View style={styles.wrapLoading}>
@@ -508,14 +494,8 @@ export const DetailCourse =({route})=>{
                         {/* Course contents */}
                         <ModalCourseContent 
                             role={role} 
-                            content={listSection} 
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
-                            getCourse={reloadListSection}
-
-                            isLimitedTime={data.isLimitedTime}
-                            courseEndDate={data.courseEndDate}
-                            idTeacher={data.idTeacher}
                         />
                     </>
                 : selectBtn === 1 ?

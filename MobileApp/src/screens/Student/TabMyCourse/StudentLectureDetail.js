@@ -25,7 +25,7 @@ export const StudentLectureDetail = ({route})=>{
     const [selectLecture, setSelectLecture] = useState({
         idLecture: idLecture,
         lectureTitle: "",
-        idSection: 0,
+        idSection: null,
         sectionName: ""
     });
     const [courseContent, setCourseContent] = useState([])
@@ -41,37 +41,17 @@ export const StudentLectureDetail = ({route})=>{
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
                 })        
-                if(idLecture === currentLecture){
-                    fetchCourseContent(response)   
-                    setCurrentLecture(selectLecture.idLecture)     
+                if(!selectLecture.idSection){
+                    setSelectLecture({
+                        idLecture: idLecture,
+                        lectureTitle: "",
+                        idSection: response.idSection,
+                        sectionName: ""
+                    })
                 }
-            }
-        } catch (error) {
-            console.log("Error: ", error);
-        } finally{
-            setLoading(false)
-        }
-    }
-
-    const fetchCourseContent = async(response)=>{
-        setLoading(true)
-        try {
-            const content = await getCourseContentStructure(state.idUser, response.idCourse)
-            if(content){
-                setCourseContent(content.sectionStructures.map(section => {
-                    if(section.idSection === response.idSection){
-                        setSelectLecture({
-                            idLecture: currentLecture,
-                            lectureTitle: response.lectureTitle,
-                            idSection: section.idSection,
-                            sectionName: section.sectionName
-                        })
-                    }
-                    return{
-                        ...section,
-                        lectures: section.lectureStructures
-                    }
-                }))
+                if(currentLecture !== selectLecture.idLecture){
+                    setCurrentLecture(selectLecture.idLecture)
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -108,19 +88,25 @@ export const StudentLectureDetail = ({route})=>{
     }, [])
 
     useEffect(()=>{
-        if(idLecture !== selectLecture.idLecture){
+        if(currentLecture !== selectLecture.idLecture){
             setLoading(true)
-            clearInterval(intervalRef.current)
-            fetchExercise()
-            fetchDetailLecture()
-            .then(() => {
-                intervalRef.current = setInterval(() => {
-                    setData((prevData) => ({
-                        ...prevData,
-                        relativeTime: calculateRelativeTime(prevData.timestamp),
-                    }));
-                }, 60000);
-            });
+            try {
+                clearInterval(intervalRef.current)
+                fetchDetailLecture()        
+                .then(() => {
+                    intervalRef.current = setInterval(() => {
+                        setData((prevData) => ({
+                            ...prevData,
+                            relativeTime: calculateRelativeTime(prevData.timestamp),
+                        }));
+                    }, 60000);
+                });
+                fetchExercise() 
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally{
+                setLoading(false)
+            }
         }
     }, [selectLecture])
 
@@ -247,7 +233,10 @@ export const StudentLectureDetail = ({route})=>{
                         <TouchableOpacity style={{alignSelf: "flex-end"}} onPress={()=>setIsOpentMenu(false)}>
                             <AntDesign name="close" size={30} color={COLORS.secondMain} />
                         </TouchableOpacity>
-                        <ModalCourseContent role={2} selectLecture={selectLecture} setSelectLecture={handleSelectLecture} content={courseContent}/>
+                        <ModalCourseContent 
+                            role={2} selectLecture={selectLecture} setSelectLecture={handleSelectLecture}
+                            idCourse={data.idCourse}
+                        />
                     </ScrollView>
                 </View>
             </Modal>
