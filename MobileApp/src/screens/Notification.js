@@ -6,20 +6,9 @@ import { COLORS, commonStyles } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultImg from "../../assets/images/DefaultImg.png"
+import DefaultAva from "../../assets/images/DefaultAva.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
 import { useNavigation } from "@react-navigation/native";
-
-// {
-//     "idNotification": 6,
-//     "senderAvatar": null,
-//     "idSender": 9,
-//     "idQualification": 14,
-//     "content": "Your qualification: IELTS has been approved.",
-//     "isRead": 0,
-//     "notificationType": 1,
-//     "idCourse": null,
-//     "relativeTime": "8 days ago"
-//   },
 
 export const NotificationScreen = (props)=>{
     const navigation = useNavigation()
@@ -134,7 +123,7 @@ export const NotificationScreen = (props)=>{
                 data={noti}
                 renderItem={({item}) => 
                     <TouchableOpacity style={[styles.container, item.isRead === 0 && {backgroundColor: "white",}]} onPress={()=>handleReadNoti(item.idNotification)}>
-                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : DefaultImg}/>
+                        <Image style={styles.img} source={item.senderAvatar ? { uri: item.senderAvatar} : (item.notificationType !== 4 ? DefaultImg : DefaultAva)}/>
                         <View style={{flexDirection: "column", flex: 1}}>
                             <Text style={styles.title}>{item.content}</Text>
                             <Text style={styles.dataDate}>{item.relativeTime}</Text>
