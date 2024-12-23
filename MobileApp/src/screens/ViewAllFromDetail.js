@@ -19,44 +19,53 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
     const [dataSort, setDataSort] = useState([]);
     const [dataFilter, setDataFilter] = useState([]);
 
-    const [indexPage, setIndexPage] = useState(1)
-    const [inputIndex, setInputIndex] = useState(1)
+    const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 10
-    const [currentData, setCurrentData] = useState(data?.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
-    const inputRef = useRef(null)
+    const [currentData, setCurrentData] = useState(data?.slice((currentPage-1)*numberItem, currentPage*numberItem) || [])
     
-    useEffect(() => {
-        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem) || [];
-        setCurrentData(newData);
-    }, [data, indexPage]);
+    const getPageData = () => {
+        return currentData.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
 
-    const handleChangeIndex = (isNext)=>{
-        let index = 0
-        if(isNext){
-            index = indexPage + 1
+    const getPagination = () => {
+        const totalPages = Math.ceil(currentData.length / numberItem);
+        if (totalPages <= 5) {
+        // Show all pages if there are 5 or fewer
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
         } else {
-            index = indexPage - 1
+        // Logic for more than 5 pages
+        if (currentPage <= 3) {
+            // Show first few pages if current page is near the start
+            return [1, 2, 3, 4, "...", totalPages];
+        } else if (currentPage >= totalPages - 2) {
+            // Show last few pages if current page is near the end
+            return [
+                1,
+                "...",
+                totalPages - 3,
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        } else {
+            // Show current page in the middle with surrounding pages
+            return [
+                1,
+                "...",
+                currentPage - 1,
+                currentPage,
+                currentPage + 1,
+                "...",
+                totalPages,
+            ];
         }
-        setIndexPage(index)
-        setInputIndex(index)
-        setCurrentData(data.slice((index-1)*numberItem, index*numberItem))
-    }
-    const handleOnChangeText = (v)=>{
-        if(v){
-            const newIndex = parseInt(v, 10)
-            setInputIndex(newIndex)
-        }
-        else setInputIndex("")
-    }
-    const handleOnSubmit = ()=>{
-        if(!isNaN(inputIndex) && inputIndex > 0 && inputIndex <= Math.ceil(data.length / numberItem)){
-            setIndexPage(inputIndex)
-            setCurrentData(data.slice((inputIndex-1)*numberItem, inputIndex*numberItem))
-        } else{
-            setInputIndex(indexPage)
-            Alert.alert("Error Input", "Please enter from 1 to " + Math.ceil(data.length / numberItem))
         }
     }
+
+    useEffect(() => {
+        const newData = data.slice((currentPage - 1) * numberItem, currentPage * numberItem) || [];
+        setCurrentData(newData);
+    }, [data, currentPage]);
     
     // Filter
     const handleFilter = (data)=>{
@@ -128,8 +137,8 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
         if(sortData.sortby && sortData.sortway){
             newData.sort((a,b) => {
                 const field = sortData.sortby
-                const aValue = a[field] || a["fullName"]
-                const bValue = b[field] || b["fullName"]
+                const aValue = field === "price" ? (a["discountedPrice"] ? a["discountedPrice"] : (a[field] ? a[field] : parseInt(0))) : (a[field] || a["fullName"])
+                const bValue = field === "price" ? (b["discountedPrice"] ? b["discountedPrice"] : (b[field] ? b[field] : parseInt(0))) : (b[field] || b["fullName"])
                 if (typeof aValue === 'number' && typeof bValue === 'number') {
                     return sortData?.sortway === 1 ? aValue - bValue : bValue - aValue;
                 }
@@ -219,7 +228,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
             </View>
             {index === 1 ?
                 <FlatList
-                    data={currentData}
+                    data={getPageData()}
                     keyExtractor={(item) => item.idCourse}
                     renderItem={({item}) => <CardVirticalCourse data={item} role={role} isUnPin={true}/>}
                     style={styles.wrapList}
@@ -227,7 +236,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                 />
             : 
                 <FlatList
-                    data={currentData}
+                    data={getPageData()}
                     keyExtractor={(item) => item.idUser}
                     renderItem={({item}) => <CardVirticalTeacher data={item}/>}
                     style={styles.wrapList}
@@ -262,27 +271,20 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                 }
             </Modal>
             <View style={styles.bottom}>
-                {indexPage>1 && 
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(false)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Previous</Text>
+                {getPagination().map(page => 
+                    page !== "..." ? 
+                    <TouchableOpacity 
+                        style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                        onPress={()=>setCurrentPage(page)}
+                        key={page}
+                    >
+                        <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                     </TouchableOpacity>
-                }
-                <TouchableOpacity style={styles.wrapPageNumber} onPress={()=> inputRef.current.focus()}>
-                    <TextInput 
-                        ref={inputRef}
-                        style={styles.pageNumberText} 
-                        value={inputIndex.toString()} 
-                        onChangeText={(v)=>handleOnChangeText(v)}
-                        onSubmitEditing={handleOnSubmit}
-                        keyboardType="numeric"    
-                    />
-                    <Text style={styles.pageNumberText}>/{Math.ceil(data.length / numberItem)} pages</Text>
-                </TouchableOpacity>
-                {indexPage < Math.ceil(data.length / numberItem) &&
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(true)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Next</Text>
-                    </TouchableOpacity>
-                }
+                    :
+                    <View style={styles.wrapNumber} key={page}>
+                        <Text style={styles.bottomNumber}>{page}</Text>
+                    </View>
+                )}
             </View>
         </View>
     )
@@ -318,26 +320,19 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         columnGap: 20,
         backgroundColor: "#FAFAFA",
+        marginLeft: 16
     },
-    wrapPageNumber:{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
+    bottomNumber:{
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 16
     },
-    pageNumber:{
+    wrapNumber:{
+        width: 32,
         height: 32,
-        width: 100,
-        backgroundColor: "white",
-        alignSelf: "flex-start",
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: COLORS.main
-    },
-    pageNumberText: {
-        color: COLORS.main,
-        fontWeight: "bold",
-        fontSize: 16,
     },
     wrapList: {
         marginBottom: 40,

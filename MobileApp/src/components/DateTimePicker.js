@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightText,
         // paddingVertical: 8,
         // minWidth: 130,
+        flex: 1
     },
     input:{
         fontSize: 16,

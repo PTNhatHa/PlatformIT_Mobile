@@ -14,42 +14,45 @@ import { CardAssignment } from "../components/CardAssignment";
 import { useUser } from "../contexts/UserContext";
 
 const ViewAllRender = ({data = [], type})=>{
-    const [indexPage, setIndexPage] = useState(1)
-    const [inputIndex, setInputIndex] = useState(1)
+    const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 10
-    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
-    const inputRef = useRef(null)
     
-    useEffect(() => {
-        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem) || [];
-        setCurrentData(newData);
-    }, [data, indexPage]);
+    const getPageData = () => {
+        return data.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
 
-    const handleChangeIndex = (isNext)=>{
-        let index = 0
-        if(isNext){
-            index = indexPage + 1
+    const getPagination = () => {
+        const totalPages = Math.ceil(data.length / numberItem);
+        if (totalPages <= 5) {
+        // Show all pages if there are 5 or fewer
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
         } else {
-            index = indexPage - 1
+        // Logic for more than 5 pages
+        if (currentPage <= 3) {
+            // Show first few pages if current page is near the start
+            return [1, 2, 3, 4, "...", totalPages];
+        } else if (currentPage >= totalPages - 2) {
+            // Show last few pages if current page is near the end
+            return [
+                1,
+                "...",
+                totalPages - 3,
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        } else {
+            // Show current page in the middle with surrounding pages
+            return [
+                1,
+                "...",
+                currentPage - 1,
+                currentPage,
+                currentPage + 1,
+                "...",
+                totalPages,
+            ];
         }
-        setIndexPage(index)
-        setInputIndex(index)
-        setCurrentData(data.slice((index-1)*numberItem, index*numberItem))
-    }
-    const handleOnChangeText = (v)=>{
-        if(v){
-            const newIndex = parseInt(v, 10)
-            setInputIndex(newIndex)
-        }
-        else setInputIndex("")
-    }
-    const handleOnSubmit = ()=>{
-        if(!isNaN(inputIndex) && inputIndex > 0 && inputIndex <= Math.ceil(data.length / numberItem)){
-            setIndexPage(inputIndex)
-            setCurrentData(data.slice((inputIndex-1)*numberItem, inputIndex*numberItem))
-        } else{
-            setInputIndex(indexPage)
-            Alert.alert("Error Input", "Please enter from 1 to " + Math.ceil(data.length / numberItem))
         }
     }
 
@@ -58,7 +61,7 @@ const ViewAllRender = ({data = [], type})=>{
             {
                 type === "Course" ? 
                     <FlatList
-                        data={currentData}
+                        data={getPageData()}
                         keyExtractor={(item) => item.idCourse}
                         renderItem={({item}) => <CardVirticalCourse data={item}/>}
                         style={styles.wrapList}
@@ -67,7 +70,7 @@ const ViewAllRender = ({data = [], type})=>{
                 : 
                 type === "Center" ? 
                     <FlatList
-                        data={currentData}
+                        data={getPageData()}
                         keyExtractor={(item) => item.idCenter}
                         renderItem={({item}) => <CardVirticalCenter data={item}/>}
                         style={styles.wrapList}
@@ -76,7 +79,7 @@ const ViewAllRender = ({data = [], type})=>{
                 : 
                 type === "Teacher" ? 
                     <FlatList
-                        data={currentData}
+                        data={getPageData()}
                         keyExtractor={(item) => item.idUser}
                         renderItem={({item}) => <CardVirticalTeacher data={item}/>}
                         style={styles.wrapList}
@@ -85,27 +88,20 @@ const ViewAllRender = ({data = [], type})=>{
                 : ""
             }
             <View style={styles.bottom}>
-                {indexPage > 1 && 
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(false)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Previous</Text>
+                {getPagination().map(page => 
+                    page !== "..." ? 
+                    <TouchableOpacity 
+                        style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                        onPress={()=>setCurrentPage(page)}
+                        key={page}
+                    >
+                        <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                     </TouchableOpacity>
-                }
-                <TouchableOpacity style={styles.wrapPageNumber} onPress={()=> inputRef.current.focus()}>
-                    <TextInput 
-                        ref={inputRef}
-                        style={styles.pageNumberText} 
-                        value={inputIndex.toString()} 
-                        onChangeText={(v)=>handleOnChangeText(v)}
-                        onSubmitEditing={handleOnSubmit}
-                        keyboardType="numeric"    
-                    />
-                    <Text style={styles.pageNumberText}>/{Math.ceil(data.length / numberItem)} pages</Text>
-                </TouchableOpacity>
-                {indexPage < Math.ceil(data.length / numberItem) &&
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(true)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Next</Text>
-                    </TouchableOpacity>
-                }
+                    :
+                    <View style={styles.wrapNumber} key={page}>
+                        <Text style={styles.bottomNumber}>{page}</Text>
+                    </View>
+                )}
             </View>
         </View>
     )
@@ -119,7 +115,6 @@ export const ScreenViewAll = ({route})=>{
     const [selectBtn, setSelectBtn] = useState(initialTab)
 
     const [search, setSearch] = useState(null)
-    const [index, setIndex] = useState(initialTab);
     const [isOpenModal, setIsOpenModal] = useState(false);
 
     const [dataSortCourse, setDataSortCourse] = useState([]);
@@ -145,19 +140,19 @@ export const ScreenViewAll = ({route})=>{
     useEffect(()=>{
         const changeIndex = async()=>{
             let txt = ""
-            if(index === 0){
+            if(selectBtn === 0){
                 txt = await AsyncStorage.getItem('searchCourse')
             }
-            if(index === 1){
+            if(selectBtn === 1){
                 txt = await AsyncStorage.getItem('searchCenter')
             }
-            if(index === 2){
+            if(selectBtn === 2){
                 txt = await AsyncStorage.getItem('searchTeacher')
             }
             setSearch(txt)
         }
         changeIndex()
-    }, [index])
+    }, [selectBtn])
 
     // Filter
     const handleFilterCourse = (data)=>{
@@ -226,8 +221,8 @@ export const ScreenViewAll = ({route})=>{
         if(sortData.sortby && sortData.sortway){
             newData.sort((a,b) => {
                 const field = sortData.sortby
-                const aValue = a[field]
-                const bValue = b[field]
+                const aValue = field === "price" ? (a["discountedPrice"] ? a["discountedPrice"] : (a[field] ? a[field] : parseInt(0))) : a[field]
+                const bValue = field === "price" ? (b["discountedPrice"] ? b["discountedPrice"] : (b[field] ? b[field] : parseInt(0))) : b[field]
                 if (typeof aValue === 'number' && typeof bValue === 'number') {
                     return sortData?.sortway === 1 ? aValue - bValue : bValue - aValue;
                 }
@@ -236,14 +231,14 @@ export const ScreenViewAll = ({route})=>{
                     if(aValue === null) return -1
                     if(bValue === null) return 1
                     if(aValue === null && bValue === null) return 0
-                    return aValue.localeCompare(bValue)
+                    return aValue?.localeCompare(bValue)
                 }
                 if(sortData.sortway === 2){
                     //Desc
                     if(aValue === null) return 1
                     if(bValue === null) return -1
                     if(aValue === null && bValue === null) return 0
-                    return bValue.localeCompare(aValue);
+                    return bValue?.localeCompare(aValue);
                 }
                 return 0
             })
@@ -254,14 +249,14 @@ export const ScreenViewAll = ({route})=>{
     // Search
     const handleOnChangeSearch = async (value)=>{
         setSearch(value)
-        if(index === 0) await AsyncStorage.setItem('searchCourse', value)
-        if(index === 1) await AsyncStorage.setItem('searchCenter', value)
-        if(index === 2) await AsyncStorage.setItem('searchTeacher', value)
+        if(selectBtn === 0) await AsyncStorage.setItem('searchCourse', value)
+        if(selectBtn === 1) await AsyncStorage.setItem('searchCenter', value)
+        if(selectBtn === 2) await AsyncStorage.setItem('searchTeacher', value)
     }
     const handleSearch = (dataSearch)=>{
         let result = [...dataSearch]
         // Course
-        if(index === 0){
+        if(selectBtn === 0){
             result = dataSearch.filter(data => {
                 return data.courseTitle?.toLowerCase().includes(search.toLowerCase()) ||
                         data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -269,14 +264,14 @@ export const ScreenViewAll = ({route})=>{
             })            
         }
         // Center
-        if(index === 1){
+        if(selectBtn === 1){
             result = dataSearch.filter(data => {
                 return data.centerName?.toLowerCase().includes(search.toLowerCase()) ||
                         data.description?.toLowerCase().includes(search.toLowerCase())
             })            
         }
         // Teacher
-        if(index === 2){
+        if(selectBtn === 2){
             result = dataSearch.filter(data => {
                 return data.name?.toLowerCase().includes(search.toLowerCase()) ||
                         data.teachingMajor?.toLowerCase().includes(search.toLowerCase()) ||
@@ -288,7 +283,7 @@ export const ScreenViewAll = ({route})=>{
     
     // Search - Sort - Filter
     useEffect(()=>{
-        if(index === 0){
+        if(selectBtn === 0){
             let result = [...initCourse]
             if(search){
                 result = handleSearch(result)
@@ -300,7 +295,7 @@ export const ScreenViewAll = ({route})=>{
     }, [search, dataSortCourse, dataFilterCourse])
 
     useEffect(()=>{
-        if(index === 1){
+        if(selectBtn === 1){
             let result = [...initCenter]
             if(search){
                 result = handleSearch(result)
@@ -312,7 +307,7 @@ export const ScreenViewAll = ({route})=>{
     }, [search, dataSortCenter, dataFilterCenter])
 
     useEffect(()=>{
-        if(index === 2){
+        if(selectBtn === 2){
             let result = [...initTeacher]
             if(search){
                 result = handleSearch(result)
@@ -391,7 +386,7 @@ export const ScreenViewAll = ({route})=>{
                 visible={isOpenModal}
                 animationType="fade"
             >
-                {index === 0 ?
+                {selectBtn === 0 ?
                     <FilterCourse 
                         dataSort={dataSortCourse}
                         setDataSort={setDataSortCourse}
@@ -399,7 +394,7 @@ export const ScreenViewAll = ({route})=>{
                         setDataFilter={setDataFilterCourse}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> :
-                    index === 1 ?
+                    selectBtn === 1 ?
                     <FilterCenter
                         dataSort={dataSortCenter}
                         setDataSort={setDataSortCenter}
@@ -407,7 +402,7 @@ export const ScreenViewAll = ({route})=>{
                         setDataFilter={setDataFilterCenter}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
                     /> :
-                    index === 2 ?
+                    selectBtn === 2 ?
                     <FilterTeacher
                         dataSort={dataSortTeacher}
                         setDataSort={setDataSortTeacher}
@@ -451,25 +446,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#FAFAFA",
         paddingTop: 10
     },
-    wrapPageNumber:{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
+    bottomNumber:{
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 16
     },
-    pageNumber:{
+    wrapNumber:{
+        width: 32,
         height: 32,
-        width: 100,
-        backgroundColor: "white",
-        alignSelf: "flex-start",
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: COLORS.main
-    },
-    pageNumberText: {
-        color: COLORS.main,
-        fontWeight: "bold",
-        fontSize: 16,
     },
     wrapList: {
         marginBottom: 50,

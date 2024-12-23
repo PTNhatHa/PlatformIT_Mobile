@@ -194,7 +194,7 @@ export const CardVirticalCenter = ({data = initCenter})=>{
             <View>
                 <Text style={styles.title}>{data.centerName}</Text>
                 {data.description &&
-                    <Text style={styles.dataText}>{data.description}</Text>
+                    <Text style={styles.dataText} numberOfLines={3}>{data.description}</Text>
                 }
                 {data.listTagCourses?.length > 0 && 
                     <View style={styles.content}>
@@ -311,7 +311,8 @@ const styles = StyleSheet.create({
     dataText: {
         fontSize: 12,
         color: COLORS.stroke,
-        textAlign: "justify"
+        textAlign: "justify",
+        maxWidth: 220
     },
     circle: {
         height: 16,
