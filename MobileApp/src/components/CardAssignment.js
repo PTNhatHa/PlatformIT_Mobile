@@ -218,13 +218,22 @@ export const CardAssignment = ({
                                     <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
                                     :""
                                 }
+                                {data.isSubmitted ?
+                                    <Tag label={"Submited"}/>                                
+                                    : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
+                                    <TagRed label={"Past due"}/>                    
+                                    : data.dueDate !== null ?
+                                    <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
+                                    :""
+                                }
+
                             </View>
                         </>
                     }
                     {role === 1 && 
                         <>                            
                             <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                                {data.isPublish === 1 &&
+                                {(data.isPublish === 1 && data.numberOfStudent) &&
                                     <>
                                         <FontAwesome5 name="user-alt" size={12} color={COLORS.main} />
                                         <Text style={styles.textNumber}>
