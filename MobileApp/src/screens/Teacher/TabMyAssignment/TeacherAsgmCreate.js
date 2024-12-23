@@ -17,7 +17,7 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { getAllActiveLanguage } from "../../../services/codeExecution"
+import { getAllActiveLanguage, runCodeTest } from "../../../services/codeExecution"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -84,32 +84,28 @@ export const TeacherAsgmCreate = ({route})=>{
         example: [
             {
                 input: "a",
-                output: "1"
-            },
-            {
-                input: "b",
-                output: "2"
+                expectedOutput: "1"
             },
         ],
-        testCase: [
+        testCases: [
             {
-                input: "aa",
-                output: "11"
+                input: "stella",
+                expectedOutput: "hello, stella"
             },
             {
-                input: "bb",
-                output: "22"
+                input: "hngan",
+                expectedOutput: "hello, bo"
             },
         ],
         isPastTestCase: true,
         isLimitTime: false,
         limitTime: 2,
         isLimitMemory: true,
-        limitMemory: 0.2,
+        limitMemory: "860",
         isShowOnSubmission: false
     })
     const [teacherCode, setTeacherCode] = useState({
-        sourceCode: "",
+        sourceCode: "#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}",
         language: {
             label: "",
             value: 0
@@ -117,14 +113,14 @@ export const TeacherAsgmCreate = ({route})=>{
         testCases: [
             {
                 input: "",
-                expectedOutput: ""
+                expectedexpectedOutput: ""
             },
         ],
     })
     const [listLanguage, setLanguage] = useState(null)    
-
+    const [resultCode, setResultCode] = useState(null)
+    
     const fetchAsgm = async()=>{
-        setLoading(true)
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
@@ -205,35 +201,41 @@ export const TeacherAsgmCreate = ({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
-        } finally{
-            setLoading(false)
         }
     }
 
     useEffect(()=>{
-        const getAllCourse = async()=>{
-            try {
-                const response = await getAllActiveCourseOfTeacher(state.idUser)
-                setListCourses([...response?.map(item=>{
-                    return{
-                        value: item.idCourse,
-                        label: item.courseTitle,
-                        isLimitedTime: item.isLimitedTime,
-                        courseStartDate: item.courseStartDate,
-                        courseEndDate: item.courseEndDate
-                    }
-                })])
-            } catch (error) {
-                console.log("Error getAllCourse: ", error);
+        setLoading(true)
+        try {
+            const getAllCourse = async()=>{
+                try {
+                    const response = await getAllActiveCourseOfTeacher(state.idUser)
+                    setListCourses([...response?.map(item=>{
+                        return{
+                            value: item.idCourse,
+                            label: item.courseTitle,
+                            isLimitedTime: item.isLimitedTime,
+                            courseStartDate: item.courseStartDate,
+                            courseEndDate: item.courseEndDate
+                        }
+                    })])
+                } catch (error) {
+                    console.log("Error getAllCourse: ", error);
+                }
             }
-        }
-        if(!idCourse){
-            if(!isEdit){
-                getAllCourse()
+            if(!idCourse){
+                if(!isEdit){
+                    getAllCourse()
+                }
+                if(idAssignment){
+                    fetchAsgm()
+                }
             }
-            if(idAssignment){
-                fetchAsgm()
-            }
+            getAllLanguage()
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }, [])
 
@@ -328,9 +330,6 @@ export const TeacherAsgmCreate = ({route})=>{
         setType(v)
         setQuestions([])
         setTotalQuestion(0)
-        if(type?.value === 3 && !listLanguage){
-            getAllLanguage()
-        }
     }
 
     useEffect(()=>{
@@ -772,18 +771,41 @@ export const TeacherAsgmCreate = ({route})=>{
             ...questionCode,
             [field]: [...questionCode[field], {
                 input: "",
-                output: ""
+                expectedOutput: ""
             }]
         }
         setQuestionCode(newCode)
     }
     const handleChangeTeacherCode = (v, field)=>{
         const newCode = {
-            ...questionCode,
+            ...teacherCode,
             [field]: v
         }
         setTeacherCode(newCode)
     }
+
+    const handleRunCodeTest = async()=>{
+        if(!teacherCode.sourceCode || teacherCode.language.value === 0){
+            Alert.alert("Warning", "Please fill your code and choose a language!")
+        } else{
+            setLoading(true)
+            try {
+                const response = await runCodeTest({
+                    idLanguage: teacherCode.language.value,
+                    sourceCode: teacherCode.sourceCode,
+                    testCases: questionCode.testCases
+                })
+                if(response){
+                    setResultCode(response)
+                }
+            } catch (error) {
+                console.log("Error: ", error);
+            } finally{
+                setLoading(false)
+            }
+        }
+    }
+
     return(
         <>
             <View style={styles.container}>
@@ -1086,7 +1108,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
-                                                value={questionCode.language} onchangeText={()=>handleChangeCode(v, "language")} 
+                                                value={questionCode.language} onchangeText={(v)=>handleChangeCode(v, "language")} 
                                                 listSelect={listLanguage}
                                                 label={"Language"}
                                             />
@@ -1104,8 +1126,8 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 {questionCode.example ? questionCode?.example?.map((ex, indexEx) => 
                                                     <View style={styles.wrapRow} key={indexEx}>
                                                         <Text style={styles.indexWidth}>{indexEx + 1}</Text>
-                                                        <TextInput style={styles.wrapRowText} value={ex.input} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "input")}/>
-                                                        <TextInput style={styles.wrapRowText} value={ex.output} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "output")}/>
+                                                        <TextInput style={styles.wrapRowText} value={ex.input} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "input")} multiline={true}/>
+                                                        <TextInput style={styles.wrapRowText} value={ex.expectedOutput} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "expectedOutput")} multiline={true}/>
                                                         <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("example", indexEx)}>
                                                             <MaterialIcons name="delete" size={16} color="black" style={{alignSelf: "center"}}/>
                                                         </TouchableOpacity>
@@ -1129,17 +1151,17 @@ export const TeacherAsgmCreate = ({route})=>{
                                                     <Text style={styles.wrapRowText}>Output</Text>
                                                     <Text style={styles.indexWidth}></Text>
                                                 </View>
-                                                {questionCode.testCase?.map((test, indexTest) => 
+                                                {questionCode.testCases?.map((test, indexTest) => 
                                                     <View style={styles.wrapRow} key={indexTest}>
                                                         <Text style={styles.indexWidth}>{indexTest + 1}</Text>
-                                                        <TextInput style={styles.wrapRowText} value={test.input} onChangeText={(v)=>handleChangeCode(v, "testCase", indexTest, "input")}/>
-                                                        <TextInput style={styles.wrapRowText} value={test.output} onChangeText={(v)=>handleChangeCode(v, "testCase", indexTest, "output")}/>
-                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("testCase", indexTest)}>
+                                                        <TextInput style={styles.wrapRowText} value={test.input} onChangeText={(v)=>handleChangeCode(v, "testCases", indexTest, "input")} multiline={true}/>
+                                                        <TextInput style={styles.wrapRowText} value={test.expectedOutput} onChangeText={(v)=>handleChangeCode(v, "testCases", indexTest, "expectedOutput")} multiline={true}/>
+                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("testCases", indexTest)}>
                                                             <MaterialIcons name="delete" size={16} color="black" style={{alignSelf: "center"}}/>
                                                         </TouchableOpacity>
                                                     </View>
                                                 )}
-                                                <TouchableOpacity onPress={()=>handleAddCode("testCase")}>
+                                                <TouchableOpacity onPress={()=>handleAddCode("testCases")}>
                                                     <Text style={styles.wrapRowText}>+ Add a test case</Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -1203,12 +1225,12 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View>
                                             <TextInputSelectBox 
                                                 placeholder={"Select a language"} 
-                                                value={teacherCode.language} onchangeText={()=>handleChangeTeacherCode(v, "language")} 
+                                                value={teacherCode.language} onchangeText={(v)=>handleChangeTeacherCode(v, "language")} 
                                                 listSelect={listLanguage}
                                                 label={"Language"}
                                             />
                                         </View>
-                                        {true &&
+                                        {resultCode &&
                                             <View>
                                                 <Text style={styles.textGray14}>Result</Text>
                                                 <View>
@@ -1219,22 +1241,25 @@ export const TeacherAsgmCreate = ({route})=>{
                                                         <Text style={styles.wrapRowText}>Time         (s)</Text>
                                                         <Text style={styles.wrapRowText}>Memory (MB)</Text>
                                                     </View>
-                                                    <View style={styles.wrapRow}>
-                                                        <Text style={styles.wrapRowText}>case 1</Text>
-                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>Pass</Text>
-                                                        <Text style={[styles.wrapRowText, false ? styles.textGreen : styles.textRed]}>0.2</Text>
-                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.1</Text>
-                                                    </View>
-                                                    <View style={styles.wrapRow}>
-                                                        <Text style={styles.wrapRowText}>case 2</Text>
-                                                        <Text style={[styles.wrapRowText, false ? styles.textGreen : styles.textRed]}>Fail</Text>
-                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.2</Text>
-                                                        <Text style={[styles.wrapRowText, true ? styles.textGreen : styles.textRed]}>0.1</Text>
-                                                    </View>
+                                                    {resultCode.map((result, index) =>{ 
+                                                        return (<View style={styles.wrapRow} key={index}>
+                                                            <Text style={styles.wrapRowText}>case {index + 1}</Text>
+                                                            <Text style={[styles.wrapRowText, (questionCode.isPastTestCase && result.isPassTestCase) ? styles.textGreen : questionCode.isPastTestCase ? styles.textRed : ""]}>
+                                                                {result.isPassTestCase === true ? "Pass" : "Fail"}
+                                                            </Text>
+                                                            <Text style={[styles.wrapRowText, (questionCode.isLimitTime && result.timeExecuted <= questionCode.limitTime) ? styles.textGreen : questionCode.isLimitTime ? styles.textRed : ""]}>
+                                                                {result.timeExecuted}
+                                                            </Text>
+                                                            <Text style={[styles.wrapRowText, (questionCode.isLimitMemory && result.memoryExecuted <= questionCode.limitMemory) ? styles.textGreen : questionCode.isLimitMemory ? styles.textRed : ""]}>
+                                                                {result.memoryExecuted}
+                                                            </Text>
+                                                        </View>)
+                                                    })}
+                                                      
                                                 </View>
                                             </View>
                                         }
-                                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>{}}>
+                                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleRunCodeTest()}>
                                             <Text style={styles.textWhite14}>Run code</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -1290,6 +1315,7 @@ const styles = StyleSheet.create({
     },
     inner:{
         padding: 16,
+        paddingBottom: 180
     },
     board: {
         flexDirection: "row",
@@ -1495,6 +1521,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingVertical: 4,
         textAlignVertical: "center",
+        flexWrap: "wrap",
     },
     bgLightGray:{
         backgroundColor: COLORS.lightGray
