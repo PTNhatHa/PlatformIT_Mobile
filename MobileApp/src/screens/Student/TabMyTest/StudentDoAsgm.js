@@ -15,7 +15,7 @@ import * as DocumentPicker from 'expo-document-picker';
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
-    const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer, dueDate, reload} = route?.params || null
+    const {idAssignment, assignmentType, initduration, isShufflingQuestion, isShufflingAnswer, dueDate, reload} = route?.params || {}
     const [loading, setLoading] = useState(true);
     const {state, dispatch} = useUser()
     const [selectFile, setSelectFile] = useState("")
@@ -250,7 +250,7 @@ export const StudentDoAsgm = ({route})=>{
                 }
                 
             } else {
-                Alert.alert("Error", "Please try again")
+                // Alert.alert("Error", "Please try again")
                 navigation.goBack()
             }
         } catch (error) {
@@ -535,7 +535,38 @@ export const StudentDoAsgm = ({route})=>{
                             </View>
                         )
                     }  
-                    
+                    {true &&
+                        <View style={styles.wrapQuestion}>
+                            <Text style={styles.title}>Problem</Text>
+                            <Text style={styles.questionContent}>question.....</Text>
+                            <View style={styles.wrapFlex}>
+                                <Text style={styles.textGray12}>Language:</Text>
+                                <Text style={styles.textBBlack12}>C</Text>
+                            </View>
+                            {true &&
+                                <View>
+                                    <Text style={styles.textGray12}>Example:</Text>
+                                    <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                        <Text style={styles.wrapRowText}>Input</Text>
+                                        <Text style={styles.wrapRowText}>Output</Text>
+                                    </View>
+                                    <View style={styles.wrapRow}>
+                                        <Text style={styles.wrapRowText}>Input</Text>
+                                        <Text style={styles.wrapRowText}>Output</Text>
+                                    </View>
+                                </View>
+                            }
+                            <Text style={styles.title}>Your code</Text>
+                            <TextInput
+                                style={styles.textCode}
+                                placeholder="Your answer"
+                                multiline={true}
+                                value={""}
+                                onChangeText={(v)=>{}}
+                            />
+
+                        </View>
+                    }
                     <TouchableOpacity style={styles.btn} onPress={()=>handleSubmit()}>
                         <Text style={styles.textWhite14}>Submit</Text>
                     </TouchableOpacity>
@@ -811,5 +842,43 @@ const styles = StyleSheet.create({
     },
     widthFlex1:{
         flex: 1
-    }
+    },
+    wrapRow:{
+        flexDirection: "row",
+        justifyContent: "space-between",        
+        width: "100%"
+    },
+    wrapRowText:{
+        flex: 1,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4,
+        textAlignVertical: "center",
+        flexWrap: "wrap",
+    },
+    wrapRowTextResult:{
+        width: 100,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4,
+        textAlignVertical: "center",
+        flexWrap: "wrap",
+    },
+    bgLightGray:{
+        backgroundColor: COLORS.lightGray
+    },
+    textCode: {
+        minHeight: 300,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        padding: 10,
+        fontSize: 16,
+        fontFamily: 'monospace',
+        backgroundColor: '#fff',
+        textAlignVertical: "top",
+        backgroundColor: COLORS.lightGray,
+    },
 })

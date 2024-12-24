@@ -23,17 +23,15 @@ import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/C
 import { ChatBoard } from './src/screens/ChatBoard';
 import { ChatBox } from './src/screens/ChatBox';
 import { CommentNoti } from './src/screens/CommentNoti';
+import { StudentDoAsgm } from './src/screens/Student/TabMyTest/StudentDoAsgm';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <ChatBoard/> */}
-          {/* <ChatBox/> */}
-          {/* <TeacherAsgmCreate/> */}
-          {/* <CommentNoti/> */}
+          {/* <SigninSignup/> */}
+          <StudentDoAsgm/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
