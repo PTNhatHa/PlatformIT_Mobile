@@ -210,23 +210,14 @@ export const CardAssignment = ({
                     {role === 2 && 
                         <>                            
                             <View style={[styles.content, {justifyContent: "flex-end"}]}>
-                                {data.isCompleted ?
-                                    <Tag label={"Submited at " + getTime(data.submittedDate)}/>                                
-                                    : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
-                                    <TagRed label={"Past due"}/>                    
-                                    : data.dueDate !== null ?
-                                    <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
-                                    :""
+                                {(data.isCompleted === 1 || data.isSubmitted === true) ?
+                                    (data.isCompleted ? <Tag label={"Submited at " + getTime(data.submittedDate)}/> : <Tag label={"Submited"}/>)                                
+                                    : 
+                                    data.isPastDue === 1 ?
+                                        <TagRed label={"Past due"}/>                    
+                                        : 
+                                        (data.dueDate !== null ? <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/> : "")
                                 }
-                                {data.isSubmitted ?
-                                    <Tag label={"Submited"}/>                                
-                                    : data.dueDate !== null && (new Date(data.dueDate) < new Date() ) ?
-                                    <TagRed label={"Past due"}/>                    
-                                    : data.dueDate !== null ?
-                                    <TagMain30 label={"Due: " + formatDateTime(data.dueDate, true)}/>   
-                                    :""
-                                }
-
                             </View>
                         </>
                     }

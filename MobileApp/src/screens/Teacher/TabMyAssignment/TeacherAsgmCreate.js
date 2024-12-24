@@ -553,17 +553,18 @@ export const TeacherAsgmCreate = ({route})=>{
                 setError("Please select a due date if you have chosen a start date.")
                 return
             }
+        }
+        if(type.value === 1 || type.value === 2){
+            if(questions?.length === 0){
+                setError("You need to add at least 1 question.")
+                return
             }
-        if(questions?.length === 0){
-            setError("You need to add at least 1 question.")
-            return
+            const check = questions.find(item => item.assignmentItemStatus !== 0 && (item.question === null || item.items?.length === 0 || item.mark === 0))
+            if(check){
+                setError("You need to fill all question.")
+                return
+            }
         }
-        const check = questions.find(item => item.assignmentItemStatus !== 0 && (item.question === null || item.items?.length === 0 || item.mark === 0))
-        if(check){
-            setError("You need to fill all question.")
-            return
-        }
-
         if(type.value === 2){
             const checkItemContent = questions.every(question => {
                 if (question.assignmentItemStatus !== 0) {
