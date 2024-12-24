@@ -84,9 +84,9 @@ export const createQuizAssignment = async (
     })
     formData.append('CreatedBy', CreatedBy)
 
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    // }
 
     return await axios.post(baseUrl + "/CreateQuizAssignment", formData, {
         headers: {

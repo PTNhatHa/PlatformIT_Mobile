@@ -27,6 +27,7 @@ export const CardLecture = ({
                     if(data.lectureStatus === 2 || data.lectureStatus === 3){
                         navigation.navigate("Update Lecture", {
                             idLecture: data.idLecture,
+                            // getCourse: reload,
                             nameSection: section.sectionName,
                             lectureStatus: data.lectureStatus
                         })
@@ -37,7 +38,7 @@ export const CardLecture = ({
                             isLimitedTime: isLimitedTime, 
                             courseEndDate: courseEndDate,
                             idTeacher: idTeacher,
-                            reload: reload
+                            // reload: reload
                         })
                     }
                 }

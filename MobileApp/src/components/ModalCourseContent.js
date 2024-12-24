@@ -2,12 +2,12 @@ import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, ActivityIndicat
 import { COLORS } from "../utils/constants"
 import { ButtonGreen, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Entypo from '@expo/vector-icons/Entypo';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabel } from "./TextInputField";
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { addSection, getCourseContentStructure, updateSection } from "../services/course";
 import { useUser } from "../contexts/UserContext";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -91,7 +91,7 @@ export const ModalCourseContent = ({
                 setShowSections(allContents.sectionStructures.map(item => (
                     {
                         idSection: item.idSection,
-                        isShow: false
+                        isShow: true
                     }
                 )) || [])
             }
@@ -102,9 +102,14 @@ export const ModalCourseContent = ({
         }
     }
 
-    useEffect(()=>{
-        getListSection()
-    }, [])
+    // useEffect(()=>{
+    //     getListSection()
+    // }, [])
+    useFocusEffect(
+        useCallback(() => {
+            getListSection()
+        }, [])
+    );
 
     const handleShowSection = (idSection)=>{
         const newShow = showSections.map(item => {

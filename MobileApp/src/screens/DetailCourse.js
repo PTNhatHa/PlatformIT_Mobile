@@ -498,6 +498,7 @@ export const DetailCourse =({route})=>{
                             role={role} 
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
+                            
                         />
                     </>
                 : selectBtn === 1 ?

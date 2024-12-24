@@ -15,7 +15,7 @@ import { ButtonIconLightGreen } from "../../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
-import { addLecture, getLectureDetail } from "../../../services/lecture";
+import { addLecture, getLectureDetail, updateLecture } from "../../../services/lecture";
 import { useUser } from "../../../contexts/UserContext";
 import { getMimeType } from "../../../utils/utils";
 import { TagRed, TagYellow } from "../../../components/Tag";
@@ -28,7 +28,7 @@ const init = {
 }
 export const TeacherLectureCreate = ({route})=>{
     const {state, dispatch} = useUser()
-    const {idCourse, nameCourse, idSection, nameSection, getCourse, idLecture, lectureStatus} = route?.params || {}
+    const {idCourse, nameCourse, idSection, nameSection, getCourse, idLecture, lectureStatus} = route?.params || {getCourse: ()=>{}}
     const [inforLecture, setInforLecture] = useState({
         idCourse: idCourse,
         nameCourse: nameCourse, 
@@ -52,7 +52,9 @@ export const TeacherLectureCreate = ({route})=>{
                 setLectureName(response.lectureTitle)
                 setInforLecture({
                     ...inforLecture,
-                    nameCourse: response.courseTitle
+                    idCourse: response.idCourse,
+                    nameCourse: response.courseTitle,
+                    idSection: response.idSection
                 })
                 setIntro(response.lectureIntroduction)
                 if(response.mainMaterials[0]){
@@ -118,19 +120,16 @@ export const TeacherLectureCreate = ({route})=>{
         const result = await pickFile()
         if(result){
             const newMaterial = [...supportMaterial, {
-                id: "id" + idSupMaterial.toString(),
-                file: {
-                    uri: result.uri,
-                    name: result.name,
-                    type: result.mimeType 
-                }
+                uri: result.uri,
+                name: result.name,
+                type: result.mimeType 
             }]
             setSupportMaterial(newMaterial)
             setIdSupMaterial(idSupMaterial + 1)
         }
     }
-    const onDeleteSupportMaterial= async(id,)=>{
-        const newMaterial = supportMaterial.filter(item => item.id !== id)
+    const onDeleteSupportMaterial= async(i)=>{
+        const newMaterial = supportMaterial.filter((item, index) => index !== i)
         setSupportMaterial(newMaterial)
     }
     const onChangeVideo = async ()=>{
@@ -154,17 +153,26 @@ export const TeacherLectureCreate = ({route})=>{
         }
         setLoading(true)
         try {
-            const listSupMaterials = supportMaterial.map(item => item.file) || null
-            const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, listSupMaterials)
-            if(response){
-                Alert.alert("Add Lecture Successfully", response)
-                getCourse()
-                navigation.goBack()
-
-            } else {
-                Alert.alert("Warning", "Please try again.")
+            if(idLecture){
+                const response = await updateLecture(state.idUser, idLecture, inforLecture.idCourse, inforLecture.idSection, lectureStatus === 3 ? 2 : "", lectureName, intro, video, material, supportMaterial)
+                if(response){
+                    Alert.alert("Update Lecture Successfully", response)
+                    // getCourse()    
+                    fetchDetailLecture
+                } else {
+                    Alert.alert("Warning", "Please try again.")
+                }
+            } else{
+                const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, supportMaterial)
+                if(response){
+                    Alert.alert("Add Lecture Successfully", response)
+                    // getCourse()
+                    navigation.goBack()
+    
+                } else {
+                    Alert.alert("Warning", "Please try again.")
+                }
             }
-            
         } catch (error) {
             console.log("Error: ", error);
         } finally{
@@ -191,7 +199,7 @@ export const TeacherLectureCreate = ({route})=>{
                     }
                     {idLecture ?
                         <View style={styles.wrapBtn}>
-                            <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>{}}>
+                            <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
                                 <Text style={styles.textWhite14}>Update</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>fetchDetailLecture()}>
@@ -269,12 +277,12 @@ export const TeacherLectureCreate = ({route})=>{
                         <View style={styles.containerGray}>
                             <Text style={styles.label}>Supporting materials</Text>
                             {supportMaterial.length > 0 &&
-                                supportMaterial.map(item => 
-                                    <View style={[styles.inputLabelGray, {marginBottom: 4}]} key={item.id}>
+                                supportMaterial.map((item, index) => 
+                                    <View style={[styles.inputLabelGray, {marginBottom: 4}]} key={index}>
                                         <Text style={{flex: 1}} numberOfLines={1}>
-                                            {item.file.name}
+                                            {item.name}
                                         </Text>
-                                        <TouchableOpacity onPress={()=>onDeleteSupportMaterial(item.id)} style={{margin: 4}}>
+                                        <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
                                             <MaterialIcons name="delete" size={18} color={COLORS.red} />
                                         </TouchableOpacity>
                                     </View>
