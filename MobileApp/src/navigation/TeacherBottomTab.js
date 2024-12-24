@@ -339,7 +339,7 @@ export const TeacherBottomTab = ()=>{
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
-                            if(item.isRead === 0){
+                            if(notification.isRead === 0){
                                 notiUnRead +=1
                             }
                             return {
@@ -347,7 +347,7 @@ export const TeacherBottomTab = ()=>{
                                 timestamp: parseRelativeTime(notification.relativeTime),
                             };
                         } catch (error) {
-                        console.error('Error parsing notification:', notification, error);
+                        console.log('Error parsing notification:', notification, error);
                         return notification; // Fallback
                         }
                     });
@@ -355,7 +355,7 @@ export const TeacherBottomTab = ()=>{
                     setUnReadNoti(notiUnRead)
                 });
             } catch (error) {
-                console.error('SignalR Connection Error:', error);
+                console.log('SignalR Connection Error:', error);
             }
         };
         console.log(">> after get from quin:", allNoti)
@@ -363,7 +363,7 @@ export const TeacherBottomTab = ()=>{
         startConnection();
     
         connection.onclose((error) => {
-            console.error('SignalR connection closed:', error);
+            console.log('SignalR connection closed:', error);
             setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
         });
     

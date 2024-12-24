@@ -333,7 +333,56 @@ export const StudentBottomTab = ()=>{
         return () => clearInterval(interval);
     }, [])
 
-    // Conversation
+    useEffect(() => {
+        console.log('Attempting to connect to SignalR hub...');
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/notificationHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                console.log('Connected to SignalR hub.');
+        
+                connection.on('UpdateNotifications', (updatedNotifications) => {
+                    console.log('Received UpdateNotifications event:', updatedNotifications);
+                    let notiUnRead = 0
+                    let processedData = updatedNotifications.map((notification) => {
+                        try {
+                            if(notification.isRead === 0){
+                                notiUnRead +=1
+                            }
+                            return {
+                                ...notification,
+                                timestamp: parseRelativeTime(notification.relativeTime),
+                            };
+                        } catch (error) {
+                        console.log('Error parsing notification:', notification, error);
+                        return notification; // Fallback
+                        }
+                    });
+                    setAllNoti(processedData);
+                    setUnReadNoti(notiUnRead)
+                });
+            } catch (error) {
+                console.log('SignalR Connection Error:', error);
+            }
+        };
+        console.log(">> after get from quin:", allNoti)
+    
+        startConnection();
+    
+        connection.onclose((error) => {
+            console.log('SignalR connection closed:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
+    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, []);
 
 
     return(
