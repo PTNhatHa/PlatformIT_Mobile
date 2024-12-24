@@ -178,7 +178,7 @@ export const TextInputSelectBox = ({
 }
 
 export const TextInputSelectDate = ({
-    label, value, placeholder, onchangeText = ()=>{}, listSelect=[]
+    label, value, placeholder, onchangeText = ()=>{}, listSelect=[], isDateTime = false
 }) => {
     const [show, setShow] = useState(false)
     const handleOnChange = (e, selectDate)=>{
@@ -380,7 +380,8 @@ const styles = StyleSheet.create({
         height: 36
     },
     inputText:{
-        width: "90%"
+        // width: "90%",
+        flex: 1
     },
     wrapList:{
         maxHeight: 200,
