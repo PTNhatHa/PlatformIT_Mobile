@@ -1169,12 +1169,6 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View>
                                             <Text style={styles.textGray14}>Scoring rules</Text>
                                             <CheckBox
-                                                isChecked={questionCode.isPastTestCase}
-                                                onClick={()=>handleChangeCode(!questionCode.isPastTestCase, "isPastTestCase")}
-                                                checkBoxColor={COLORS.secondMain}
-                                                rightText="Pass test cases"
-                                            />
-                                            <CheckBox
                                                 isChecked={questionCode.isLimitTime}
                                                 onClick={()=>handleChangeCode(!questionCode.isLimitTime, "isLimitTime")}
                                                 checkBoxColor={COLORS.secondMain}
@@ -1233,30 +1227,35 @@ export const TeacherAsgmCreate = ({route})=>{
                                         {resultCode &&
                                             <View>
                                                 <Text style={styles.textGray14}>Result</Text>
-                                                <View>
-                                                    {/* Row */}
-                                                    <View style={[styles.wrapRow, styles.bgLightGray]}>
-                                                        <Text style={styles.wrapRowText}></Text>
-                                                        <Text style={styles.wrapRowText}>Pass test case</Text>
-                                                        <Text style={styles.wrapRowText}>Time         (s)</Text>
-                                                        <Text style={styles.wrapRowText}>Memory (MB)</Text>
-                                                    </View>
-                                                    {resultCode.map((result, index) =>{ 
-                                                        return (<View style={styles.wrapRow} key={index}>
-                                                            <Text style={styles.wrapRowText}>case {index + 1}</Text>
-                                                            <Text style={[styles.wrapRowText, (questionCode.isPastTestCase && result.isPassTestCase) ? styles.textGreen : questionCode.isPastTestCase ? styles.textRed : ""]}>
-                                                                {result.isPassTestCase === true ? "Pass" : "Fail"}
-                                                            </Text>
-                                                            <Text style={[styles.wrapRowText, (questionCode.isLimitTime && result.timeExecuted <= questionCode.limitTime) ? styles.textGreen : questionCode.isLimitTime ? styles.textRed : ""]}>
-                                                                {result.timeExecuted}
-                                                            </Text>
-                                                            <Text style={[styles.wrapRowText, (questionCode.isLimitMemory && result.memoryExecuted <= questionCode.limitMemory) ? styles.textGreen : questionCode.isLimitMemory ? styles.textRed : ""]}>
-                                                                {result.memoryExecuted}
-                                                            </Text>
-                                                        </View>)
-                                                    })}
-                                                      
-                                                </View>
+                                                <ScrollView horizontal={true}>
+                                                    <View style={{padding: 4}}>
+                                                        {/* Row */}
+                                                        <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                            <Text style={styles.wrapRowTextResult}>Case</Text>
+                                                            <Text style={styles.wrapRowTextResult}>Pass test case</Text>
+                                                            <Text style={styles.wrapRowTextResult}>Time(s)</Text>
+                                                            <Text style={styles.wrapRowTextResult}>Memory(KB)</Text>
+                                                            <Text style={styles.wrapRowTextResult}>Description</Text>
+                                                        </View>
+                                                        {resultCode.map((result, index) =>{ 
+                                                            return (<View style={styles.wrapRow} key={index}>
+                                                                <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
+                                                                <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
+                                                                    {result.isPassTestCase === true ? "Pass" : "Fail"}
+                                                                </Text>
+                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isLimitTime && result.timeExecuted <= questionCode.limitTime) ? styles.textGreen : questionCode.isLimitTime ? styles.textRed : ""]}>
+                                                                    {result.timeExecuted}
+                                                                </Text>
+                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isLimitMemory && result.memoryExecuted <= questionCode.limitMemory) ? styles.textGreen : questionCode.isLimitMemory ? styles.textRed : ""]}>
+                                                                    {result.memoryExecuted}
+                                                                </Text>
+                                                                <Text style={styles.wrapRowTextResult}>
+                                                                    {result.failDescriptionCode_NOUSE}
+                                                                </Text>
+                                                            </View>)
+                                                        })}
+                                                    </View>                                                      
+                                                </ScrollView>
                                             </View>
                                         }
                                         <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleRunCodeTest()}>
@@ -1516,6 +1515,15 @@ const styles = StyleSheet.create({
     },
     wrapRowText:{
         flex: 1,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4,
+        textAlignVertical: "center",
+        flexWrap: "wrap",
+    },
+    wrapRowTextResult:{
+        width: 100,
         borderWidth: 1,
         borderColor: COLORS.lightText,
         textAlign: "center",
