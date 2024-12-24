@@ -921,7 +921,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             {selectCourse?.isLimitedTime === 1 &&
                                 <>
                                     <View style={styles.wrapFlex}>
-                                        <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate}/>
+                                        <TextInputSelectDate label={"Start date"} value={startDate} onchangeText={setStartDate} isDateTime={true}/>
                                         {startDate &&
                                             <TouchableOpacity onPress={()=>setStartDate(null)} style={{margin: 4, marginTop: 16}}>
                                                 <MaterialIcons name="delete" size={24} color="black" />
@@ -929,7 +929,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                         }
                                     </View>
                                     <View style={styles.wrapFlex}>
-                                        <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate}/>
+                                        <TextInputSelectDate label={"Due date"} value={dueDate} onchangeText={setDueDate} isDateTime={true}/>
                                         {dueDate &&
                                             <TouchableOpacity onPress={()=>setDueDate(null)} style={{margin: 4, marginTop: 16}}>
                                                 <MaterialIcons name="delete" size={24} color="black" />
@@ -1311,7 +1311,7 @@ const styles = StyleSheet.create({
     },
     inner:{
         padding: 16,
-        paddingBottom: 180
+        // paddingBottom: 180
     },
     board: {
         flexDirection: "row",
@@ -1370,7 +1370,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         padding: 16,
         borderRadius: 8,
-        marginBottom: 32,
+        marginVertical: 8,
         gap: 8,
         zIndex: -1,
     },

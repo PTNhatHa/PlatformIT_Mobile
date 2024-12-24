@@ -6,6 +6,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { formatDateTime } from "../utils/utils";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export const TextInputIcon = ({
     value, icon, placeholder, onchangeText, error, keyboardType, isPassword, isMultiline = false
@@ -27,11 +28,11 @@ export const TextInputIcon = ({
                 />
                 {(isPassword && !showPassword) ? 
                     <TouchableOpacity onPress={()=>setShowPassword(true)}>
-                        <Ionicons name="eye" size={24} color="black" />
+                        <Ionicons name="eye" size={24} color={COLORS.lightText} />
                     </TouchableOpacity>
                     : isPassword &&
                     <TouchableOpacity onPress={()=>setShowPassword(false)}>
-                        <Ionicons name="eye-off" size={24} color="black" />
+                        <Ionicons name="eye-off" size={24} color={COLORS.lightText} />
                     </TouchableOpacity>
                 }
             </View>
@@ -64,11 +65,11 @@ export const TextInputLabel = ({
                     />
                     {(isPassword && !showPassword) ? 
                         <TouchableOpacity onPress={()=>setShowPassword(true)}>
-                            <Ionicons name="eye" size={24} color="black" />
+                            <Ionicons name="eye" size={24} color={COLORS.lightText} />
                         </TouchableOpacity>
                         : isPassword &&
                         <TouchableOpacity onPress={()=>setShowPassword(false)}>
-                            <Ionicons name="eye-off" size={24} color="black" />
+                            <Ionicons name="eye-off" size={24} color={COLORS.lightText} />
                         </TouchableOpacity>
                     }
                 </View>
@@ -178,10 +179,10 @@ export const TextInputSelectBox = ({
 }
 
 export const TextInputSelectDate = ({
-    label, value, placeholder, onchangeText = ()=>{}, listSelect=[], isDateTime = false
+    label, value, placeholder, onchangeText = ()=>{}, isDateTime = false
 }) => {
     const [show, setShow] = useState(false)
-    const handleOnChange = (e, selectDate)=>{
+    const handleOnChange = (selectDate)=>{
         const currentDate = selectDate || value || new Date()
         onchangeText(currentDate)
         setShow(false)
@@ -193,7 +194,7 @@ export const TextInputSelectDate = ({
                 <View style={[styles.inputLabelBox]}>
                     <TextInput 
                         style={styles.inputText}
-                        value={value ? formatDateTime(new Date(value)) : null}
+                        value={value ? formatDateTime(value, isDateTime) : null}
                         editable={false}
                         placeholder="Select a date"
                     />
@@ -201,14 +202,13 @@ export const TextInputSelectDate = ({
                         <Feather name="calendar" size={20} color="black" />
                     </TouchableOpacity>
                 </View>
-                {show &&
-                    <DateTimePicker 
-                        mode="date" 
-                        onChange={handleOnChange}
-                        value={value instanceof Date ? new Date(value) : new Date()} 
-                        display="default"
-                    />
-                }
+                <DateTimePickerModal
+                    isVisible={show}
+                    mode={isDateTime ? "datetime" : "date"} // Chọn chế độ date hoặc datetime
+                    date={value instanceof Date ? new Date(value) : new Date()} // Giá trị ban đầu
+                    onConfirm={handleOnChange} // Khi xác nhận
+                    onCancel={() => setShow(false)} // Khi hủy
+                />
             </View>
         </>
     )
@@ -273,7 +273,7 @@ export const SelectCourseBox = ({
                 </View>
                 {isOpenBox &&
                     <View style={[styles.wrapList, {backgroundColor: COLORS.lightGray}]}>
-                        <ScrollView >
+                        <ScrollView nestedScrollEnabled>
                             {currentList?.map(item => 
                                 <TouchableOpacity key={item?.value} onPress={()=>{
                                     onchangeText(item)
@@ -385,16 +385,17 @@ const styles = StyleSheet.create({
     },
     wrapList:{
         maxHeight: 200,
-        position: "absolute",
+        // position: "absolute",
         backgroundColor: COLORS.lightGray,
         borderWidth: 1,
         borderTopWidth: 0,
         borderColor: COLORS.lightText,
         alignSelf: "flex-end",
         width: "100%",
-        top: 50,
+        // top: 50,
         zIndex: 9999,
-        borderRadius: 4
+        borderRadius: 4,
+        flexGrow: 1,
     },
     textListTag: {
         margin: 4,

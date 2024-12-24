@@ -14,8 +14,8 @@ export const createManualAssignment = async (
     formData.append('IsTest', IsTest)
 
     formData.append('IdLecture', IdLecture)
-    formData.append('StartDate', StartDate)
-    formData.append('DueDate', DueDate)
+    formData.append('StartDate', StartDate ? new Date(StartDate).toISOString() : "")
+    formData.append('DueDate', DueDate ? new Date(DueDate).toISOString() : "")
     formData.append('Duration', Duration)
 
     formData.append('AssignmentType', AssignmentType)
@@ -50,17 +50,14 @@ export const createQuizAssignment = async (
     AssignmentType, IsPublish, IsShufflingQuestion, IsShufflingAnswer, ShowAnswer, 
     AssignmentItems, CreatedBy
 )=>{
-    // console.log(Title, IdCourse, IsTest, IdLecture, StartDate, DueDate, Duration,
-    //     AssignmentType, IsPublish, IsShufflingQuestion, IsShufflingAnswer, ShowAnswer, 
-    //     AssignmentItems, CreatedBy);
     const formData = new FormData()
     formData.append('Title', Title)
     formData.append('IdCourse', IdCourse)
     formData.append('IsTest', IsTest)
 
     formData.append('IdLecture', IdLecture)
-    formData.append('StartDate', StartDate)
-    formData.append('DueDate', DueDate)
+    formData.append('StartDate', StartDate ? new Date(StartDate).toISOString() : "")
+    formData.append('DueDate', DueDate ? new Date(DueDate).toISOString() : "")
     formData.append('Duration', Duration)
 
     formData.append('AssignmentType', AssignmentType)
@@ -87,9 +84,9 @@ export const createQuizAssignment = async (
     })
     formData.append('CreatedBy', CreatedBy)
 
-    // for (let [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
 
     return await axios.post(baseUrl + "/CreateQuizAssignment", formData, {
         headers: {
@@ -101,7 +98,7 @@ export const createQuizAssignment = async (
         return response.data
     })
     .catch(error => {
-        console.log("Error CreateQuizAssignment: ", error.request);
+        console.log("Error CreateQuizAssignment: ", error.response );
     })
 }
 
@@ -155,8 +152,9 @@ export const updateAssignment = async (updatedBy, updateData)=>{
     const formData = new FormData()
     formData.append('IdAssignment', updateData.idAssignment)
     formData.append('Title', updateData.title || "")
-    formData.append('StartDate', updateData.startDate || "")
-    formData.append('DueDate', updateData.dueDate || "")
+    formData.append('StartDate', updateData.startDate ? new Date(updateData.startDate).toISOString() : "")
+    formData.append('DueDate', updateData.dueDate ? new Date(updateData.dueDate).toISOString() : "")
+
     formData.append('Duration', updateData.duration || "")
     formData.append('IsPublish', updateData.isPublish)
     formData.append('IsShufflingQuestion', updateData.isShufflingQuestion)
