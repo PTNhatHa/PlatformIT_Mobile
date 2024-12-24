@@ -207,10 +207,10 @@ export const StudentDetailAsgm = ({route})=>{
                                                 <Text style={[styles.boxStatus, styles.boxGreen]}>Submitted</Text>
                                         }
                                     </View>
-                                    <View style={styles.wrapFlex}>
+                                    {data.assignmentType !== 3 && <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Marks</Text>
                                         <Text style={styles.textBlack16}>{data.totalMark}/{data.assignmentMark}</Text>
-                                    </View>
+                                    </View>}
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Duration</Text>
                                         <Text style={styles.textBlack16}>{formatTime(data.resultDuration)} minutes</Text>

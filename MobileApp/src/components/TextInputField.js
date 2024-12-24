@@ -10,6 +10,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 export const TextInputIcon = ({
     value, icon, placeholder, onchangeText, error, keyboardType, isPassword, isMultiline = false
 }) => {
+    const [showPassword, setShowPassword] = useState(false)
     return(
         <View>
             <View style={styles.containerIcon}>
@@ -21,9 +22,18 @@ export const TextInputIcon = ({
                     placeholder={placeholder}
                     onChangeText={(v)=>onchangeText(v)}
                     keyboardType={keyboardType || "default"}
-                    secureTextEntry={isPassword}
+                    secureTextEntry={isPassword && !showPassword}
                     multiline={isMultiline}
                 />
+                {(isPassword && !showPassword) ? 
+                    <TouchableOpacity onPress={()=>setShowPassword(true)}>
+                        <Ionicons name="eye" size={24} color="black" />
+                    </TouchableOpacity>
+                    : isPassword &&
+                    <TouchableOpacity onPress={()=>setShowPassword(false)}>
+                        <Ionicons name="eye-off" size={24} color="black" />
+                    </TouchableOpacity>
+                }
             </View>
             {error && <Text style={styles.error}>{error}</Text>}
         </View>
@@ -33,6 +43,7 @@ export const TextInputIcon = ({
 export const TextInputLabel = ({
     label, value, placeholder, onchangeText = ()=>{}, keyboardType, isPassword, error, isEditable = true
 }) => {
+    const [showPassword, setShowPassword] = useState(false)
     const handleOnchangeText = (v)=>{
         onchangeText(v)
     }
@@ -40,16 +51,27 @@ export const TextInputLabel = ({
         <>
             <View style={styles.container}>
                 <Text style={styles.label}>{label}</Text>
-                <TextInput 
-                    style={[styles.inputLabel]}
-                    value={value}
-                    placeholder={placeholder}
-                    onChangeText={(v)=>handleOnchangeText(v)}
-                    keyboardType={keyboardType || "default"}
-                    multiline={label === "Bio" || label === "Content"}
-                    editable={label !== "Affiliated Center" && label !== "Email" && isEditable}
-                    secureTextEntry={isPassword}
-                />
+                <View style={styles.inputLabelFlex}>
+                    <TextInput 
+                        style={[styles.inputLabel]}
+                        value={value}
+                        placeholder={placeholder}
+                        onChangeText={(v)=>handleOnchangeText(v)}
+                        keyboardType={keyboardType || "default"}
+                        multiline={label === "Bio" || label === "Content"}
+                        editable={label !== "Affiliated Center" && label !== "Email" && isEditable}
+                        secureTextEntry={isPassword && !showPassword}
+                    />
+                    {(isPassword && !showPassword) ? 
+                        <TouchableOpacity onPress={()=>setShowPassword(true)}>
+                            <Ionicons name="eye" size={24} color="black" />
+                        </TouchableOpacity>
+                        : isPassword &&
+                        <TouchableOpacity onPress={()=>setShowPassword(false)}>
+                            <Ionicons name="eye-off" size={24} color="black" />
+                        </TouchableOpacity>
+                    }
+                </View>
             </View>
             {error && <Text style={styles.error}>{error}</Text>}
         </>
@@ -313,14 +335,16 @@ const styles = StyleSheet.create({
     },
     input:{
         fontSize: 16,
-        width: "85%",
+        // width: "85%",
+        flex: 1
     },
     error:{
         color: COLORS.red
     },
     inputLabel:{
         fontSize: 16,
-        width: "100%",
+        // width: "100%",
+        flex: 1,
         color: "black"
     },
     label: {
@@ -408,5 +432,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#F8E9AC",
         alignSelf: "flex-start",
         borderRadius: 4
+    },
+    inputLabelFlex:{
+        flexDirection: "row", 
+        width: "100%",
+        alignItems: "center"
     }
 })
