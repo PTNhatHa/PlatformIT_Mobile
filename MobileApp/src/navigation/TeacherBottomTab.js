@@ -15,7 +15,7 @@ import { DetailTeacher } from "../screens/DetailTeacher";
 import { TeacherAllCourse } from "../screens/Teacher/TabMyCourse/TeacherAllCourse";
 import { TeacherDetailAttendance } from "../screens/Teacher/TabMyCourse/TeacherDetailAttendance";
 import { NotificationScreen } from "../screens/Notification";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
@@ -264,6 +264,7 @@ export const TeacherBottomTab = ()=>{
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
     const [unReadMess, setUnReadMess]= useState(0)
+    const intervalRef = useRef(null);
 
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
@@ -311,7 +312,7 @@ export const TeacherBottomTab = ()=>{
     useEffect(()=>{
         getNoti()
         getUnReadMessage()
-        const interval = setInterval(() => {
+        intervalRef.current = setInterval(() => {
             setAllNoti((prevNotifications) =>
               prevNotifications.map((notification) => ({
                 ...notification,
@@ -319,7 +320,7 @@ export const TeacherBottomTab = ()=>{
               }))
             );
         }, 60000); // Update every minute
-        return () => clearInterval(interval);
+        return () => clearInterval(intervalRef.current);
     }, [])
 
     useEffect(() => {
@@ -336,6 +337,7 @@ export const TeacherBottomTab = ()=>{
         
                 connection.on('UpdateNotifications', (updatedNotifications) => {
                     console.log('Received UpdateNotifications event:', updatedNotifications);
+                    clearInterval(intervalRef.current)
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
@@ -351,8 +353,18 @@ export const TeacherBottomTab = ()=>{
                         return notification; // Fallback
                         }
                     });
-                    setAllNoti(processedData);
                     setUnReadNoti(notiUnRead)
+                    setAllNoti(processedData)
+                    .then(() => {
+                        intervalRef.current = setInterval(() => {
+                            setAllNoti((prevNotifications) =>
+                              prevNotifications.map((notification) => ({
+                                ...notification,
+                                relativeTime: calculateRelativeTime(notification.timestamp),
+                              }))
+                            );
+                        }, 60000); // Update every minute
+                    })
                 });
             } catch (error) {
                 console.log('SignalR Connection Error:', error);

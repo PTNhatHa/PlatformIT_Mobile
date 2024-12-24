@@ -1,6 +1,7 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import { useNavigation } from "@react-navigation/native"
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const initLecture = {
     "idLecture": 0,
@@ -34,7 +35,12 @@ export const CardLecture = ({
                 }
             }}
         >
-            <Text style={[styles.title, selectObject.idLecture === data.idLecture && {color: COLORS.main}]}>{data.lectureTitle}</Text>
+            <View style={styles.wrapFlex}>
+                <Text style={[styles.title, selectObject.idLecture === data.idLecture && {color: COLORS.main}]}>
+                    {data.lectureTitle}
+                </Text>
+                {(role === 2 && !data.isFinishedLecture) && <AntDesign name="checkcircle" size={16} color={COLORS.main}/>}
+            </View>
             {data.lectureIntroduction !== "null" && data.lectureIntroduction !== null &&
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>
             }           
@@ -60,16 +66,21 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 18,
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
     body:{
         fontSize: 12,
-        color: COLORS.stroke
+        color: COLORS.stroke,
     },
     exercise:{
         fontSize: 12,
         color: COLORS.main,
         fontWeight: "bold",
         alignSelf: "flex-end"
+    },
+    wrapFlex:{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4
     }
 })

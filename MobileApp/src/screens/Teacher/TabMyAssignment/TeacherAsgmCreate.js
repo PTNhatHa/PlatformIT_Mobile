@@ -80,7 +80,10 @@ export const TeacherAsgmCreate = ({route})=>{
     ]
     const [questionCode, setQuestionCode] = useState({
         problem: "",
-        language: 1,
+        language: {
+            label: "",
+            value: 0
+        },
         example: [
             {
                 input: "a",
@@ -785,13 +788,13 @@ export const TeacherAsgmCreate = ({route})=>{
     }
 
     const handleRunCodeTest = async()=>{
-        if(!teacherCode.sourceCode || teacherCode.language.value === 0){
+        if(!teacherCode.sourceCode || questionCode.language.value === 0){
             Alert.alert("Warning", "Please fill your code and choose a language!")
         } else{
             setLoading(true)
             try {
                 const response = await runCodeTest({
-                    idLanguage: teacherCode.language.value,
+                    idLanguage: questionCode.language.value,
                     sourceCode: teacherCode.sourceCode,
                     testCases: questionCode.testCases
                 })
@@ -1216,14 +1219,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 onChangeText={(v)=>handleChangeTeacherCode(v, "sourceCode")}
                                             />
                                         </View>
-                                        <View>
-                                            <TextInputSelectBox 
-                                                placeholder={"Select a language"} 
-                                                value={teacherCode.language} onchangeText={(v)=>handleChangeTeacherCode(v, "language")} 
-                                                listSelect={listLanguage}
-                                                label={"Language"}
-                                            />
-                                        </View>
+                                        <Text style={styles.textGray14}>Language: {questionCode.language.label}</Text>
                                         {resultCode &&
                                             <View>
                                                 <Text style={styles.textGray14}>Result</Text>
