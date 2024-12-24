@@ -225,6 +225,7 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
                         getNoti={getNoti}
                     />
                 )}
+                options={{ headerShown: false }}
             />
             <StackNoti.Screen
                 name="Comment"
@@ -264,7 +265,7 @@ export const TeacherBottomTab = ()=>{
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
     const [unReadMess, setUnReadMess]= useState(0)
-    const intervalRef = useRef(null);
+    const intervalRef = useRef(null)
 
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
@@ -312,15 +313,24 @@ export const TeacherBottomTab = ()=>{
     useEffect(()=>{
         getNoti()
         getUnReadMessage()
-        intervalRef.current = setInterval(() => {
-            setAllNoti((prevNotifications) =>
-              prevNotifications.map((notification) => ({
-                ...notification,
-                relativeTime: calculateRelativeTime(notification.timestamp),
-              }))
-            );
-        }, 60000); // Update every minute
-        return () => clearInterval(intervalRef.current);
+        const startUpdatingRelativeTime = () => {
+            intervalRef.current = setInterval(() => {
+                setAllNoti((prevNotifications) =>
+                    prevNotifications.map((notification) => ({
+                        ...notification,
+                        relativeTime: calculateRelativeTime(notification.timestamp),
+                    }))
+                );
+            }, 60000); // Update every minute
+        };
+    
+        startUpdatingRelativeTime();
+    
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
     }, [])
 
     useEffect(() => {
@@ -334,10 +344,11 @@ export const TeacherBottomTab = ()=>{
             try {
                 await connection.start();
                 console.log('Connected to SignalR hub.');
-        
                 connection.on('UpdateNotifications', (updatedNotifications) => {
                     console.log('Received UpdateNotifications event:', updatedNotifications);
-                    clearInterval(intervalRef.current)
+                    if (intervalRef.current) {
+                        clearInterval(intervalRef.current); // Dọn dẹp trước khi tạo mới
+                    }
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
@@ -355,16 +366,14 @@ export const TeacherBottomTab = ()=>{
                     });
                     setUnReadNoti(notiUnRead)
                     setAllNoti(processedData)
-                    .then(() => {
-                        intervalRef.current = setInterval(() => {
-                            setAllNoti((prevNotifications) =>
-                              prevNotifications.map((notification) => ({
-                                ...notification,
-                                relativeTime: calculateRelativeTime(notification.timestamp),
-                              }))
-                            );
-                        }, 60000); // Update every minute
-                    })
+                    intervalRef.current = setInterval(() => {
+                        setAllNoti((prevNotifications) =>
+                          prevNotifications.map((notification) => ({
+                            ...notification,
+                            relativeTime: calculateRelativeTime(notification.timestamp),
+                          }))
+                        );
+                    }, 60000); // Update every minute
                 });
             } catch (error) {
                 console.log('SignalR Connection Error:', error);

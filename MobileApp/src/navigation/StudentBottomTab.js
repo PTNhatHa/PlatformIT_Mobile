@@ -212,6 +212,7 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
                         getNoti={getNoti}
                     />
                 )}
+                options={{ headerShown: false }}
             />
             <StackNoti.Screen
                 name="Comment"
@@ -247,7 +248,8 @@ export const StudentBottomTab = ()=>{
     const [allNoti, setAllNoti]= useState([])
     const [unReadNoti, setUnReadNoti]= useState(0)
     const [unReadMess, setUnReadMess]= useState(0)
-
+    const intervalRef = useRef(null)
+    
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
         let notiUnRead = 0
@@ -322,15 +324,24 @@ export const StudentBottomTab = ()=>{
     useEffect(()=>{
         getNoti()
         getUnReadMessage()
-        const interval = setInterval(() => {
-            setAllNoti((prevNotifications) =>
-              prevNotifications.map((notification) => ({
-                ...notification,
-                relativeTime: calculateRelativeTime(notification.timestamp),
-              }))
-            )            
-        }, 60000); // Update every minute
-        return () => clearInterval(interval);
+        const startUpdatingRelativeTime = () => {
+            intervalRef.current = setInterval(() => {
+                setAllNoti((prevNotifications) =>
+                    prevNotifications.map((notification) => ({
+                        ...notification,
+                        relativeTime: calculateRelativeTime(notification.timestamp),
+                    }))
+                );
+            }, 60000); // Update every minute
+        };
+    
+        startUpdatingRelativeTime();
+    
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
     }, [])
 
     useEffect(() => {
@@ -344,9 +355,11 @@ export const StudentBottomTab = ()=>{
             try {
                 await connection.start();
                 console.log('Connected to SignalR hub.');
-        
                 connection.on('UpdateNotifications', (updatedNotifications) => {
                     console.log('Received UpdateNotifications event:', updatedNotifications);
+                    if (intervalRef.current) {
+                        clearInterval(intervalRef.current); // Dọn dẹp trước khi tạo mới
+                    }
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
@@ -362,8 +375,16 @@ export const StudentBottomTab = ()=>{
                         return notification; // Fallback
                         }
                     });
-                    setAllNoti(processedData);
                     setUnReadNoti(notiUnRead)
+                    setAllNoti(processedData)
+                    intervalRef.current = setInterval(() => {
+                        setAllNoti((prevNotifications) =>
+                          prevNotifications.map((notification) => ({
+                            ...notification,
+                            relativeTime: calculateRelativeTime(notification.timestamp),
+                          }))
+                        );
+                    }, 60000); // Update every minute
                 });
             } catch (error) {
                 console.log('SignalR Connection Error:', error);
@@ -383,7 +404,6 @@ export const StudentBottomTab = ()=>{
             connection.stop().then(() => console.log('SignalR connection stopped.'));
         };
     }, []);
-
 
     return(
         <Tab.Navigator

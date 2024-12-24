@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { COLORS } from "../utils/constants"
 import { useNavigation } from "@react-navigation/native"
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { TagRed, TagYellow } from "./Tag";
 
 const initLecture = {
     "idLecture": 0,
@@ -44,13 +45,22 @@ export const CardLecture = ({
             {data.lectureIntroduction !== "null" && data.lectureIntroduction !== null &&
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>
             }           
-            {data.exerciseCount === 1 ?
-                <Text style={styles.exercise}>{data.exerciseCount} exercise</Text>
+            {data.lectureStatus !== 1 ?
+                <View style={{alignSelf: "flex-end"}}>
+                    {data.lectureStatus === 2 && <TagYellow label={"Pending"}/>}
+                    {data.lectureStatus === 3 && <TagRed label={"Reject"}/>}
+                </View>
                 :
-                data.exerciseCount > 1 ? 
-                <Text style={styles.exercise}>{data.exerciseCount} exercises</Text>
-                :
-                ""
+                <>
+                    {data.exerciseCount === 1 ?
+                        <Text style={styles.exercise}>{data.exerciseCount} exercise</Text>
+                        :
+                        data.exerciseCount > 1 ? 
+                        <Text style={styles.exercise}>{data.exerciseCount} exercises</Text>
+                        :
+                        ""
+                    }
+                </>
             }
         </TouchableOpacity>
     )

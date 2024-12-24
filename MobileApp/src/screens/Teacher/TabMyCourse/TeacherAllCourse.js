@@ -12,15 +12,6 @@ export const TeacherAllCourse = ({route})=>{
     const {state, dispatch} = useUser()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
-    
-    useEffect(()=>{
-        if(idCourse !== null){
-            navigation.navigate("Detail My Course", {
-                idCourse: idCourse,
-                role: route?.params?.role
-            });
-        }
-    },[idCourse])
 
     const getAllCourseOfTeacher = async()=>{
         try {
@@ -36,8 +27,14 @@ export const TeacherAllCourse = ({route})=>{
         }
     }
     useEffect(()=>{
+        if(idCourse !== null){
+            navigation.navigate("Detail My Course", {
+                idCourse: idCourse,
+                role: route?.params?.role
+            });
+        }
         getAllCourseOfTeacher()
-    }, [])
+    }, [idCourse])
     
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
