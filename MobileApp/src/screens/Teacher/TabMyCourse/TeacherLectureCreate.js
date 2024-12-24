@@ -15,8 +15,10 @@ import { ButtonIconLightGreen } from "../../../components/Button";
 import { useNavigation } from "@react-navigation/native";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
-import { addLecture } from "../../../services/lecture";
+import { addLecture, getLectureDetail } from "../../../services/lecture";
 import { useUser } from "../../../contexts/UserContext";
+import { getMimeType } from "../../../utils/utils";
+import { TagRed, TagYellow } from "../../../components/Tag";
 
 const init = {
     idCourse: 1, 
@@ -26,7 +28,13 @@ const init = {
 }
 export const TeacherLectureCreate = ({route})=>{
     const {state, dispatch} = useUser()
-    const {idCourse, nameCourse, idSection, nameSection, getCourse} = route?.params || {}
+    const {idCourse, nameCourse, idSection, nameSection, getCourse, idLecture, lectureStatus} = route?.params || {}
+    const [inforLecture, setInforLecture] = useState({
+        idCourse: idCourse,
+        nameCourse: nameCourse, 
+        idSection: idSection, 
+        nameSection: nameSection
+    })
     const navigation = useNavigation()
     const [lectureName, setLectureName] = useState(null)
     const [intro, setIntro] = useState(null)
@@ -35,9 +43,55 @@ export const TeacherLectureCreate = ({route})=>{
     const [idSupMaterial, setIdSupMaterial] = useState(1)
     const [video, setVideo] = useState(null)
     const [error, setError] = useState(null)
-
     const [loading, setLoading] = useState(false);
 
+    const fetchDetailLecture = async()=>{
+        try {
+            const response = await getLectureDetail(idLecture)
+            if(response){
+                setLectureName(response.lectureTitle)
+                setInforLecture({
+                    ...inforLecture,
+                    nameCourse: response.courseTitle
+                })
+                setIntro(response.lectureIntroduction)
+                if(response.mainMaterials[0]){
+                    setMaterial({
+                        uri: response.mainMaterials[0].path,
+                        name: response.mainMaterials[0].fileName,
+                        type: getMimeType(response.mainMaterials[0].fileName) 
+                    })
+                }
+                if(response.supportMaterials){
+                    setSupportMaterial([...response.supportMaterials.map(sup => {
+                        return{
+                            uri: sup.path,
+                            name: sup.fileName,
+                            type: getMimeType(sup.fileName) 
+                        }
+                    })])
+                }
+                if(response.videoMaterial){
+                    setVideo({
+                        uri: response.videoMaterial.path,
+                        name: response.videoMaterial.fileName,
+                        type: getMimeType(response.videoMaterial.fileName) 
+                    })
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        if(idLecture !== null){
+            fetchDetailLecture()
+        }
+    }, [idLecture])
+    
     const pickFile = async(type = "*")=>{
         try{
             let result = await DocumentPicker.getDocumentAsync({
@@ -124,23 +178,36 @@ export const TeacherLectureCreate = ({route})=>{
         <>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.top}>
-                    <Text style={styles.title}>{nameCourse}</Text>
+                    <Text style={styles.title}>{inforLecture.nameCourse}</Text>
                     <View style={styles.wrapFlex}>
                         <AntDesign name="right" size={18} color="black" style={{width: 18}}/>
-                        <Text style={styles.title}>{nameSection}</Text>
+                        <Text style={styles.title}>{inforLecture.nameSection}</Text>
                     </View>
-                    {/* <View style={styles.wrapFlex}>
-                        <AntDesign name="doubleright" size={18} color="black" />
-                        <Text style={styles.title}>{nameSection}</Text>
-                    </View> */}
-                    <View style={styles.wrapBtn}>
-                        <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
-                            <Text style={styles.textWhite14}>Create</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>navigation.goBack()}>
-                            <Text style={styles.textGray14}>Cancel</Text>
-                        </TouchableOpacity>
-                    </View>  
+                    {lectureStatus !== 1 &&
+                        <View>
+                            {lectureStatus === 2 && <TagYellow label={"Pending"}/>}
+                            {lectureStatus === 3 && <TagRed label={"Reject"}/>}
+                        </View>
+                    }
+                    {idLecture ?
+                        <View style={styles.wrapBtn}>
+                            <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>{}}>
+                                <Text style={styles.textWhite14}>Update</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>fetchDetailLecture()}>
+                                <Text style={styles.textGray14}>Discard changes</Text>
+                            </TouchableOpacity>
+                        </View> 
+                        :
+                        <View style={styles.wrapBtn}>
+                            <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
+                                <Text style={styles.textWhite14}>Create</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>navigation.goBack()}>
+                                <Text style={styles.textGray14}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>  
+                    }
                     {error && <Text style={{color: COLORS.red}}>{error}</Text>}
                 </View>
                 <View style={styles.main}>
@@ -149,8 +216,6 @@ export const TeacherLectureCreate = ({route})=>{
                     </View>
                     {/* Information */}
                     <View style={styles.wrapper}>
-                        {/* <TextInputLabelGray label={"Add to course"} value={nameCourse} editable={false}/>                            
-                        <TextInputLabelGray label={"Add to section"} value={nameSection} editable={false}/>                        */}
                         <TextInputLabelGray placeholder={"Lecture name"} label={"Lecture name*"} value={lectureName} onchangeText={setLectureName}/>                            
                         <TextInputLabelGray placeholder={"Introduction"} label={"Introduction"} value={intro} onchangeText={setIntro} multiline={true}/>                       
                     </View>

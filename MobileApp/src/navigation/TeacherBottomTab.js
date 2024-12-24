@@ -104,6 +104,10 @@ const StackMyCourseScreen = ()=>{
                 component={TeacherLectureCreate}
             />
             <StackMyCourse.Screen
+                name="Update Lecture"
+                component={TeacherLectureCreate}
+            />
+            <StackMyCourse.Screen
                 name="Create Test"
                 component={TeacherAsgmCreate}
             />

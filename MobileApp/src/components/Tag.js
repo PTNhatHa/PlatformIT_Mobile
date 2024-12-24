@@ -20,7 +20,7 @@ export const TagNoColor = ({label})=>{
 export const TagYellow = ({label})=>{
     return(
         <View style={[styles.container, {backgroundColor: 'rgba(255, 204, 0, 0.3)'}]}>
-            <Text style={[styles.text, {color: COLORS.yellow}]}>{label}</Text>
+            <Text style={[styles.text]}>{label}</Text>
         </View>
     )
 }
@@ -28,7 +28,7 @@ export const TagYellow = ({label})=>{
 export const TagRed = ({label})=>{
     return(
         <View style={[styles.container, {backgroundColor: 'rgba(192, 15, 12, 0.3)'}]}>
-            <Text style={[styles.text, {color: COLORS.red}]}>{label}</Text>
+            <Text style={[styles.text]}>{label}</Text>
         </View>
     )
 }
@@ -36,7 +36,7 @@ export const TagRed = ({label})=>{
 export const TagMain30 = ({label})=>{
     return(
         <View style={[styles.container, {backgroundColor: COLORS.main30}]}>
-            <Text style={[styles.text, {fontWeight: "bold"}]}>{label}</Text>
+            <Text style={[styles.text]}>{label}</Text>
         </View>
     )
 }
@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start"
     },
     text:{
-        color: COLORS.main,
+        color: "black",
         fontSize: 10,
+        fontWeight: "bold"
     }
 })

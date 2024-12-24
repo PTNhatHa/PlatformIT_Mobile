@@ -24,6 +24,13 @@ export const CardLecture = ({
             onPress={()=>{
                 if(role !==0){
                     setSelected(section.idSection, section.sectionName, data.idLecture, data.lectureTitle)
+                    if(data.lectureStatus === 2 || data.lectureStatus === 3){
+                        navigation.navigate("Update Lecture", {
+                            idLecture: data.idLecture,
+                            nameSection: section.sectionName,
+                            lectureStatus: data.lectureStatus
+                        })
+                    }else
                     if(!selectObject.idLecture){
                         navigation.navigate("Detail Lecture", {
                             idLecture: data.idLecture,

@@ -22,6 +22,7 @@ export const FilterCourse = ({
         { label: "Name Course", value: "courseTitle"},
         { label: "Price", value: "price"},
         { label: "Rate", value: "rate"},
+        { label: "Create Date", value: "createdDate"},
     ]
     const listSortby2 = [
         { label: "None", value: 0},

@@ -408,7 +408,9 @@ export const DetailCourse =({route})=>{
                                 <Image source={data.teacherAvatarPath ? {uri: data.teacherAvatarPath} : DefaultAva} style={styles.avata}/>
                                 <View>
                                     <Text style={styles.titleContentCard}>{data.teacherName}</Text>
-                                    <Text style={styles.dataText}>{data.teacherDescription}</Text>
+                                    {data.teacherDescription && <Text style={styles.dataText} numberOfLines={3}>{data.teacherDescription}</Text>}
+                                    {data.teachingMajor && <Text style={styles.dataText}>{data.teachingMajor}</Text>}
+                                    <Text style={styles.dataText}>{data.teacherCourseCount} {data.teacherCourseCount > 1 ? "courses" : "course"}</Text>
                                 </View>
                             </View>
                         </LinearGradient>
@@ -431,7 +433,7 @@ export const DetailCourse =({route})=>{
                             <Image source={data.centerAvatarPath ? {uri: data.centerAvatarPath} : DefaultImg} style={styles.avata}/>
                             <View>
                                 <Text style={styles.titleContentCard}>{data.centerName}</Text>
-                                <Text style={styles.dataText}>{data.centerDescription}</Text>
+                                {data.centerDescription && <Text style={styles.dataText} numberOfLines={3}>{data.centerDescription}</Text>}
                             </View>
                         </View>
                     </LinearGradient>
@@ -834,7 +836,7 @@ const styles = StyleSheet.create({
     dataText:{
         color: "white",
         flexWrap: "wrap",
-        width: 290,
+        maxWidth: 270,
         textAlign: "justify"
     },
     wrapLoading:{
