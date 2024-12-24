@@ -216,7 +216,7 @@ export const StudentDetailAsgm = ({route})=>{
                                         <Text style={styles.textBlack16}>{formatTime(data.resultDuration)} minutes</Text>
                                     </View>   
                                 </View>
-                                {data.showAnswer === 1 &&
+                                {(data.showAnswer === 1 || data.assignmentType === 3) &&
                                     <View style={styles.containerInner}>
                                         <TouchableOpacity style={styles.btn} onPress={()=>setIsShowAnswer(!isShowAnswer)}>
                                             <Text style={styles.textWhite14}>{isShowAnswer ? "Hide my answer" : "Show my answer"}</Text>
@@ -224,10 +224,9 @@ export const StudentDetailAsgm = ({route})=>{
                                     </View>
                                 }                            
                                 {isShowAnswer &&
-                                    <View style={styles.containerInner}>
-                                        {/* Answers */}
-                                        {(data.assignmentType === 2 && listQuestion !== null) && 
-                                            getPageData()?.map((question, index) =>     
+                                    ((data.assignmentType === 2 && listQuestion !== null) ? 
+                                        <View style={styles.containerInner}>
+                                            {getPageData()?.map((question, index) =>     
                                                 <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
                                                     <View style={styles.headerQ}>
                                                         <Text style={styles.title}>Question {index + (currentPage - 1) * numberItem + 1}</Text>
@@ -262,27 +261,51 @@ export const StudentDetailAsgm = ({route})=>{
                                                         }
                                                     </View>
                                                 </View>
-                                            )
-                                        }  
-                                        
-                                        {/* paginage */}
-                                        <View style={styles.bottom}>
-                                            {getPagination().map((page, index) => 
-                                                page !== "..." ? 
-                                                <TouchableOpacity 
-                                                    style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
-                                                    onPress={()=>setCurrentPage(page)}
-                                                    key={index}
-                                                >
-                                                    <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
-                                                </TouchableOpacity>
-                                                :
-                                                <View style={styles.wrapNumber} key={index}>
-                                                    <Text style={styles.bottomNumber}>{page}</Text>
-                                                </View>
-                                            )}
+                                            )}                                                                                                                                
+                                            {/* paginage */}
+                                            <View style={styles.bottom}>
+                                                {getPagination().map((page, index) => 
+                                                    page !== "..." ? 
+                                                    <TouchableOpacity 
+                                                        style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                                                        onPress={()=>setCurrentPage(page)}
+                                                        key={index}
+                                                    >
+                                                        <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
+                                                    </TouchableOpacity>
+                                                    :
+                                                    <View style={styles.wrapNumber} key={index}>
+                                                        <Text style={styles.bottomNumber}>{page}</Text>
+                                                    </View>
+                                                )}
+                                            </View>
                                         </View>
-                                    </View>
+                                        :
+                                        <View style={styles.containerInner}>
+                                            <Text style={styles.title}>Problem</Text>
+                                            <Text style={styles.questionContent}>question.....</Text>
+                                            <View style={styles.wrapFlex}>
+                                                <Text style={styles.textGray12}>Language:</Text>
+                                                <Text style={styles.textBBlack12}>C</Text>
+                                            </View>
+                                            {true &&
+                                                <View>
+                                                    <Text style={styles.textGray12}>Example:</Text>
+                                                    <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                        <Text style={styles.wrapRowText}>Input</Text>
+                                                        <Text style={styles.wrapRowText}>Output</Text>
+                                                    </View>
+                                                    <View style={styles.wrapRow}>
+                                                        <Text style={styles.wrapRowText}>Input</Text>
+                                                        <Text style={styles.wrapRowText}>Output</Text>
+                                                    </View>
+                                                </View>
+                                            }
+                                            <Text style={styles.title}>Your code</Text>
+                                            <Text style={styles.textCode}>Coding...</Text>
+                                            <Text style={styles.title}>Result</Text>
+                                        </View>
+                                    )
                                 }
                             </>
                         }
@@ -463,5 +486,43 @@ const styles = StyleSheet.create({
         backgroundColor: "#E6B1B0",
         flex: 1,
         borderRadius: 2
+    },
+    wrapRow:{
+        flexDirection: "row",
+        justifyContent: "space-between",        
+        width: "100%"
+    },
+    wrapRowText:{
+        flex: 1,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4,
+        textAlignVertical: "center",
+        flexWrap: "wrap",
+    },
+    wrapRowTextResult:{
+        width: 100,
+        borderWidth: 1,
+        borderColor: COLORS.lightText,
+        textAlign: "center",
+        paddingVertical: 4,
+        textAlignVertical: "center",
+        flexWrap: "wrap",
+    },
+    bgLightGray:{
+        backgroundColor: COLORS.lightGray
+    },
+    textCode: {
+        minHeight: 300,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        padding: 10,
+        fontSize: 16,
+        fontFamily: 'monospace',
+        backgroundColor: '#fff',
+        textAlignVertical: "top",
+        backgroundColor: COLORS.lightGray,
     },
 })

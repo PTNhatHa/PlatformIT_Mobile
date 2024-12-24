@@ -564,7 +564,6 @@ export const StudentDoAsgm = ({route})=>{
                                 value={""}
                                 onChangeText={(v)=>{}}
                             />
-
                         </View>
                     }
                     <TouchableOpacity style={styles.btn} onPress={()=>handleSubmit()}>
