@@ -143,7 +143,7 @@ export const StudentAllTest = ()=>{
                     }
                 })
             }
-            completed.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+            completed.sort((a, b) => new Date(b.submittedDate) - new Date(a.submittedDate));
             upcoming.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
             pastdue.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
 

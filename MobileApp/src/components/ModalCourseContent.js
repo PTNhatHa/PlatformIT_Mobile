@@ -102,9 +102,6 @@ export const ModalCourseContent = ({
         }
     }
 
-    // useEffect(()=>{
-    //     getListSection()
-    // }, [])
     useFocusEffect(
         useCallback(() => {
             getListSection()

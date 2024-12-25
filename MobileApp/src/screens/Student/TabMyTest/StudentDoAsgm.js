@@ -74,7 +74,7 @@ export const StudentDoAsgm = ({route})=>{
                       {
                         text: "OK", 
                         onPress: () => {
-                          reload();
+                        //   reload();
                           navigation.goBack();
                         }
                       }
@@ -108,11 +108,8 @@ export const StudentDoAsgm = ({route})=>{
                 answers: manualAnswer
             }
             const response = await submitManualAssignment(result)
-            console.log("response: ", response);
+            // console.log("response: ", response);
             if(response){
-                // Alert.alert("Submit assignment", response)
-                // reload()
-                // navigation.goBack()
                 Alert.alert(
                     "Submit assignment", 
                     response, 
@@ -120,7 +117,7 @@ export const StudentDoAsgm = ({route})=>{
                       {
                         text: "OK", 
                         onPress: () => {
-                          reload();
+                        //   reload();
                           navigation.goBack();
                         }
                       }
@@ -154,7 +151,6 @@ export const StudentDoAsgm = ({route})=>{
                     if(assignmentType === 2){
                         handleSubmitQuiz()
                     }
-                    navigation.goBack()
                 } },
             ]
         );
@@ -535,7 +531,7 @@ export const StudentDoAsgm = ({route})=>{
                             </View>
                         )
                     }  
-                    {true &&
+                    {assignmentType === 3 &&
                         <View style={styles.wrapQuestion}>
                             <Text style={styles.title}>Problem</Text>
                             <Text style={styles.questionContent}>question.....</Text>

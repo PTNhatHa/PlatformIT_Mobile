@@ -2,7 +2,7 @@ import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TouchableOp
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ModalCourseContent } from "../../../components/ModalCourseContent";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
@@ -13,6 +13,7 @@ import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getCourseContentStructure } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
 import { GetExerciseOfLecture, getExerciseOfLectureViaStudent } from "../../../services/assignment";
+import { useFocusEffect } from "@react-navigation/native";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture, idTeacher} = route?.params || {}
@@ -77,7 +78,7 @@ export const StudentLectureDetail = ({route})=>{
     useEffect(()=>{
         setLoading(true)
         fetchDetailLecture()
-        fetchExercise()
+        // fetchExercise()
         intervalRef.current = setInterval(() => {
             setData((prevData) => ({
                 ...prevData,
@@ -86,6 +87,12 @@ export const StudentLectureDetail = ({route})=>{
         }, 60000);
         return () => clearInterval(intervalRef.current);
     }, [])
+    
+    useFocusEffect(
+        useCallback(() => {
+            fetchExercise()
+        }, [])
+    );
 
     useEffect(()=>{
         if(currentLecture !== selectLecture.idLecture){

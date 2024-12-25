@@ -15,7 +15,7 @@ import { DetailTeacher } from "../screens/DetailTeacher";
 import { StudentAllCourse } from "../screens/Student/TabMyCourse/StudentAllCourse";
 import { NotificationScreen } from "../screens/Notification";
 import { useUser } from "../contexts/UserContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ViewAllFromDetail } from "../screens/ViewAllFromDetail";
 import { getAllNotificationOfUser } from "../services/notification";
 import * as signalR from '@microsoft/signalr';

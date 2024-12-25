@@ -3,10 +3,10 @@ import { COLORS, commonStyles, typeAssignment } from "../../../utils/constants"
 import Octicons from '@expo/vector-icons/Octicons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SET_INFO, useUser } from "../../../contexts/UserContext";
 import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
@@ -57,9 +57,11 @@ export const StudentDetailAsgm = ({route})=>{
         }
     }
 
-    useEffect(()=>{
-        fetchDetailAsgm()
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            fetchDetailAsgm()
+        }, [])
+    );
 
     const getPagination = () => {
         const totalPages = Math.ceil(listQuestion.length / numberItem)
