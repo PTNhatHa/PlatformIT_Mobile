@@ -15,8 +15,8 @@ import { ButtonIconLightGreen } from "../../../components/Button";
 import * as DocumentPicker from 'expo-document-picker';
 import { Video } from "expo-av";
 import { useNavigation } from "@react-navigation/native";
-import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
-import { getLectureDetail, inactiveLecture } from "../../../services/lecture";
+import { calculateRelativeTime, getMimeType, parseRelativeTime } from "../../../utils/utils";
+import { getLectureDetail, inactiveLecture, updateLecture } from "../../../services/lecture";
 import { getCourseContentStructure, getSectionDetail } from "../../../services/course";
 import { GetExerciseOfLecture } from "../../../services/assignment";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -45,23 +45,65 @@ export const TeacherLectureDetail = ({route})=>{
     });
 
     const [data, setData] = useState({})
-    const [editData, setEditData] = useState({})
     const [loading, setLoading] = useState(true);
     const [courseContent, setCourseContent] = useState([])
     const [isEditMode, setIsEditMode] = useState(false)
     const [exercises, setExercises] = useState([])
     const [isOpenSetting, setIsOpentSetting] = useState(false)
     const intervalRef = useRef(null);
+    const [editData, setEditData] = useState({})
+    const [error, setError] = useState(null)
+
+    const handleDiscardChange = ()=>{
+        setEditData({...data})
+    }
 
     const fetchDetailLecture = async()=>{
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
-                setEditData({...response})
+                setEditData({
+                    ...response,
+                    videoMaterial: response.videoMaterial ? {
+                        uri: response.videoMaterial.path,
+                        name: response.videoMaterial.fileName,
+                        type: getMimeType(response.videoMaterial.fileName) 
+                    } : null,
+                    mainMaterials: response.mainMaterials[0] ? {
+                        uri: response.mainMaterials[0].path,
+                        name: response.mainMaterials[0].fileName,
+                        type: getMimeType(response.mainMaterials[0].fileName) 
+                    } : null,
+                    supportMaterials: response.supportMaterials ? [...response.supportMaterials.map(sup => {
+                        return{
+                            uri: sup.path,
+                            name: sup.fileName,
+                            type: getMimeType(sup.fileName) 
+                        }
+                    })] : []
+                })
                 setData({
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
+                    videoMaterial: response.videoMaterial ? {
+                        uri: response.videoMaterial.path,
+                        name: response.videoMaterial.fileName,
+                        type: getMimeType(response.videoMaterial.fileName) 
+                    } : null,
+                    mainMaterials: response.mainMaterials[0] ? {
+                        uri: response.mainMaterials[0].path,
+                        name: response.mainMaterials[0].fileName,
+                        type: getMimeType(response.mainMaterials[0].fileName) 
+                    } : null,
+                    supportMaterials: response.supportMaterials ? [...response.supportMaterials.map(sup => {
+                        return{
+                            uri: sup.path,
+                            name: sup.fileName,
+                            type: getMimeType(sup.fileName) 
+                        }
+                    })] : []
                 })
+
                 if(!selectLecture.idSection){
                     setSelectLecture({
                         idLecture: idLecture,
@@ -157,12 +199,12 @@ export const TeacherLectureDetail = ({route})=>{
         const result = await pickFile()
         if(result){
             setEditData({
-                ...data,
-                mainMaterials: [{
-                    path: result.uri,
-                    fileName: result.name,
+                ...editData,
+                mainMaterials: {
+                    uri: result.uri,
+                    name: result.name,
                     type: result.mimeType 
-                }]
+                }
             })
         }
     }
@@ -174,8 +216,8 @@ export const TeacherLectureDetail = ({route})=>{
                 supportMaterials: [
                     ...editData.supportMaterials,
                     {
-                        path: result.uri,
-                        fileName: result.name,
+                        uri: result.uri,
+                        name: result.name,
                         type: result.mimeType 
                     }
                 ]
@@ -195,8 +237,8 @@ export const TeacherLectureDetail = ({route})=>{
             setEditData({
                 ...editData,
                 videoMaterial: {
-                    path: result.uri,
-                    fileName: result.name,
+                    uri: result.uri,
+                    name: result.name,
                     type: result.mimeType 
                 }
             })
@@ -231,6 +273,37 @@ export const TeacherLectureDetail = ({route})=>{
             { cancelable: true }
         )
     }
+
+    const handleUpdateLecture = async()=>{
+        if(!editData.lectureTitle){
+            setError("Please fill the lecture name.")
+            return
+        }
+        if(!editData.mainMaterials && !editData.videoMaterial){
+            setError("Please fill upload a video or a material.")
+            return
+        }
+        setLoading(true)
+        try {
+            const response = await updateLecture(
+                state.idUser, idLecture, editData.idCourse, editData.idSection, "", editData.lectureTitle, editData.lectureIntroduction, 
+                editData.videoMaterial, editData.mainMaterials, editData.supportMaterials)
+            if(response){
+                Alert.alert("Update Lecture Successfully", response)
+                fetchDetailLecture()
+            } else {
+                Alert.alert("Warning", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error update lecture: ", error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(()=>{
+        setError(null)
+    }, [editData])
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
@@ -272,12 +345,10 @@ export const TeacherLectureDetail = ({route})=>{
                             <Text style={styles.title}>{isEditMode ? "Edit lecture" : data.lectureTitle}</Text>
                             {isEditMode ?                                 
                                 <View style={styles.wrapBtn}>
-                                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]}>
+                                    <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleUpdateLecture()}>
                                         <Text style={styles.textWhite14}>Save changes</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.btn]} onPress={()=>{
-                                        setEditData({...data})
-                                    }}>
+                                    <TouchableOpacity style={[styles.btn]} onPress={()=>handleDiscardChange()}>
                                         <Text style={styles.textGray14}>Discard changes</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -286,6 +357,7 @@ export const TeacherLectureDetail = ({route})=>{
                                     <Text style={styles.textGray12}>{data.relativeTime}</Text>
                                 </>
                             }
+                            {error && <Text style={{color: COLORS.red}}>{error}</Text>}
                         </View>
                         {isEditMode && 
                             <TextInputLabelGray 
@@ -318,7 +390,7 @@ export const TeacherLectureDetail = ({route})=>{
                             </View>
                             {(data.videoMaterial && !isEditMode) ? 
                                 <Video
-                                    source={{ uri: data.videoMaterial.path }}
+                                    source={{ uri: data.videoMaterial?.uri }}
                                     style={styles.contentVideo}
                                     useNativeControls
                                     resizeMode="contain"
@@ -326,7 +398,7 @@ export const TeacherLectureDetail = ({route})=>{
                                 : isEditMode ?
                                     editData.videoMaterial ?
                                     <Video
-                                        source={{ uri: editData.videoMaterial.path }}
+                                        source={{ uri: editData.videoMaterial.uri }}
                                         style={styles.contentVideo}
                                         useNativeControls
                                         resizeMode="contain"
@@ -338,21 +410,21 @@ export const TeacherLectureDetail = ({route})=>{
                         </View>                     
                         <View style={styles.containerGray}>
                             {isEditMode && <Text style={styles.label}>Material</Text>}
-                            {(data.mainMaterials?.length > 0 && !isEditMode) ?
+                            {(data.mainMaterials && !isEditMode) ?
                                 <View style={styles.wrapFlex}>
-                                    <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
-                                        <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
+                                    <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials?.uri)}>
+                                        <Text numberOfLines={1}>{data.mainMaterials?.name}</Text>
                                     </TouchableOpacity>                                    
                                 </View>
-                                : (editData.mainMaterials?.length > 0 && isEditMode) ? 
+                                : (editData.mainMaterials && isEditMode) ? 
                                     <View style={styles.wrapFlex}>
-                                        <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
-                                            <Text numberOfLines={1}>{editData.mainMaterials[0]?.fileName}</Text>
+                                        <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(editData.mainMaterials?.uri)}>
+                                            <Text numberOfLines={1}>{editData.mainMaterials?.name}</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity 
                                             onPress={()=>setEditData({
                                                 ...editData,
-                                                mainMaterials: []
+                                                mainMaterials: null
                                             })}  
                                             style={{margin: 4}}
                                         >
@@ -407,23 +479,22 @@ export const TeacherLectureDetail = ({route})=>{
 
                     {/* Content */}
                     {index === 2 &&
-                        <View style={styles.wrapper}>
-                                                   
+                        <View style={styles.wrapper}>                                                   
                             <View style={styles.containerGray}>
                                 {isEditMode && <Text style={styles.label}>Supporting materials</Text>}                                
                                 {(data.supportMaterials?.length > 0 && !isEditMode) &&
                                     data.supportMaterials.map((item, index) => 
                                         <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
-                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
-                                                <Text numberOfLines={1}>{item.fileName}</Text>
+                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.uri)}>
+                                                <Text numberOfLines={1}>{item.name}</Text>
                                             </TouchableOpacity>                                            
                                         </View>
                                 )}
                                 {(editData.supportMaterials?.length > 0 && isEditMode) &&
                                     editData.supportMaterials.map((item, index) => 
                                         <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
-                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
-                                                <Text numberOfLines={1}>{item.fileName}</Text>
+                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.uri)}>
+                                                <Text numberOfLines={1}>{item.name}</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
                                                 <MaterialIcons name="delete" size={24} color={COLORS.red} />
@@ -520,7 +591,8 @@ const styles = StyleSheet.create({
         ...commonStyles.shadow,
         borderRadius: 8,
         backgroundColor: "white",
-        paddingBottom: 16
+        paddingBottom: 16,
+        marginBottom: 100
     },
     contentVideo: {
         width: "100%",
@@ -673,7 +745,7 @@ const styles = StyleSheet.create({
         height: "100%",
         justifyContent: 'center', 
         alignItems: 'center', 
-        backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        backgroundColor: 'rgba(117, 117, 117, 0.3)',
     },
     btnMenu:{
         ...commonStyles.shadow,

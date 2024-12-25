@@ -201,9 +201,9 @@ export const TeacherLectureCreate = ({route})=>{
             if(idLecture){
                 const response = await updateLecture(state.idUser, idLecture, inforLecture.idCourse, inforLecture.idSection, lectureStatus === 3 ? 2 : "", lectureName, intro, video, material, supportMaterial)
                 if(response){
+                    setLoading(true)
+                    fetchDetailLecture()
                     Alert.alert("Update Lecture Successfully", response)
-                    // getCourse()    
-                    fetchDetailLecture
                 } else {
                     Alert.alert("Warning", "Please try again.")
                 }
@@ -211,7 +211,6 @@ export const TeacherLectureCreate = ({route})=>{
                 const response = await addLecture(state.idUser, idCourse, idSection, lectureName, intro, video, material, supportMaterial)
                 if(response){
                     Alert.alert("Add Lecture Successfully", response)
-                    // getCourse()
                     navigation.goBack()
     
                 } else {

@@ -92,14 +92,16 @@ export const updateLecture = async (idCreatedBy, IdLecture, IdCourse, IdSection,
     }
     formData.append('Title', Title)
     formData.append('Introduction', Introduction === null ? "" : Introduction)
-    formData.append('LectureVideo', LectureVideo)
-    formData.append('MainMaterials', MainMaterials)
+    formData.append('LectureVideo', LectureVideo || "")
+    formData.append('MainMaterials', MainMaterials || "")
     SupportMaterials.forEach((item, index) => {
         formData.append(`SupportMaterials`, item)
     })
+
     // for (let [key, value] of formData.entries()) {
     //     console.log(key, value);
     // }
+
     return await axios.post(baseUrl + "/UpdateLecture?idCreatedBy=" + idCreatedBy, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -110,6 +112,6 @@ export const updateLecture = async (idCreatedBy, IdLecture, IdCourse, IdSection,
         return response.data.message
     })
     .catch(error => {
-        console.log("Error UpdateLecture: ", error.response);
+        console.log("Error UpdateLecture: ", error.request);
     })
 }
