@@ -17,7 +17,7 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { createCodeAssignment, getAllActiveLanguage, runCodeTest } from "../../../services/codeExecution"
+import { createCodeAssignment, getAllActiveLanguage, runCodeTest, viewCodeAssignment } from "../../../services/codeExecution"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -84,41 +84,15 @@ export const TeacherAsgmCreate = ({route})=>{
             label: "",
             value: 0
         },
-        examples: [
-            {
-                input: "stella",
-                output: "hello, stella"
-            }
-        ],
-        testCases: [
-            {
-                input: "stella",
-                expectedOutput: "hello, stella"
-            },
-            {
-                input: "hngan",
-                expectedOutput: "hello, hngan"
-            }
-        ],
+        examples: [],
+        testCases: [],
         isPerformanceOnTime: false,
         timeValue: null,
         isPerformanceOnMemory: false,
         memoryValue: null,
         isShowTestcase: true
     })
-    const [teacherCode, setTeacherCode] = useState({
-        sourceCode: "#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}",
-        language: {
-            label: "",
-            value: 0
-        },
-        testCases: [
-            {
-                input: "",
-                expectedexpectedOutput: ""
-            },
-        ],
-    })
+    const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
     const [listLanguage, setLanguage] = useState(null)    
     const [resultCode, setResultCode] = useState(null)
     
@@ -155,51 +129,70 @@ export const TeacherAsgmCreate = ({route})=>{
                     label: typeAssignment[response.assignmentType], 
                     value: response.assignmentType
                 })
-                setIsShufflingQuestion(response.isShufflingQuestion ? false : true)
-                setIsShufflingAnswer(response.isShufflingAnswer ? false : true)
-                setIsShowAnswer(response.showAnswer ? false : true)
-                setQuestions([...response.assignmentItems?.map(question=>{
-                    let realQuestion
-                    if(response.assignmentType === 1){
-                        // Manual
-                        realQuestion = {
-                            ...question,
-                            mark: question.mark.toString(),
-                            attachedFile: question.attachedFile !== null && {
-                                uri: question.attachedFile,
-                                name: question.nameFile,
-                                type: getMimeType(question.attachedFile)
-                            },
-                            isDeletedFile: 0,
-                        }
-                    }
-                    if(response.assignmentType === 2){
-                        // Quiz
-                        const listItems = question.items.map(item=>{
-                            return{
-                                ...item,
-                                isCorrect: item.isCorrect === 0 ? false : true
+                if(response.assignmentType !== 3){
+
+                    setIsShufflingQuestion(response.isShufflingQuestion ? false : true)
+                    setIsShufflingAnswer(response.isShufflingAnswer ? false : true)
+                    setIsShowAnswer(response.showAnswer ? false : true)
+                    setQuestions([...response.assignmentItems?.map(question=>{
+                        let realQuestion
+                        if(response.assignmentType === 1){
+                            // Manual
+                            realQuestion = {
+                                ...question,
+                                mark: question.mark.toString(),
+                                attachedFile: question.attachedFile !== null && {
+                                    uri: question.attachedFile,
+                                    name: question.nameFile,
+                                    type: getMimeType(question.attachedFile)
+                                },
+                                isDeletedFile: 0,
                             }
-                        })
-                        realQuestion = {
-                            ...question,
-                            mark: question.mark.toString(),
-                            attachedFile: question.attachedFile !== null && {
-                                uri: question.attachedFile,
-                                name: question.nameFile,
-                                type: getMimeType(question.attachedFile)
-                            },
-                            isDeletedFile: 0,
-                            isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
-                            items: listItems
                         }
+                        if(response.assignmentType === 2){
+                            // Quiz
+                            const listItems = question.items.map(item=>{
+                                return{
+                                    ...item,
+                                    isCorrect: item.isCorrect === 0 ? false : true
+                                }
+                            })
+                            realQuestion = {
+                                ...question,
+                                mark: question.mark.toString(),
+                                attachedFile: question.attachedFile !== null && {
+                                    uri: question.attachedFile,
+                                    name: question.nameFile,
+                                    type: getMimeType(question.attachedFile)
+                                },
+                                isDeletedFile: 0,
+                                isMultipleAnswer: question.isMultipleAnswer === 0 ? false : true,
+                                items: listItems
+                            }
+                        }
+                        // console.log(realQuestion);
+                        return realQuestion
+                    })] || [])
+                    const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
+                    setTotalMark(totalMark)
+                    setTotalQuestion(response.assignmentItems.length)
+                } else {
+                    // Code
+                    const detailCode = await viewCodeAssignment(idAssignment)
+                    if(detailCode){
+                        setQuestionCode({
+                            ...detailCode,
+                            language: {
+                                label: detailCode.languageName,
+                                value: detailCode.idLanguage
+                            },
+                            timeValue: detailCode.timeValue.toString(),
+                            memoryValue: detailCode.memoryValue.toString(),
+                            isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
+                            isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
+                        })
                     }
-                    // console.log(realQuestion);
-                    return realQuestion
-                })] || [])
-                const totalMark = response.assignmentItems?.reduce((total, item) => total + parseInt(item.mark) || 0, 0);
-                setTotalMark(totalMark)
-                setTotalQuestion(response.assignmentItems.length)
+                }
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -586,6 +579,26 @@ export const TeacherAsgmCreate = ({route})=>{
                 return
             }
         }
+        if(type.value === 3){
+            if(!questionCode.problem){
+                setError("You must fill the problem.")
+                return
+            }
+            if(questionCode.language.value === 0){
+                setError("You must choose a language.")
+                return
+            }
+            if(questionCode.testCases.length === 0){
+                setError("You must fill at least one test cases.")
+                return
+            }else{
+                const checkCase = questionCode.testCases.find(item => !item.input || !item.expectedOutput)
+                if(checkCase){
+                    setError("You must fill all the test cases.")
+                    return
+                }
+            }
+        }
 
         let textStatus = "create"
         if(isEdit) textStatus = "update"
@@ -599,10 +612,12 @@ export const TeacherAsgmCreate = ({route})=>{
         } else {
             textStatus += " test"
         }
-        if(totalQuestion > 1){
-            textStatus += " with " + totalQuestion + " questions?"
-        } else {
-            textStatus += " with " +  totalQuestion + " question?"
+        if(!type.value === 3){
+            if(totalQuestion > 1){
+                textStatus += " with " + totalQuestion + " questions?"
+            } else {
+                textStatus += " with " +  totalQuestion + " question?"
+            }
         }
         
         Alert.alert(
@@ -809,23 +824,16 @@ export const TeacherAsgmCreate = ({route})=>{
         }
         setQuestionCode(newCode)
     }
-    const handleChangeTeacherCode = (v, field)=>{
-        const newCode = {
-            ...teacherCode,
-            [field]: v
-        }
-        setTeacherCode(newCode)
-    }
 
     const handleRunCodeTest = async()=>{
-        if(!teacherCode.sourceCode || questionCode.language.value === 0){
+        if(!teacherCode || questionCode.language.value === 0){
             Alert.alert("Warning", "Please fill your code and choose a language!")
         } else{
             setLoading(true)
             try {
                 const response = await runCodeTest({
                     idLanguage: questionCode.language.value,
-                    sourceCode: teacherCode.sourceCode,
+                    sourceCode: teacherCode,
                     testCases: questionCode.testCases
                 })
                 if(response){
@@ -1210,7 +1218,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Performance on time"
                                             />
-                                            {questionCode.isPerformanceOnTime &&
+                                            {questionCode.isPerformanceOnTime === true &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
@@ -1227,7 +1235,7 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Perfomance on memory"
                                             />
-                                            {questionCode.isPerformanceOnMemory &&
+                                            {questionCode.isPerformanceOnMemory === true &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
@@ -1248,8 +1256,8 @@ export const TeacherAsgmCreate = ({route})=>{
                                                 style={[styles.minHeight, styles.textCode]}
                                                 placeholder="Your code"
                                                 multiline={true}
-                                                value={teacherCode.sourceCode}
-                                                onChangeText={(v)=>handleChangeTeacherCode(v, "sourceCode")}
+                                                value={teacherCode}
+                                                onChangeText={(v)=>setTeacherCode(v)}
                                             />
                                         </View>
                                         <Text style={styles.textGray14}>Language: {questionCode.language.label}</Text>

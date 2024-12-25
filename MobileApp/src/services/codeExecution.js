@@ -25,7 +25,6 @@ export const runCodeTest = async (codeTest)=>{
 }
 
 export const createCodeAssignment = async (data)=>{  
-    console.log(data);
     return await axios.post(baseUrl + "/CreateCodeAssignment", data)
     .then(response => {
         // console.log(response);
@@ -33,5 +32,17 @@ export const createCodeAssignment = async (data)=>{
     })
     .catch(error => {
         console.log("Error CreateCodeAssignment: ", error.response);
+    })
+}
+
+export const viewCodeAssignment = async (idAssignment)=>{ 
+    console.log("zooo: ", idAssignment); 
+    return await axios.get(baseUrl + "/ViewCodeAssignment?idAssignment=" + idAssignment)
+    .then(response => {
+        // console.log(response);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error ViewCodeAssignment: ", error.response);
     })
 }
