@@ -17,7 +17,7 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { getAllActiveLanguage, runCodeTest } from "../../../services/codeExecution"
+import { createCodeAssignment, getAllActiveLanguage, runCodeTest } from "../../../services/codeExecution"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -84,11 +84,11 @@ export const TeacherAsgmCreate = ({route})=>{
             label: "",
             value: 0
         },
-        example: [
+        examples: [
             {
-                input: "a",
-                expectedOutput: "1"
-            },
+                input: "stella",
+                output: "hello, stella"
+            }
         ],
         testCases: [
             {
@@ -97,15 +97,14 @@ export const TeacherAsgmCreate = ({route})=>{
             },
             {
                 input: "hngan",
-                expectedOutput: "hello, bo"
-            },
+                expectedOutput: "hello, hngan"
+            }
         ],
-        isPastTestCase: true,
-        isLimitTime: false,
-        limitTime: 2,
-        isLimitMemory: true,
-        limitMemory: "860",
-        isShowOnSubmission: false
+        isPerformanceOnTime: false,
+        timeValue: null,
+        isPerformanceOnMemory: false,
+        memoryValue: null,
+        isShowTestcase: true
     })
     const [teacherCode, setTeacherCode] = useState({
         sourceCode: "#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}",
@@ -681,8 +680,38 @@ export const TeacherAsgmCreate = ({route})=>{
                         questions, state.idUser
                     )
                 }
+                if(type.value === 3){
+                    const data = {
+                        title: titleAsgm,
+                        idCourse: selectCourse.value,
+                        isTest: isExercise ? 0 : 1,
+                        idLecture: selectLecture?.value || null,
+                        startDate: startDate ? new Date(startDate).toISOString() : null,
+                        endDate: dueDate ? new Date(dueDate).toISOString() : null,
+                        duration: duration || null,
+                        assignmentType: type.value,
+                        isPublish: isPublish,
+                        isShowTestcase: questionCode.isShowTestcase ? 1 : 0,
+                        createdBy: state.idUser,
+                        problem: questionCode.problem,
+                        idLanguage: questionCode.language.value,
+                        examples: [...questionCode.examples],
+                        isPassTestCase: 1,
+                        isPerformanceOnTime: questionCode.isPerformanceOnTime ? 1 : 0,
+                        isPerformanceOnMemory: questionCode.isPerformanceOnMemory ? 1 : 0,
+                        timeValue: questionCode.timeValue,
+                        memoryValue: questionCode.memoryValue,
+                        testCases: [...questionCode.testCases]
+                    }
+                    response = await createCodeAssignment(data)
+                    if(response){
+                        Alert.alert("Done", "Create assignment done.")
+                        reload()
+                        navigation.goBack()
+                    }
+                }
             }
-            if(response){
+            if(response && type.value !== 3){
                 Alert.alert("Done", response)
                 reload()
                 navigation.goBack()
@@ -1095,7 +1124,10 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <>
                                     {/* CODE */}
                                     <View style={{alignSelf: "flex-end", marginVertical: 8}}>
-                                        <CustomSwitch label={"Show test cases on submission"} value={questionCode.isShowOnSubmission} onChangeText={()=>{}}/>   
+                                        <CustomSwitch label={"Show test cases on submission"} 
+                                            value={questionCode.isShowTestcase} 
+                                            onChangeText={()=>handleChangeCode(!questionCode.isShowTestcase, "isShowTestcase")}
+                                        />   
                                     </View>
                                     <View style={styles.wrapContent}>
                                         <Text style={styles.title}>Question</Text>
@@ -1127,17 +1159,17 @@ export const TeacherAsgmCreate = ({route})=>{
                                                     <Text style={styles.wrapRowText}>Output</Text>
                                                     <Text style={styles.indexWidth}></Text>
                                                 </View>
-                                                {questionCode.example ? questionCode?.example?.map((ex, indexEx) => 
+                                                {questionCode.examples ? questionCode?.examples?.map((ex, indexEx) => 
                                                     <View style={styles.wrapRow} key={indexEx}>
                                                         <Text style={styles.indexWidth}>{indexEx + 1}</Text>
-                                                        <TextInput style={styles.wrapRowText} value={ex.input} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "input")} multiline={true}/>
-                                                        <TextInput style={styles.wrapRowText} value={ex.expectedOutput} onChangeText={(v)=>handleChangeCode(v, "example", indexEx, "expectedOutput")} multiline={true}/>
-                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("example", indexEx)}>
+                                                        <TextInput style={styles.wrapRowText} value={ex.input} onChangeText={(v)=>handleChangeCode(v, "examples", indexEx, "input")} multiline={true}/>
+                                                        <TextInput style={styles.wrapRowText} value={ex.output} onChangeText={(v)=>handleChangeCode(v, "examples", indexEx, "output")} multiline={true}/>
+                                                        <TouchableOpacity style={styles.indexWidth} onPress={()=>handleDeleteCode("examples", indexEx)}>
                                                             <MaterialIcons name="delete" size={16} color="black" style={{alignSelf: "center"}}/>
                                                         </TouchableOpacity>
                                                     </View>
                                                 ) : ""}
-                                                <TouchableOpacity onPress={()=>handleAddCode("example")}>
+                                                <TouchableOpacity onPress={()=>handleAddCode("examples")}>
                                                     <Text style={styles.wrapRowText}>+ Add a record</Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -1173,35 +1205,35 @@ export const TeacherAsgmCreate = ({route})=>{
                                         <View>
                                             <Text style={styles.textGray14}>Scoring rules</Text>
                                             <CheckBox
-                                                isChecked={questionCode.isLimitTime}
-                                                onClick={()=>handleChangeCode(!questionCode.isLimitTime, "isLimitTime")}
+                                                isChecked={questionCode.isPerformanceOnTime}
+                                                onClick={()=>handleChangeCode(!questionCode.isPerformanceOnTime, "isPerformanceOnTime")}
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Performance on time"
                                             />
-                                            {questionCode.isLimitTime &&
+                                            {questionCode.isPerformanceOnTime &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
                                                         placeholder="Time limit (second)"
-                                                        value={questionCode.limitTime}
-                                                        onChangeText={(v)=>handleChangeCode(v, "limitTime")}
+                                                        value={questionCode.timeValue}
+                                                        onChangeText={(v)=>handleChangeCode(v, "timeValue")}
                                                         keyboardType={"numeric"}
                                                     />
                                                 </View>
                                             }
                                             <CheckBox
-                                                isChecked={questionCode.isLimitMemory}
-                                                onClick={()=>handleChangeCode(!questionCode.isLimitMemory, "isLimitMemory")}
+                                                isChecked={questionCode.isPerformanceOnMemory}
+                                                onClick={()=>handleChangeCode(!questionCode.isPerformanceOnMemory, "isPerformanceOnMemory")}
                                                 checkBoxColor={COLORS.secondMain}
                                                 rightText="Perfomance on memory"
                                             />
-                                            {questionCode.isLimitMemory &&
+                                            {questionCode.isPerformanceOnMemory &&
                                                 <View style={styles.paddingCheck}>
                                                     <TextInput
                                                         style={[styles.inputLabelGray]}
                                                         placeholder="Memory limit (MB)"
-                                                        value={questionCode.limitMemory}
-                                                        onChangeText={(v)=>handleChangeCode(v, "limitMemory")}
+                                                        value={questionCode.memoryValue}
+                                                        onChangeText={(v)=>handleChangeCode(v, "memoryValue")}
                                                         keyboardType={"numeric"}
                                                     />
                                                 </View>
@@ -1240,10 +1272,10 @@ export const TeacherAsgmCreate = ({route})=>{
                                                                 <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
                                                                     {result.isPassTestCase === true ? "Pass" : "Fail"}
                                                                 </Text>
-                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isLimitTime && result.timeExecuted <= questionCode.limitTime) ? styles.textGreen : questionCode.isLimitTime ? styles.textRed : ""]}>
+                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isPerformanceOnTime && result.timeExecuted <= questionCode.timeValue) ? styles.textGreen : questionCode.isPerformanceOnTime ? styles.textRed : ""]}>
                                                                     {result.timeExecuted}
                                                                 </Text>
-                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isLimitMemory && result.memoryExecuted <= questionCode.limitMemory) ? styles.textGreen : questionCode.isLimitMemory ? styles.textRed : ""]}>
+                                                                <Text style={[styles.wrapRowTextResult, (questionCode.isPerformanceOnMemory && result.memoryExecuted <= questionCode.memoryValue) ? styles.textGreen : questionCode.isPerformanceOnMemory ? styles.textRed : ""]}>
                                                                     {result.memoryExecuted}
                                                                 </Text>
                                                                 <Text style={styles.wrapRowTextResult}>

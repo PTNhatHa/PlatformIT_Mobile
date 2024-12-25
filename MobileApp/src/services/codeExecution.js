@@ -23,3 +23,15 @@ export const runCodeTest = async (codeTest)=>{
         console.log("Error RunCodeTest: ", error);
     })
 }
+
+export const createCodeAssignment = async (data)=>{  
+    console.log(data);
+    return await axios.post(baseUrl + "/CreateCodeAssignment", data)
+    .then(response => {
+        // console.log(response);
+        return response
+    })
+    .catch(error => {
+        console.log("Error CreateCodeAssignment: ", error.response);
+    })
+}
