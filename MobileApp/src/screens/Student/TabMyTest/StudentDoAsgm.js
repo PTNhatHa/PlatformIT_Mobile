@@ -12,6 +12,7 @@ import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
+import { viewCodeAssignment } from "../../../services/codeExecution";
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -26,6 +27,22 @@ export const StudentDoAsgm = ({route})=>{
 
     const [duration, setDuration] = useState(initduration*60);
     const [totalTime, setTotalTime] = useState(0);
+    const [questionCode, setQuestionCode] = useState({
+        problem: "",
+        language: {
+            label: "",
+            value: 0
+        },
+        examples: [],
+        testCases: [],
+        isPerformanceOnTime: false,
+        timeValue: null,
+        isPerformanceOnMemory: false,
+        memoryValue: null,
+        isShowTestcase: true
+    })
+    const [studentCode, setStudentCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
+    
 
     // Lấy thời gian hiện tại theo múi giờ Việt Nam  
     const options = {  
@@ -201,53 +218,68 @@ export const StudentDoAsgm = ({route})=>{
 
     const fetchDetailAsgm = async()=>{
         try {
-            const response = await getDetailAssignmentItemForStudent(idAssignment)
-            if(response){
-                let shuffledResponse = response
-                if(isShufflingQuestion){
-                    shuffledResponse = shuffle(response)
-                    // console.log(shuffledResponse);
+            if(assignmentType === 3){
+                const detailCode = await viewCodeAssignment(idAssignment)
+                if(detailCode){
+                    setQuestionCode({
+                        ...detailCode,
+                        language: {
+                            label: detailCode.languageName,
+                            value: detailCode.idLanguage
+                        },
+                        timeValue: detailCode.timeValue.toString(),
+                        memoryValue: detailCode.memoryValue.toString(),
+                        isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
+                        isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
+                    })
                 }
-                if(assignmentType === 1){
-                    setListQuestion(shuffledResponse)
-                    setManualAnswer([...shuffledResponse.map(question =>{
-                        if(question.assignmentItemAnswerType === 1){
-                            return{
-                                idAssignmentItem: question.idAssignmentItem,
-                                answer: "",
+            } else{
+                const response = await getDetailAssignmentItemForStudent(idAssignment)
+                if(response){
+                    let shuffledResponse = response
+                    if(isShufflingQuestion){
+                        shuffledResponse = shuffle(response)
+                    }
+                    if(assignmentType === 1){
+                        setListQuestion(shuffledResponse)
+                        setManualAnswer([...shuffledResponse.map(question =>{
+                            if(question.assignmentItemAnswerType === 1){
+                                return{
+                                    idAssignmentItem: question.idAssignmentItem,
+                                    answer: "",
+                                }
+                            } else {
+                                return{
+                                    idAssignmentItem: question.idAssignmentItem,
+                                    attachedFile: ""
+                                }
                             }
-                        } else {
+                        })])
+                    }
+                    if(assignmentType === 2){
+                        setListQuestion([...shuffledResponse.map(question =>{
                             return{
-                                idAssignmentItem: question.idAssignmentItem,
-                                attachedFile: ""
+                                ...question,
+                                items: isShufflingAnswer ? shuffle([...question.items.map(item=>{
+                                            return{
+                                                ...item,
+                                                isCorrect: 0
+                                            }
+                                        })])
+                                        :
+                                        question.items.map(item=>{
+                                            return{
+                                                ...item,
+                                                isCorrect: 0
+                                            }
+                                        })
                             }
-                        }
-                    })])
+                        })])
+                    }
+                    
+                } else {
+                    navigation.goBack()
                 }
-                if(assignmentType === 2){
-                    setListQuestion([...shuffledResponse.map(question =>{
-                        return{
-                            ...question,
-                            items: isShufflingAnswer ? shuffle([...question.items.map(item=>{
-                                        return{
-                                            ...item,
-                                            isCorrect: 0
-                                        }
-                                    })])
-                                    :
-                                    question.items.map(item=>{
-                                        return{
-                                            ...item,
-                                            isCorrect: 0
-                                        }
-                                    })
-                        }
-                    })])
-                }
-                
-            } else {
-                // Alert.alert("Error", "Please try again")
-                navigation.goBack()
             }
         } catch (error) {
             console.log("Error fetch data: ", error);

@@ -149,7 +149,9 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
             const comment = {
                 idLecture: idLecture,
                 idSender: state.idUser,
-                idReceiver: state.idRole === 4 ? null : (newCmt.idReceiver ? (newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver) : idTeacher),
+                idReceiver: state.idRole === 4 ? 
+                    (newCmt.idReceiver ? newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver : null) : 
+                    (newCmt.idReceiver ? (newCmt.idReceiver === state.idUser ? null : newCmt.idReceiver) : idTeacher),
                 idCommentRef: newCmt.idCommentRef,
                 content: newCmt.content
             }

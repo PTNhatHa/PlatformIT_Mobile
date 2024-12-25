@@ -110,7 +110,6 @@ export const TeacherDetailAsgm = ({route})=>{
                     setListQuestion(response.assignmentItems)
                 } else{
                     const detailCode = await viewCodeAssignment(idAssignment)
-                    console.log("detailCode: ", detailCode);
                     if(detailCode){
                         setQuestionCode({
                             ...detailCode,
