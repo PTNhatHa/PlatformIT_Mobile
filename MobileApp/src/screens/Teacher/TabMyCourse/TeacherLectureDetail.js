@@ -44,7 +44,8 @@ export const TeacherLectureDetail = ({route})=>{
         sectionName: ""
     });
 
-    const [data, setData] = useState([])
+    const [data, setData] = useState({})
+    const [editData, setEditData] = useState({})
     const [loading, setLoading] = useState(true);
     const [courseContent, setCourseContent] = useState([])
     const [isEditMode, setIsEditMode] = useState(false)
@@ -56,6 +57,7 @@ export const TeacherLectureDetail = ({route})=>{
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
+                setEditData({...response})
                 setData({
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
@@ -131,9 +133,9 @@ export const TeacherLectureDetail = ({route})=>{
         Linking.canOpenURL(url)  
         .then((supported) => {  
             if (supported) {  
-            return Linking.openURL(url);  
+                return Linking.openURL(url);  
             } else {  
-            console.log("Can't open URL: " + url);  
+                console.log("Can't open URL: " + url);  
             }  
         })  
         .catch((err) => console.error('Error occurred', err));  
@@ -154,7 +156,7 @@ export const TeacherLectureDetail = ({route})=>{
     const onChangeMaterial= async()=>{
         const result = await pickFile()
         if(result){
-            setData({
+            setEditData({
                 ...data,
                 mainMaterials: [{
                     path: result.uri,
@@ -167,10 +169,10 @@ export const TeacherLectureDetail = ({route})=>{
     const addSupportMaterial= async()=>{
         const result = await pickFile()
         if(result){
-            setData({
-                ...data,
+            setEditData({
+                ...editData,
                 supportMaterials: [
-                    ...data.supportMaterials,
+                    ...editData.supportMaterials,
                     {
                         path: result.uri,
                         fileName: result.name,
@@ -181,17 +183,17 @@ export const TeacherLectureDetail = ({route})=>{
         }
     }
     const onDeleteSupportMaterial= async(index)=>{
-        const newMaterial = data.supportMaterials.filter((item, i) => index !== i)
-        setData({
-            ...data,
+        const newMaterial = editData.supportMaterials.filter((item, i) => index !== i)
+        setEditData({
+            ...editData,
             supportMaterials: newMaterial
         })
     }
     const onChangeVideo = async ()=>{
         const result = await pickFile("video")
         if(result){
-            setData({
-                ...data,
+            setEditData({
+                ...editData,
                 videoMaterial: {
                     path: result.uri,
                     fileName: result.name,
@@ -249,7 +251,10 @@ export const TeacherLectureDetail = ({route})=>{
             </TouchableOpacity>
             {isOpenSetting &&
                 <>
-                    <TouchableOpacity style={[styles.btnSetting, styles.btnEdit, isEditMode && styles.btnActive]} onPress={()=>setIsEditMode(!isEditMode)}>
+                    <TouchableOpacity style={[styles.btnSetting, styles.btnEdit, isEditMode && styles.btnActive]} onPress={()=>{
+                        setIndex(1)
+                        setIsEditMode(!isEditMode)
+                    }}>
                         <MaterialIcons name="mode-edit" size={24} color="black" />
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.btnSetting, styles.btnDelete]} onPress={()=>handleDeleteLecture()}>
@@ -271,8 +276,7 @@ export const TeacherLectureDetail = ({route})=>{
                                         <Text style={styles.textWhite14}>Save changes</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={[styles.btn]} onPress={()=>{
-                                        setLoading(true)
-                                        fetchDetailLecture()
+                                        setEditData({...data})
                                     }}>
                                         <Text style={styles.textGray14}>Discard changes</Text>
                                     </TouchableOpacity>
@@ -285,20 +289,20 @@ export const TeacherLectureDetail = ({route})=>{
                         </View>
                         {isEditMode && 
                             <TextInputLabelGray 
-                                placeholder={"Lecture name"} label={"Lecture name*"} value={data.lectureTitle} 
-                                onchangeText={(v)=>setData({
-                                    ...data,
+                                placeholder={"Lecture name"} label={"Lecture name*"} value={editData.lectureTitle} 
+                                onchangeText={(v)=>setEditData({
+                                    ...editData,
                                     lectureTitle: v
                                 })}
                             />
                         }
                         <View style={styles.containerGray}>
                             <View style={styles.wrapFlex}>
-                            {isEditMode && <Text style={styles.label}>Lecture video</Text>}
-                                {(data.videoMaterial && isEditMode) &&
+                                {isEditMode && <Text style={styles.label}>Lecture video</Text>}
+                                {(editData.videoMaterial && isEditMode) &&
                                     <TouchableOpacity 
-                                        onPress={()=>setData({
-                                            ...data,
+                                        onPress={()=>setEditData({
+                                            ...editData,
                                             videoMaterial: null
                                         })} 
                                         style={[styles.btnText]}
@@ -312,7 +316,7 @@ export const TeacherLectureDetail = ({route})=>{
                                     </TouchableOpacity>
                                 }
                             </View>
-                            {data.videoMaterial ? 
+                            {(data.videoMaterial && !isEditMode) ? 
                                 <Video
                                     source={{ uri: data.videoMaterial.path }}
                                     style={styles.contentVideo}
@@ -320,35 +324,47 @@ export const TeacherLectureDetail = ({route})=>{
                                     resizeMode="contain"
                                 />
                                 : isEditMode ?
+                                    editData.videoMaterial ?
+                                    <Video
+                                        source={{ uri: editData.videoMaterial.path }}
+                                        style={styles.contentVideo}
+                                        useNativeControls
+                                        resizeMode="contain"
+                                    />
+                                    :
                                     <Image source={DefaultImg} style={styles.contentVideo}/>
                                 :""
                             }
                         </View>                     
                         <View style={styles.containerGray}>
-                            {isEditMode && <Text style={styles.label}>Materials</Text>}
-                            {data.mainMaterials?.length > 0 ?
+                            {isEditMode && <Text style={styles.label}>Material</Text>}
+                            {(data.mainMaterials?.length > 0 && !isEditMode) ?
                                 <View style={styles.wrapFlex}>
                                     <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
                                         <Text numberOfLines={1}>{data.mainMaterials[0]?.fileName}</Text>
-                                    </TouchableOpacity>
-                                    {isEditMode && 
+                                    </TouchableOpacity>                                    
+                                </View>
+                                : (editData.mainMaterials?.length > 0 && isEditMode) ? 
+                                    <View style={styles.wrapFlex}>
+                                        <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(data.mainMaterials[0]?.path)}>
+                                            <Text numberOfLines={1}>{editData.mainMaterials[0]?.fileName}</Text>
+                                        </TouchableOpacity>
                                         <TouchableOpacity 
-                                            onPress={()=>setData({
-                                                ...data,
+                                            onPress={()=>setEditData({
+                                                ...editData,
                                                 mainMaterials: []
                                             })}  
                                             style={{margin: 4}}
                                         >
                                             <MaterialIcons name="delete" size={24} color={COLORS.red} />
-                                        </TouchableOpacity>
-                                    }
-                                </View>
-                                : isEditMode ? 
-                                    <TouchableOpacity onPress={()=>onChangeMaterial()} style={[styles.btnText]}>
-                                        <MaterialIcons name="upload-file" size={20} color="black" />
-                                        <Text>Attach file</Text>
-                                    </TouchableOpacity>
-                                : ""
+                                        </TouchableOpacity>                                      
+                                    </View>
+                                    : isEditMode ?
+                                        <TouchableOpacity onPress={()=>onChangeMaterial()} style={[styles.btnText]}>
+                                            <MaterialIcons name="upload-file" size={20} color="black" />
+                                            <Text>Attach file</Text>
+                                        </TouchableOpacity> 
+                                        : ""
                             }
                         </View>  
                     </View>
@@ -376,9 +392,9 @@ export const TeacherLectureDetail = ({route})=>{
                         <View style={styles.wrapper}> 
                             {isEditMode ?
                                 <TextInputLabelGray 
-                                    placeholder={"Introduction"} label={"Introduction"} value={data.lectureIntroduction} multiline={true}
-                                    onchangeText={(v)=>setData({
-                                        ...data,
+                                    placeholder={"Introduction"} value={editData.lectureIntroduction} multiline={true}
+                                    onchangeText={(v)=>setEditData({
+                                        ...editData,
                                         lectureIntroduction: v
                                     })} 
                                 /> 
@@ -395,17 +411,23 @@ export const TeacherLectureDetail = ({route})=>{
                                                    
                             <View style={styles.containerGray}>
                                 {isEditMode && <Text style={styles.label}>Supporting materials</Text>}                                
-                                {data.supportMaterials?.length > 0 &&
+                                {(data.supportMaterials?.length > 0 && !isEditMode) &&
                                     data.supportMaterials.map((item, index) => 
                                         <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
                                             <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
                                                 <Text numberOfLines={1}>{item.fileName}</Text>
+                                            </TouchableOpacity>                                            
+                                        </View>
+                                )}
+                                {(editData.supportMaterials?.length > 0 && isEditMode) &&
+                                    editData.supportMaterials.map((item, index) => 
+                                        <View style={[styles.wrapFlex, {marginBottom: 4}]} key={index}>
+                                            <TouchableOpacity style={[styles.inputLabelGray]} onPress={()=>openURL(item.path)}>
+                                                <Text numberOfLines={1}>{item.fileName}</Text>
                                             </TouchableOpacity>
-                                            {isEditMode && 
-                                                <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
-                                                    <MaterialIcons name="delete" size={24} color={COLORS.red} />
-                                                </TouchableOpacity>
-                                            }
+                                            <TouchableOpacity onPress={()=>onDeleteSupportMaterial(index)} style={{margin: 4}}>
+                                                <MaterialIcons name="delete" size={24} color={COLORS.red} />
+                                            </TouchableOpacity>                                            
                                         </View>
                                 )}
                                 {isEditMode && 
@@ -519,10 +541,14 @@ const styles = StyleSheet.create({
     },
     nav:{
         paddingHorizontal: 16,
-        borderBottomWidth: 0.7,
-        borderColor: COLORS.lightText,
+        borderWidth: 0.7,
+        borderBottomColor: COLORS.lightText,
+        borderTopColor: "white",
+        borderLeftColor: "white",
+        borderRightColor: "white",
         flexDirection: "row",
-        gap: 16
+        gap: 16,
+
     },
     navText: {
         fontSize: 14,

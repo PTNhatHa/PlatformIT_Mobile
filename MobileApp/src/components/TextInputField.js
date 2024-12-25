@@ -88,7 +88,7 @@ export const TextInputLabelGray = ({
     return(
         <>
             <View style={styles.containerGray}>
-                <Text style={styles.label}>{label}</Text>
+                {label && <Text style={styles.label}>{label}</Text>}
                 <TextInput 
                     style={[styles.inputLabelGray]}
                     value={value}
