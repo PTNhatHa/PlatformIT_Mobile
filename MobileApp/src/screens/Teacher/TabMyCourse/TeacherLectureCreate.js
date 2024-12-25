@@ -54,7 +54,8 @@ export const TeacherLectureCreate = ({route})=>{
                     ...inforLecture,
                     idCourse: response.idCourse,
                     nameCourse: response.courseTitle,
-                    idSection: response.idSection
+                    idSection: response.idSection,
+                    detailLecture: response
                 })
                 setIntro(response.lectureIntroduction)
                 if(response.mainMaterials[0]){
@@ -87,6 +88,50 @@ export const TeacherLectureCreate = ({route})=>{
             setLoading(false)
         }
     }
+
+    const handleDiscard = ()=>{
+        try {
+            const response = inforLecture.detailLecture
+            if(response){
+                setLectureName(response.lectureTitle)
+                setIntro(response.lectureIntroduction)
+                if(response.mainMaterials[0]){
+                    setMaterial({
+                        uri: response.mainMaterials[0].path,
+                        name: response.mainMaterials[0].fileName,
+                        type: getMimeType(response.mainMaterials[0].fileName) 
+                    })
+                } else{
+                    setMaterial(null)
+                }
+                if(response.supportMaterials){
+                    setSupportMaterial([...response.supportMaterials.map(sup => {
+                        return{
+                            uri: sup.path,
+                            name: sup.fileName,
+                            type: getMimeType(sup.fileName) 
+                        }
+                    })])
+                } else{
+                    setSupportMaterial([])
+                }
+                if(response.videoMaterial){
+                    setVideo({
+                        uri: response.videoMaterial.path,
+                        name: response.videoMaterial.fileName,
+                        type: getMimeType(response.videoMaterial.fileName) 
+                    })
+                } else{
+                    setVideo(null)
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
 
     useEffect(()=>{
         if(idLecture !== null){
@@ -202,7 +247,7 @@ export const TeacherLectureCreate = ({route})=>{
                             <TouchableOpacity style={[styles.btn, {backgroundColor: COLORS.main}]} onPress={()=>handleSave()}>
                                 <Text style={styles.textWhite14}>Update</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>fetchDetailLecture()}>
+                            <TouchableOpacity style={[styles.btnBorderGray]} onPress={()=>handleDiscard()}>
                                 <Text style={styles.textGray14}>Discard changes</Text>
                             </TouchableOpacity>
                         </View> 
