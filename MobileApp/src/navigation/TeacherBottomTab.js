@@ -350,9 +350,9 @@ export const TeacherBottomTab = ()=>{
                 console.log('Connected to SignalR hub.');
                 connection.on('UpdateNotifications', (updatedNotifications) => {
                     console.log('Received UpdateNotifications event:', updatedNotifications);
-                    if (intervalRef.current) {
-                        clearInterval(intervalRef.current); // Dọn dẹp trước khi tạo mới
-                    }
+                    // if (intervalRef.current) {
+                    //     clearInterval(intervalRef.current); // Dọn dẹp trước khi tạo mới
+                    // }
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
@@ -370,14 +370,14 @@ export const TeacherBottomTab = ()=>{
                     });
                     setUnReadNoti(notiUnRead)
                     setAllNoti(processedData)
-                    intervalRef.current = setInterval(() => {
-                        setAllNoti((prevNotifications) =>
-                          prevNotifications.map((notification) => ({
-                            ...notification,
-                            relativeTime: calculateRelativeTime(notification.timestamp),
-                          }))
-                        );
-                    }, 60000); // Update every minute
+                    // intervalRef.current = setInterval(() => {
+                    //     setAllNoti((prevNotifications) =>
+                    //       prevNotifications.map((notification) => ({
+                    //         ...notification,
+                    //         relativeTime: calculateRelativeTime(notification.timestamp),
+                    //       }))
+                    //     );
+                    // }, 60000); // Update every minute
                 });
             } catch (error) {
                 console.log('SignalR Connection Error:', error);

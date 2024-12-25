@@ -128,7 +128,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
                         <View style={styles.wrapContent}>
                             <Text style={styles.title}>{item.name}</Text>
                             <Text style={[styles.dataMess, item.isRead === 0 && styles.dataMessActive]} numberOfLines={1} ellipsizeMode="tail">
-                                {/* {item.nameLastChat === item.name ? item.name : "You"}:  */}
+                                {item.lastMessageSenderName === item.name ? `${item.name}: ` : "You: "}
                                 {item.lastMessage}
                             </Text>
                         </View>
