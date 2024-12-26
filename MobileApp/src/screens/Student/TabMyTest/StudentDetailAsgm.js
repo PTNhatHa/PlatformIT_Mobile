@@ -341,6 +341,12 @@ export const StudentDetailAsgm = ({route})=>{
                                                             {/* Row */}
                                                             <View style={[styles.wrapRow, styles.bgLightGray]}>
                                                                 <Text style={styles.wrapRowTextResult}>Case</Text>
+                                                                {true &&
+                                                                    <>
+                                                                        <Text style={styles.wrapRowTextResult}>Input</Text>
+                                                                        <Text style={styles.wrapRowTextResult}>Output</Text>
+                                                                    </>
+                                                                }
                                                                 <Text style={styles.wrapRowTextResult}>Pass test case</Text>
                                                                 <Text style={styles.wrapRowTextResult}>Time(s)</Text>
                                                                 <Text style={styles.wrapRowTextResult}>Memory(KB)</Text>
@@ -349,6 +355,12 @@ export const StudentDetailAsgm = ({route})=>{
                                                             {resultCode.testCases.map((result, index) =>{ 
                                                                 return (<View style={styles.wrapRow} key={index}>
                                                                     <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
+                                                                    {result.testCases &&
+                                                                        <>
+                                                                            <Text style={styles.wrapRowTextResult}>{result.testCases.input}</Text>
+                                                                            <Text style={styles.wrapRowTextResult}>{result.testCases.expectedOutput}</Text>
+                                                                        </>
+                                                                    }
                                                                     <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
                                                                         {result.isPassTestCase === true ? "Pass" : "Fail"}
                                                                     </Text>
