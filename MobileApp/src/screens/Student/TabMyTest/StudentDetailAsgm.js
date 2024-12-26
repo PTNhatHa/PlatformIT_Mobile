@@ -55,6 +55,7 @@ export const StudentDetailAsgm = ({route})=>{
                     const answers = await getCodeAssignmentResult(idAssignment, state.idUser)
                     if(answers){
                         setResultCode(answers)
+                        // Chờ quìn sửa xong ròi bỏ
                         setData({
                             ...response,
                             submittedDate: answers.submittedDate,

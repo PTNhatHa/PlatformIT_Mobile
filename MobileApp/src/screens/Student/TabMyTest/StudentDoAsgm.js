@@ -165,7 +165,7 @@ export const StudentDoAsgm = ({route})=>{
             if(response){
                 Alert.alert(
                     "Submit assignment", 
-                    response, 
+                    "Done", 
                     [
                       {
                         text: "OK", 

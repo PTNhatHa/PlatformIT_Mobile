@@ -65,3 +65,13 @@ export const getCodeAssignmentResult = async (idAssignment, idStudent)=>{
         console.log("Error GetCodeAssignmentResult: ", error.response);
     })
 }
+
+export const updateCodeAssignment = async (dataUpdate)=>{ 
+    return await axios.post(baseUrl + "/UpdateCodeAssignment", dataUpdate)
+    .then(response => {
+        return response
+    })
+    .catch(error => {
+        console.log("Error UpdateCodeAssignment: ", error.response);
+    })
+}

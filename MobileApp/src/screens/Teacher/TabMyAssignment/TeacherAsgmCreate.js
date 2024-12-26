@@ -17,7 +17,7 @@ import { RadioBtn } from "../../../components/RadioBtn"
 import { formatDateTime, getFileTypeFromUrl, getMimeType } from "../../../utils/utils"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Fontisto from '@expo/vector-icons/Fontisto';
-import { createCodeAssignment, getAllActiveLanguage, runCodeTest, viewCodeAssignment } from "../../../services/codeExecution"
+import { createCodeAssignment, getAllActiveLanguage, runCodeTest, updateCodeAssignment, viewCodeAssignment } from "../../../services/codeExecution"
 
 export const TeacherAsgmCreate = ({route})=>{
     const {idCourse, nameCourse, isLimitedTime, courseEndDate, idSection, nameSection, idLecture, nameLecture, reload} = route?.params || {}
@@ -189,6 +189,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             memoryValue: detailCode.memoryValue.toString(),
                             isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
                             isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
+                            isShowTestcase: detailCode.isShowTestcase === 1 ? true : false,
                         })
                     }
                 }
@@ -638,9 +639,8 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             let response = null
             if(isEdit){
-                let editData
                 if(type.value !== 3){
-                    editData = {
+                    const editData = {
                         idAssignment: detailAsgm.idAssignment,
                         title: titleAsgm,
                         isTest: detailAsgm.isTest,
@@ -648,8 +648,7 @@ export const TeacherAsgmCreate = ({route})=>{
                         dueDate: dueDate || "",
                         duration: duration || 0,
                         assignmentType: detailAsgm.assignmentType,
-                        isPublish: isPublish,
-                        
+                        isPublish: isPublish,                        
                         isShufflingQuestion: isShufflingQuestion ? 1 : 0,
                         isShufflingAnswer: isShufflingAnswer ? 1 : 0,
                         showAnswer: isShowAnswer ? 1 : 0,
@@ -677,6 +676,37 @@ export const TeacherAsgmCreate = ({route})=>{
                         })
                     }
                     response = await updateAssignment(state.idUser, editData)
+                } else{
+                    const editDataCode = {
+                        idAssignment: detailAsgm.idAssignment,
+                        title: titleAsgm,
+                        idCourse: selectCourse.value,
+                        isTest: detailAsgm.isTest,
+                        idLecture: selectLecture?.value || null,
+                        startDate: startDate || "",
+                        endDate: dueDate || "",
+                        duration: duration || 0,
+                        assignmentType: detailAsgm.assignmentType,
+                        isPublish: isPublish,  
+
+                        isShowTestcase: questionCode.isShowTestcase ? 1 : 0,
+                        createdBy: state.idUser,
+                        problem: questionCode.problem,
+                        idLanguage: questionCode.language.value,
+                        examples: [...questionCode.examples],
+                        isPassTestCase: 1,
+                        isPerformanceOnTime: questionCode.isPerformanceOnTime ? 1 : 0,
+                        isPerformanceOnMemory: questionCode.isPerformanceOnMemory ? 1 : 0,
+                        timeValue: questionCode.timeValue,
+                        memoryValue: questionCode.memoryValue,
+                        testCases: [...questionCode.testCases]
+                    }
+                    response = await updateCodeAssignment(editDataCode)
+                    if(response){
+                        Alert.alert("Done", "Update assignment done.")
+                        reload()
+                        navigation.goBack()
+                    }
                 }
             } else{
                 if(type.value === 1){
