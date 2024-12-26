@@ -1,6 +1,6 @@
 import { ActivityIndicator, Alert, Image, InteractionManager, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
-import { COLORS } from "../utils/constants"
+import { COLORS, currentIP } from "../utils/constants"
 import { ButtonGreen, ButtonWhite } from "./Button"
 import { TouchableOpacity } from "react-native"
 import { useEffect, useRef, useState } from "react"
@@ -12,6 +12,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import * as signalR from '@microsoft/signalr';
 
 const init = [
     {
@@ -109,6 +110,10 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
         }
     }
     useEffect(()=>{
+
+    }, [])
+
+    useEffect(()=>{
         getAllCmt()
         const interval = setInterval(() => {
             setListMainCmt((prevMain)=>
@@ -130,6 +135,90 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
         }, 60000); // Update every minute
         return () => clearInterval(interval);
     },[idLecture])
+
+    useEffect(()=>{
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/notificationHub?lectureId=${idLecture}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                // console.log('Connected to UpdateCommentsOfLecture hub.');
+                connection.on('UpdateCommentsOfLecture', (updatedNotifications) => {
+                    // console.log("updatedNotifications: ", updatedNotifications);
+                    const response = updatedNotifications
+                    if(response){
+                        let sub = {}
+                        let show = {}
+                        let showMore = {}
+                        const main = []
+                        response.forEach(cmt => {
+                            showMore = {
+                                ...sub,
+                                [cmt.idComment] : false
+                            }
+                            if(cmt.idCommentRef === null){
+                                sub = {
+                                    ...sub,
+                                    [cmt.idComment] : [],
+                                }
+                                main.push({
+                                    ...cmt,                            
+                                    timestamp: parseRelativeTime(cmt.relativeTime),
+                                })
+                                show = {
+                                    ...show,
+                                    [cmt.idComment] : true
+                                }
+                            }
+                            if(cmt.idCommentRef !== null && sub[cmt.idCommentRef]){
+                                sub[cmt.idCommentRef].push({
+                                    ...cmt,
+                                    timestamp: parseRelativeTime(cmt.relativeTime),
+                                    commentRefName: ""
+                                })
+                            } else if(cmt.idCommentRef !== null){
+                                Object.keys(sub).forEach(key => {
+                                    const findSub = sub[key].find(item => item.idComment === cmt.idCommentRef)
+                                    if (findSub) {
+                                        sub[key].push({
+                                            ...cmt,
+                                            timestamp: parseRelativeTime(cmt.relativeTime),                                    
+                                        });
+                                    }
+                                });
+                            }
+                        });                
+                        setListMainCmt(main.sort(
+                            (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+                          ))
+                        Object.keys(sub).forEach((key) => {
+                            sub[key].sort(
+                                (a, b) => new Date(a.createdDate) - new Date(b.createdDate)
+                            );
+                        });
+                        setListSubCmt(sub)
+                        setListIsShow(show)
+                        setListShowMore(showMore)
+                    }    
+                });
+            } catch (error) {
+                console.log('SignalR Connection Error:', error);
+            }
+        };    
+        startConnection();
+        connection.onclose((error) => {
+            console.log('SignalR connection closed:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
+    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, [])
 
     const handleAddReply = (idReceiver, idCommentRef, nameRep)=>{
         setNewCmt({
