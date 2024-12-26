@@ -6,6 +6,9 @@ import { formatDateTime, formatTime } from "../utils/utils";
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { Tag } from "./Tag";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useEffect, useState } from "react";
+import { isChatAvailable } from "../services/user";
+import { useUser } from "../contexts/UserContext";
 
 const initStudent={
     idUser: 1,
@@ -22,12 +25,29 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
     const navigation = useNavigation()
     let progressLecture = "100%"
     let progressAsgm = "100%"
+    const {state} = useUser()
+    const [isChat, setIsChat] = useState(false)
+
     if(lectureCount > 0){
         progressLecture = (data.finishedLectureCount/lectureCount*100) + "%"
     }
     if(assignmentCount > 0){
         progressAsgm = (data.finishedAssignmentCount/assignmentCount*100) + "%"
     }
+    const checkIsChat = async()=>{
+        try {
+            const check = await isChatAvailable(data.idStudent, state.idUser)
+            if(check === true){
+                setIsChat(true)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+    useEffect(()=>{
+        checkIsChat()
+    }, [])
+
     return(
         <TouchableOpacity style={styles.container} onPress={()=> navigation.navigate("Detail Attendance", {
             idStudent: data.idStudent, 
@@ -35,18 +55,19 @@ export const CardStudentAttendance = ({data = initStudent, lectureCount, assignm
         })} key={data.idStudent}>
             <View style={{gap: 4}}>
                 <Image source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva} style={styles.avata}/>
-                <TouchableOpacity style={styles.btn} 
-                    onPress={()=>{
-                    console.log("data.idStudent: ", data.idStudent);    
-                    navigation.navigate("Chat", {
-                        screen: "ChatBoard",
-                        params: {
-                            idStudent: data.idStudent
-                        }
-                    })}
-                }>
-                    <Ionicons name="chatbubble-outline" size={12} color={COLORS.main} />
-                </TouchableOpacity>
+                {isChat &&
+                    <TouchableOpacity style={styles.btn} 
+                        onPress={()=>{  
+                            navigation.navigate("Chat", {
+                                screen: "ChatBoard",
+                                params: {
+                                    idStudent: data.idStudent
+                                }
+                            })}
+                        }>
+                            <Ionicons name="chatbubble-outline" size={12} color={COLORS.main} />
+                        </TouchableOpacity>
+                    }
             </View>
             <View style={{gap: 2}}>
                 <Text style={styles.title}>{data.fullName}</Text>

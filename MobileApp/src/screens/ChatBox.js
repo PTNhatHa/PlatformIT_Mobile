@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
-import { COLORS, commonStyles } from "../utils/constants";
+import { COLORS, commonStyles, currentIP } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultAva from "../../assets/images/DefaultAva.png"
@@ -13,6 +13,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { getConversation, sendMessage } from "../services/message";
 import { formatDateTime, getTime } from "../utils/utils";
 import { isChatAvailable } from "../services/user";
+import * as signalR from '@microsoft/signalr';
 
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
@@ -79,6 +80,51 @@ export const ChatBox = ({route})=>{
         checkIsChat()
     },[])
 
+    useEffect(()=>{
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                // console.log('Connected to UpdateCommentsOfLecture hub.');
+                connection.on('UpdateConversation', (updatedConversation) => {
+                    // console.log("updatedNotifications: ", updatedNotifications);
+                    const response = updatedConversation          
+                    if(response){
+                        setListMessage(response)
+                        setReceiverName(response[0].idSender !== state.idUser ? 
+                            {
+                                name: response[0].senderName,
+                                avatar: response[0].senderAvatar
+                            }
+                            :
+                            {
+                                name: response[0].receiverName,
+                                avatar: response[0].receiverAvatar
+                            }
+                            
+                        )
+                    }
+                });
+            } catch (error) {
+                console.log('SignalR Connection Error:', error);
+            }
+        };    
+        startConnection();
+        connection.onclose((error) => {
+            console.log('SignalR connection closed:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
+    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, [])
+    
     const handleSendMessage = async()=>{
         setLoading(true)
         try {

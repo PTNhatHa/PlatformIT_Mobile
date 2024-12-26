@@ -15,9 +15,10 @@ import { ProgressCircle } from "../../../components/Progress"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { CardVirticalCourse } from "../../../components/CardVertical"
-import { getDetailStudent } from "../../../services/user"
+import { getDetailStudent, isChatAvailable } from "../../../services/user"
 import DefaultAva from "../../../../assets/images/DefaultAva.png"
 import { useNavigation } from "@react-navigation/native"
+import { useUser } from "../../../contexts/UserContext"
 
 const init = {
     "idUser": null,
@@ -43,8 +44,22 @@ export const TeacherDetailAttendance = ({route})=>{
     const navigation = useNavigation()
     const {idStudent, idCourse} = route?.params || {}
     const [data, setData] = useState({})
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [indexTab, setIndexTab] = useState(1)
+
+    const {state} = useUser()
+    const [isChat, setIsChat] = useState(false)
+
+    const checkIsChat = async()=>{
+        try {
+            const check = await isChatAvailable(idStudent, state.idUser)
+            if(check === true){
+                setIsChat(true)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
 
     useEffect(()=>{
         const fetchDetail = async()=>{
@@ -58,6 +73,8 @@ export const TeacherDetailAttendance = ({route})=>{
             }
         }
         fetchDetail()
+        checkIsChat()
+        setIsLoading(false)
     }, [])
     return(
         <ScrollView
@@ -87,7 +104,15 @@ export const TeacherDetailAttendance = ({route})=>{
             <>
                 {indexTab === 1 &&
                     <View style={styles.PI}>
-                        <Text style={commonStyles.title}>Personal Infomation</Text>
+                        <View style={styles.wrapFlex}>
+                            <Text style={commonStyles.title}>Personal Infomation</Text>
+                            {isChat &&
+                                <TouchableOpacity style={[styles.titleCard]}>
+                                    <Ionicons name="chatbubble-outline" size={16} color="black" />
+                                    <Text style={[styles.titleCardText]}>Chat</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
                         <View style={styles.avataWrapper}>
                             <View style={styles.avataInner}>
                                 <Image style={styles.avataImage} source={data.avatarPath ? {uri: data.avatarPath} : DefaultAva}/>
@@ -235,5 +260,25 @@ const styles = StyleSheet.create({
     wrapList:{
         gap: 10,
         minHeight: 510
-    }
+    },
+    wrapFlex: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between"
+    },
+    titleCard:{
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        backgroundColor: COLORS.main30,
+        borderRadius: 4,
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        columnGap: 4,
+        alignItems: "center"
+    },
+    titleCardText: {
+        fontSize: 14,
+        fontWeight: "bold",
+        color: "black"
+    },
 })

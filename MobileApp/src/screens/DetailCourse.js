@@ -400,7 +400,7 @@ export const DetailCourse =({route})=>{
                                 {isChat &&
                                     <TouchableOpacity style={[styles.titleCard, {backgroundColor: COLORS.main30}]}>
                                         <Ionicons name="chatbubble-outline" size={16} color="black" />
-                                        <Text style={[styles.titleCardText, {color: "black"}]}>Contact</Text>
+                                        <Text style={[styles.titleCardText, {color: "black"}]}>Chat</Text>
                                     </TouchableOpacity>
                                 }
                             </View>
