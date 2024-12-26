@@ -13,43 +13,46 @@ import { formatDateTime } from "../../../utils/utils";
 import { FilterAsgm } from "../../../components/Filter";
 
 const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
-    const [indexPage, setIndexPage] = useState(1)
-    const [inputIndex, setInputIndex] = useState(1)
-    const numberItem = 10
-    const [currentData, setCurrentData] = useState(data.slice((indexPage-1)*numberItem, indexPage*numberItem) || [])
-    const inputRef = useRef(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const numberItem = 5
     let createDate = null
     
-    useEffect(() => {
-        const newData = data.slice((indexPage - 1) * numberItem, indexPage * numberItem) || [];
-        setCurrentData(newData);
-    }, [data, indexPage]);
+    const getPageData = () => {
+        return data.slice((currentPage-1) * numberItem, currentPage * numberItem);
+    };
 
-    const handleChangeIndex = (isNext)=>{
-        let index = 0
-        if(isNext){
-            index = indexPage + 1
+    const getPagination = () => {
+        const totalPages = Math.ceil(data.length / numberItem);
+        if (totalPages <= 5) {
+        // Show all pages if there are 5 or fewer
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
         } else {
-            index = indexPage - 1
+        // Logic for more than 5 pages
+        if (currentPage <= 3) {
+            // Show first few pages if current page is near the start
+            return [1, 2, 3, 4, "...", totalPages];
+        } else if (currentPage >= totalPages - 2) {
+            // Show last few pages if current page is near the end
+            return [
+                1,
+                "...",
+                totalPages - 3,
+                totalPages - 2,
+                totalPages - 1,
+                totalPages,
+            ];
+        } else {
+            // Show current page in the middle with surrounding pages
+            return [
+                1,
+                "...",
+                currentPage - 1,
+                currentPage,
+                currentPage + 1,
+                "...",
+                totalPages,
+            ];
         }
-        setIndexPage(index)
-        setInputIndex(index)
-        setCurrentData(data.slice((index-1)*numberItem, index*numberItem))
-    }
-    const handleOnChangeText = (v)=>{
-        if(v){
-            const newIndex = parseInt(v, 10)
-            setInputIndex(newIndex)
-        }
-        else setInputIndex("")
-    }
-    const handleOnSubmit = ()=>{
-        if(!isNaN(inputIndex) && inputIndex > 0 && inputIndex <= Math.ceil(data.length / numberItem)){
-            setIndexPage(inputIndex)
-            setCurrentData(data.slice((inputIndex-1)*numberItem, inputIndex*numberItem))
-        } else{
-            setInputIndex(indexPage)
-            Alert.alert("Error Input", "Please enter from 1 to " + Math.ceil(data.length / numberItem))
         }
     }
 
@@ -57,7 +60,7 @@ const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
         <View style={{ flex: 1}}>
             <View style={styles.wrapList}>
                 <ScrollView contentContainerStyle={styles.wrapList}>
-                    {currentData.map(item => {
+                    {getPageData().map(item => {
                         if(formatDateTime(item.createdDate) !== createDate){
                             createDate = formatDateTime(item.createdDate)
                             return(
@@ -82,27 +85,20 @@ const ViewAllRender = ({data = [], status, getAllAsgm=()=>{}})=>{
                 </ScrollView>
             </View>
             <View style={styles.bottom}>
-                {indexPage > 1 && 
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(false)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Previous</Text>
+                {getPagination().map(page => 
+                    page !== "..." ? 
+                    <TouchableOpacity 
+                        style={[styles.wrapNumber, page === currentPage && {backgroundColor: COLORS.main}]} 
+                        onPress={()=>setCurrentPage(page)}
+                        key={page}
+                    >
+                        <Text style={[styles.bottomNumber, page === currentPage && {color: "white"}]}>{page}</Text>
                     </TouchableOpacity>
-                }
-                <TouchableOpacity style={styles.wrapPageNumber} onPress={()=> inputRef.current.focus()}>
-                    <TextInput 
-                        ref={inputRef}
-                        style={styles.pageNumberText} 
-                        value={inputIndex.toString()} 
-                        onChangeText={(v)=>handleOnChangeText(v)}
-                        onSubmitEditing={handleOnSubmit}
-                        keyboardType="numeric"    
-                    />
-                    <Text style={styles.pageNumberText}>/{Math.ceil(data.length / numberItem)} pages</Text>
-                </TouchableOpacity>
-                {indexPage < Math.ceil(data.length / numberItem) &&
-                    <TouchableOpacity style={[styles.pageNumber]} onPress={()=>handleChangeIndex(true)}>
-                        <Text style={[styles.pageNumberText, {color: "white"}]}>Next</Text>
-                    </TouchableOpacity>
-                }
+                    :
+                    <View style={styles.wrapNumber} key={page}>
+                        <Text style={styles.bottomNumber}>{page}</Text>
+                    </View>
+                )}
             </View>
         </View>
     )
@@ -242,19 +238,25 @@ export const TeacherAllAssignment = ()=>{
     useEffect(()=>{
         if(selectBtn === 0){
             let result = listPublish ? [...listPublish] : []
-            result = handleFilter(result, filterPublish)
+            if(filterPublish){
+                result = handleFilter(result, filterPublish)
+            }
             result = handleSearch(result, search.publish)
             setCurrentPublish(result)
         }
         if(selectBtn === 1){
             let result = listUnpublish ? [...listUnpublish] : []
-            result = handleFilter(result, filterUnpublish)
+            if(filterUnpublish){
+                result = handleFilter(result, filterUnpublish)
+            }
             result = handleSearch(result, search.unPublish)
             setCurrentUnpublish(result)
         }
         if(selectBtn === 2){
             let result = listPastDue ? [...listPastDue] : []
-            result = handleFilter(result, filterPastDue)
+            if(filterPastDue){
+                result = handleFilter(result, filterPastDue)
+            }
             result = handleSearch(result, search.pastDue)
             setCurrentPastDue(result)
         }
@@ -424,25 +426,17 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         alignItems: "center"
     },
-    wrapPageNumber:{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
+    bottomNumber:{
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 16
     },
-    pageNumber:{
+    wrapNumber:{
+        width: 32,
         height: 32,
-        width: 100,
-        backgroundColor: "white",
-        alignSelf: "flex-start",
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: COLORS.main
-    },
-    pageNumberText: {
-        color: COLORS.main,
-        fontWeight: "bold",
-        fontSize: 16,
     },
     wrapList: {
         marginBottom: 50,
