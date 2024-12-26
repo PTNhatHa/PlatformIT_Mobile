@@ -338,7 +338,7 @@ export const StudentDetailAsgm = ({route})=>{
                                                             {/* Row */}
                                                             <View style={[styles.wrapRow, styles.bgLightGray]}>
                                                                 <Text style={styles.wrapRowTextResult}>Case</Text>
-                                                                {true &&
+                                                                {resultCode.isShowTestcase === 1 &&
                                                                     <>
                                                                         <Text style={styles.wrapRowTextResult}>Input</Text>
                                                                         <Text style={styles.wrapRowTextResult}>Output</Text>
@@ -352,7 +352,7 @@ export const StudentDetailAsgm = ({route})=>{
                                                             {resultCode.testCases.map((result, index) =>{ 
                                                                 return (<View style={styles.wrapRow} key={index}>
                                                                     <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
-                                                                    {result.testCases &&
+                                                                    {resultCode.isShowTestcase === 1 &&
                                                                         <>
                                                                             <Text style={styles.wrapRowTextResult}>{result.testCases.input}</Text>
                                                                             <Text style={styles.wrapRowTextResult}>{result.testCases.expectedOutput}</Text>
@@ -361,10 +361,10 @@ export const StudentDetailAsgm = ({route})=>{
                                                                     <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
                                                                         {result.isPassTestCase === true ? "Pass" : "Fail"}
                                                                     </Text>
-                                                                    <Text style={[styles.wrapRowTextResult, !result.isTimeOut ? styles.textGreen : styles.textRed]}>
+                                                                    <Text style={[styles.wrapRowTextResult, (!result.isTimeOut && resultCode.isPerformanceOnTime) ? styles.textGreen : resultCode.isPerformanceOnTime ? styles.textRed : ""]}>
                                                                         {result.timeExecuted}
                                                                     </Text>
-                                                                    <Text style={[styles.wrapRowTextResult, !result.isOverMemory ? styles.textGreen : styles.textRed]}>
+                                                                    <Text style={[styles.wrapRowTextResult, (!result.isOverMemory && resultCode.isPerformanceOnMemory) ? styles.textGreen : resultCode.isPerformanceOnMemory ? styles.textRed : ""]}>
                                                                         {result.memoryExecuted}
                                                                     </Text>
                                                                     <Text style={styles.wrapRowTextResult}>

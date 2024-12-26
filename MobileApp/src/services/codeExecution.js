@@ -16,7 +16,6 @@ export const getAllActiveLanguage = async ()=>{
 export const runCodeTest = async (codeTest)=>{  
     return await axios.post(baseUrl + "/RunCodeTest", codeTest)
     .then(response => {
-        console.log("runCodeTest: ", response);
         return response.data
     })
     .catch(error => {

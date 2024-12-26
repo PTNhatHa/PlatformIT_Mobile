@@ -81,6 +81,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
                 const response = await updateReadStatus(idUser, state.idUser)
                 if(response){
                     getUnReadMessage()
+                    getAllConversation()
                 }
             }
         } catch (error) {

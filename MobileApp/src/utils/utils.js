@@ -26,11 +26,11 @@ export const formatDateTime = (date, isTime = false, isNoZ = false) => {
     return date ? date.toLocaleDateString('vi-VN', options) : '';
 };
 
-export const getTime = (date) => {
+export const getTime = (date, isNoZ = false) => {
     if(date === null) return ""
     // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
     if (typeof date === 'string') {
-        date = new Date(date);
+        date = new Date(date + (!isNoZ ? "Z" : ""));
     }
     
     if (!(date instanceof Date) || isNaN(date.getTime())) {

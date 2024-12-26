@@ -90,11 +90,13 @@ export const TeacherAsgmCreate = ({route})=>{
         timeValue: null,
         isPerformanceOnMemory: false,
         memoryValue: null,
-        isShowTestcase: true
+        isShowTestcase: false,
+        isAllowRunCode: false
     })
     const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
     const [listLanguage, setLanguage] = useState(null)    
     const [resultCode, setResultCode] = useState(null)
+    const [isSettingCode, setIsSettingCode] = useState(null)
     
     const fetchAsgm = async()=>{
         try {
@@ -190,6 +192,7 @@ export const TeacherAsgmCreate = ({route})=>{
                             isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
                             isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
                             isShowTestcase: detailCode.isShowTestcase === 1 ? true : false,
+                            isAllowRunCode: detailCode.isAllowRunCode === 1 ? true : false,
                         })
                     }
                 }
@@ -683,8 +686,8 @@ export const TeacherAsgmCreate = ({route})=>{
                         idCourse: selectCourse.value,
                         isTest: detailAsgm.isTest,
                         idLecture: selectLecture?.value || null,
-                        startDate: startDate || "",
-                        endDate: dueDate || "",
+                        startDate: startDate ? new Date(startDate).toISOString() : null,
+                        endDate: dueDate ? new Date(dueDate).toISOString() : null,
                         duration: duration || 0,
                         assignmentType: detailAsgm.assignmentType,
                         isPublish: isPublish,  
@@ -699,7 +702,8 @@ export const TeacherAsgmCreate = ({route})=>{
                         isPerformanceOnMemory: questionCode.isPerformanceOnMemory ? 1 : 0,
                         timeValue: questionCode.timeValue,
                         memoryValue: questionCode.memoryValue,
-                        testCases: [...questionCode.testCases]
+                        testCases: [...questionCode.testCases],
+                        isAllowRunCode: questionCode.isAllowRunCode ? 1 : 0,
                     }
                     response = await updateCodeAssignment(editDataCode)
                     if(response){
@@ -743,7 +747,8 @@ export const TeacherAsgmCreate = ({route})=>{
                         isPerformanceOnMemory: questionCode.isPerformanceOnMemory ? 1 : 0,
                         timeValue: questionCode.timeValue,
                         memoryValue: questionCode.memoryValue,
-                        testCases: [...questionCode.testCases]
+                        testCases: [...questionCode.testCases],
+                        isAllowRunCode: questionCode.isAllowRunCode ? 1 : 0,
                     }
                     response = await createCodeAssignment(data)
                     if(response){
@@ -1159,11 +1164,10 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <>
                                     {/* CODE */}
                                     <View style={{alignSelf: "flex-end", marginVertical: 8}}>
-                                        <CustomSwitch label={"Show test cases on submission"} 
-                                            value={questionCode.isShowTestcase} 
-                                            onChangeText={()=>handleChangeCode(!questionCode.isShowTestcase, "isShowTestcase")}
-                                        />   
-                                    </View>
+                                        <TouchableOpacity onPress={()=>setIsSettingCode(true)}>
+                                            <MaterialIcons name="menu" size={24} color="black" />
+                                        </TouchableOpacity>
+                                    </View> 
                                     <View style={styles.wrapContent}>
                                         <Text style={styles.title}>Question</Text>
                                         <View>
@@ -1363,6 +1367,32 @@ export const TeacherAsgmCreate = ({route})=>{
                                 <Text>Show answer on submit</Text>
                                 <CustomSwitch value={isShowAnswer} onChangeText={setIsShowAnswer}/>  
                             </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+            <Modal
+                visible={isSettingCode}
+                transparent={true}
+                animationType="fade"
+            >
+                <TouchableWithoutFeedback onPress={() => setIsSettingCode(false)}>
+                    <View style={styles.modalWrapper}>
+                        <View style={styles.openModal}>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Show test case on submission</Text>
+                                <CustomSwitch 
+                                    value={questionCode.isShowTestcase} 
+                                    onChangeText={()=>handleChangeCode(!questionCode.isShowTestcase, "isShowTestcase")}
+                                />                                
+                            </View>
+                            <View style={[styles.btnOpenModal]}>
+                                <Text>Allow run code</Text>
+                                <CustomSwitch 
+                                    value={questionCode.isAllowRunCode} 
+                                    onChangeText={()=>handleChangeCode(!questionCode.isAllowRunCode, "isAllowRunCode")}
+                                />                                
+                            </View>                            
                         </View>
                     </View>
                 </TouchableWithoutFeedback>

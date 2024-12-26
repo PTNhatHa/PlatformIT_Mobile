@@ -991,7 +991,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                     {/* Row */}
                                                                     <View style={[styles.wrapRow, styles.bgLightGray]}>
                                                                         <Text style={styles.wrapRowTextResult}>Case</Text>
-                                                                        {true &&
+                                                                        {resultCodeStudent.isShowTestcase === 1 &&
                                                                             <>
                                                                                 <Text style={styles.wrapRowTextResult}>Input</Text>
                                                                                 <Text style={styles.wrapRowTextResult}>Output</Text>
@@ -1005,7 +1005,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                     {resultCodeStudent.testCases.map((result, index) =>{ 
                                                                         return (<View style={styles.wrapRow} key={index}>
                                                                             <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
-                                                                            {result.testCases &&
+                                                                            {resultCodeStudent.isShowTestcase === 1 &&
                                                                                 <>
                                                                                     <Text style={styles.wrapRowTextResult}>{result.testCases.input}</Text>
                                                                                     <Text style={styles.wrapRowTextResult}>{result.testCases.expectedOutput}</Text>
@@ -1014,10 +1014,10 @@ export const TeacherDetailAsgm = ({route})=>{
                                                                             <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
                                                                                 {result.isPassTestCase === true ? "Pass" : "Fail"}
                                                                             </Text>
-                                                                            <Text style={[styles.wrapRowTextResult, !result.isTimeOut ? styles.textGreen : styles.textRed]}>
+                                                                            <Text style={[styles.wrapRowTextResult, (!result.isTimeOut && resultCodeStudent.isPerformanceOnTime) ? styles.textGreen : resultCodeStudent.isPerformanceOnTime ? styles.textRed : ""]}>
                                                                                 {result.timeExecuted}
                                                                             </Text>
-                                                                            <Text style={[styles.wrapRowTextResult, !result.isOverMemory ? styles.textGreen : styles.textRed]}>
+                                                                            <Text style={[styles.wrapRowTextResult, (!result.isOverMemory && resultCodeStudent.isPerformanceOnMemory) ? styles.textGreen : resultCodeStudent.isPerformanceOnMemory ? styles.textRed : ""]}>
                                                                                 {result.memoryExecuted}
                                                                             </Text>
                                                                             <Text style={styles.wrapRowTextResult}>

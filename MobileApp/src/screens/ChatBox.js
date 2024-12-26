@@ -161,7 +161,7 @@ export const ChatBox = ({route})=>{
                                     if((mess.idSender !== listMessage[index + 1]?.idSender || isShowDateTimeNext)){
                                         return(
                                             <View key={mess.idMessage}>                                                
-                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate, true) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={styles.wrapFlex}>
                                                     <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
                                                     <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
@@ -173,7 +173,7 @@ export const ChatBox = ({route})=>{
                                     } else{
                                         return(
                                             <View key={mess.idMessage}>
-                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                                {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate, true) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={[styles.wrapFlex, styles.subMess]}>
                                                     <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
                                                         {mess.content}

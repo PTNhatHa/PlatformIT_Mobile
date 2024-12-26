@@ -194,13 +194,15 @@ const StackChatScreen = ({getUnReadMessage})=>{
         >
             <StackChat.Screen
                 name="ChatBoard"
-                component={(props) => (
+                options={{ headerShown: true }}
+            >
+                {props => (
                     <ChatBoard 
                         {...props} 
-                        getUnReadMessage={getUnReadMessage}
+                        getUnReadMessage={getUnReadMessage} 
                     />
                 )}
-            />
+            </StackChat.Screen>
             <StackChat.Screen
                 name="ChatBox"
                 component={ChatBox}
@@ -396,18 +398,22 @@ export const TeacherBottomTab = ()=>{
                 await connection.start();
                 console.log('Connected to UpdateConversation Noti hub.');
                 connection.on('UpdateChatList', (updatedConversation) => {
-                    console.log("UpdateChatList Noti: ", updatedConversation);
-                    const response = updatedConversation          
-                    if(response){
-                        response.forEach(item => {
-                            if(item.isRead === 0){
-                                messUnRead +=1
-                            }
-                        });
+                    try {
+                        console.log("UpdateChatList Noti: ", updatedConversation);
+                        const response = updatedConversation;
+                        if (response) {
+                            response.forEach(item => {
+                                if (item.isRead === 0) {
+                                    messUnRead += 1;
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error processing UpdateChatList:', error);
                     }
                 });
             } catch (error) {
-                console.log('SignalR Connection Error:', error);
+                console.log('SignalR Connection Error:', error.message);
             }
         };    
         startConnection();
