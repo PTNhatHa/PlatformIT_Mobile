@@ -61,6 +61,7 @@ export const DetailCourse =({route})=>{
     const [progress, setProgress] = useState({})
     const [ratings, setRatings] = useState([])
     const [isAddRating, setIsAddRating] = useState(false)
+    const [rateAvg, setRateAvg] = useState(5)
     const [newRating, setNewRating] = useState({
         idUser: state.idUser,
         idCourse: idCourse,
@@ -119,13 +120,16 @@ export const DetailCourse =({route})=>{
     const getRating = async()=>{
         try {
             const response = await getAllRatingsOfCourse(idCourse)
+            let avg = 0
             if(response){
                 setRatings([...response.map(rate => {
+                    avg += rate.ratePoint
                     return{
                         ...rate,
                         timestamp: parseRelativeTime(rate.relativeTime),
                     }
                 })])
+                setRateAvg(((avg / response.length) || 0).toFixed(1))
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -501,7 +505,7 @@ export const DetailCourse =({route})=>{
                 <View style={{ flexDirection: "row", justifyContent: "space-between"}}>
                     <View style={styles.titleCard}>
                         <AntDesign name="star" size={16} color={COLORS.yellow}/>
-                        <Text style={styles.titleCardText}>{data.totalRatePoint} Rating</Text>
+                        <Text style={styles.titleCardText}>{rateAvg} Rating</Text>
                     </View>
                     {role === 2 &&
                         <TouchableOpacity style={styles.titleCard} onPress={()=>setIsAddRating(true)}>
