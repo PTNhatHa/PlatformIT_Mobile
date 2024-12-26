@@ -35,9 +35,8 @@ export const createCodeAssignment = async (data)=>{
     })
 }
 
-export const viewCodeAssignment = async (idAssignment)=>{ 
-    console.log("zooo: ", idAssignment); 
-    return await axios.get(baseUrl + "/ViewCodeAssignment?idAssignment=" + idAssignment)
+export const viewCodeAssignment = async (idAssignment, isTeacherView)=>{ 
+    return await axios.get(baseUrl + "/ViewCodeAssignment?idAssignment=" + idAssignment + "&isTeacherView=" + isTeacherView)
     .then(response => {
         // console.log(response);
         return response.data

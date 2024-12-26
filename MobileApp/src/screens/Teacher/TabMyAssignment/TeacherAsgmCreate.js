@@ -178,7 +178,7 @@ export const TeacherAsgmCreate = ({route})=>{
                     setTotalQuestion(response.assignmentItems.length)
                 } else {
                     // Code
-                    const detailCode = await viewCodeAssignment(idAssignment)
+                    const detailCode = await viewCodeAssignment(idAssignment, true)
                     if(detailCode){
                         setQuestionCode({
                             ...detailCode,

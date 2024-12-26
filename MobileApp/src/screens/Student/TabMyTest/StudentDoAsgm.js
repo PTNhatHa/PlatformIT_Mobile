@@ -219,7 +219,7 @@ export const StudentDoAsgm = ({route})=>{
     const fetchDetailAsgm = async()=>{
         try {
             if(assignmentType === 3){
-                const detailCode = await viewCodeAssignment(idAssignment)
+                const detailCode = await viewCodeAssignment(idAssignment, false)
                 if(detailCode){
                     setQuestionCode({
                         ...detailCode,

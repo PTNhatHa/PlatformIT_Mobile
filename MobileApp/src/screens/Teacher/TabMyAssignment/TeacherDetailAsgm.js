@@ -109,7 +109,7 @@ export const TeacherDetailAsgm = ({route})=>{
                     setTotalMark(totalMark)
                     setListQuestion(response.assignmentItems)
                 } else{
-                    const detailCode = await viewCodeAssignment(idAssignment)
+                    const detailCode = await viewCodeAssignment(idAssignment, true)
                     if(detailCode){
                         setQuestionCode({
                             ...detailCode,
