@@ -51,7 +51,7 @@ export const TextInputLabel = ({
     return(
         <>
             <View style={styles.container}>
-                <Text style={styles.label}>{label}</Text>
+                {label && <Text style={styles.label}>{label}</Text>}
                 <View style={styles.inputLabelFlex}>
                     <TextInput 
                         style={[styles.inputLabel]}

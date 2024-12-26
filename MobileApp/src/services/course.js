@@ -176,3 +176,25 @@ export const updateSection = async (idSection, newSectionName, idUpdatedBy)=>{
         console.log("Error UpdateSection: ", error);
     })
 }
+
+export const getAllRatingsOfCourse = async (idCourse)=>{
+    return await axios.get(baseUrl + "/GetAllRatingsOfCourse?idCourse=" + idCourse)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetAllRatingsOfCourse: ", error);
+    })
+}
+
+export const addRating = async (newRating)=>{
+    return await axios.post(baseUrl + "/AddRating", newRating)
+    .then(response => {
+        console.log(response.data.message);
+        return response.data.message
+    })
+    .catch(error => {
+        console.log("Error AddRating: ", error);
+    })
+}

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
-import { enrollCourse, getCourseDetail, getCourseProgress, getCourseProgressByIdStudent, getSectionDetail, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
+import { addRating, enrollCourse, getAllRatingsOfCourse, getCourseDetail, getCourseProgress, getCourseProgressByIdStudent, getSectionDetail, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
 import { useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
@@ -59,6 +59,14 @@ export const DetailCourse =({route})=>{
     const [filterStudent, setFilterStudent] = useState([])
 
     const [progress, setProgress] = useState({})
+    const [ratings, setRatings] = useState([])
+    const [isAddRating, setIsAddRating] = useState(false)
+    const [newRating, setNewRating] = useState({
+        idUser: state.idUser,
+        idCourse: idCourse,
+        content: "",
+        ratingNumber: 0
+    })
 
     const getCourse = async()=>{
         try {
@@ -105,6 +113,46 @@ export const DetailCourse =({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
+        }
+    }
+
+    const getRating = async()=>{
+        try {
+            const response = await getAllRatingsOfCourse(idCourse)
+            if(response){
+                setRatings([...response.map(rate => {
+                    return{
+                        ...rate,
+                        timestamp: parseRelativeTime(rate.relativeTime),
+                    }
+                })])
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+    const handleAddRating = async()=>{
+        if(!newRating.content || newRating.ratingNumber === 0){
+            Alert.alert("Warning", "Please fill all.")
+            return
+        }
+        setLoading(true)
+        try {
+            const response = await addRating(newRating)
+            if(response){
+                setIsAddRating(false)
+                setNewRating({
+                    ...newRating,
+                    content: "",
+                    ratingNumber: 0
+                })
+                getRating()
+                Alert.alert("Done", response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -173,6 +221,7 @@ export const DetailCourse =({route})=>{
             getCourse()
             getAttendance()
             getNoti()
+            getRating()
             const interval = setInterval(() => {
                 setListNoti((prevNotifications) =>
                   prevNotifications.map((notification) => ({
@@ -180,6 +229,13 @@ export const DetailCourse =({route})=>{
                     relativeTime: calculateRelativeTime(notification.timestamp),
                   }))
                 );
+                setRatings((prevRating) =>
+                  prevRating.map((rate) => ({
+                    ...rate,
+                    relativeTime: calculateRelativeTime(rate.timestamp),
+                  }))
+                );
+
               }, 60000); // Update every minute
           
               return () => clearInterval(interval);
@@ -448,14 +504,14 @@ export const DetailCourse =({route})=>{
                         <Text style={styles.titleCardText}>{data.totalRatePoint} Rating</Text>
                     </View>
                     {role === 2 &&
-                        <View style={styles.titleCard}>
+                        <TouchableOpacity style={styles.titleCard} onPress={()=>setIsAddRating(true)}>
                             <FontAwesome5 name="edit" size={16} color={COLORS.secondMain}/>
                             <Text style={styles.titleCardText}>Write a review</Text>
-                        </View>
+                        </TouchableOpacity>
                     }
                 </View>
                 <FlatList
-                    data={data.rateModels}
+                    data={ratings}
                     keyExtractor={item => item.idRating}
                     renderItem={({item})=>
                         <CardReview data={item}/>
@@ -635,6 +691,53 @@ export const DetailCourse =({route})=>{
                     <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new notification</Text>
                     <TextInputLabel label={"Content"} value={notiContent} placeholder={"Content"} onchangeText={setNotiContent}/>
                     <ButtonGreen title={"Save"} action={addNoti}/>
+                </View>
+            </View>
+        </Modal>
+        {/* Add Rating */}
+        <Modal
+            visible={isAddRating}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={()=>setIsAddRating(false)}
+        >
+            <View style={styles.selectImgWrapper}>
+                <View style={styles.addNoti}>
+                    <TouchableOpacity style={styles.close} onPress={()=>{
+                        setIsAddRating(false)
+                        setNewRating({
+                            ...newRating,
+                            content: "",
+                            ratingNumber: 0
+                        })
+                    }}>
+                        <AntDesign name="close" size={30} color={COLORS.secondMain} />
+                    </TouchableOpacity>
+                    <Text style={{ fontSize: 20, fontWeight: "bold"}}>Add new rating</Text>
+                    <View style={styles.wrapFlex}>
+                        {Array.from({ length: 5 }, (_, i) => (
+                            <TouchableOpacity key={i} onPress={()=>setNewRating({
+                                ...newRating,
+                                ratingNumber: i+1
+                            })}>
+                                <AntDesign 
+                                    name={i < newRating.ratingNumber ? "star" : "staro"} // 3 star đầy, 2 star rỗng
+                                    size={24} 
+                                    color={COLORS.yellow} 
+                                    key={i} 
+                                />
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                    <TextInputLabel 
+                        value={newRating} 
+                        placeholder={"Tell something about this course..."} 
+                        onchangeText={(v)=>setNewRating({
+                            ...newRating,
+                            content: v
+                        })}
+                    />
+                    <ButtonGreen title={"Save"} action={()=>handleAddRating()}/>
                 </View>
             </View>
         </Modal>

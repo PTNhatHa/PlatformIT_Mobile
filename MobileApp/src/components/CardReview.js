@@ -5,11 +5,13 @@ import { formatDateTime } from "../utils/utils";
 import DefaultAva from "../../assets/images/DefaultAva.png"
 
 const initReview={
-    "idRating": 0,
-    "raterAvatarPath": "",
-    "raterName": "Sample",
-    "rateContent": "Sample",
-    "ratePoint": 4
+    "idRating": 3,
+    "raterAvatarPath": "https://storage.googleapis.com/plait-1bf02.appspot.com/avatar_7d01b7cb-7729-474f-88d1-2d9c58457835.png",
+    "raterName": "Ni Ne",
+    "rateContent": "Hay quá!",
+    "ratePoint": 5,
+    "relativeTime": "5 hours ago",
+    "createdDate": "2024-12-26T04:38:31.0247871"
   }
 export const CardReview = ({data = initReview})=>{
     const renderStars = ()=>{
@@ -36,10 +38,10 @@ export const CardReview = ({data = initReview})=>{
             </View>
             <Text style={styles.reviewBoby}>{data.rateContent}</Text>
             <View style={styles.wrapReviewer}>
-                <Image source={data.raterAvatarPath || DefaultAva} style={styles.avata}/>
+                <Image source={data.raterAvatarPath ? {uri: data.raterAvatarPath} : DefaultAva} style={styles.avata}/>
                 <View>
                     <Text style={styles.name}>{data.raterName}</Text>
-                    <Text style={styles.reviewBoby}>{formatDateTime(data.createdDate)}</Text>
+                    <Text style={styles.reviewBoby}>{data.relativeTime}</Text>
                 </View>
             </View>
         </TouchableOpacity>
