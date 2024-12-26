@@ -696,7 +696,7 @@ export const StudentDoAsgm = ({route})=>{
                                     </ScrollView>
                                 </View>
                             }
-                            {!questionCode.isAllowRunCode &&
+                            {questionCode.isAllowRunCode &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>handleRunCodeTest()}>
                                     <Text style={styles.textWhite14}>Run</Text>
                                 </TouchableOpacity>
