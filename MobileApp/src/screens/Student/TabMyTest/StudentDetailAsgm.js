@@ -364,10 +364,10 @@ export const StudentDetailAsgm = ({route})=>{
                                                                     <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
                                                                         {result.isPassTestCase === true ? "Pass" : "Fail"}
                                                                     </Text>
-                                                                    <Text style={[styles.wrapRowTextResult, (resultCode.isPerformanceOnTime && result.timeExecuted <= resultCode.timeValue) ? styles.textGreen : resultCode.isPerformanceOnTime ? styles.textRed : ""]}>
+                                                                    <Text style={[styles.wrapRowTextResult, !result.isTimeOut ? styles.textGreen : styles.textRed]}>
                                                                         {result.timeExecuted}
                                                                     </Text>
-                                                                    <Text style={[styles.wrapRowTextResult, (resultCode.isPerformanceOnMemory && result.memoryExecuted <= resultCode.memoryValue) ? styles.textGreen : resultCode.isPerformanceOnMemory ? styles.textRed : ""]}>
+                                                                    <Text style={[styles.wrapRowTextResult, !result.isOverMemory ? styles.textGreen : styles.textRed]}>
                                                                         {result.memoryExecuted}
                                                                     </Text>
                                                                     <Text style={styles.wrapRowTextResult}>

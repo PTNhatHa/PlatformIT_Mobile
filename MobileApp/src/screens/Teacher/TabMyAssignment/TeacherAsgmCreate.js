@@ -100,7 +100,6 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             const response = await getAssignmentInfo(idAssignment)
             if(response){
-                // console.log("response: ", response);
                 setTitleAsgm(response.title + " (Duplicate)")
                 if(isEdit === true){
                     setTitleAsgm(response.title)
@@ -536,15 +535,9 @@ export const TeacherAsgmCreate = ({route})=>{
                 return
             }
         }
-        if(startDate || dueDate){
-            if(!startDate){
-                setError("Please select a start date if you have chosen a due date.")
-                return
-            }
-            if(!dueDate){
-                setError("Please select a due date if you have chosen a start date.")
-                return
-            }
+        if(startDate && !dueDate){
+            setError("Please select a due date if you have chosen a start date.")
+            return
         }
         if(type.value === 1 || type.value === 2){
             if(questions?.length === 0){
@@ -645,42 +638,46 @@ export const TeacherAsgmCreate = ({route})=>{
         try {
             let response = null
             if(isEdit){
-                const editData = {
-                    idAssignment: detailAsgm.idAssignment,
-                    title: titleAsgm,
-                    isTest: detailAsgm.isTest,
-                    startDate: startDate || "",
-                    dueDate: dueDate || "",
-                    duration: duration || 0,
-                    assignmentType: detailAsgm.assignmentType,
-                    isPublish: isPublish,
-                    isShufflingQuestion: isShufflingQuestion ? 1 : 0,
-                    isShufflingAnswer: isShufflingAnswer ? 1 : 0,
-                    showAnswer: isShowAnswer ? 1 : 0,
-                    assignmentStatus: detailAsgm.assignmentStatus,
-                    assignmentItems: questions.map(asgmItem => {
-                        return{
-                            idAssignmentItem: asgmItem.idAssignmentItem || "",
-                            question: asgmItem.question,
-                            mark: asgmItem.mark,                            
-                            explanation: (asgmItem.explanation === null || asgmItem.explanation === "null") ? "" : asgmItem.explanation ,
-                            isMultipleAnswer: asgmItem.isMultipleAnswer === true ? 1 : 0,
-                            attachedFile: asgmItem.attachedFile || "",
-                            isDeletedFile: (asgmItem.attachedFile === null && asgmItem.isDeletedFile === 1) ? 1 : 0,
-                            assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || "",
-                            assignmentItemStatus: asgmItem.assignmentItemStatus,
-                            items: asgmItem.items?.map(item => {
-                                return{
-                                    idMultipleAssignmentItem: item.idMultipleAssignmentItem || "",
-                                    content: item.content,
-                                    isCorrect: item.isCorrect === true ? 1 : 0,
-                                    multipleAssignmentItemStatus: item.multipleAssignmentItemStatus
-                                }
-                            }) || []
-                        }
-                    })
+                let editData
+                if(type.value !== 3){
+                    editData = {
+                        idAssignment: detailAsgm.idAssignment,
+                        title: titleAsgm,
+                        isTest: detailAsgm.isTest,
+                        startDate: startDate || "",
+                        dueDate: dueDate || "",
+                        duration: duration || 0,
+                        assignmentType: detailAsgm.assignmentType,
+                        isPublish: isPublish,
+                        
+                        isShufflingQuestion: isShufflingQuestion ? 1 : 0,
+                        isShufflingAnswer: isShufflingAnswer ? 1 : 0,
+                        showAnswer: isShowAnswer ? 1 : 0,
+                        assignmentStatus: detailAsgm.assignmentStatus,
+                        assignmentItems: questions.map(asgmItem => {
+                            return{
+                                idAssignmentItem: asgmItem.idAssignmentItem || "",
+                                question: asgmItem.question,
+                                mark: asgmItem.mark,                            
+                                explanation: (asgmItem.explanation === null || asgmItem.explanation === "null") ? "" : asgmItem.explanation ,
+                                isMultipleAnswer: asgmItem.isMultipleAnswer === true ? 1 : 0,
+                                attachedFile: asgmItem.attachedFile || "",
+                                isDeletedFile: (asgmItem.attachedFile === null && asgmItem.isDeletedFile === 1) ? 1 : 0,
+                                assignmentItemAnswerType: asgmItem.assignmentItemAnswerType || "",
+                                assignmentItemStatus: asgmItem.assignmentItemStatus,
+                                items: asgmItem.items?.map(item => {
+                                    return{
+                                        idMultipleAssignmentItem: item.idMultipleAssignmentItem || "",
+                                        content: item.content,
+                                        isCorrect: item.isCorrect === true ? 1 : 0,
+                                        multipleAssignmentItemStatus: item.multipleAssignmentItemStatus
+                                    }
+                                }) || []
+                            }
+                        })
+                    }
+                    response = await updateAssignment(state.idUser, editData)
                 }
-                response = await updateAssignment(state.idUser, editData)
             } else{
                 if(type.value === 1){
                     response = await createManualAssignment(
