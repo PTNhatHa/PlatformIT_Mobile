@@ -48,7 +48,7 @@ export const CardLecture = ({
                 <Text style={[styles.title, selectObject.idLecture === data.idLecture && {color: COLORS.main}]}>
                     {data.lectureTitle}
                 </Text>
-                {(role === 2 && !data.isFinishedLecture) && <AntDesign name="checkcircle" size={16} color={COLORS.main}/>}
+                {(role === 2 && data.isFinishedLecture) && <AntDesign name="checkcircle" size={16} color={COLORS.main}/>}
             </View>
             {data.lectureIntroduction !== "null" && data.lectureIntroduction !== null &&
                 <Text style={styles.body}>{data.lectureIntroduction}</Text>

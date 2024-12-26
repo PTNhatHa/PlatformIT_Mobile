@@ -43,12 +43,14 @@ export const TeacherLectureCreate = ({route})=>{
     const [idSupMaterial, setIdSupMaterial] = useState(1)
     const [video, setVideo] = useState(null)
     const [error, setError] = useState(null)
+    const [reason, setReason] = useState(null)
     const [loading, setLoading] = useState(false);
 
     const fetchDetailLecture = async()=>{
         try {
             const response = await getLectureDetail(idLecture)
             if(response){
+                setReason(response.reason)
                 setLectureName(response.lectureTitle)
                 setInforLecture({
                     ...inforLecture,
@@ -238,7 +240,12 @@ export const TeacherLectureCreate = ({route})=>{
                     {lectureStatus !== 1 &&
                         <View>
                             {lectureStatus === 2 && <TagYellow label={"Pending"}/>}
-                            {lectureStatus === 3 && <TagRed label={"Reject"}/>}
+                            {lectureStatus === 3 && 
+                                <View style={styles.wrapFlex}>
+                                    <TagRed label={"Reject"}/>
+                                    <Text style={{color: COLORS.red}}>{reason}</Text>
+                                </View>
+                            }
                         </View>
                     }
                     {idLecture ?

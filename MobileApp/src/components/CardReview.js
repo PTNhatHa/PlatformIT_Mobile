@@ -32,7 +32,7 @@ export const CardReview = ({data = initReview})=>{
         return star
     }
     return(
-        <TouchableOpacity style={styles.container} key={data.idRating}>
+        <View style={styles.container} key={data.idRating}>
             <View style={styles.star}>
                 {renderStars()}
             </View>
@@ -44,7 +44,7 @@ export const CardReview = ({data = initReview})=>{
                     <Text style={styles.reviewBoby}>{data.relativeTime}</Text>
                 </View>
             </View>
-        </TouchableOpacity>
+        </View>
     )
 }
 
