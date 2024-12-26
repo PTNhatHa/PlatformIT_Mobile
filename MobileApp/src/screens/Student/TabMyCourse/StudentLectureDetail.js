@@ -53,6 +53,12 @@ export const StudentLectureDetail = ({route})=>{
         try {
             const response = await getLectureDetail(selectLecture.idLecture)
             if(response){
+                if(!response.videoMaterial && !timeReached){
+                    setTimeout(() => {
+                        setTimeReached(true)
+                        console.log("2 phút đã trôi qua, timeReached được đặt thành true");
+                    }, 120000);
+                }
                 setData({
                     ...response,
                     timestamp: parseRelativeTime(response.relativeTime),
