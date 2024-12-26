@@ -80,50 +80,42 @@ export const ChatBox = ({route})=>{
         checkIsChat()
     },[])
 
-    useEffect(()=>{
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
+    // useEffect(()=>{
+    //     const connection = new signalR.HubConnectionBuilder()
+    //         .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+    //         .configureLogging(signalR.LogLevel.Information)
+    //         .build();
         
-        const startConnection = async () => {
-            try {
-                await connection.start();
-                // console.log('Connected to UpdateCommentsOfLecture hub.');
-                connection.on('UpdateConversation', (updatedConversation) => {
-                    // console.log("updatedNotifications: ", updatedNotifications);
-                    const response = updatedConversation          
-                    if(response){
-                        setListMessage(response)
-                        setReceiverName(response[0].idSender !== state.idUser ? 
-                            {
-                                name: response[0].senderName,
-                                avatar: response[0].senderAvatar
-                            }
-                            :
-                            {
-                                name: response[0].receiverName,
-                                avatar: response[0].receiverAvatar
-                            }
-                            
-                        )
-                    }
-                });
-            } catch (error) {
-                console.log('SignalR Connection Error:', error);
-            }
-        };    
-        startConnection();
-        connection.onclose((error) => {
-            console.log('SignalR connection closed:', error);
-            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
-        });
+    //     const startConnection = async () => {
+    //         try {
+    //             await connection.start();
+    //             console.log('Connected to UpdateConversation chatBox hub.');
+    //             // connection.on('UpdateConversation', (updatedConversation) => {
+    //             //     console.log("updatedConversation: ", updatedConversation);
+    //             //     const response = updatedConversation          
+    //             //     if(response){
+    //             //         setListMessage(response)
+    //             //     }
+    //             // });
+    //             connection.on('UpdateChatList', (UpdateChatList) => {
+    //                 console.log("UpdateChatList chatBox: ", UpdateChatList);
+                    
+    //             });
+    //         } catch (error) {
+    //             console.log('SignalR Connection Error chatBox:', error);
+    //         }
+    //     };    
+    //     startConnection();
+    //     connection.onclose((error) => {
+    //         console.log('SignalR connection closed chatBox:', error);
+    //         setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+    //     });
     
-        return () => {
-            console.log('Stopping SignalR connection...');
-            connection.stop().then(() => console.log('SignalR connection stopped.'));
-        };
-    }, [])
+    //     return () => {
+    //         console.log('Stopping SignalR connection...');
+    //         connection.stop().then(() => console.log('SignalR connection stopped.'));
+    //     };
+    // }, [])
     
     const handleSendMessage = async()=>{
         setLoading(true)

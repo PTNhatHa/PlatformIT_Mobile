@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
-import { COLORS, commonStyles } from "../utils/constants";
+import { COLORS, commonStyles, currentIP } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultAva from "../../assets/images/DefaultAva.png"
@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllUserConversations, updateReadStatus } from "../services/message";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
+import * as signalR from '@microsoft/signalr';
 
 export const ChatBoard = ({route, getUnReadMessage})=>{
     const idTeacher = route?.params?.idTeacher || 0
@@ -96,6 +97,45 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
             }
         }
     }
+
+    // useEffect(()=>{
+    //     const connection = new signalR.HubConnectionBuilder()
+    //         .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+    //         .configureLogging(signalR.LogLevel.Information)
+    //         .build();
+        
+    //     const startConnection = async () => {
+    //         try {
+    //             await connection.start();
+    //             console.log('Connected to UpdateConversation chatboard hub.');                
+    //             connection.on('UpdateChatList', (UpdateChatList) => {
+    //                 console.log("UpdateChatList: ", UpdateChatList);
+    //                 const response = UpdateChatList
+    //                 if(response){
+    //                     const newMess = response.map(mess => {
+    //                         return{
+    //                             ...mess,
+    //                             timestamp: parseRelativeTime(mess.relativeTime),
+    //                         }
+    //                     })
+    //                     setListChat(newMess)
+    //                 }
+    //             });
+    //         } catch (error) {
+    //             console.log('SignalR Connection chatboard Error:', error);
+    //         }
+    //     };    
+    //     startConnection();
+    //     connection.onclose((error) => {
+    //         console.log('SignalR connection closed chatboard:', error);
+    //         setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+    //     });
+    
+    //     return () => {
+    //         console.log('Stopping SignalR connection...');
+    //         connection.stop().then(() => console.log('SignalR connection stopped.'));
+    //     };
+    // }, [])
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
