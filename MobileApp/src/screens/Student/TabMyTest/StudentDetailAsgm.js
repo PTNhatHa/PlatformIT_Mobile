@@ -30,11 +30,8 @@ export const StudentDetailAsgm = ({route})=>{
         try {
             const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
             if(response){
-                if(response.assignmentType === 1){
-                    setData(response)
-                }
+                setData(response)
                 if(response.assignmentType === 2){
-                    setData(response)
                     const answers = await getAssignmentAnswer(idAssignment, state.idUser)
                     if(answers){
                         setListQuestion([...answers.detailQuestionResponses.map(question => {
@@ -55,7 +52,6 @@ export const StudentDetailAsgm = ({route})=>{
                     const answers = await getCodeAssignmentResult(idAssignment, state.idUser)
                     if(answers){
                         setResultCode(answers)
-                        // Chờ quìn sửa xong ròi bỏ
                         setData({
                             ...response,
                             submittedDate: answers.submittedDate,
@@ -64,7 +60,7 @@ export const StudentDetailAsgm = ({route})=>{
                             totalMark: answers.totalMark,
                             resultDuration: answers.duration
                         })
-                    }
+                    } 
                 }
             } else {
                 Alert.alert("Error", "Please try again")

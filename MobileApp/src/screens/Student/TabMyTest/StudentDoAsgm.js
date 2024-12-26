@@ -160,24 +160,23 @@ export const StudentDoAsgm = ({route})=>{
                 assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
                 submittedDate: dateVN,
             }
-            console.log(result);
-            const response = await submitCode(result)
-            if(response){
-                Alert.alert(
-                    "Submit assignment", 
-                    "Done", 
-                    [
-                      {
-                        text: "OK", 
-                        onPress: () => {
-                          navigation.goBack();
-                        }
-                      }
-                    ]
-                  );
-            } else{
-                Alert.alert("Warning", "Please try again.")
-            }
+            // const response = await submitCode(result)
+            // if(response){
+            //     Alert.alert(
+            //         "Submit assignment", 
+            //         "Done", 
+            //         [
+            //           {
+            //             text: "OK", 
+            //             onPress: () => {
+            //               navigation.goBack();
+            //             }
+            //           }
+            //         ]
+            //       );
+            // } else{
+            //     Alert.alert("Warning", "Please try again.")
+            // }
         } catch (error) {
             console.log("Error submit: ", error);
         } finally{
@@ -604,6 +603,7 @@ export const StudentDoAsgm = ({route})=>{
                         )
                     }  
                     {assignmentType === 3 &&
+                    <>
                         <View style={styles.wrapQuestion}>
                             <View>
                                 <Text style={styles.title}>Question</Text>
@@ -627,7 +627,9 @@ export const StudentDoAsgm = ({route})=>{
                                         </View>
                                     ) : ""}
                                 </View>
-                            </View>
+                            </View>                            
+                        </View>
+                        <View style={styles.wrapQuestion}>
                             <Text style={styles.title}>Your code</Text>
                             <TextInput
                                 style={styles.textCode}
@@ -636,7 +638,11 @@ export const StudentDoAsgm = ({route})=>{
                                 value={studentCode}
                                 onChangeText={(v)=>setStudentCode(v)}
                             />
+                            <TouchableOpacity style={styles.btn} onPress={()=>{}}>
+                                <Text style={styles.textWhite14}>Run</Text>
+                            </TouchableOpacity>
                         </View>
+                    </>
                     }
                     <TouchableOpacity style={styles.btn} onPress={()=>handleSubmit()}>
                         <Text style={styles.textWhite14}>Submit</Text>

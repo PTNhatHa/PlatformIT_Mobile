@@ -18,7 +18,7 @@ import { FilterStudentOverview } from "../../../components/Filter";
 import { CustomSwitch } from "../../../components/CustomSwitch";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabelGray, TextInputSelectBox } from "../../../components/TextInputField";
-import { runCodeTest, viewCodeAssignment } from "../../../services/codeExecution";
+import { getCodeAssignmentResult, runCodeTest, viewCodeAssignment } from "../../../services/codeExecution";
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -66,6 +66,7 @@ export const TeacherDetailAsgm = ({route})=>{
     })
     const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
     const [resultCode, setResultCode] = useState(null)
+    const [resultCodeStudent, setResultCodeStudent] = useState(null)
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
@@ -78,24 +79,20 @@ export const TeacherDetailAsgm = ({route})=>{
     };
 
     const handleRunCodeTest = async()=>{
-        if(!teacherCode || questionCode.language.value === 0){
-            Alert.alert("Warning", "Please fill your code and choose a language!")
-        } else{
-            setLoading(true)
-            try {
-                const response = await runCodeTest({
-                    idLanguage: questionCode.language.value,
-                    sourceCode: teacherCode,
-                    testCases: questionCode.testCases
-                })
-                if(response){
-                    setResultCode(response)
-                }
-            } catch (error) {
-                console.log("Error: ", error);
-            } finally{
-                setLoading(false)
+        setLoading(true)
+        try {
+            const response = await runCodeTest({
+                idLanguage: questionCode.language.value,
+                sourceCode: teacherCode,
+                testCases: questionCode.testCases
+            })
+            if(response){
+                setResultCode(response)
             }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -283,40 +280,58 @@ export const TeacherDetailAsgm = ({route})=>{
                         ...detail
                     }
                 })
-                const answers = await getAssignmentAnswer(idAssignment, idStudent)
-                if(answers){
-                    if(data.assignmentType === 1){
-                        setCurrentStudentAnswer([...answers.detailQuestionResponses])
-                        setGradingManual({
-                            idAssignmentResult: answers.idAssignmentResult,
-                            manualItems: [...answers.detailQuestionResponses.map(item => {
+                if(data.assignmentType !== 3){
+                    const answers = await getAssignmentAnswer(idAssignment, idStudent)
+                    if(answers){
+                        if(data.assignmentType === 1){
+                            setCurrentStudentAnswer([...answers.detailQuestionResponses])
+                            setGradingManual({
+                                idAssignmentResult: answers.idAssignmentResult,
+                                manualItems: [...answers.detailQuestionResponses.map(item => {
+                                    return{
+                                        idAssignmentResultItem: item.idAssignmentResultItem,
+                                        mark: item.studentMark
+                                    }
+                                })]
+                            })
+                            setErrorMark([...answers.detailQuestionResponses.map(item => {
                                 return{
                                     idAssignmentResultItem: item.idAssignmentResultItem,
-                                    mark: item.studentMark
+                                    error: ""
                                 }
-                            })]
+                            })])
+                        }
+                        if(data.assignmentType === 2){
+                            setCurrentStudentAnswer([...answers.detailQuestionResponses.map(question => {
+                                return{
+                                    ...question,
+                                    items: question.items.map(item => {
+                                        return{
+                                            ...item,
+                                            isSelected: question.selectedOptions.includes(item.idMultipleAssignmentItem),
+                                            isCorect: question.correctOptions.includes(item.idMultipleAssignmentItem),
+                                        }
+                                    })
+                                }
+                            })])
+                        }
+                    }
+                } else{
+                    const answers = await getCodeAssignmentResult(idAssignment, idStudent)
+                    if(answers){
+                        setResultCodeStudent(answers)
+                        setCurrentStudent(prev => {
+                            return{
+                                ...prev,
+                                ...detail,
+                                submittedDate: answers.submittedDate,
+                                resultStatus: answers.submissionStatus,
+                                assignmentMark: 0,
+                                totalMark: answers.totalMark,
+                                resultDuration: answers.duration
+                            }
                         })
-                        setErrorMark([...answers.detailQuestionResponses.map(item => {
-                            return{
-                                idAssignmentResultItem: item.idAssignmentResultItem,
-                                error: ""
-                            }
-                        })])
-                    }
-                    if(data.assignmentType === 2){
-                        setCurrentStudentAnswer([...answers.detailQuestionResponses.map(question => {
-                            return{
-                                ...question,
-                                items: question.items.map(item => {
-                                    return{
-                                        ...item,
-                                        isSelected: question.selectedOptions.includes(item.idMultipleAssignmentItem),
-                                        isCorect: question.correctOptions.includes(item.idMultipleAssignmentItem),
-                                    }
-                                })
-                            }
-                        })])
-                    }
+                    } 
                 }
             }
         } catch (error) {
@@ -737,7 +752,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                     </View>
                                 </View>
                                 
-                                {!currentStudentAnswer ?
+                                {(!currentStudentAnswer && !resultCodeStudent) ?
                                     <View style={styles.container}>
                                         <View style={styles.wrapperSearch}>
                                             <TextInput
@@ -795,6 +810,9 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 <TouchableOpacity style={styles.wrapFlex} onPress={()=>{
                                                     setCurrentStudent(null)
                                                     setCurrentStudentAnswer(null)    
+                                                    if(data.assignmentType === 3){
+                                                        setResultCodeStudent(null)
+                                                    }
                                                 }}>
                                                     <AntDesign name="left" size={18} color="black" />
                                                     <Text style={styles.textBlack16}>Answer sheet</Text>
@@ -830,109 +848,189 @@ export const TeacherDetailAsgm = ({route})=>{
                                                     <Text style={styles.textBlack16}>{formatTime(currentStudent.resultDuration)} minutes</Text>
                                                 </View> 
                                             </View>
+                                            {data.assignmentType !== 3 ?
+                                                <>
+                                                    {getPageDataStudentAnswer()?.map((question, index) => {    
+                                                        let currentMark
+                                                        let error
+                                                        if(data.assignmentType === 1){
+                                                            currentMark = gradingManual?.manualItems?.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
+                                                            error = errorMark.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
+                                                        }
+                                                        return (
+                                                        <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
+                                                            <View style={styles.headerQ}>
+                                                                <Text style={styles.title}>Question {index + (currentPageStudentAnswer - 1) * numberItem + 1}</Text>
+                                                                <Text style={styles.textGray12}>{ question.studentMark && `${question.studentMark}/`}{question.questionMark} mark</Text>
+                                                            </View>
+                                                            <Text style={styles.questionContent}>{question.question}</Text>
+                                                            {data.assignmentType === 1 ?
+                                                                <>
+                                                                    {/* Manual */}
+                                                                    {question.attachedFile &&
+                                                                        <View>
+                                                                            <Text style={styles.textGray12}>Reference material:</Text>
+                                                                            <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
+                                                                                <Text>{question.nameFile}</Text>
+                                                                            </TouchableOpacity>
+                                                                        </View>
+                                                                    }
+                                                                    <View>
+                                                                        <Text style={styles.textGray12}>Answer:</Text>
+                                                                        {question.answerText && 
+                                                                            <Text style={styles.inputLabelGray}>{question.answerText}</Text>
+                                                                        }
+                                                                        {question.answerAttachedFile &&
+                                                                            <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.answerAttachedFile)}>
+                                                                                <Text>{question.answerAttachedFile}</Text>
+                                                                            </TouchableOpacity>
+                                                                        }
 
-                                            {getPageDataStudentAnswer()?.map((question, index) => {    
-                                                let currentMark
-                                                let error
-                                                if(data.assignmentType === 1){
-                                                    currentMark = gradingManual?.manualItems?.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
-                                                    error = errorMark.find(item => item.idAssignmentResultItem === question.idAssignmentResultItem)
-                                                }
-                                                return (
-                                                <View style={styles.wrapQuestion} key={question.idAssignmentItem}> 
-                                                    <View style={styles.headerQ}>
-                                                        <Text style={styles.title}>Question {index + (currentPageStudentAnswer - 1) * numberItem + 1}</Text>
-                                                        <Text style={styles.textGray12}>{ question.studentMark && `${question.studentMark}/`}{question.questionMark} mark</Text>
-                                                    </View>
-                                                    <Text style={styles.questionContent}>{question.question}</Text>
-                                                    {data.assignmentType === 1 ?
-                                                        <>
-                                                            {/* Manual */}
-                                                            {question.attachedFile &&
-                                                                <View>
-                                                                    <Text style={styles.textGray12}>Reference material:</Text>
-                                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.attachedFile)}>
-                                                                        <Text>{question.nameFile}</Text>
-                                                                    </TouchableOpacity>
+                                                                        <View style={[styles.topBorder, styles.wrapFlex]}>   
+                                                                            <View style={styles.width30}>
+                                                                                <TextInputLabelGray 
+                                                                                    label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark?.toString()} 
+                                                                                    onchangeText={(v)=>onChangeMark(question.idAssignmentResultItem, v, question.questionMark)}
+                                                                                />
+                                                                            </View>    
+                                                                            <View style={styles.textBot}>
+                                                                                {error && <Text style={styles.textError}>{error.error}</Text>}    
+                                                                            </View>                                                         
+                                                                        </View>  
+                                                                    </View>
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    {/* Quiz */}
+                                                                    {question.attachedFile && 
+                                                                        <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
+                                                                            <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
+                                                                        </TouchableOpacity>
+                                                                    }
+                                                                    <View>
+                                                                        <Text style={styles.textGray12}>Choices:</Text>
+                                                                        {question.isMultipleAnswer === 0 ?
+                                                                            question.items.map(item => 
+                                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                                    <RadioView selected={item.isSelected}/>  
+                                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                                </View>
+                                                                            )
+                                                                            :
+                                                                            question.items.map(item => 
+                                                                                <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
+                                                                                    <CheckBox
+                                                                                        isChecked={item.isSelected}
+                                                                                        checkBoxColor={COLORS.secondMain}
+                                                                                        onClick={()=>{}}
+                                                                                    />
+                                                                                    <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
+                                                                                </View>
+                                                                            )
+                                                                        }
+                                                                    </View>
+                                                                </>                                                        
+                                                            }
+                                                        </View>
+                                                        )
+                                                    })}   
+
+                                                    {/* paginage */}
+                                                    <View style={styles.bottom}>
+                                                        {getPagination(currentStudentAnswer, currentPageStudentAnswer).map((page, index) => 
+                                                            page !== "..." ? 
+                                                            <TouchableOpacity 
+                                                                style={[styles.wrapNumber, page === currentPageStudentAnswer && {backgroundColor: COLORS.main}]} 
+                                                                onPress={()=>setCurrentPageStudentAnswer(page)}
+                                                                key={index}
+                                                            >
+                                                                <Text style={[styles.bottomNumber, page === currentPageStudentAnswer && {color: "white"}]}>{page}</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <View style={styles.wrapNumber} key={index}>
+                                                                <Text style={styles.bottomNumber}>{page}</Text>
+                                                            </View>
+                                                        )}
+                                                    </View>        
+                                                </>
+                                                :
+                                                <>
+                                                    <View>
+                                                        <Text style={styles.title}>Question</Text>
+                                                        <View>
+                                                            <Text style={styles.textGray14}>Problem</Text>
+                                                            <Text style={styles.questionContent}>{resultCodeStudent.problem}</Text>                                            
+                                                        </View>                                        
+                                                    </View>                                  
+                                                    <View>
+                                                        <Text style={styles.textGray14}>Example</Text>
+                                                        <View>
+                                                            {/* Row */}
+                                                            <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                                <Text style={styles.wrapRowText}>Input</Text>
+                                                                <Text style={styles.wrapRowText}>Output</Text>
+                                                            </View>
+                                                            {resultCodeStudent.examples ? resultCodeStudent?.examples?.map((ex, indexEx) => 
+                                                                <View style={styles.wrapRow} key={indexEx}>
+                                                                    <Text style={styles.wrapRowText} multiline={true}>{ex.input}</Text>
+                                                                    <Text style={styles.wrapRowText} multiline={true}>{ex.output}</Text>
                                                                 </View>
-                                                            }
-                                                            <View>
-                                                                <Text style={styles.textGray12}>Answer:</Text>
-                                                                {question.answerText && 
-                                                                    <Text style={styles.inputLabelGray}>{question.answerText}</Text>
-                                                                }
-                                                                {question.answerAttachedFile &&
-                                                                    <TouchableOpacity style={styles.wrapFile} onPress={()=>openURL(question.answerAttachedFile)}>
-                                                                        <Text>{question.answerAttachedFile}</Text>
-                                                                    </TouchableOpacity>
-                                                                }
-
-                                                                <View style={[styles.topBorder, styles.wrapFlex]}>   
-                                                                    <View style={styles.width30}>
-                                                                        <TextInputLabelGray 
-                                                                            label={"Mark*"} placeholder={"Mark"} type={"numeric"} value={currentMark?.mark?.toString()} 
-                                                                            onchangeText={(v)=>onChangeMark(question.idAssignmentResultItem, v, question.questionMark)}
-                                                                        />
-                                                                    </View>    
-                                                                    <View style={styles.textBot}>
-                                                                        {error && <Text style={styles.textError}>{error.error}</Text>}    
-                                                                    </View>                                                         
-                                                                </View>  
-                                                            </View>
-                                                        </>
-                                                        :
-                                                        <>
-                                                            {/* Quiz */}
-                                                            {question.attachedFile && 
-                                                                <TouchableOpacity onPress={()=>setSelectFile(question.attachedFile)}>
-                                                                    <Image source={{uri: question.attachedFile}} style={styles.questionImg}/>
-                                                                </TouchableOpacity>
-                                                            }
-                                                            <View>
-                                                                <Text style={styles.textGray12}>Choices:</Text>
-                                                                {question.isMultipleAnswer === 0 ?
-                                                                    question.items.map(item => 
-                                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                                            <RadioView selected={item.isSelected}/>  
-                                                                            <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
-                                                                        </View>
-                                                                    )
-                                                                    :
-                                                                    question.items.map(item => 
-                                                                        <View style={styles.wrapFlex} key={item.idMultipleAssignmentItem}>
-                                                                            <CheckBox
-                                                                                isChecked={item.isSelected}
-                                                                                checkBoxColor={COLORS.secondMain}
-                                                                                onClick={()=>{}}
-                                                                            />
-                                                                            <Text style={[styles.boxChoice, item.isCorect ? styles.boxColorGreen : (item.isSelected && !item.isCorect) ? styles.boxColorRed : ""]}>{item.content}</Text>
-                                                                        </View>
-                                                                    )
-                                                                }
-                                                            </View>
-                                                        </>                                                        
-                                                    }
-                                                </View>
-                                                )
-                                            })}   
-
-                                            {/* paginage */}
-                                            <View style={styles.bottom}>
-                                                {getPagination(currentStudentAnswer, currentPageStudentAnswer).map((page, index) => 
-                                                    page !== "..." ? 
-                                                    <TouchableOpacity 
-                                                        style={[styles.wrapNumber, page === currentPageStudentAnswer && {backgroundColor: COLORS.main}]} 
-                                                        onPress={()=>setCurrentPageStudentAnswer(page)}
-                                                        key={index}
-                                                    >
-                                                        <Text style={[styles.bottomNumber, page === currentPageStudentAnswer && {color: "white"}]}>{page}</Text>
-                                                    </TouchableOpacity>
-                                                    :
-                                                    <View style={styles.wrapNumber} key={index}>
-                                                        <Text style={styles.bottomNumber}>{page}</Text>
+                                                            ) : ""}
+                                                        </View>
+                                                    </View>                                            
+                                                    <View>
+                                                        <Text style={styles.title}>Student answer</Text>
+                                                        <View>
+                                                            <Text style={styles.textGray14}>Your code</Text>
+                                                            <Text style={styles.textCode}>{resultCodeStudent.sourceCode}</Text>                                                    
+                                                        </View>
+                                                        <View>
+                                                            <Text style={styles.textGray14}>Result</Text>
+                                                            <ScrollView horizontal={true}>
+                                                                <View style={{padding: 4}}>
+                                                                    {/* Row */}
+                                                                    <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                                        <Text style={styles.wrapRowTextResult}>Case</Text>
+                                                                        {true &&
+                                                                            <>
+                                                                                <Text style={styles.wrapRowTextResult}>Input</Text>
+                                                                                <Text style={styles.wrapRowTextResult}>Output</Text>
+                                                                            </>
+                                                                        }
+                                                                        <Text style={styles.wrapRowTextResult}>Pass test case</Text>
+                                                                        <Text style={styles.wrapRowTextResult}>Time(s)</Text>
+                                                                        <Text style={styles.wrapRowTextResult}>Memory(KB)</Text>
+                                                                        <Text style={styles.wrapRowTextResult}>Description</Text>
+                                                                    </View>
+                                                                    {resultCodeStudent.testCases.map((result, index) =>{ 
+                                                                        return (<View style={styles.wrapRow} key={index}>
+                                                                            <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
+                                                                            {result.testCases &&
+                                                                                <>
+                                                                                    <Text style={styles.wrapRowTextResult}>{result.testCases.input}</Text>
+                                                                                    <Text style={styles.wrapRowTextResult}>{result.testCases.expectedOutput}</Text>
+                                                                                </>
+                                                                            }
+                                                                            <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
+                                                                                {result.isPassTestCase === true ? "Pass" : "Fail"}
+                                                                            </Text>
+                                                                            <Text style={[styles.wrapRowTextResult, !result.isTimeOut ? styles.textGreen : styles.textRed]}>
+                                                                                {result.timeExecuted}
+                                                                            </Text>
+                                                                            <Text style={[styles.wrapRowTextResult, !result.isOverMemory ? styles.textGreen : styles.textRed]}>
+                                                                                {result.memoryExecuted}
+                                                                            </Text>
+                                                                            <Text style={styles.wrapRowTextResult}>
+                                                                                {result.description}
+                                                                            </Text>
+                                                                        </View>)
+                                                                    })}
+                                                                </View>                                                      
+                                                            </ScrollView>
+                                                        </View>                                                                                             
                                                     </View>
-                                                )}
-                                            </View>        
+                                                </>
+                                            }
                                         </View>
                                     </>
                                 }
