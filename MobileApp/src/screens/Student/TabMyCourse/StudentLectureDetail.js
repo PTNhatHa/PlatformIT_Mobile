@@ -35,12 +35,15 @@ export const StudentLectureDetail = ({route})=>{
     const [timeReached, setTimeReached] = useState(isFinishedLecture);
 
     const handlePlaybackStatusUpdate = (status) => {
-        console.log("Minute: ", status.positionMillis, " -- ", (status.isLoaded && status.isPlaying && status.positionMillis >= 10000));
-        if (status.isLoaded && status.isPlaying && status.positionMillis >= 10000) {
-            if (!selectLecture.isFinishedLecture) {
-                setTimeReached(true);
-                console.log("Minute: ", status.positionMillis);
-                // Thực hiện hành động tại đây
+        if (status.isLoaded && status.isPlaying && status.durationMillis) {
+            const halfwayPoint = status.durationMillis / 2;
+    
+            if (status.positionMillis >= halfwayPoint) {
+                if (!timeReached) {
+                    setTimeReached(true);
+                    console.log("Đã xem được một nửa video!");
+                    // Thực hiện hành động tại đây
+                }
             }
         }
     };
