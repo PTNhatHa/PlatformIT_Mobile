@@ -12,7 +12,8 @@ import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-import { viewCodeAssignment } from "../../../services/codeExecution";
+import { submitCode, viewCodeAssignment } from "../../../services/codeExecution";
+import { CustomSwitch } from "../../../components/CustomSwitch";
 
 export const StudentDoAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -78,12 +79,8 @@ export const StudentDoAsgm = ({route})=>{
                 submittedDate: dateVN,
                 answers: listAnswers
             }
-            console.log(result);
             const response = await submitQuizAssignment(result)
             if(response){
-                // Alert.alert("Submit assignment", response)
-                // reload()
-                // navigation.goBack()
                 Alert.alert(
                     "Submit assignment", 
                     response, 
@@ -91,7 +88,6 @@ export const StudentDoAsgm = ({route})=>{
                       {
                         text: "OK", 
                         onPress: () => {
-                        //   reload();
                           navigation.goBack();
                         }
                       }
@@ -108,7 +104,6 @@ export const StudentDoAsgm = ({route})=>{
     }
 
     const handleSubmitManual = async()=>{
-        console.log("zooo");
         setLoading(true)
         try {
             const dateVN = new Date().toLocaleString('en-CA', {  
@@ -125,7 +120,6 @@ export const StudentDoAsgm = ({route})=>{
                 answers: manualAnswer
             }
             const response = await submitManualAssignment(result)
-            // console.log("response: ", response);
             if(response){
                 Alert.alert(
                     "Submit assignment", 
@@ -134,7 +128,48 @@ export const StudentDoAsgm = ({route})=>{
                       {
                         text: "OK", 
                         onPress: () => {
-                        //   reload();
+                          navigation.goBack();
+                        }
+                      }
+                    ]
+                  );
+            } else{
+                Alert.alert("Warning", "Please try again.")
+            }
+        } catch (error) {
+            console.log("Error submit: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
+
+    const handleSubmitCode = async()=>{
+        setLoading(true)
+        try {
+            const dateVN = new Date().toLocaleString('en-CA', {  
+                timeZone: 'Asia/Ho_Chi_Minh',  
+                hour12: false,  
+            }).replace(', ', 'T') 
+
+            const result = {
+                idAssignment: idAssignment,
+                idStudent: state.idUser,
+                idLanguage: questionCode.language.value,
+                sourceCode: studentCode,
+                duration: totalTime,
+                assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
+                submittedDate: dateVN,
+            }
+            console.log(result);
+            const response = await submitCode(result)
+            if(response){
+                Alert.alert(
+                    "Submit assignment", 
+                    response, 
+                    [
+                      {
+                        text: "OK", 
+                        onPress: () => {
                           navigation.goBack();
                         }
                       }
@@ -168,6 +203,9 @@ export const StudentDoAsgm = ({route})=>{
                     if(assignmentType === 2){
                         handleSubmitQuiz()
                     }
+                    if(assignmentType === 3){
+                        handleSubmitCode()
+                    }
                 } },
             ]
         );
@@ -186,7 +224,9 @@ export const StudentDoAsgm = ({route})=>{
                         if(assignmentType === 2){
                             handleSubmitQuiz()
                         }
-                        navigation.goBack()
+                        if(assignmentType === 3){
+                            handleSubmitCode()
+                        }
                     } },
                 ]
             );
@@ -565,32 +605,36 @@ export const StudentDoAsgm = ({route})=>{
                     }  
                     {assignmentType === 3 &&
                         <View style={styles.wrapQuestion}>
-                            <Text style={styles.title}>Problem</Text>
-                            <Text style={styles.questionContent}>question.....</Text>
-                            <View style={styles.wrapFlex}>
-                                <Text style={styles.textGray12}>Language:</Text>
-                                <Text style={styles.textBBlack12}>C</Text>
-                            </View>
-                            {true &&
+                            <View>
+                                <Text style={styles.title}>Question</Text>
                                 <View>
-                                    <Text style={styles.textGray12}>Example:</Text>
+                                    <Text style={styles.textGray14}>Problem</Text>
+                                    <Text style={styles.questionContent}>{questionCode.problem}</Text>                                            
+                                </View>                                        
+                            </View>                                  
+                            <View>
+                                <Text style={styles.textGray14}>Example</Text>
+                                <View>
+                                    {/* Row */}
                                     <View style={[styles.wrapRow, styles.bgLightGray]}>
                                         <Text style={styles.wrapRowText}>Input</Text>
                                         <Text style={styles.wrapRowText}>Output</Text>
                                     </View>
-                                    <View style={styles.wrapRow}>
-                                        <Text style={styles.wrapRowText}>Input</Text>
-                                        <Text style={styles.wrapRowText}>Output</Text>
-                                    </View>
+                                    {questionCode.examples ? questionCode?.examples?.map((ex, indexEx) => 
+                                        <View style={styles.wrapRow} key={indexEx}>
+                                            <Text style={styles.wrapRowText} multiline={true}>{ex.input}</Text>
+                                            <Text style={styles.wrapRowText} multiline={true}>{ex.output}</Text>
+                                        </View>
+                                    ) : ""}
                                 </View>
-                            }
+                            </View>
                             <Text style={styles.title}>Your code</Text>
                             <TextInput
                                 style={styles.textCode}
                                 placeholder="Your answer"
                                 multiline={true}
-                                value={""}
-                                onChangeText={(v)=>{}}
+                                value={studentCode}
+                                onChangeText={(v)=>setStudentCode(v)}
                             />
                         </View>
                     }
@@ -907,5 +951,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         textAlignVertical: "top",
         backgroundColor: COLORS.lightGray,
+    },
+    textGray14: {
+        fontSize: 14,
+        color: COLORS.stroke
     },
 })

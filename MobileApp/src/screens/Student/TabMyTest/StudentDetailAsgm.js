@@ -10,6 +10,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
+import { getCodeAssignmentResult } from "../../../services/codeExecution";
 
 export const StudentDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -23,13 +24,17 @@ export const StudentDetailAsgm = ({route})=>{
     const numberItem = 2
     const [selectFile, setSelectFile] = useState("")
     const [isShowAnswer, setIsShowAnswer] = useState(false)
+    const [resultCode, setResultCode] = useState({})
 
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
             if(response){
-                setData(response)
+                if(response.assignmentType === 1){
+                    setData(response)
+                }
                 if(response.assignmentType === 2){
+                    setData(response)
                     const answers = await getAssignmentAnswer(idAssignment, state.idUser)
                     if(answers){
                         setListQuestion([...answers.detailQuestionResponses.map(question => {
@@ -44,6 +49,20 @@ export const StudentDetailAsgm = ({route})=>{
                                 })
                             }
                         })])
+                    }
+                }
+                if(response.assignmentType === 3){
+                    const answers = await getCodeAssignmentResult(idAssignment, state.idUser)
+                    if(answers){
+                        setResultCode(answers)
+                        setData({
+                            ...response,
+                            submittedDate: answers.submittedDate,
+                            resultStatus: answers.submissionStatus,
+                            assignmentMark: 0,
+                            totalMark: answers.totalMark,
+                            resultDuration: answers.duration
+                        })
                     }
                 }
             } else {
@@ -154,10 +173,12 @@ export const StudentDetailAsgm = ({route})=>{
                         <View style={styles.containerInner}>
                             <View>
                                 <Text style={styles.title}>{data.title}</Text>
-                                <View style={styles.wrapFlex}>
-                                    <Octicons name="dot-fill" size={10} color="black" />
-                                    <Text style={styles.textBBlack12}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
-                                </View>
+                                {data.questionQuantity > 1 &&
+                                    <View style={styles.wrapFlex}>
+                                        <Octicons name="dot-fill" size={10} color="black" />
+                                        <Text style={styles.textBBlack12}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>
+                                    </View>
+                                }
                             </View>
                             <View style={styles.wrapDetail}>
                                 <View style={styles.wrapFlex}>
@@ -284,28 +305,68 @@ export const StudentDetailAsgm = ({route})=>{
                                         </View>
                                         :
                                         <View style={styles.containerInner}>
-                                            <Text style={styles.title}>Problem</Text>
-                                            <Text style={styles.questionContent}>question.....</Text>
-                                            <View style={styles.wrapFlex}>
-                                                <Text style={styles.textGray12}>Language:</Text>
-                                                <Text style={styles.textBBlack12}>C</Text>
-                                            </View>
-                                            {true &&
+                                            <View>
+                                                <Text style={styles.title}>Question</Text>
                                                 <View>
-                                                    <Text style={styles.textGray12}>Example:</Text>
+                                                    <Text style={styles.textGray14}>Problem</Text>
+                                                    <Text style={styles.questionContent}>{resultCode.problem}</Text>                                            
+                                                </View>                                        
+                                            </View>                                  
+                                            <View>
+                                                <Text style={styles.textGray14}>Example</Text>
+                                                <View>
+                                                    {/* Row */}
                                                     <View style={[styles.wrapRow, styles.bgLightGray]}>
                                                         <Text style={styles.wrapRowText}>Input</Text>
                                                         <Text style={styles.wrapRowText}>Output</Text>
                                                     </View>
-                                                    <View style={styles.wrapRow}>
-                                                        <Text style={styles.wrapRowText}>Input</Text>
-                                                        <Text style={styles.wrapRowText}>Output</Text>
-                                                    </View>
+                                                    {resultCode.examples ? resultCode?.examples?.map((ex, indexEx) => 
+                                                        <View style={styles.wrapRow} key={indexEx}>
+                                                            <Text style={styles.wrapRowText} multiline={true}>{ex.input}</Text>
+                                                            <Text style={styles.wrapRowText} multiline={true}>{ex.output}</Text>
+                                                        </View>
+                                                    ) : ""}
                                                 </View>
-                                            }
-                                            <Text style={styles.title}>Your code</Text>
-                                            <Text style={styles.textCode}>Coding...</Text>
-                                            <Text style={styles.title}>Result</Text>
+                                            </View>                                            
+                                            <View>
+                                                <Text style={styles.title}>Your answer</Text>
+                                                <View>
+                                                    <Text style={styles.textGray14}>Your code</Text>
+                                                    <Text style={styles.textCode}>{resultCode.sourceCode}</Text>                                                    
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.textGray14}>Result</Text>
+                                                    <ScrollView horizontal={true}>
+                                                        <View style={{padding: 4}}>
+                                                            {/* Row */}
+                                                            <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                                <Text style={styles.wrapRowTextResult}>Case</Text>
+                                                                <Text style={styles.wrapRowTextResult}>Pass test case</Text>
+                                                                <Text style={styles.wrapRowTextResult}>Time(s)</Text>
+                                                                <Text style={styles.wrapRowTextResult}>Memory(KB)</Text>
+                                                                <Text style={styles.wrapRowTextResult}>Description</Text>
+                                                            </View>
+                                                            {resultCode.testCases.map((result, index) =>{ 
+                                                                return (<View style={styles.wrapRow} key={index}>
+                                                                    <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
+                                                                    <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
+                                                                        {result.isPassTestCase === true ? "Pass" : "Fail"}
+                                                                    </Text>
+                                                                    <Text style={[styles.wrapRowTextResult, (resultCode.isPerformanceOnTime && result.timeExecuted <= resultCode.timeValue) ? styles.textGreen : resultCode.isPerformanceOnTime ? styles.textRed : ""]}>
+                                                                        {result.timeExecuted}
+                                                                    </Text>
+                                                                    <Text style={[styles.wrapRowTextResult, (resultCode.isPerformanceOnMemory && result.memoryExecuted <= resultCode.memoryValue) ? styles.textGreen : resultCode.isPerformanceOnMemory ? styles.textRed : ""]}>
+                                                                        {result.memoryExecuted}
+                                                                    </Text>
+                                                                    <Text style={styles.wrapRowTextResult}>
+                                                                        {result.description}
+                                                                    </Text>
+                                                                </View>)
+                                                            })}
+                                                        </View>                                                      
+                                                    </ScrollView>
+                                                </View>                                                                                             
+                                            </View>
                                         </View>
                                     )
                                 }
@@ -527,4 +588,16 @@ const styles = StyleSheet.create({
         textAlignVertical: "top",
         backgroundColor: COLORS.lightGray,
     },
+    textGray14: {
+        fontSize: 14,
+        color: COLORS.stroke
+    },
+    textGreen:{
+        color: COLORS.green,
+        fontWeight: "bold"
+    },
+    textRed:{
+        color: COLORS.red,
+        fontWeight: "bold"
+    }
 })

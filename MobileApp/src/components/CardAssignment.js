@@ -269,7 +269,7 @@ export const CardAssignment = ({
                                         <Text style={styles.dataText}>{data.duration} min</Text>
                                     </View>
                                 }
-                                {data.questionQuantity !== null &&
+                                {data.questionQuantity > 0 &&
                                     <View style={styles.content}>
                                         <FontAwesome6 name="circle-question" size={12} color={COLORS.main} />
                                         <Text style={styles.dataText}>{data.questionQuantity} {data.questionQuantity > 1 ? "questions" : "question"}</Text>

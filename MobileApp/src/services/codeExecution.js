@@ -16,8 +16,8 @@ export const getAllActiveLanguage = async ()=>{
 export const runCodeTest = async (codeTest)=>{  
     return await axios.post(baseUrl + "/RunCodeTest", codeTest)
     .then(response => {
-        // console.log(response.data);
-        return response.data
+        console.log(response);
+        return response.data.message
     })
     .catch(error => {
         console.log("Error RunCodeTest: ", error);
@@ -43,5 +43,25 @@ export const viewCodeAssignment = async (idAssignment, isTeacherView)=>{
     })
     .catch(error => {
         console.log("Error ViewCodeAssignment: ", error.response);
+    })
+}
+
+export const submitCode = async (result)=>{ 
+    return await axios.post(baseUrl + "/SubmitCode", result)
+    .then(response => {
+        return response
+    })
+    .catch(error => {
+        console.log("Error SubmitCode: ", error.response);
+    })
+}
+
+export const getCodeAssignmentResult = async (idAssignment, idStudent)=>{ 
+    return await axios.get(baseUrl + "/GetCodeAssignmentResult?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+    .then(response => {
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error GetCodeAssignmentResult: ", error.response);
     })
 }
