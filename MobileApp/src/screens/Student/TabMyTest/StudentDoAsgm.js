@@ -12,7 +12,7 @@ import { RadioBtn, RadioView } from "../../../components/RadioBtn";
 import CheckBox from "react-native-check-box";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import * as DocumentPicker from 'expo-document-picker';
-import { submitCode, viewCodeAssignment } from "../../../services/codeExecution";
+import { studentRunCode, submitCode, viewCodeAssignment } from "../../../services/codeExecution";
 import { CustomSwitch } from "../../../components/CustomSwitch";
 
 export const StudentDoAsgm = ({route})=>{
@@ -43,7 +43,7 @@ export const StudentDoAsgm = ({route})=>{
         isShowTestcase: true
     })
     const [studentCode, setStudentCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
-    
+    const [resultCode, setResultCode] = useState(null)
 
     // Lấy thời gian hiện tại theo múi giờ Việt Nam  
     const options = {  
@@ -256,9 +256,11 @@ export const StudentDoAsgm = ({route})=>{
     };
 
     const fetchDetailAsgm = async()=>{
+        setLoading(true)
         try {
             if(assignmentType === 3){
                 const detailCode = await viewCodeAssignment(idAssignment, false)
+                console.log("detailCode: ", detailCode);
                 if(detailCode){
                     setQuestionCode({
                         ...detailCode,
@@ -266,8 +268,8 @@ export const StudentDoAsgm = ({route})=>{
                             label: detailCode.languageName,
                             value: detailCode.idLanguage
                         },
-                        timeValue: detailCode.timeValue.toString(),
-                        memoryValue: detailCode.memoryValue.toString(),
+                        timeValue: detailCode.timeValue?.toString(),
+                        memoryValue: detailCode.memoryValue?.toString(),
                         isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
                         isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
                     })
@@ -503,6 +505,24 @@ export const StudentDoAsgm = ({route})=>{
         })]    
         setManualAnswer(updateAnswer)
     }
+    
+    const handleRunCodeTest = async()=>{
+        setLoading(true)
+        try {
+            const response = await studentRunCode({
+                idAssignment: idAssignment,
+                idLanguage: questionCode.language.value,
+                sourceCode: studentCode
+            })
+            if(response){
+                setResultCode(response)
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+        }
+    }
     return(
         <View style={styles.wrapContainer}>
             {(!loading && duration > 0) &&
@@ -611,6 +631,10 @@ export const StudentDoAsgm = ({route})=>{
                                     <Text style={styles.textGray14}>Problem</Text>
                                     <Text style={styles.questionContent}>{questionCode.problem}</Text>                                            
                                 </View>                                        
+                                <View style={styles.wrapFlex}>
+                                    <Text style={styles.textGray14}>Language: </Text>
+                                    <Text style={styles.questionContent}>{questionCode.language.label}</Text>                                            
+                                </View>                                        
                             </View>                                  
                             <View>
                                 <Text style={styles.textGray14}>Example</Text>
@@ -638,9 +662,45 @@ export const StudentDoAsgm = ({route})=>{
                                 value={studentCode}
                                 onChangeText={(v)=>setStudentCode(v)}
                             />
-                            <TouchableOpacity style={styles.btn} onPress={()=>{}}>
-                                <Text style={styles.textWhite14}>Run</Text>
-                            </TouchableOpacity>
+                            {resultCode &&
+                                <View>
+                                    <Text style={styles.textGray14}>Result</Text>
+                                    <ScrollView horizontal={true}>
+                                        <View style={{padding: 4}}>
+                                            {/* Row */}
+                                            <View style={[styles.wrapRow, styles.bgLightGray]}>
+                                                <Text style={styles.wrapRowTextResult}>Case</Text>
+                                                <Text style={styles.wrapRowTextResult}>Pass test case</Text>
+                                                <Text style={styles.wrapRowTextResult}>Time(s)</Text>
+                                                <Text style={styles.wrapRowTextResult}>Memory(KB)</Text>
+                                                <Text style={styles.wrapRowTextResult}>Description</Text>
+                                            </View>
+                                            {resultCode.map((result, index) =>{ 
+                                                return (<View style={styles.wrapRow} key={index}>
+                                                    <Text style={styles.wrapRowTextResult}>{index + 1}</Text>
+                                                    <Text style={[styles.wrapRowTextResult, result.isPassTestCase ? styles.textGreen : styles.textRed]}>
+                                                        {result.isPassTestCase === true ? "Pass" : "Fail"}
+                                                    </Text>
+                                                    <Text style={[styles.wrapRowTextResult, (questionCode.isPerformanceOnTime && result.timeExecuted <= questionCode.timeValue) ? styles.textGreen : questionCode.isPerformanceOnTime ? styles.textRed : ""]}>
+                                                        {result.timeExecuted}
+                                                    </Text>
+                                                    <Text style={[styles.wrapRowTextResult, (questionCode.isPerformanceOnMemory && result.memoryExecuted <= questionCode.memoryValue) ? styles.textGreen : questionCode.isPerformanceOnMemory ? styles.textRed : ""]}>
+                                                        {result.memoryExecuted}
+                                                    </Text>
+                                                    <Text style={styles.wrapRowTextResult}>
+                                                        {result.description}
+                                                    </Text>
+                                                </View>)
+                                            })}
+                                        </View>                                                      
+                                    </ScrollView>
+                                </View>
+                            }
+                            {!questionCode.isAllowRunCode &&
+                                <TouchableOpacity style={styles.btn} onPress={()=>handleRunCodeTest()}>
+                                    <Text style={styles.textWhite14}>Run</Text>
+                                </TouchableOpacity>
+                            }
                         </View>
                     </>
                     }
@@ -962,4 +1022,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: COLORS.stroke
     },
+    textGreen:{
+        color: COLORS.green,
+        fontWeight: "bold"
+    },
+    textRed:{
+        color: COLORS.red,
+        fontWeight: "bold"
+    }
 })

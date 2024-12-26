@@ -18,7 +18,7 @@ import { FilterStudentOverview } from "../../../components/Filter";
 import { CustomSwitch } from "../../../components/CustomSwitch";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TextInputLabelGray, TextInputSelectBox } from "../../../components/TextInputField";
-import { getCodeAssignmentResult, runCodeTest, viewCodeAssignment } from "../../../services/codeExecution";
+import { getCodeAssignmentResult, runCodeTest, updateCodeAssignment, viewCodeAssignment } from "../../../services/codeExecution";
 
 export const TeacherDetailAsgm = ({route})=>{
     const navigation = useNavigation()
@@ -62,11 +62,13 @@ export const TeacherDetailAsgm = ({route})=>{
         timeValue: null,
         isPerformanceOnMemory: false,
         memoryValue: null,
-        isShowTestcase: true
+        isShowTestcase: false,
+        isAllowRunCode: false
     })
     const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
     const [resultCode, setResultCode] = useState(null)
     const [resultCodeStudent, setResultCodeStudent] = useState(null)
+    const [isSettingCode, setIsSettingCode] = useState(null)
 
     const getPageData = () => {
         return listQuestion.slice((currentPage-1) * numberItem, currentPage * numberItem);
@@ -118,6 +120,8 @@ export const TeacherDetailAsgm = ({route})=>{
                             memoryValue: detailCode.memoryValue.toString(),
                             isPerformanceOnTime: detailCode.isPerformanceOnTime === 1 ? true : false,
                             isPerformanceOnMemory: detailCode.isPerformanceOnMemory === 1 ? true : false,
+                            isShowTestcase: detailCode.isShowTestcase === 1 ? true : false,
+                            isAllowRunCode: detailCode.isAllowRunCode === 1 ? true : false,
                         })
                     }
                 }
@@ -133,7 +137,7 @@ export const TeacherDetailAsgm = ({route})=>{
                             color: COLORS.green 
                         },
                         { label: 'Late', 
-                            value: overView.totalStudents -overView.submittedCount - overView.notSubmittedCount, 
+                            value: overView.totalStudents - overView.submittedCount - overView.notSubmittedCount, 
                             color: COLORS.yellow 
                         },
                         { label: 'Not Submitted', 
@@ -425,7 +429,6 @@ export const TeacherDetailAsgm = ({route})=>{
                 ...data,
                 [field]: value === false ? 0 : 1
             }
-            console.log("newData: ", newData);
             const response = await updateAssignment(state.idUser, newData)
             if(response){
                 // Alert.alert("response", response)
@@ -436,6 +439,52 @@ export const TeacherDetailAsgm = ({route})=>{
         } finally{
             setLoading(false)
             setIsChangeSetting(true)
+        }
+    }
+
+    const handleChangeSettingCode = async(value, field)=>{
+        setLoading(true)
+        setIsSettingCode(false)
+        try {
+            const editDataCode = {
+                idAssignment: data.idAssignment,
+                title: data.title,
+                idCourse: data.value,
+                isTest: data.isTest,
+                idLecture: data.idLecture,
+                startDate: data.startDate ? new Date(data.startDate).toISOString() : null,
+                endDate: data.dueDate ? new Date(data.dueDate).toISOString() : null,
+                duration: data.duration || 0,
+                assignmentType: data.assignmentType,
+                isPublish: data.isPublish,  
+
+                isShowTestcase: field === "isShowTestcase" ? (!questionCode.isShowTestcase ? 1 : 0) : (questionCode.isShowTestcase ? 1 : 0),
+                createdBy: state.idUser,
+                problem: questionCode.problem,
+                idLanguage: questionCode.language.value,
+                examples: [...questionCode.examples],
+                isPassTestCase: 1,
+                isPerformanceOnTime: questionCode.isPerformanceOnTime ? 1 : 0,
+                isPerformanceOnMemory: questionCode.isPerformanceOnMemory ? 1 : 0,
+                timeValue: questionCode.timeValue,
+                memoryValue: questionCode.memoryValue,
+                testCases: [...questionCode.testCases],
+                isAllowRunCode: field === "isAllowRunCode" ? (!questionCode.isAllowRunCode ? 1 : 0) : (questionCode.isAllowRunCode ? 1 : 0),
+            }
+            const response = await updateCodeAssignment(editDataCode)
+            if(response){
+                if(field === "isShowTestcase"){
+                    handleChangeCode(!questionCode.isShowTestcase, "isShowTestcase")
+                }
+                if(field === "isAllowRunCode"){
+                    handleChangeCode(!questionCode.isAllowRunCode, "isAllowRunCode")
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            setLoading(false)
+            setIsSettingCode(true)
         }
     }
 
@@ -599,17 +648,20 @@ export const TeacherDetailAsgm = ({route})=>{
                                 : questionCode.problem &&
                                 <View style={styles.innerContentCode}>
                                     {/* CODE */}
-                                    <View style={styles.wrapSwitch}>
-                                        <CustomSwitch label={"Show test cases on submission"} 
-                                            value={questionCode.isShowTestcase} 
-                                            onChangeText={()=>handleChangeCode(!questionCode.isShowTestcase, "isShowTestcase")}
-                                        />   
-                                    </View>
+                                    <View style={{alignSelf: "flex-end", marginVertical: 8}}>
+                                        <TouchableOpacity onPress={()=>setIsSettingCode(true)}>
+                                            <MaterialIcons name="menu" size={24} color="black" />
+                                        </TouchableOpacity>
+                                    </View> 
                                     <View>
                                         <Text style={styles.title}>Question</Text>
                                         <View>
                                             <Text style={styles.textGray14}>Problem</Text>
                                             <Text style={styles.questionContent}>{questionCode.problem}</Text>                                            
+                                        </View>                                        
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray14}>Language: </Text>
+                                            <Text style={styles.questionContent}>{questionCode.language.label}</Text>                                            
                                         </View>                                        
                                     </View>                                  
                                     <View>
@@ -841,7 +893,15 @@ export const TeacherDetailAsgm = ({route})=>{
                                                 </View>
                                                 <View style={styles.wrapFlex}>
                                                     <Text style={styles.textGray16}>Marks</Text>
-                                                    <Text style={styles.textBlack16}>{currentStudent.totalMark}/{currentStudent.assignmentMark}</Text>
+                                                    {data.assignmentType !== 3 ?
+                                                        <Text style={styles.textBlack16}>
+                                                            {currentStudent.totalMark}/{currentStudent.assignmentMark}
+                                                        </Text>
+                                                        :
+                                                        <Text style={styles.textBlack16}>
+                                                            {currentStudent.totalMark*100}%
+                                                        </Text>
+                                                    }
                                                 </View>
                                                 <View style={styles.wrapFlex}>
                                                     <Text style={styles.textGray16}>Duration</Text>
@@ -960,6 +1020,10 @@ export const TeacherDetailAsgm = ({route})=>{
                                                         <View>
                                                             <Text style={styles.textGray14}>Problem</Text>
                                                             <Text style={styles.questionContent}>{resultCodeStudent.problem}</Text>                                            
+                                                        </View>                                        
+                                                        <View style={styles.wrapFlex}>
+                                                            <Text style={styles.textGray14}>Language: </Text>
+                                                            <Text style={styles.questionContent}>{resultCodeStudent.languageName}</Text>                                            
                                                         </View>                                        
                                                     </View>                                  
                                                     <View>
@@ -1085,6 +1149,32 @@ export const TeacherDetailAsgm = ({route})=>{
                                 <Text>Show answer on submit</Text>
                                 <CustomSwitch value={data.showAnswer} onChangeText={(v)=>handleChangeSetting(v, "showAnswer")}/>  
                             </View>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+            <Modal
+                visible={isSettingCode}
+                transparent={true}
+                animationType="fade"
+            >
+                <TouchableWithoutFeedback onPress={() => setIsSettingCode(false)}>
+                    <View style={styles.modalWrapper}>
+                        <View style={styles.openModal}>
+                            <View style={[styles.btnOpenModal, {borderBottomWidth: 1}]}>
+                                <Text>Show test case on submission</Text>
+                                <CustomSwitch 
+                                    value={questionCode.isShowTestcase} 
+                                    onChangeText={()=>handleChangeSettingCode("isShowTestcase")}
+                                />                                
+                            </View>
+                            <View style={[styles.btnOpenModal]}>
+                                <Text>Allow run code</Text>
+                                <CustomSwitch 
+                                    value={questionCode.isAllowRunCode} 
+                                    onChangeText={()=>handleChangeSettingCode("isAllowRunCode")}
+                                />                                
+                            </View>                            
                         </View>
                     </View>
                 </TouchableWithoutFeedback>

@@ -118,6 +118,12 @@ export const CardStudentDetailAsgm = ({data = initStudent, isPastDue = 0, onPres
                         <Text style={styles.dataText}>{data.studentTotalMark}</Text>
                     </View>
                 }
+                {data.studentCodeResult &&
+                    <View style={styles.content}>                    
+                        <Text style={styles.dataText}>Mark: </Text>
+                        <Text style={styles.dataText}>{data.studentCodeResult*100}%</Text>
+                    </View>
+                }
                 {(data.status === 1 || data.status === 3) ?
                     <View style={[styles.wrapTag, styles.bgGreen]}>
                         <Text style={styles.textTag}>{isPastDue === 1 ? "On time" : "Submitted"}</Text>
