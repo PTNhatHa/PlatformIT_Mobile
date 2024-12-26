@@ -178,13 +178,15 @@ const StackChatScreen = ({getUnReadMessage})=>{
         >
             <StackChat.Screen
                 name="ChatBoard"
-                component={(props) => (
+                options={{ headerShown: true }}
+            >
+                {props => (
                     <ChatBoard 
                         {...props} 
-                        getUnReadMessage={getUnReadMessage}
+                        getUnReadMessage={getUnReadMessage} 
                     />
                 )}
-            />
+            </StackChat.Screen>
             <StackChat.Screen
                 name="ChatBox"
                 component={ChatBox}

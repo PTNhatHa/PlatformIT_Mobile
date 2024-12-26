@@ -17,7 +17,6 @@ export const CardLecture = ({
     reload
 })=>{
     const navigation = useNavigation()
-    // console.log(selectObject);
     return(
         <TouchableOpacity 
             style={styles.container} key={data.idLecture} 
@@ -38,6 +37,7 @@ export const CardLecture = ({
                             isLimitedTime: isLimitedTime, 
                             courseEndDate: courseEndDate,
                             idTeacher: idTeacher,
+                            isFinishedLecture: data.isFinishedLecture
                             // reload: reload
                         })
                     }

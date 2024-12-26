@@ -48,7 +48,7 @@ const initLecture = [
 
 export const ModalCourseContent = ({
     role=0, idCourse, nameCourse,
-    selectLecture, setSelectLecture = ()=>{}, 
+    selectLecture, setSelectLecture = ()=>{}, setTimeReached=()=>{}
 })=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
@@ -74,13 +74,15 @@ export const ModalCourseContent = ({
             const response = await getCourseContentStructure(role === 3 ? state.idUser : null, idCourse)
             if(response){
                 let allContents = {}
-                if(role === 2){
+                if(role === 2){                    
                     allContents = {
                         ...response,
                         sectionStructures: response.sectionStructures.map(section => {
                             return{
                                 ...section,
-                                lectureStructures: section.lectureStructures.filter(lecture => lecture.lectureStatus === 1)
+                                lectureStructures: section.lectureStructures.filter(lecture =>{                                    
+                                    return lecture.lectureStatus === 1
+                                })
                             }
                         })
                     }

@@ -458,7 +458,14 @@ export const DetailCourse =({route})=>{
                                     <Text style={styles.titleCardText}>Teacher</Text>
                                 </View>
                                 {isChat &&
-                                    <TouchableOpacity style={[styles.titleCard, {backgroundColor: COLORS.main30}]}>
+                                    <TouchableOpacity style={[styles.titleCard, {backgroundColor: COLORS.main30}]} 
+                                        onPress={()=>navigation.navigate("Chat", {
+                                            screen: "ChatBoard",
+                                            params: {
+                                                idTeacher: data.idTeacher
+                                            }
+                                        })}
+                                    >
                                         <Ionicons name="chatbubble-outline" size={16} color="black" />
                                         <Text style={[styles.titleCardText, {color: "black"}]}>Chat</Text>
                                     </TouchableOpacity>

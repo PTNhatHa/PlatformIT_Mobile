@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { ScrollView } from "react-native"
 import Entypo from '@expo/vector-icons/Entypo';
 import { COLORS, commonStyles } from "../../../utils/constants";
@@ -16,7 +16,7 @@ import { GetExerciseOfLecture, getExerciseOfLectureViaStudent } from "../../../s
 import { useFocusEffect } from "@react-navigation/native";
 
 export const StudentLectureDetail = ({route})=>{
-    const {idLecture, idTeacher} = route?.params || {}
+    const {idLecture, idTeacher, isFinishedLecture} = route?.params || {}
     const {state} = useUser()
     const [index, setIndex] = useState(1)
     const [currentLecture, setCurrentLecture] = useState(idLecture)
@@ -27,11 +27,23 @@ export const StudentLectureDetail = ({route})=>{
         idLecture: idLecture,
         lectureTitle: "",
         idSection: null,
-        sectionName: ""
+        sectionName: "",
     });
-    const [courseContent, setCourseContent] = useState([])
     const [exercises, setExercises] = useState([])
     const intervalRef = useRef(null);
+
+    const [timeReached, setTimeReached] = useState(isFinishedLecture);
+
+    const handlePlaybackStatusUpdate = (status) => {
+        console.log("Minute: ", status.positionMillis, " -- ", (status.isLoaded && status.isPlaying && status.positionMillis >= 10000));
+        if (status.isLoaded && status.isPlaying && status.positionMillis >= 10000) {
+            if (!selectLecture.isFinishedLecture) {
+                setTimeReached(true);
+                console.log("Minute: ", status.positionMillis);
+                // Thực hiện hành động tại đây
+            }
+        }
+    };
 
     const fetchDetailLecture = async()=>{
         setLoading(true)
@@ -164,6 +176,7 @@ export const StudentLectureDetail = ({route})=>{
                                 style={styles.contentVideo}
                                 useNativeControls
                                 resizeMode="contain"
+                                onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
                             />
                         }
                         {data.mainMaterials?.length > 0 &&
@@ -242,7 +255,7 @@ export const StudentLectureDetail = ({route})=>{
                         </TouchableOpacity>
                         <ModalCourseContent 
                             role={2} selectLecture={selectLecture} setSelectLecture={handleSelectLecture}
-                            idCourse={data.idCourse}
+                            idCourse={data.idCourse} setTimeReached={setTimeReached}
                         />
                     </ScrollView>
                 </View>
