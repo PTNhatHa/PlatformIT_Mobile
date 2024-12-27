@@ -1,4 +1,4 @@
-import { Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import DefaultImg from "../../../../assets/images/DefaultImg.png"
 import Feather from '@expo/vector-icons/Feather';
@@ -166,19 +166,24 @@ export const StudentPaymentHistory = () =>{
                 </TouchableOpacity>
             </View>
             {getPageData().length > 0 &&
-                getPageData().map(trans => 
-                    <View style={styles.wrapCard} key={trans.idTransaction}>
-                        <Image source={trans.avatarCourse ? {uri: trans.avatarCourse} : DefaultImg} style={styles.img}/>
-                        <View style={styles.wrapContent}>
-                            <Text style={styles.title} numberOfLines={1}>{trans.nameCourse}</Text>
-                            <Text style={styles.textGray14}>Pay on {formatDateTime(trans.createDate, true)}</Text>
-                            <Text style={styles.textCost}>
-                                -{trans.cost.toLocaleString('vi-VN')}
-                                <Text style={styles.textUnderline}>đ</Text>
-                            </Text>
+                <FlatList
+                    data={getPageData()}
+                    keyExtractor={(item) => item.idTransaction}
+                    renderItem={({item}) => 
+                        <View style={styles.wrapCard} key={item?.iditemaction}>
+                            <Image source={item?.avatarCourse ? {uri: item?.avatarCourse} : DefaultImg} style={styles.img}/>
+                            <View style={styles.wrapContent}>
+                                <Text style={styles.title} numberOfLines={1}>{item?.nameCourse}</Text>
+                                <Text style={styles.textGray14}>Pay on {formatDateTime(item?.createDate, true)}</Text>
+                                <Text style={styles.textCost}>
+                                    -{item?.cost?.toLocaleString('vi-VN')}
+                                    <Text style={styles.textUnderline}>đ</Text>
+                                </Text>
+                            </View>
                         </View>
-                    </View>
-                )
+                    }
+                    style={styles.wrapList}
+                />
             }
             <View style={styles.bottom}>
                 {getPagination().map(page => 
@@ -294,5 +299,8 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         justifyContent: "center",
         alignItems: "center",
+    },
+    wrapList: {
+        marginBottom: 35,
     },
 })

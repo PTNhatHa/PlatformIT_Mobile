@@ -17,7 +17,7 @@ export const StudentAccount = ({navigation})=>{
                 <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Your infomation")}>
                     <Text style={styles.text}>View Profile</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.nav}>
+                <TouchableOpacity style={styles.nav} onPress={() => navigation.navigate("Payment History")}>
                     <Text style={styles.text}>Payment History</Text>
                 </TouchableOpacity>
             </View>

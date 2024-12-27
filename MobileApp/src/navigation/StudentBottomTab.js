@@ -31,6 +31,7 @@ import { ChatBoard } from "../screens/ChatBoard";
 import { ChatBox } from "../screens/ChatBox";
 import { getAllUserConversations } from "../services/message";
 import { CommentNoti } from "../screens/CommentNoti";
+import { StudentPaymentHistory } from "../screens/Student/TabAccount/StudentPaymentHistory";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -239,6 +240,10 @@ const StackAccountScreen = ()=>{
             <StackAccount.Screen
                 name="Your infomation"
                 component={StudentPI}
+            />
+            <StackAccount.Screen
+                name="Payment History"
+                component={StudentPaymentHistory}
             />
         </StackAccount.Navigator>
     )
