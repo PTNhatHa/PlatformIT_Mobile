@@ -196,8 +196,12 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
         if(search){
             result = handleSearch(result)
         }
-        result = handleSort(result, dataSort)
-        result = handleFilter(result) || []
+        if(dataSort){
+            result = handleSort(result, dataSort)
+        }
+        if(dataFilter){
+            result = handleFilter(result) || []
+        }
         setData(result)
     }, [search, dataSort, dataFilter])
         

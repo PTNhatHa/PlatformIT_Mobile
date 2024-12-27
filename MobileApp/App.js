@@ -24,14 +24,15 @@ import { ChatBoard } from './src/screens/ChatBoard';
 import { ChatBox } from './src/screens/ChatBox';
 import { CommentNoti } from './src/screens/CommentNoti';
 import { StudentDoAsgm } from './src/screens/Student/TabMyTest/StudentDoAsgm';
+import { StudentPaymentHistory } from './src/screens/Student/TabAccount/StudentPaymentHistory';
 
 export default function App() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <NavigationContainer>
         <UserProvider>
-          <SigninSignup/>
-          {/* <StudentDoAsgm/> */}
+          {/* <SigninSignup/> */}
+          <StudentPaymentHistory/>
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>
