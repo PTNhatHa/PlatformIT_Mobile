@@ -5,6 +5,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useEffect, useState } from "react";
 import { formatDateTime } from "../../../utils/utils";
 import { FilterPayment } from "../../../components/Filter";
+import { useNavigation } from "@react-navigation/native";
 
 const initData = [
     {
@@ -64,6 +65,7 @@ export const StudentPaymentHistory = () =>{
     const [dataSort, setDataSort] = useState([]);
     const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 5
+    const navigation = useNavigation()
 
     const getPageData = () => {
         return currentData.slice((currentPage-1) * numberItem, currentPage * numberItem);
@@ -170,7 +172,17 @@ export const StudentPaymentHistory = () =>{
                     data={getPageData()}
                     keyExtractor={(item) => item.idTransaction}
                     renderItem={({item}) => 
-                        <View style={styles.wrapCard} key={item?.iditemaction}>
+                        <TouchableOpacity 
+                            style={styles.wrapCard} 
+                            key={item?.idTransaction} 
+                            onPress={()=> navigation.navigate("My Course", {
+                                screen: "My Course",
+                                params: {
+                                    idCourse: item.idCourse,
+                                    role: 2
+                                }
+                            })}
+                        >
                             <Image source={item?.avatarCourse ? {uri: item?.avatarCourse} : DefaultImg} style={styles.img}/>
                             <View style={styles.wrapContent}>
                                 <Text style={styles.title} numberOfLines={1}>{item?.nameCourse}</Text>
@@ -180,7 +192,7 @@ export const StudentPaymentHistory = () =>{
                                     <Text style={styles.textUnderline}>đ</Text>
                                 </Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     }
                     style={styles.wrapList}
                 />
