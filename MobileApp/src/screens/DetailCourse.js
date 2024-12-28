@@ -28,7 +28,7 @@ import { TextInputLabel } from "../components/TextInputField"
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { ModalCourseContent } from "../components/ModalCourseContent"
-import { addBoardNotificationForCourse, getNotificationBoardOfCourse } from "../services/notification"
+import { addBoardNotificationForCourse, deleteNotificationBoard, getNotificationBoardOfCourse, readNotificationBoard } from "../services/notification"
 import { isChatAvailable } from "../services/user"
 import { FilterStudentProgress } from "../components/Filter"
 import { ProgressCircle } from "../components/Progress"
@@ -263,6 +263,46 @@ export const DetailCourse =({route})=>{
                 setNotiContent("")
                 getNoti()
             }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+
+    const handleDeleteNoti = (idNotification)=>{
+        Alert.alert(
+            "Confirm delete notification",
+            "Are you sure you want to delete this notification",
+            [
+                {
+                    text: "Yes",
+                    onPress: async()=> {
+                        setLoading(true)
+                        try {
+                            const response = await deleteNotificationBoard(idNotification, state.idUser)
+                            if(response){
+                                getNoti()
+                            }
+                        } catch (error) {
+                            console.log("Error: ", error);
+                        } finally{
+                            setLoading(false)
+                        }
+                    },
+                    style: "destructive"
+                },
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+            ],
+            { cancelable: true }
+        )
+        
+    }
+
+    const handleReadNoti = async()=>{
+        try {
+            await readNotificationBoard(idCourse, state.idUser)
         } catch (error) {
             console.log("Error: ", error);
         }
@@ -626,7 +666,7 @@ export const DetailCourse =({route})=>{
                         <View style={styles.wrapShow}>
                             {listNoti.length > 0 &&
                                 listNoti?.map(item => 
-                                    <CardNoti role={role} data={item} key={item.idNotification}/>
+                                    <CardNoti role={role} data={item} key={item.idNotification} handleDeleteNoti={handleDeleteNoti}/>
                             )}
                         </View>
                     </>

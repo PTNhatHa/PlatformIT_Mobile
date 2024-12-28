@@ -62,3 +62,27 @@ export const addBoardNotificationForCourse = async (idCourse, content, idCreated
         console.log("Error addBoardNotificationForCourse: ", error);
     })
 }
+
+export const deleteNotificationBoard = async (idNotification, idCreatedBy)=>{
+    const url = baseUrl + "/DeleteNotificationBoard?idNotification=" + idNotification + "&idCreatedBy=" + idCreatedBy
+    return await axios.post(url)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error DeleteNotificationBoard: ", error.response);
+    })
+}
+
+export const readNotificationBoard = async (idCourse, idUser)=>{
+    const url = baseUrl + "/ReadNotificationBoard?idCourse=" + idCourse + "&idUser=" + idUser
+    return await axios.post(url)
+    // .then(response => {
+    //     // console.log(response.data);
+    //     return response.data
+    // })
+    .catch(error => {
+        console.log("Error ReadNotificationBoard: ", error.response);
+    })
+}

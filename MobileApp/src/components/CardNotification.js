@@ -13,7 +13,8 @@ const initNoti=  {
     "idCourse": null,
     "relativeTime": "2 days ago"
   }
-export const CardNoti = ({data = initNoti, isScreen = false, role = 0})=>{
+export const CardNoti = ({data = initNoti, isScreen = false, role = 0, handleDeleteNoti=()=>{}})=>{
+
     return(
         <View style={styles.container}>
             {isScreen && <Image style={styles.img} source={{ uri: data.senderAvatar}}/>}
@@ -22,7 +23,7 @@ export const CardNoti = ({data = initNoti, isScreen = false, role = 0})=>{
                 <Text style={styles.dataDate}>{data.relativeTime}</Text>
             </View>
             {role === 1 &&
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>handleDeleteNoti(data.idNotification)}>
                     <FontAwesome6 name="delete-left" size={24} color={COLORS.red} />
                 </TouchableOpacity>
             }

@@ -210,7 +210,7 @@ export default SignIn = ({navigation}) => {
                         fontSize={20}
                         action={handleSignin}
                     />
-                    <Text style={styles.textGray}>------- Students can sign in with -------</Text>
+                    <Text style={styles.textGray}>--- Students can sign in with ---</Text>
                     <View style={{columnGap: 12, flexDirection: "row"}}>
                         <TouchableOpacity style={styles.party3} onPress={()=>promptAsync()}>
                             <FontAwesome name="google-plus" size={16} color="black" />
@@ -265,8 +265,9 @@ export default SignIn = ({navigation}) => {
 
 const styles = StyleSheet.create({
     container: {
-        width: width,
-        height: height,
+        // width: width,
+        // height: height,
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 16,
@@ -292,7 +293,8 @@ const styles = StyleSheet.create({
       },
     wrapSignIn: {
         backgroundColor: "white",
-        height: "75%",
+        // height: "75%",
+        flex: 1,
         width: "100%",
         borderRadius: 8,
         shadowColor: "#000", // Màu của bóng đổ
