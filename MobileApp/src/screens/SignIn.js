@@ -13,33 +13,33 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { determineFileType, validateEmail } from "../utils/utils";
 import { forgotPassword, getAvaImg, getUserInfo } from "../services/user";
-
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 import CheckBox from "react-native-check-box";
 import { useFocusEffect } from "@react-navigation/native";
-WebBrowser.maybeCompleteAuthSession();
-
 const { width, height } = Dimensions.get('window');
+import { useAuthRequest } from 'expo-auth-session'; 
+import * as AuthSession from 'expo-auth-session';  
 
 export default SignIn = ({navigation}) => {
-    const [accessToken, setAccessToken] = useState(null)
-    const [user, setUser] = useState(null)
 
-    // Login-google
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-        clientId: "605777517558-ojtuhupen9p211juela7o4k8gb4sf378.apps.googleusercontent.com",
-        androidClientId: "605777517558-m6s2vvj805r7qfcgju63bhlpqi3vid6g.apps.googleusercontent.com",
-        redirectUri: "https://auth.expo.io/@phanha182/MobileApp",
-    });
+    const discovery = {  
+        authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',  
+        tokenEndpoint: 'https://oauth2.googleapis.com/token',  
+        revocationEndpoint: 'https://oauth2.googleapis.com/revoke',  
+    };
 
-    // useEffect(()=>{
-    //     console.log(response);
-    //     if(response?.type === "success"){
-    //         setAccessToken(response.authentication.accessToken)
-    //         console.log(accessToken);
-    //     }
-    // }, [response])
+    const [request, response, promptAsync] = useAuthRequest({  
+        clientId: "605777517558-m6s2vvj805r7qfcgju63bhlpqi3vid6g.apps.googleusercontent.com",  
+        redirectUri: "https://auth.expo.io/@phanha182/MobileApp",  
+        scopes: ["profile", "email"],  
+        responseType: 'token',  
+    }, discovery);  
+    
+    useEffect(() => {  
+        if (response?.type === 'success') {  
+            const { access_token } = response.params;  
+            // Gọi API thông tin người dùng  
+        }  
+    }, [response]);  
 
 
     const [loading, setLoading] = useState(false);
@@ -265,9 +265,9 @@ export default SignIn = ({navigation}) => {
 
 const styles = StyleSheet.create({
     container: {
-        // width: width,
-        // height: height,
-        flex: 1,
+        width: width,
+        height: height,
+        // flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 16,

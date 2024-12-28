@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
@@ -7,7 +7,7 @@ import { ButtonIconLightGreen } from "../components/Button";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { changeReadStatus, readAllNotification } from "../services/notification";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllUserConversations, updateReadStatus } from "../services/message";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
@@ -16,6 +16,7 @@ import * as signalR from '@microsoft/signalr';
 export const ChatBoard = ({route, getUnReadMessage})=>{
     const idTeacher = route?.params?.idTeacher || 0
     const idStudent = route?.params?.idStudent || 0
+    const {name, avatar} = route?.params || {}
     const navigation = useNavigation()
     const {state} = useUser()
     const [listChat, setListChat] = useState([])
@@ -42,18 +43,33 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
         }
     }
 
-    useEffect(()=>{
-        getAllConversation()
-        const interval = setInterval(() => {
-            setListChat((prevMessage) =>
-              prevMessage.map((mess) => ({
-                ...mess,
-                relativeTime: calculateRelativeTime(mess.timestamp),
-              }))
-            )
-        }, 60000); // Update every minute
-        return () => clearInterval(interval);
-    }, [])
+    // useEffect(()=>{
+    //     getAllConversation()
+    //     const interval = setInterval(() => {
+    //         setListChat((prevMessage) =>
+    //           prevMessage.map((mess) => ({
+    //             ...mess,
+    //             relativeTime: calculateRelativeTime(mess.timestamp),
+    //           }))
+    //         )
+    //     }, 60000); // Update every minute
+    //     return () => clearInterval(interval);
+    // }, [])
+
+    useFocusEffect(
+        useCallback(() => {
+            getAllConversation()
+            const interval = setInterval(() => {
+                setListChat((prevMessage) =>
+                  prevMessage.map((mess) => ({
+                    ...mess,
+                    relativeTime: calculateRelativeTime(mess.timestamp),
+                  }))
+                )
+            }, 60000); // Update every minute
+            return () => clearInterval(interval);
+        }, [])
+    );
 
     const handleRefresh = async ()=>{
         setRefreshing(true)
@@ -70,7 +86,9 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
         if(idStudent || idTeacher){
             navigation.navigate("ChatBox", {
                 idStudent: idStudent,
-                idTeacher: idTeacher
+                idTeacher: idTeacher,
+                name: name || "",
+                avatar: avatar || ""
             })
         }
     }, [idStudent, idTeacher])
@@ -99,44 +117,44 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
         }
     }
 
-    // useEffect(()=>{
-    //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
-    //         .configureLogging(signalR.LogLevel.Information)
-    //         .build();
+    useEffect(()=>{
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
         
-    //     const startConnection = async () => {
-    //         try {
-    //             await connection.start();
-    //             console.log('Connected to UpdateConversation chatboard hub.');                
-    //             connection.on('UpdateChatList', (UpdateChatList) => {
-    //                 console.log("UpdateChatList: ", UpdateChatList);
-    //                 const response = UpdateChatList
-    //                 if(response){
-    //                     const newMess = response.map(mess => {
-    //                         return{
-    //                             ...mess,
-    //                             timestamp: parseRelativeTime(mess.relativeTime),
-    //                         }
-    //                     })
-    //                     setListChat(newMess)
-    //                 }
-    //             });
-    //         } catch (error) {
-    //             console.log('SignalR Connection chatboard Error:', error);
-    //         }
-    //     };    
-    //     startConnection();
-    //     connection.onclose((error) => {
-    //         console.log('SignalR connection closed chatboard:', error);
-    //         setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
-    //     });
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                console.log('Connected to UpdateConversation chatboard hub.');                
+                connection.on('UpdateChatList', (UpdateChatList) => {
+                    console.log("UpdateChatList: ", UpdateChatList);
+                    const response = UpdateChatList
+                    if(response){
+                        const newMess = response.map(mess => {
+                            return{
+                                ...mess,
+                                timestamp: parseRelativeTime(mess.relativeTime),
+                            }
+                        })
+                        setListChat(newMess)
+                    }
+                });
+            } catch (error) {
+                console.log('SignalR Connection chatboard Error:', error);
+            }
+        };    
+        startConnection();
+        connection.onclose((error) => {
+            console.log('SignalR connection closed chatboard:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
     
-    //     return () => {
-    //         console.log('Stopping SignalR connection...');
-    //         connection.stop().then(() => console.log('SignalR connection stopped.'));
-    //     };
-    // }, [])
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, [])
 
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải

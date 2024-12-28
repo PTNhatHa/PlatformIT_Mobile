@@ -13,6 +13,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import Entypo from '@expo/vector-icons/Entypo';
 import { useUser } from "../contexts/UserContext";
+import { readNotificationBoard } from "../services/notification";
 
 const initCourse={
     "idCourse": 3,
@@ -45,6 +46,19 @@ export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false
         }
         setShowTags(selectTags)
     }, [data.tags])
+    
+    const handleReadNoti = async()=>{
+        try {
+            await readNotificationBoard(data.idCourse, state.idUser)
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+    useEffect(()=>{
+        if(data.isNewNotification === 0){
+            handleReadNoti()
+        }
+    }, [])
     return(
         <TouchableOpacity 
             style={styles.container} 

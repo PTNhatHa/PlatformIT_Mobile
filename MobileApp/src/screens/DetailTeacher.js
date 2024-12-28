@@ -120,12 +120,13 @@ export const DetailTeacher =({route})=>{
                         </View>
                     </LinearGradient>
                 </View>
-                {console.log("isChat: ", isChat)}
                 {isChat &&
                     <TouchableOpacity style={styles.wrapperPro} onPress={()=>navigation.navigate("Chat", {
                         screen: "ChatBoard",
                         params: {
-                            idTeacher: idTeacher
+                            idTeacher: idTeacher,
+                            name: data.name,
+                            avatar: data.teacherAvatar
                         }
                     })}>
                         <View style={[styles.contentCard, {justifyContent: "center", alignItems: "center"}]}>

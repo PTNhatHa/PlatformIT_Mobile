@@ -396,10 +396,8 @@ export const TeacherBottomTab = ()=>{
         const startConnection = async () => {
             try {
                 await connection.start();
-                console.log('Connected to UpdateConversation Noti hub.');
                 connection.on('UpdateChatList', (updatedConversation) => {
                     try {
-                        console.log("UpdateChatList Noti: ", updatedConversation);
                         const response = updatedConversation;
                         if (response) {
                             let messUnRead = 0

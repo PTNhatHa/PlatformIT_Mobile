@@ -20,7 +20,7 @@
       "package": "com.plait.MobileApp",
       "config": {
         "googleSignIn": {
-          "certificateHash": "42:80:33:E7:8C:2D:31:75:0C:98:03:C8:2B:0F:BF:8A:F3:A5:E2:18"  
+          "certificateHash": "A7:A4:7A:E0:8A:63:97:BC:D4:EA:8C:36:C4:17:80:99:F6:E3:A9:CF"  
         },
         "permissions": ["INTERNET"]
       },
@@ -39,13 +39,11 @@
       },
       "authUrl": "https://auth.expo.io/@phanha182/MobileApp"
     },
-    "plugins": [
-      [
-        "@react-native-google-signin/google-signin",
-        {
-          "iosUrlScheme": "com.googleusercontent.apps.605777517558-hn1157pd4gimiq630fhc83rbmh97sgm4"
-        }
-      ]
-    ]
+    "auth": {  
+      "google": {  
+        "clientId": "605777517558-ojtuhupen9p211juela7o4k8gb4sf378.apps.googleusercontent.com",
+        "scopes": ["profile", "email"]  
+      }  
+    }  
   }
 }

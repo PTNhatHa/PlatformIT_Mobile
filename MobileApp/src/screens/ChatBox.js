@@ -18,6 +18,7 @@ import * as signalR from '@microsoft/signalr';
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
     const idStudent = route?.params?.idStudent || null
+    const {name, avatar} = route?.params || {}
     const navigation = useNavigation()
     const {state} = useUser()
     const [listMessage, setListMessage] = useState([])
@@ -30,8 +31,8 @@ export const ChatBox = ({route})=>{
         createdBy: state.idUser
     })
     const [receiverName, setReceiverName] = useState({
-        name: "",
-        avatar: ""
+        name: name || "",
+        avatar: avatar || ""
     })
     const scrollViewRef = useRef(null);
     const [isChat, setIsChat] = useState(true)
@@ -80,43 +81,44 @@ export const ChatBox = ({route})=>{
         checkIsChat()
     },[])
 
-    // useEffect(()=>{
-    //     const connection = new signalR.HubConnectionBuilder()
-    //         .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
-    //         .configureLogging(signalR.LogLevel.Information)
-    //         .build();
+    useEffect(()=>{
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
         
-    //     const startConnection = async () => {
-    //         try {
-    //             await connection.start();
-    //             console.log('Connected to UpdateConversation chatBox hub.');
-    //             // connection.on('UpdateConversation', (updatedConversation) => {
-    //             //     console.log("updatedConversation: ", updatedConversation);
-    //             //     const response = updatedConversation          
-    //             //     if(response){
-    //             //         setListMessage(response)
-    //             //     }
-    //             // });
-    //             connection.on('UpdateChatList', (UpdateChatList) => {
-    //                 console.log("UpdateChatList chatBox: ", UpdateChatList);
-                    
-    //             });
-    //         } catch (error) {
-    //             console.log('SignalR Connection Error chatBox:', error);
-    //         }
-    //     };    
-    //     startConnection();
-    //     connection.onclose((error) => {
-    //         console.log('SignalR connection closed chatBox:', error);
-    //         setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
-    //     });
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                // console.log('Connected to UpdateConversation chatBox hub.');
+                connection.on('UpdateNewMessage', (updateNewMessage) => {
+                    setLoading(true)  
+                    if(updateNewMessage){
+                        setListMessage((prev) => [...prev, {
+                            idSender: updateNewMessage.idSender,
+                            idReceiver: state.idUser,
+                            content: updateNewMessage.content,
+                            createdDate: new Date(),
+                        }])
+                    }
+                    setLoading(false)
+                });
+            } catch (error) {
+                console.log('SignalR Connection Error chatBox:', error);
+            }
+        };    
+        startConnection();
+        connection.onclose((error) => {
+            console.log('SignalR connection closed chatBox:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
     
-    //     return () => {
-    //         console.log('Stopping SignalR connection...');
-    //         connection.stop().then(() => console.log('SignalR connection stopped.'));
-    //     };
-    // }, [])
-    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, [])
+
     const handleSendMessage = async()=>{
         setLoading(true)
         try {
@@ -160,10 +162,10 @@ export const ChatBox = ({route})=>{
                                 if(mess.idSender !== state.idUser){
                                     if((mess.idSender !== listMessage[index + 1]?.idSender || isShowDateTimeNext)){
                                         return(
-                                            <View key={mess.idMessage}>                                                
+                                            <View key={index}>                                                
                                                 {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate, true) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={styles.wrapFlex}>
-                                                    <Image style={styles.img} source={mess.senderAvatar ? { uri: mess.senderAvatar} : DefaultAva}/>
+                                                    <Image style={styles.img} source={receiverName.avatar ? { uri: receiverName.avatar} : DefaultAva}/>
                                                     <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
                                                         {mess.content}
                                                     </Text>                        
@@ -172,7 +174,7 @@ export const ChatBox = ({route})=>{
                                         )
                                     } else{
                                         return(
-                                            <View key={mess.idMessage}>
+                                            <View key={index}>
                                                 {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate, true) : formatDateTime(mess.createdDate, true)}</Text>}
                                                 <View key={index} style={[styles.wrapFlex, styles.subMess]}>
                                                     <Text style={[styles.dataMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopLeft, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomLeft]}>
@@ -184,7 +186,7 @@ export const ChatBox = ({route})=>{
                                     }
                                 } else{
                                     return(
-                                        <View key={mess.idMessage}>
+                                        <View key={index}>
                                             {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
                                             <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
                                                 <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomRight]}>
