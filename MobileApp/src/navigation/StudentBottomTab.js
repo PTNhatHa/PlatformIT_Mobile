@@ -206,8 +206,10 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
             }}
         >
             <StackNoti.Screen
-                name="NotiBoard"
-                component={(props) => (
+                name="NotiBoard"               
+                options={{ headerShown: false }}
+            >
+                {(props) => (
                     <NotificationScreen 
                         {...props} 
                         allNoti={allNoti} 
@@ -215,8 +217,7 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
                         getNoti={getNoti}
                     />
                 )}
-                options={{ headerShown: false }}
-            />
+            </StackNoti.Screen>
             <StackNoti.Screen
                 name="Comment"
                 component={CommentNoti}
@@ -401,6 +402,50 @@ export const StudentBottomTab = ()=>{
         };
     }, []);
 
+    // NewChat
+    useEffect(()=>{
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+        
+        const startConnection = async () => {
+            try {
+                await connection.start();
+                console.log('Connected to UpdateConversation Noti hub.');
+                connection.on('UpdateChatList', (updatedConversation) => {
+                    try {
+                        console.log("UpdateChatList Noti: ", updatedConversation);
+                        const response = updatedConversation;
+                        if (response) {
+                            let messUnRead = 0
+                            response.forEach(item => {
+                                if (item.isRead === 0) {
+                                    messUnRead += 1;
+                                }
+                            });
+                            setUnReadMess(messUnRead)
+                        }
+                    } catch (error) {
+                        console.error('Error processing UpdateChatList:', error);
+                    }
+                });
+            } catch (error) {
+                console.log('SignalR Connection Error:', error.message);
+            }
+        };    
+        startConnection();
+        connection.onclose((error) => {
+            console.log('SignalR connection closed:', error);
+            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+        });
+    
+        return () => {
+            console.log('Stopping SignalR connection...');
+            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        };
+    }, [])
+    
     return(
         <Tab.Navigator
             screenOptions={({route})=>({

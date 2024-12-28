@@ -222,8 +222,10 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
             }}
         >
             <StackNoti.Screen
-                name="NotiBoard"
-                component={(props) => (
+                name="NotiBoard"               
+                options={{ headerShown: false }}
+            >
+                {(props) => (
                     <NotificationScreen 
                         {...props} 
                         allNoti={allNoti} 
@@ -231,8 +233,7 @@ const StackNotiScreen = ({allNoti, setUnReadNoti, getNoti})=>{
                         getNoti={getNoti}
                     />
                 )}
-                options={{ headerShown: false }}
-            />
+            </StackNoti.Screen>
             <StackNoti.Screen
                 name="Comment"
                 component={CommentNoti}
@@ -306,7 +307,6 @@ export const TeacherBottomTab = ()=>{
                 });
                 
             }
-            console.log("messUnRead: ", messUnRead);
             setUnReadMess(messUnRead)
         } catch (error) {
             console.log("Error: ", error);
@@ -402,11 +402,13 @@ export const TeacherBottomTab = ()=>{
                         console.log("UpdateChatList Noti: ", updatedConversation);
                         const response = updatedConversation;
                         if (response) {
+                            let messUnRead = 0
                             response.forEach(item => {
                                 if (item.isRead === 0) {
                                     messUnRead += 1;
                                 }
                             });
+                            setUnReadMess(messUnRead)
                         }
                     } catch (error) {
                         console.error('Error processing UpdateChatList:', error);
