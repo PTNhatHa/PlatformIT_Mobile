@@ -71,7 +71,7 @@ export const ModalCourseContent = ({
     const getListSection = async()=>{
         setLoading(true)
         try {
-            const response = await getCourseContentStructure(role === 3 ? state.idUser : null, idCourse)
+            const response = await getCourseContentStructure(role === 2 ? state.idUser : null, idCourse)
             if(response){
                 let allContents = {}
                 if(role === 2){                    

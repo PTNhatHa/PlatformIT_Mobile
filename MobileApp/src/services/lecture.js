@@ -99,10 +99,10 @@ export const updateLecture = async (idCreatedBy, IdLecture, IdCourse, IdSection,
     })
 
     // for (let [key, value] of formData.entries()) {
-    //     console.log(key, value);
-    // }
-
-    return await axios.post(baseUrl + "/UpdateLecture?idCreatedBy=" + idCreatedBy, formData, {
+        //     console.log(key, value);
+        // }
+        
+        return await axios.post(baseUrl + "/UpdateLecture?idCreatedBy=" + idCreatedBy, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -113,5 +113,16 @@ export const updateLecture = async (idCreatedBy, IdLecture, IdCourse, IdSection,
     })
     .catch(error => {
         console.log("Error UpdateLecture: ", error.request);
+    })
+}
+
+export const finishLectures = async (idLecture, idStudent)=>{
+    return await axios.post(baseUrl + "/FinishLectures?idLecture=" + idLecture + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error FinishLectures: ", error);
     })
 }

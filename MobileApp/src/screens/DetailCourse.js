@@ -303,6 +303,7 @@ export const DetailCourse =({route})=>{
     const handleReadNoti = async()=>{
         try {
             await readNotificationBoard(idCourse, state.idUser)
+        
         } catch (error) {
             console.log("Error: ", error);
         }

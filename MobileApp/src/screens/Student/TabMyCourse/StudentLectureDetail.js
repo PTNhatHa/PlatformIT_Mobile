@@ -8,12 +8,13 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { CardAssignment } from "../../../components/CardAssignment";
 import { Comments } from "../../../components/Comments";
 import { Video } from "expo-av";
-import { getLectureDetail } from "../../../services/lecture";
+import { finishLectures, getLectureDetail } from "../../../services/lecture";
 import { calculateRelativeTime, parseRelativeTime } from "../../../utils/utils";
 import { getCourseContentStructure } from "../../../services/course";
 import { useUser } from "../../../contexts/UserContext";
 import { GetExerciseOfLecture, getExerciseOfLectureViaStudent } from "../../../services/assignment";
 import { useFocusEffect } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 export const StudentLectureDetail = ({route})=>{
     const {idLecture, idTeacher, isFinishedLecture} = route?.params || {}
@@ -34,15 +35,29 @@ export const StudentLectureDetail = ({route})=>{
 
     const [timeReached, setTimeReached] = useState(isFinishedLecture);
 
+    const handleFinishLecture = async()=>{
+        try {
+            const response = await finishLectures(idLecture, state.idUser)
+            if(response){
+                Toast.show({
+                    type: 'success', // Loại thông báo: success, error, info
+                    text1: 'Hoàn thành', // Tiêu đề thông báo
+                    text2: 'Bạn đã hoàn thành bài giảng 🎉', // Nội dung thông báo
+                    visibilityTime: 3000, // Thời gian hiển thị (ms)
+                });
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
     const handlePlaybackStatusUpdate = (status) => {
-        if (status.isLoaded && status.isPlaying && status.durationMillis) {
-            const halfwayPoint = status.durationMillis / 2;
-    
+        if (status.isLoaded && status.isPlaying && status.durationMillis && !timeReached) {
+            const halfwayPoint = status.durationMillis / 10;
+            console.log(status.positionMillis, " --- ", halfwayPoint, " --- ", status.positionMillis >= halfwayPoint);
             if (status.positionMillis >= halfwayPoint) {
-                if (!timeReached) {
+                if (!timeReached) {                    
                     setTimeReached(true);
-                    console.log("Đã xem được một nửa video!");
-                    // Thực hiện hành động tại đây
+                    handleFinishLecture()
                 }
             }
         }
@@ -56,7 +71,8 @@ export const StudentLectureDetail = ({route})=>{
                 if(!response.videoMaterial && !timeReached){
                     setTimeout(() => {
                         setTimeReached(true)
-                        console.log("2 phút đã trôi qua, timeReached được đặt thành true");
+                        // console.log("2 phút đã trôi qua, timeReached được đặt thành true");
+                        handleFinishLecture()
                     }, 120000);
                 }
                 setData({
@@ -274,6 +290,7 @@ export const StudentLectureDetail = ({route})=>{
                     <ActivityIndicator size="large" color="white" />
                 </View>
             }  
+            <Toast />
         </>
     )
 }
