@@ -5,7 +5,7 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { formatDateTime } from "../utils/utils";
-import { Tag, TagNoColor } from "./Tag";
+import { Tag, TagMain30, TagNoColor, TagYellow } from "./Tag";
 import { useState, useEffect } from "react"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import { useNavigation } from "@react-navigation/native";
@@ -89,7 +89,10 @@ export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false
             </View>
 
             <View style={{ flex: 1}}>
-                <Text style={styles.title}>{data.courseTitle}</Text>
+                <View style={styles.content}>
+                    <Text style={styles.title}>{data.courseTitle}</Text>
+                    {data.isNewNotification === 1 &&  <View style={styles.circle}/>}
+                </View>
                 {data?.tags?.length > 0 && 
                     <View style={styles.content}>
                         {showTags.map(item=>
@@ -299,7 +302,8 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        flex: 1
     },
     content: {
         flexDirection: "row",
@@ -315,9 +319,11 @@ const styles = StyleSheet.create({
         maxWidth: 220
     },
     circle: {
-        height: 16,
-        width: 16,
+        height: 12,
+        width: 12,
         borderRadius: 90,
+        backgroundColor: COLORS.green,
+        alignSelf: "flex-start"
     },
     wrapCost:{
         flexDirection: "row",
