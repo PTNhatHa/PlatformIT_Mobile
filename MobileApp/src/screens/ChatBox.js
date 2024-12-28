@@ -94,11 +94,13 @@ export const ChatBox = ({route})=>{
                 connection.on('UpdateNewMessage', (updateNewMessage) => {
                     setLoading(true)  
                     if(updateNewMessage){
+                        const date = new Date();
+                        const isoDateWithoutZ = date.toISOString().replace('Z', '');
                         setListMessage((prev) => [...prev, {
                             idSender: updateNewMessage.idSender,
                             idReceiver: state.idUser,
                             content: updateNewMessage.content,
-                            createdDate: new Date(),
+                            createdDate: isoDateWithoutZ,
                         }])
                     }
                     setLoading(false)
