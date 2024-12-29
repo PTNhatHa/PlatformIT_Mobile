@@ -21,6 +21,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
     const navigation = useNavigation()
     const {state} = useUser()
     const [listChat, setListChat] = useState([])
+    const [listChatCurrent, setListChatCurrent] = useState([])
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
     const [search, setSearch] = useState(null)
@@ -37,6 +38,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
                     }
                 })
                 setListChat(newMess)
+                setListChatCurrent(newMess)
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -53,6 +55,12 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
             // getAllConversation()
             const interval = setInterval(() => {
                 setListChat((prevMessage) =>
+                  prevMessage.map((mess) => ({
+                    ...mess,
+                    relativeTime: calculateRelativeTime(mess.timestamp),
+                  }))
+                )
+                setListChatCurrent((prevMessage) =>
                   prevMessage.map((mess) => ({
                     ...mess,
                     relativeTime: calculateRelativeTime(mess.timestamp),
@@ -147,6 +155,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
                             }
                         })
                         setListChat(newMess)
+                        setListChatCurrent(newMess)
                     }
                 });
             } catch (error) {
@@ -165,6 +174,15 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
         };
     }, [])
 
+    const handleSearch = (v)=>{
+        setSearch(v)
+        let result = [...listChat]
+        result = result.filter(item => {
+            return item?.name?.toLowerCase().includes(v.toLowerCase())
+        })
+        setListChatCurrent(result)
+    }
+
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải
         return (
@@ -182,11 +200,11 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
                     value={search}
                     style={styles.input}
                     placeholder={"Search"}
-                    onChangeText={()=>{}}
+                    onChangeText={(v)=>handleSearch(v)}
                 />
             </View>
             <FlatList
-                data={listChat}
+                data={listChatCurrent}
                 renderItem={({item}) => 
                     <TouchableOpacity 
                         style={styles.container} 
