@@ -402,6 +402,18 @@ export const StudentBottomTab = ()=>{
         };
     }, []);
 
+    
+    const updateReadMess = async(idUser)=>{
+        try {
+            const response = await updateReadStatus(idUser, state.idUser)
+            if(response){
+                console.log("response: ", response);
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
+    
     // NewChat
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
@@ -412,19 +424,26 @@ export const StudentBottomTab = ()=>{
         const startConnection = async () => {
             try {
                 await connection.start();
-                console.log('Connected to UpdateConversation Noti hub.');
-                connection.on('UpdateChatList', (updatedConversation) => {
+                connection.on('UpdateChatList', async(updatedConversation) => {
                     try {
-                        console.log("UpdateChatList Noti: ", updatedConversation);
                         const response = updatedConversation;
+                        const currentChat = await AsyncStorage.getItem('currentChat')
                         if (response) {
-                            let messUnRead = 0
-                            response.forEach(item => {
-                                if (item.isRead === 0) {
-                                    messUnRead += 1;
-                                }
-                            });
-                            setUnReadMess(messUnRead)
+                            const cleanedCurrentChat = currentChat?.trim(); // Loại bỏ khoảng trắng
+                            const currentChatNumber = Number(cleanedCurrentChat);
+                            const userIdNumber = Number(response[0]?.userId);
+                            if (currentChatNumber === userIdNumber) {
+                                // console.log("zooooo");
+                                updateReadMess(state.currentChat)
+                            } else{
+                                let messUnRead = 0
+                                response.forEach(item => {
+                                    if (item?.isRead === 0) {
+                                        messUnRead += 1;
+                                    }
+                                });
+                                setUnReadMess(messUnRead)
+                            }
                         }
                     } catch (error) {
                         console.error('Error processing UpdateChatList:', error);
@@ -445,7 +464,7 @@ export const StudentBottomTab = ()=>{
             connection.stop().then(() => console.log('SignalR connection stopped.'));
         };
     }, [])
-    
+
     return(
         <Tab.Navigator
             screenOptions={({route})=>({

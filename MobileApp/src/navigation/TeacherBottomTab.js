@@ -28,8 +28,9 @@ import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import { TeacherDetailAsgm } from "../screens/Teacher/TabMyAssignment/TeacherDetailAsgm";
 import { ChatBoard } from "../screens/ChatBoard";
 import { ChatBox } from "../screens/ChatBox";
-import { getAllUserConversations } from "../services/message";
+import { getAllUserConversations, updateReadStatus } from "../services/message";
 import { CommentNoti } from "../screens/CommentNoti";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -305,7 +306,6 @@ export const TeacherBottomTab = ()=>{
                         messUnRead +=1
                     }
                 });
-                
             }
             setUnReadMess(messUnRead)
         } catch (error) {
@@ -386,6 +386,16 @@ export const TeacherBottomTab = ()=>{
         };
     }, []);
 
+    const updateReadMess = async(idUser)=>{
+        try {
+            const response = await updateReadStatus(idUser, state.idUser)
+            if(response){
+                console.log("response: ", response);
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        }
+    }
     // NewChat
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
@@ -396,17 +406,26 @@ export const TeacherBottomTab = ()=>{
         const startConnection = async () => {
             try {
                 await connection.start();
-                connection.on('UpdateChatList', (updatedConversation) => {
+                connection.on('UpdateChatList', async(updatedConversation) => {
                     try {
                         const response = updatedConversation;
+                        const currentChat = await AsyncStorage.getItem('currentChat')
                         if (response) {
-                            let messUnRead = 0
-                            response.forEach(item => {
-                                if (item.isRead === 0) {
-                                    messUnRead += 1;
-                                }
-                            });
-                            setUnReadMess(messUnRead)
+                            const cleanedCurrentChat = currentChat?.trim(); // Loại bỏ khoảng trắng
+                            const currentChatNumber = Number(cleanedCurrentChat);
+                            const userIdNumber = Number(response[0]?.userId);
+                            if (currentChatNumber === userIdNumber) {
+                                // console.log("zooooo");
+                                updateReadMess(state.currentChat)
+                            } else{
+                                let messUnRead = 0
+                                response.forEach(item => {
+                                    if (item?.isRead === 0) {
+                                        messUnRead += 1;
+                                    }
+                                });
+                                setUnReadMess(messUnRead)
+                            }
                         }
                     } catch (error) {
                         console.error('Error processing UpdateChatList:', error);

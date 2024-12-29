@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Alert, FlatList, Image, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { useUser } from "../contexts/UserContext";
+import { SET_INFO, useUser } from "../contexts/UserContext";
 import { CardNoti } from "../components/CardNotification";
 import { COLORS, commonStyles, currentIP } from "../utils/constants";
 import { ButtonIconLightGreen } from "../components/Button";
@@ -14,13 +14,14 @@ import { getConversation, sendMessage } from "../services/message";
 import { formatDateTime, getTime } from "../utils/utils";
 import { isChatAvailable } from "../services/user";
 import * as signalR from '@microsoft/signalr';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const ChatBox = ({route})=>{
     const idTeacher = route?.params?.idTeacher || null
     const idStudent = route?.params?.idStudent || null
     const {name, avatar} = route?.params || {}
     const navigation = useNavigation()
-    const {state} = useUser()
+    const {state, dispatch} = useUser()
     const [listMessage, setListMessage] = useState([])
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false)
@@ -39,8 +40,9 @@ export const ChatBox = ({route})=>{
 
     const getMessages = async()=>{
         setLoading(true)
-        try {
-            const response = await getConversation(state.idUser, idStudent || idTeacher)            
+        try {            
+            const response = await getConversation(state.idUser, idStudent || idTeacher)   
+            await AsyncStorage.setItem('currentChat', JSON.stringify(idStudent || idTeacher))         
             if(response){
                 setListMessage(response)
                 setReceiverName(response[0].idSender !== state.idUser ? 
@@ -58,7 +60,7 @@ export const ChatBox = ({route})=>{
             }
         } catch (error) {
             console.log("Error: ", error);
-        } finally{
+        } finally{            
             setLoading(false)
         }
     }
@@ -79,6 +81,8 @@ export const ChatBox = ({route})=>{
     useEffect(()=>{
         getMessages()
         checkIsChat()
+        // console.log("idStudent || idTeacher: ", idStudent || idTeacher);
+        // dispatch({ type: SET_INFO, payload: { "currentChat": idStudent || idTeacher }})
     },[])
 
     useEffect(()=>{
@@ -147,7 +151,10 @@ export const ChatBox = ({route})=>{
     return(
         <View style={styles.wrapContainer}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={()=>navigation.goBack()}>
+                <TouchableOpacity onPress={()=>{
+                    // await AsyncStorage.setItem('currentChat', JSON.stringify(0)) 
+                    navigation.goBack()
+                }}>
                     <AntDesign name="arrowleft" size={24} color={COLORS.main} />
                 </TouchableOpacity>
                 <Image style={styles.img} source={receiverName.avatar ? { uri: receiverName.avatar} : DefaultAva}/>

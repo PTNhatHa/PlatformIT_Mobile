@@ -40,6 +40,7 @@ export const getAllUserConversations = async (IdcurrentUser)=>{
 }
 
 export const updateReadStatus = async (idUser, IdcurrentUser)=>{
+    console.log("updateReadStatus");
     const url = baseUrl + "/UpdateReadStatus?idUser=" + idUser + "&idCurrentUser=" + IdcurrentUser
     return await axios.post(url)
     .then(response => {

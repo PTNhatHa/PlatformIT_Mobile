@@ -12,6 +12,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { getAllUserConversations, updateReadStatus } from "../services/message";
 import { calculateRelativeTime, parseRelativeTime } from "../utils/utils";
 import * as signalR from '@microsoft/signalr';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const ChatBoard = ({route, getUnReadMessage})=>{
     const idTeacher = route?.params?.idTeacher || 0
@@ -22,6 +23,7 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
     const [listChat, setListChat] = useState([])
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false)
+    const [search, setSearch] = useState(null)
 
     const getAllConversation = async()=>{
         setLoading(true)
@@ -43,22 +45,12 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
         }
     }
 
-    // useEffect(()=>{
-    //     getAllConversation()
-    //     const interval = setInterval(() => {
-    //         setListChat((prevMessage) =>
-    //           prevMessage.map((mess) => ({
-    //             ...mess,
-    //             relativeTime: calculateRelativeTime(mess.timestamp),
-    //           }))
-    //         )
-    //     }, 60000); // Update every minute
-    //     return () => clearInterval(interval);
-    // }, [])
-
+    
     useFocusEffect(
         useCallback(() => {
-            getAllConversation()
+            console.log(">>>>> call again");
+            handleReadMessCurrent()
+            // getAllConversation()
             const interval = setInterval(() => {
                 setListChat((prevMessage) =>
                   prevMessage.map((mess) => ({
@@ -116,6 +108,23 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
             }
         }
     }
+    const handleReadMessCurrent = async()=>{
+        try {
+            const currentChat = await AsyncStorage.getItem('currentChat')
+            if(currentChat){
+                const cleanedCurrentChat = currentChat?.trim(); // Loại bỏ khoảng trắng
+                const currentChatNumber = Number(cleanedCurrentChat);
+                const response = await updateReadStatus(currentChatNumber, state.idUser)
+                if(response){
+                    await AsyncStorage.setItem('currentChat', JSON.stringify(0)) 
+                }
+            }
+        } catch (error) {
+            console.log("Error: ", error);
+        } finally{
+            getAllConversation()
+        }
+    }
 
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
@@ -170,9 +179,10 @@ export const ChatBoard = ({route, getUnReadMessage})=>{
             <View style={styles.wrapperSearch}>
                 <MaterialIcons name="search" size={20} color="black" />
                 <TextInput
-                    value={"search"}
+                    value={search}
                     style={styles.input}
                     placeholder={"Search"}
+                    onChangeText={()=>{}}
                 />
             </View>
             <FlatList
