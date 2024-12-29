@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useEffect, useState } from "react";
 import { SET_INFO, useUser } from "../../../contexts/UserContext";
-import { getAssignmentInfo, getDetailAssignmentItemForStudent, submitManualAssignment, submitQuizAssignment } from "../../../services/assignment";
+import { canDoAssignment, getAssignmentInfo, getDetailAssignmentItemForStudent, submitManualAssignment, submitQuizAssignment } from "../../../services/assignment";
 import { useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioBtn, RadioView } from "../../../components/RadioBtn";
@@ -160,23 +160,23 @@ export const StudentDoAsgm = ({route})=>{
                 assignmentResultStatus: dueDate ? (new Date() <= new Date(dueDate) ? 1 : 2) : 3 , //1: On time, 2: Late, 3: Submitted
                 submittedDate: dateVN,
             }
-            // const response = await submitCode(result)
-            // if(response){
-            //     Alert.alert(
-            //         "Submit assignment", 
-            //         "Done", 
-            //         [
-            //           {
-            //             text: "OK", 
-            //             onPress: () => {
-            //               navigation.goBack();
-            //             }
-            //           }
-            //         ]
-            //       );
-            // } else{
-            //     Alert.alert("Warning", "Please try again.")
-            // }
+            const response = await submitCode(result)
+            if(response){
+                Alert.alert(
+                    "Submit assignment", 
+                    "Done", 
+                    [
+                      {
+                        text: "OK", 
+                        onPress: () => {
+                          navigation.goBack();
+                        }
+                      }
+                    ]
+                  );
+            } else{
+                Alert.alert("Warning", "Please try again.")
+            }
         } catch (error) {
             console.log("Error submit: ", error);
         } finally{
@@ -260,7 +260,6 @@ export const StudentDoAsgm = ({route})=>{
         try {
             if(assignmentType === 3){
                 const detailCode = await viewCodeAssignment(idAssignment, false)
-                console.log("detailCode: ", detailCode);
                 if(detailCode){
                     setQuestionCode({
                         ...detailCode,

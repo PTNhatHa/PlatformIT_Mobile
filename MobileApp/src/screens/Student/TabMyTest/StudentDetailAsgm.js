@@ -5,7 +5,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { ButtonGreen } from "../../../components/Button";
 import { useCallback, useEffect, useState } from "react";
 import { SET_INFO, useUser } from "../../../contexts/UserContext";
-import { getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
+import { canDoAssignment, doingAssignment, getAssignmentAnswer, getAssignmentInfo, getDetailAssignmentForStudent, getQuizAnswer } from "../../../services/assignment";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { formatDateTime, formatTime } from "../../../utils/utils";
 import { RadioView } from "../../../components/RadioBtn";
@@ -25,11 +25,16 @@ export const StudentDetailAsgm = ({route})=>{
     const [selectFile, setSelectFile] = useState("")
     const [isShowAnswer, setIsShowAnswer] = useState(false)
     const [resultCode, setResultCode] = useState({})
+    const [isCanDo, setIsCanDo] = useState(false)
 
     const fetchDetailAsgm = async()=>{
         try {
             const response = await getDetailAssignmentForStudent(idAssignment, state.idUser)
             if(response){
+                const checkCanDo = await canDoAssignment(idAssignment, state.idUser)
+                if(checkCanDo){
+                    setIsCanDo(checkCanDo)
+                }
                 setData(response)
                 if(response.assignmentType === 2){
                     const answers = await getAssignmentAnswer(idAssignment, state.idUser)
@@ -48,7 +53,7 @@ export const StudentDetailAsgm = ({route})=>{
                         })])
                     }
                 }
-                if(response.assignmentType === 3){
+                if(response.assignmentType === 3 && response.submittedDate){
                     const answers = await getCodeAssignmentResult(idAssignment, state.idUser)
                     if(answers){
                         setResultCode(answers)
@@ -125,17 +130,23 @@ export const StudentDetailAsgm = ({route})=>{
             [
                 {
                     text: "Yes",
-                    onPress: ()=> {
-                        dispatch({ type: SET_INFO, payload: { "isDoAsgm": true }})
-                        navigation.navigate("Do Assignment", {
-                            idAssignment: idAssignment,
-                            assignmentType: data.assignmentType,
-                            initduration: data.duration,
-                            isShufflingQuestion: data.isShufflingQuestion === 1 ? true : false,
-                            isShufflingAnswer: data.isShufflingAnswer === 1 ? true : false,
-                            dueDate: data.dueDate || data.courseEndDate || null,
-                            reload: fetchDetailAsgm
-                        })
+                    onPress: async()=> {
+                        try {
+                            const response = await doingAssignment(idAssignment, state.idUser)
+                        } catch (error) {
+                            console.log("Error: ", error);
+                        } finally{
+                            dispatch({ type: SET_INFO, payload: { "isDoAsgm": true }})
+                            navigation.navigate("Do Assignment", {
+                                idAssignment: idAssignment,
+                                assignmentType: data.assignmentType,
+                                initduration: data.duration,
+                                isShufflingQuestion: data.isShufflingQuestion === 1 ? true : false,
+                                isShufflingAnswer: data.isShufflingAnswer === 1 ? true : false,
+                                dueDate: data.dueDate || data.courseEndDate || null,
+                                reload: fetchDetailAsgm
+                            })
+                        }
                     },
                     style: "destructive"
                 },
@@ -201,8 +212,8 @@ export const StudentDetailAsgm = ({route})=>{
                                     </>
                                 }
                             </View>
-                            {((data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate))
-                                || (data.submittedDate === null && data.courseEndDate === null)) &&
+                            {(((data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate))
+                                || (data.submittedDate === null && data.courseEndDate === null)) && isCanDo) &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>handleStartAsgm()}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
@@ -227,10 +238,17 @@ export const StudentDetailAsgm = ({route})=>{
                                                 <Text style={[styles.boxStatus, styles.boxGreen]}>Submitted</Text>
                                         }
                                     </View>
-                                    {data.assignmentType !== 3 && <View style={styles.wrapFlex}>
-                                        <Text style={styles.textGray16}>Marks</Text>
-                                        <Text style={styles.textBlack16}>{data.totalMark}/{data.assignmentMark}</Text>
-                                    </View>}
+                                    {data.assignmentType !== 3 ? 
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Marks</Text>
+                                            <Text style={styles.textBlack16}>{data.totalMark}/{data.assignmentMark}</Text>
+                                        </View>
+                                        :
+                                        <View style={styles.wrapFlex}>
+                                            <Text style={styles.textGray16}>Marks</Text>
+                                            <Text style={styles.textBlack16}>{data.codeResult*100}%</Text>
+                                        </View>                                        
+                                    }
                                     <View style={styles.wrapFlex}>
                                         <Text style={styles.textGray16}>Duration</Text>
                                         <Text style={styles.textBlack16}>{formatTime(data.resultDuration)} minutes</Text>

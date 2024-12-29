@@ -899,7 +899,7 @@ export const TeacherDetailAsgm = ({route})=>{
                                                         </Text>
                                                         :
                                                         <Text style={styles.textBlack16}>
-                                                            {currentStudent.totalMark*100}%
+                                                            {currentStudent.codeResult*100}%
                                                         </Text>
                                                     }
                                                 </View>

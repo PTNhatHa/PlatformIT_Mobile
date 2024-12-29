@@ -325,3 +325,25 @@ export const gradingManualAssignment = async (idUpdatedBy, gradingManual)=>{
         console.log("Error GradingManualAssignment: ", error);
     })
 }
+
+export const doingAssignment = async (idAssignment, idStudent)=>{
+    return await axios.post(baseUrl + "/DoingAssignment?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error DoingAssignment: ", error);
+    })
+}
+
+export const canDoAssignment = async (idAssignment, idStudent)=>{
+    return await axios.get(baseUrl + "/CanDoAssignment?idAssignment=" + idAssignment + "&idStudent=" + idStudent)
+    .then(response => {
+        // console.log(response.data);
+        return response.data
+    })
+    .catch(error => {
+        console.log("Error CanDoAssignment: ", error);
+    })
+}
