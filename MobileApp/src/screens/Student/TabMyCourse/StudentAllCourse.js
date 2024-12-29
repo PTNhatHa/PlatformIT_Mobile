@@ -35,9 +35,9 @@ export const StudentAllCourse = ({route})=>{
             setLoading(false)
         }
     }
-    useEffect(()=>{
-        getAllCourseOfStudent()
-    }, [])
+    // useEffect(()=>{
+    //     getAllCourseOfStudent()
+    // }, [])
     
     useFocusEffect(
         useCallback(() => {
@@ -56,7 +56,7 @@ export const StudentAllCourse = ({route})=>{
     return(
         <>
             {!loading &&
-                <ViewAllFromDetail myCourse={data} role={1}/>
+                <ViewAllFromDetail myCourse={data} role={2}/>
             }
             {loading &&
                 <View style={styles.wrapLoading}>

@@ -49,21 +49,26 @@ export const CardVirticalCourse = ({data = initCourse, role = 0, isUnPin = false
     
     const handleReadNoti = async()=>{
         try {
-            await readNotificationBoard(data.idCourse, state.idUser)
+            if(data.isNewNotification !== 0 && role === 2){
+                await readNotificationBoard(data.idCourse, state.idUser)
+            }
         } catch (error) {
             console.log("Error: ", error);
+        } finally{
+
         }
     }
-    useEffect(()=>{
-        if(data.isNewNotification === 0){
-            handleReadNoti()
-        }
-    }, [])
+    // useEffect(()=>{
+    //     if(data.isNewNotification === 0){
+    //         handleReadNoti()
+    //     }
+    // }, [])
     return(
         <TouchableOpacity 
             style={styles.container} 
             onPress={(role !== 0 || ((state.idRole === 4 && state.idUser === data.idTeacher && isUnPin) || (data.isEnrolled))) ? 
                 ()=>{ 
+                    handleReadNoti()
                     if(role !== 0){
                         navigation.navigate("Detail Course", {
                             idCourse: data.idCourse,

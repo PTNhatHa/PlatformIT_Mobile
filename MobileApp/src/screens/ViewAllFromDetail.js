@@ -258,20 +258,21 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                         dataFilter={dataFilter}
                         setDataFilter={setDataFilter}
                         onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                        isStudent={role === 2}
                     /> :
                     index === 2 ?
-                    <FilterCenter
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        dataFilter={dataFilter}
-                        setDataFilter={setDataFilter}
-                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    /> :
-                    <FilterTeacher
-                        dataSort={dataSort}
-                        setDataSort={setDataSort}
-                        onPressCancel={()=>setIsOpenModal(!isOpenModal)}
-                    /> 
+                        <FilterCenter
+                            dataSort={dataSort}
+                            setDataSort={setDataSort}
+                            dataFilter={dataFilter}
+                            setDataFilter={setDataFilter}
+                            onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                        /> :
+                        <FilterTeacher
+                            dataSort={dataSort}
+                            setDataSort={setDataSort}
+                            onPressCancel={()=>setIsOpenModal(!isOpenModal)}
+                        /> 
                 }
             </Modal>
             <View style={styles.bottom}>

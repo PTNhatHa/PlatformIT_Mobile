@@ -12,7 +12,7 @@ import { getAlltag } from "../services/tag";
 export const FilterCourse = ({
     dataSort=[], setDataSort=()=>{}, 
     dataFilter=[], setDataFilter=()=>{},
-    onPressCancel
+    onPressCancel, isStudent = false
 })=>{
     // Sort
     const [sortby1, setsortby1] = useState(dataSort.sortby || 0)
@@ -23,6 +23,14 @@ export const FilterCourse = ({
         { label: "Price", value: "price"},
         { label: "Rate", value: "rate"},
         { label: "Create Date", value: "createdDate"},
+    ]
+    const listSortby3 = [
+        { label: "None", value: 0},
+        { label: "Name Course", value: "courseTitle"},
+        { label: "Price", value: "price"},
+        { label: "Rate", value: "rate"},
+        { label: "Create Date", value: "createdDate"},
+        { label: "Enrollment Date", value: "enrolmentDate"},
     ]
     const listSortby2 = [
         { label: "None", value: 0},
@@ -143,7 +151,7 @@ export const FilterCourse = ({
                             <Text style={stylesFilter.smallTitle}>Sort by</Text>
                             <View style={stylesFilter.comboBox}>
                                 <RNPickerSelect
-                                    items={listSortby1}
+                                    items={isStudent ? listSortby3 : listSortby1}
                                     onValueChange={(v)=> setsortby1(v)}
                                     value={sortby1}
                                 />

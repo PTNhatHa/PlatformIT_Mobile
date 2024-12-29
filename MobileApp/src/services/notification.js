@@ -76,6 +76,7 @@ export const deleteNotificationBoard = async (idNotification, idCreatedBy)=>{
 }
 
 export const readNotificationBoard = async (idCourse, idUser)=>{
+    console.log("readNotificationBoard: ", idCourse, "---", idUser);
     const url = baseUrl + "/ReadNotificationBoard?idCourse=" + idCourse + "&idUser=" + idUser
     return await axios.post(url)
     .then(response => {
