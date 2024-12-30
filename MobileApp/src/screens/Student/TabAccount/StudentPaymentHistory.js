@@ -1,4 +1,4 @@
-import { FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { FlatList, Image, Modal, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../../../utils/constants"
 import DefaultImg from "../../../../assets/images/DefaultImg.png"
 import Feather from '@expo/vector-icons/Feather';
@@ -69,6 +69,17 @@ export const StudentPaymentHistory = () =>{
     const [currentPage, setCurrentPage] = useState(1)
     const numberItem = 10
     const navigation = useNavigation()
+    const [refreshing, setRefreshing] = useState(false)
+    const handleRefresh = async ()=>{
+        setRefreshing(true)
+        try {
+            fetchData()
+        } catch (error) {
+            console.log("Error refresh");
+        } finally{
+            setRefreshing(false)
+        }
+    }
 
     const fetchData = async()=>{
         try {
@@ -228,6 +239,7 @@ export const StudentPaymentHistory = () =>{
                         </TouchableOpacity>
                     }
                     style={styles.wrapList}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}
                 />
             }
             <View style={styles.bottom}>

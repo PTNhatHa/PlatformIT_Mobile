@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, FlatList, Modal, RefreshControl, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import { COLORS, commonStyles } from "../utils/constants"
 import Feather from '@expo/vector-icons/Feather';
 import { useState, useEffect, useRef } from "react";
@@ -6,7 +6,7 @@ import { FilterCenter, FilterCourse, FilterTeacher } from "../components/Filter"
 import { formatDateTime } from "../utils/utils";
 import { CardVirticalCourse, CardVirticalTeacher } from "../components/CardVertical";
 
-export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
+export const ViewAllFromDetail = ({route, myCourse = [], role = 0, refresh=()=>{}})=>{
     const initData = route?.params?.initData || myCourse || []
     const index = route?.params?.index || 1
     const namePage = route?.params?.namePage || ""
@@ -23,6 +23,18 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
     const numberItem = 10
     const [currentData, setCurrentData] = useState(data?.slice((currentPage-1)*numberItem, currentPage*numberItem) || [])
     
+    const [refreshing, setRefreshing] = useState(false)
+    const handleRefresh = async ()=>{
+        setRefreshing(true)
+        try {
+            refresh()
+        } catch (error) {
+            console.log("Error refresh");
+        } finally{
+            setRefreshing(false)
+        }
+    }
+
     const getPageData = () => {
         return currentData.slice((currentPage-1) * numberItem, currentPage * numberItem);
     };
@@ -237,6 +249,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0})=>{
                     renderItem={({item}) => <CardVirticalCourse data={item} role={role} isUnPin={true}/>}
                     style={styles.wrapList}
                     ItemSeparatorComponent={() => <View style={{ height: 4 }} />}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh}/>}
                 />
             : 
                 <FlatList

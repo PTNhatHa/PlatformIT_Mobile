@@ -65,7 +65,7 @@ export const StudentAllCourse = ({route})=>{
     return(
         <>
             {!loading &&
-                <ViewAllFromDetail myCourse={data} role={2}/>
+                <ViewAllFromDetail myCourse={data} role={2} refresh={getAllCourseOfStudent}/>
             }
             {loading &&
                 <View style={styles.wrapLoading}>

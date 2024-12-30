@@ -272,10 +272,9 @@ export const DetailCourse =({route})=>{
                         relativeTime: calculateRelativeTime(rate.timestamp),
                       }))
                     );
-    
-                  }, 60000); // Update every minute
-              
-                  return () => clearInterval(interval);
+                }, 60000); // Update every minute
+            
+                return () => clearInterval(interval);
             } catch (error) {
                 console.log(error);
             } finally{
