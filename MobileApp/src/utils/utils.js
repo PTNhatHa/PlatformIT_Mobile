@@ -30,7 +30,7 @@ export const getTime = (date, isNoZ = false) => {
     if(date === null) return ""
     // Kiểm tra nếu date là chuỗi, thì chuyển đổi thành đối tượng Date
     if (typeof date === 'string') {
-        date = new Date(date + (!isNoZ ? "Z" : ""));
+        date = new Date(date + (isNoZ ? "Z" : ""));
     }
     
     if (!(date instanceof Date) || isNaN(date.getTime())) {

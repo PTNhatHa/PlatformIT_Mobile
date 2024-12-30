@@ -32,6 +32,7 @@ import { ChatBox } from "../screens/ChatBox";
 import { getAllUserConversations } from "../services/message";
 import { CommentNoti } from "../screens/CommentNoti";
 import { StudentPaymentHistory } from "../screens/Student/TabAccount/StudentPaymentHistory";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -398,6 +399,7 @@ export const StudentBottomTab = ()=>{
                             const cleanedCurrentChat = currentChat?.trim(); // Loại bỏ khoảng trắng
                             const currentChatNumber = Number(cleanedCurrentChat);
                             const userIdNumber = Number(response[0]?.userId);
+                            console.log(">>>>>", currentChatNumber === userIdNumber);
                             if (currentChatNumber === userIdNumber) {
                                 // console.log("zooooo");
                                 updateReadMess(state.currentChat)

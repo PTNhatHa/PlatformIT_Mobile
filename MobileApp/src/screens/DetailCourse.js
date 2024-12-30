@@ -329,7 +329,7 @@ export const DetailCourse =({route})=>{
                 } else{
                     const response = await payment(data.discountedPrice || data.price, state.idUser, idCourse)
                     if(response){
-                        console.log(">>>>URL: ", response.paymentUrl);
+                        // console.log(">>>>URL: ", response.paymentUrl);
                         navigation.navigate("My Course", {
                             screen: "My Course",
                         })
