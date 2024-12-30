@@ -20,9 +20,9 @@ export const Home = ({navigation})=>{
             const responseCourse = await getAllCourseCards( state.idRole === 3 ? state.idUser : null)
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
-            setDataCourse(responseCourse)
-            setDataCenter(responseCenter)
-            setDataTeacher(responseTeacher)
+            setDataCourse(responseCourse.reverse())
+            setDataCenter(responseCenter.reverse())
+            setDataTeacher(responseTeacher.reverse())
         } catch (error) {
             console.log("Error: ", error);
         } finally{

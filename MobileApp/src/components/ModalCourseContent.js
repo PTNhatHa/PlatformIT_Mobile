@@ -74,15 +74,13 @@ export const ModalCourseContent = ({
             const response = await getCourseContentStructure(role === 2 ? state.idUser : null, idCourse)
             if(response){
                 let allContents = {}
-                if(role === 2){                    
+                if(role !== 1){                    
                     allContents = {
                         ...response,
                         sectionStructures: response.sectionStructures.map(section => {
                             return{
                                 ...section,
-                                lectureStructures: section.lectureStructures.filter(lecture =>{                                    
-                                    return lecture.lectureStatus === 1
-                                })
+                                lectureStructures: section.lectureStructures.filter(lecture =>lecture.lectureStatus === 1)
                             }
                         })
                     }

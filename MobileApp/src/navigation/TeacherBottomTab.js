@@ -428,7 +428,7 @@ export const TeacherBottomTab = ()=>{
                             }
                         }
                     } catch (error) {
-                        console.error('Error processing UpdateChatList:', error);
+                        console.log('Error processing UpdateChatList:', error);
                     }
                 });
             } catch (error) {

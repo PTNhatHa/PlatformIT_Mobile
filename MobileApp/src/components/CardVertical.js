@@ -322,7 +322,8 @@ const styles = StyleSheet.create({
     title:{
         fontSize: 16,
         fontWeight: "bold",
-        flex: 1
+        // flex: 1
+        width: "100%"
     },
     content: {
         flexDirection: "row",

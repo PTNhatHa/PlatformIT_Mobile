@@ -322,9 +322,9 @@ export const ScreenViewAll = ({route})=>{
             const responseCourse = await getAllCourseCards(state.idRole === 3 ? state.idUser : null)
             const responseCenter = await getAllCenterCards()
             const responseTeacher = await getAllTeacherCards()
-            setInitCourse(responseCourse)
-            setInitCenter(responseCenter)
-            setInitTeacher(responseTeacher)
+            setInitCourse(responseCourse.reverse())
+            setInitCenter(responseCenter.reverse())
+            setInitTeacher(responseTeacher.reverse())
 
             setDataCourse(responseCourse)
             setDataCenter(responseCenter)

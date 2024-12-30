@@ -12,7 +12,19 @@ export const StudentAllCourse = ({route})=>{
     const {state, dispatch} = useUser()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
-    
+    const [refreshing, setRefreshing] = useState(false)
+
+    const handleRefresh = async ()=>{
+        setRefreshing(true)
+        try {
+            getAllCourseOfStudent();
+        } catch (error) {
+            console.log("Error refresh");
+        } finally{
+            setRefreshing(false)
+        }
+    }
+
     useEffect(()=>{
         if(idCourse !== null){
             navigation.navigate("Detail My Course", {
@@ -27,7 +39,7 @@ export const StudentAllCourse = ({route})=>{
             setLoading(true)
             const response = await getAllCourseCardsByIdStudent(state.idUser)
             if(response){
-                setData(response)
+                setData(response.reverse())
             }
         } catch (error) {
             console.log("Error: ", error);
@@ -35,9 +47,6 @@ export const StudentAllCourse = ({route})=>{
             setLoading(false)
         }
     }
-    // useEffect(()=>{
-    //     getAllCourseOfStudent()
-    // }, [])
     
     useFocusEffect(
         useCallback(() => {

@@ -67,14 +67,14 @@ export const StudentPaymentHistory = () =>{
     const [currentData, setCurrentData] = useState([...initData]);
     const [dataSort, setDataSort] = useState([]);
     const [currentPage, setCurrentPage] = useState(1)
-    const numberItem = 5
+    const numberItem = 10
     const navigation = useNavigation()
 
     const fetchData = async()=>{
         try {
             const response = await getAllPaymentOfStudent(state.idUser)
             if(response){
-                setData(response)
+                setData(response.reverse())
                 setCurrentData(response)
             }
         } catch (error) {

@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Dimensions, FlatList, Image, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, ImageBackground, Linking, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import DefaultAva from "../../assets/images/DefaultAva.png"
 import DefaultImg from "../../assets/images/DefaultImg.png"
 import { COLORS, commonStyles } from "../utils/constants"
@@ -14,12 +14,12 @@ import { CardHorizontalTeacher } from "../components/CardHorizontal";
 import { CardReview } from "../components/CardReview";
 import { ButtonGreen, ButtonIcon, ButtonIconLightGreen } from "../components/Button";
 import { CardLecture } from "../components/CardLecture";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CardAssignment, CardAssignmentStudent } from "../components/CardAssignment";
 import Entypo from '@expo/vector-icons/Entypo';
 import { LinearGradient } from "expo-linear-gradient";
 import { addRating, enrollCourse, getAllRatingsOfCourse, getCourseDetail, getCourseProgress, getCourseProgressByIdStudent, getSectionDetail, getTestOfCourseStudent, isEnrolledCourse } from "../services/course";
-import { useNavigation } from "@react-navigation/native"
+import { useFocusEffect, useNavigation } from "@react-navigation/native"
 import { CardNoti } from "../components/CardNotification"
 import { CardVirticalAssignmentTeacher } from "../components/CardVertical"
 import { CardStudentAttendance } from "../components/CardStudent"
@@ -32,6 +32,7 @@ import { addBoardNotificationForCourse, deleteNotificationBoard, getNotification
 import { isChatAvailable } from "../services/user"
 import { FilterStudentProgress } from "../components/Filter"
 import { ProgressCircle } from "../components/Progress"
+import { payment } from "../services/payment"
 
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
@@ -220,35 +221,68 @@ export const DetailCourse =({route})=>{
         }
     }
 
-    useEffect(()=>{
-        try {
-            getCourse()
-            getAttendance()
-            getNoti()
-            getRating()
-            const interval = setInterval(() => {
-                setListNoti((prevNotifications) =>
-                  prevNotifications.map((notification) => ({
-                    ...notification,
-                    relativeTime: calculateRelativeTime(notification.timestamp),
-                  }))
-                );
-                setRatings((prevRating) =>
-                  prevRating.map((rate) => ({
-                    ...rate,
-                    relativeTime: calculateRelativeTime(rate.timestamp),
-                  }))
-                );
+    // useEffect(()=>{
+    //     try {
+    //         getCourse()
+    //         getAttendance()
+    //         getNoti()
+    //         getRating()
+    //         const interval = setInterval(() => {
+    //             setListNoti((prevNotifications) =>
+    //               prevNotifications.map((notification) => ({
+    //                 ...notification,
+    //                 relativeTime: calculateRelativeTime(notification.timestamp),
+    //               }))
+    //             );
+    //             setRatings((prevRating) =>
+    //               prevRating.map((rate) => ({
+    //                 ...rate,
+    //                 relativeTime: calculateRelativeTime(rate.timestamp),
+    //               }))
+    //             );
 
-              }, 60000); // Update every minute
+    //           }, 60000); // Update every minute
           
-              return () => clearInterval(interval);
-        } catch (error) {
-            console.log(error);
-        } finally{
-            setLoading(false)
-        }
-    }, [idCourse])
+    //           return () => clearInterval(interval);
+    //     } catch (error) {
+    //         console.log(error);
+    //     } finally{
+    //         setLoading(false)
+    //     }
+    // }, [idCourse])
+
+    useFocusEffect(
+        useCallback(() => {
+            setLoading(true)
+            try {
+                getCourse()
+                getAttendance()
+                getNoti()
+                getRating()
+                const interval = setInterval(() => {
+                    setListNoti((prevNotifications) =>
+                      prevNotifications.map((notification) => ({
+                        ...notification,
+                        relativeTime: calculateRelativeTime(notification.timestamp),
+                      }))
+                    );
+                    setRatings((prevRating) =>
+                      prevRating.map((rate) => ({
+                        ...rate,
+                        relativeTime: calculateRelativeTime(rate.timestamp),
+                      }))
+                    );
+    
+                  }, 60000); // Update every minute
+              
+                  return () => clearInterval(interval);
+            } catch (error) {
+                console.log(error);
+            } finally{
+                setLoading(false)
+            }
+        }, [])
+    );
 
     const addNoti = async()=>{
         if(!notiContent){
@@ -300,15 +334,35 @@ export const DetailCourse =({route})=>{
         
     }
 
+    const openURL = (url) => {  
+        Linking.canOpenURL(url)  
+        .then((supported) => {  
+            if (supported) {  
+            return Linking.openURL(url);  
+            } else {  
+            console.log("Can't open URL: " + url);  
+            }  
+        })  
+        .catch((err) => console.error('Error occurred', err));  
+    };  
+
     const payCourse = ()=>{
         const callApi = async()=>{
             try {
-                const response = await enrollCourse(state.idUser, idCourse)
-                if(response.code){
-                    Alert.alert("Warning", response.message)
+                if(!data.price){
+                    const response = await enrollCourse(state.idUser, idCourse)
+                    if(response.code){
+                        Alert.alert("Warning", response.message)
+                    } else{
+                        Alert.alert("Done", response)
+                        checkStudentIsEnrollCourse()
+                    }
                 } else{
-                    Alert.alert("Done", response)
-                    checkStudentIsEnrollCourse()
+                    const response = await payment(data.discountedPrice || data.price, state.idUser, idCourse)
+                    if(response){
+                        console.log(">>>>URL: ", response.paymentUrl);
+                        openURL(response.paymentUrl)
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -449,11 +503,6 @@ export const DetailCourse =({route})=>{
                                     <Text style={styles.infoBtnText}>Pay for this course</Text>
                                 </TouchableOpacity>
                             }                                                            
-                            {role === 2 &&
-                                <TouchableOpacity style={styles.infoBtn}>
-                                    <Text style={styles.infoBtnText}>View payment history</Text>
-                                </TouchableOpacity>
-                            }
                         </>
                         : data.price === null ?
                         <>
@@ -995,6 +1044,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center', 
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
+        zIndex: 9999
     },
     addLec: {
         padding: 12,
