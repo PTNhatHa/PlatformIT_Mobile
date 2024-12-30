@@ -221,36 +221,6 @@ export const DetailCourse =({route})=>{
         }
     }
 
-    // useEffect(()=>{
-    //     try {
-    //         getCourse()
-    //         getAttendance()
-    //         getNoti()
-    //         getRating()
-    //         const interval = setInterval(() => {
-    //             setListNoti((prevNotifications) =>
-    //               prevNotifications.map((notification) => ({
-    //                 ...notification,
-    //                 relativeTime: calculateRelativeTime(notification.timestamp),
-    //               }))
-    //             );
-    //             setRatings((prevRating) =>
-    //               prevRating.map((rate) => ({
-    //                 ...rate,
-    //                 relativeTime: calculateRelativeTime(rate.timestamp),
-    //               }))
-    //             );
-
-    //           }, 60000); // Update every minute
-          
-    //           return () => clearInterval(interval);
-    //     } catch (error) {
-    //         console.log(error);
-    //     } finally{
-    //         setLoading(false)
-    //     }
-    // }, [idCourse])
-
     useFocusEffect(
         useCallback(() => {
             setLoading(true)
@@ -360,6 +330,9 @@ export const DetailCourse =({route})=>{
                     const response = await payment(data.discountedPrice || data.price, state.idUser, idCourse)
                     if(response){
                         console.log(">>>>URL: ", response.paymentUrl);
+                        navigation.navigate("My Course", {
+                            screen: "My Course",
+                        })
                         openURL(response.paymentUrl)
                     }
                 }
@@ -495,24 +468,16 @@ export const DetailCourse =({route})=>{
                             <Text style={styles.cost}>{data.discountedPrice}</Text>
                         }
                     </View>
-                    {new Date(data.registStartDate) <= new Date() && new Date() <= new Date(data.registEndDate) ?
+                    {/* {((new Date(data.registStartDate) <= new Date() && new Date() <= new Date(data.registEndDate)) ||
+                        data.price === null) &&
                         <>
-                            {(state.idRole === 3 && role === 0) &&
-                                <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
-                                    <Text style={styles.infoBtnText}>Pay for this course</Text>
-                                </TouchableOpacity>
-                            }                                                            
                         </>
-                        : data.price === null ?
-                        <>
-                            {(state.idRole === 3 && role === 0) &&
-                                <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
-                                    <Text style={styles.infoBtnText}>Pay for this course</Text>
-                                </TouchableOpacity>
-                            }
-                        </>
-                        :""
-                    }
+                    } */}
+                    {(state.idRole === 3 && role === 0) &&
+                        <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
+                            <Text style={styles.infoBtnText}>Pay for this course</Text>
+                        </TouchableOpacity>
+                    }                                                      
                 </View>
             </View>
             {data.introduction && 

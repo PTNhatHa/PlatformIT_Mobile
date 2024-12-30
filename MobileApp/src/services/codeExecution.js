@@ -71,7 +71,7 @@ export const updateCodeAssignment = async (dataUpdate)=>{
         return response
     })
     .catch(error => {
-        console.log("Error UpdateCodeAssignment: ", error.response);
+        console.log("Error UpdateCodeAssignment: ", error.request);
     })
 }
 
