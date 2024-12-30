@@ -87,7 +87,7 @@ export const ChatBox = ({route})=>{
 
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .withUrl(`${currentIP}:5000/chatHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         

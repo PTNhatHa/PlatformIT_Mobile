@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP +":5000/api/Message"
+const baseUrl = currentIP +":5000/api/Message"
 
 export const sendMessage = async (message)=>{
     // console.log(message);

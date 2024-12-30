@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP + ":5000/api/Authen"
+const baseUrl = currentIP + ":5000/api/Authen"
 
 export const signupApi = async (name, email, username, password)=>{
     const url = baseUrl + "/signup"

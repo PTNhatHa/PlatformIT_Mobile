@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP +":5000/api/Comment"
+const baseUrl = currentIP +":5000/api/Comment"
 
 export const addComment = async (newCmt)=>{
     return await axios.post(baseUrl + "/AddComment", newCmt)

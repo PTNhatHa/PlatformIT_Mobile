@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP +":5000/api/Course"
+const baseUrl = currentIP +":5000/api/Course"
 
 export const getAllCourseCards = async (idStudent)=>{
     let id = ""

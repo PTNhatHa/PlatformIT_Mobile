@@ -342,7 +342,7 @@ export const TeacherBottomTab = ()=>{
     useEffect(() => {
         // console.log('Attempting to connect to SignalR hub...');
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/notificationHub?userId=${state.idUser}`)
+            .withUrl(`${currentIP}:5000/notificationHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         
@@ -399,7 +399,7 @@ export const TeacherBottomTab = ()=>{
     // NewChat
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .withUrl(`${currentIP}:5000/chatHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         

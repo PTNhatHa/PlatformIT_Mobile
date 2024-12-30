@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP +":5000/api/CodeExecution"
+const baseUrl = currentIP +":5000/api/CodeExecution"
 
 export const getAllActiveLanguage = async ()=>{
     return await axios.get(baseUrl + "/GetAllActiveLanguage")

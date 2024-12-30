@@ -873,9 +873,9 @@ export const FilterPayment = ({
     const [sortby2, setsortby2] = useState(dataSort.sortway || 0)
     const listSortby1 = [
         { label: "None", value: 0},
-        { label: "Name", value: "nameCourse"},
-        { label: "Payment date", value: "createDate"},
-        { label: "Cost", value: "cost"},
+        { label: "Name", value: "courseName"},
+        { label: "Payment date", value: "paymentDate"},
+        { label: "Cost", value: "price"},
     ]
     const listSortby2 = [
         { label: "None", value: 0},

@@ -1,6 +1,6 @@
 import axios from "axios"
 import { currentIP } from "../utils/constants"
-const baseUrl = "http://" + currentIP +":5000/api/Assignment"
+const baseUrl = currentIP +":5000/api/Assignment"
 
 export const createManualAssignment = async (
     Title, IdCourse, IsTest, IdLecture, StartDate, DueDate, Duration,

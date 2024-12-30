@@ -298,37 +298,6 @@ export const StudentBottomTab = ()=>{
         }
     }
 
-    useEffect(() => {
-        // Create connection to the SignalR hub
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://' + currentIP +':5000/notificationHub')  // Ensure the URL matches your backend
-            .build();
-
-        // Start the connection
-        connection.start()
-            .then(() => console.log('Connected to SignalR'))
-            .catch(err => console.error('SignalR Connection Error: ', err));
-
-        // Subscribe to the "UpdateNotifications" event
-        connection.on('UpdateNotifications', (updatedNotifications) => {
-            let notiUnRead = 0
-            if(updatedNotifications){
-                updatedNotifications.forEach(item => {
-                    if(item.isRead === 0){
-                        notiUnRead +=1
-                    }
-                });
-                setAllNoti(updatedNotifications)
-            }
-            setUnReadNoti(notiUnRead)
-        });
-
-        // Clean up the connection when component unmounts
-        return () => {
-            connection.stop();
-        };
-    }, []);
-
     useEffect(()=>{
         getNoti()
         getUnReadMessage()
@@ -355,7 +324,7 @@ export const StudentBottomTab = ()=>{
     useEffect(() => {
         // console.log('Attempting to connect to SignalR hub...');
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/notificationHub?userId=${state.idUser}`)
+            .withUrl(`${currentIP}:5000/notificationHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         
@@ -364,7 +333,6 @@ export const StudentBottomTab = ()=>{
                 await connection.start();
                 // console.log('Connected to SignalR hub.');
                 connection.on('UpdateNotifications', (updatedNotifications) => {
-                    // console.log('Received UpdateNotifications event:', updatedNotifications);
                     let notiUnRead = 0
                     let processedData = updatedNotifications.map((notification) => {
                         try {
@@ -386,9 +354,7 @@ export const StudentBottomTab = ()=>{
             } catch (error) {
                 console.log('SignalR Connection Error:', error);
             }
-        };
-        console.log(">> after get from quin:", allNoti)
-    
+        };    
         startConnection();
     
         connection.onclose((error) => {
@@ -417,7 +383,7 @@ export const StudentBottomTab = ()=>{
     // NewChat
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/chatHub?userId=${state.idUser}`)
+            .withUrl(`${currentIP}:5000/chatHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         
