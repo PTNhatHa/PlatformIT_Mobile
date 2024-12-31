@@ -56,13 +56,14 @@ export const NotificationScreen = (props)=>{
                 }
             })
         }
-        if(goal.notificationType === 3){
+        if(goal.notificationType === 5){
             // BOARD
             navigation.navigate("My Course", {
                 screen: "My Course",
                 params: {
                     idCourse: goal.idCourse,
-                    role: 2
+                    idLecture: goal.idLecture,
+                    role: 1
                 }
             })
         }

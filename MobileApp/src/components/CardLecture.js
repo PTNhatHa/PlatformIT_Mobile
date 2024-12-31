@@ -3,6 +3,7 @@ import { COLORS } from "../utils/constants"
 import { useNavigation } from "@react-navigation/native"
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { TagRed, TagYellow } from "./Tag";
+import { useEffect, useState } from "react";
 
 const initLecture = {
     "idLecture": 0,
@@ -14,9 +15,32 @@ const initLecture = {
 export const CardLecture = ({
     data = initLecture, role=0, setSelected = ()=>{}, 
     section, selectObject, isLimitedTime, courseEndDate, idTeacher,
-    reload
+    isNoti = false
 })=>{
     const navigation = useNavigation()
+    const [isFromNoti, setIsFromNoti] = useState(isNoti)
+    useEffect(()=>{
+        if(role !==0 && isFromNoti){
+            setIsFromNoti(false)
+            setSelected(section.idSection, section.sectionName, data.idLecture, data.lectureTitle)
+            if(data.lectureStatus === 2 || data.lectureStatus === 3){
+                navigation.navigate("Update Lecture", {
+                    idLecture: data.idLecture,
+                    nameSection: section.sectionName,
+                    lectureStatus: data.lectureStatus
+                })
+            }else
+            if(!selectObject.idLecture){
+                navigation.navigate("Detail Lecture", {
+                    idLecture: data.idLecture,
+                    isLimitedTime: isLimitedTime, 
+                    courseEndDate: courseEndDate,
+                    idTeacher: idTeacher,
+                    isFinishedLecture: data.isFinishedLecture
+                })
+            }
+        }
+    }, [data])
     return(
         <TouchableOpacity 
             style={styles.container} key={data.idLecture} 
@@ -26,7 +50,6 @@ export const CardLecture = ({
                     if(data.lectureStatus === 2 || data.lectureStatus === 3){
                         navigation.navigate("Update Lecture", {
                             idLecture: data.idLecture,
-                            // getCourse: reload,
                             nameSection: section.sectionName,
                             lectureStatus: data.lectureStatus
                         })
@@ -38,7 +61,6 @@ export const CardLecture = ({
                             courseEndDate: courseEndDate,
                             idTeacher: idTeacher,
                             isFinishedLecture: data.isFinishedLecture
-                            // reload: reload
                         })
                     }
                 }

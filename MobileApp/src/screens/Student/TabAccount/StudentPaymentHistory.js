@@ -218,7 +218,7 @@ export const StudentPaymentHistory = () =>{
                             <Image source={item?.courseAvatar ? {uri: item?.courseAvatar} : DefaultImg} style={styles.img}/>
                             <View style={styles.wrapContent}>
                                 <Text style={styles.title} numberOfLines={1}>{item?.courseName}</Text>
-                                <Text style={styles.textGray14}>Payment date: {formatDateTime(item?.paymentDate, true, true)}</Text>
+                                <Text style={styles.textGray14}>Payment date: {formatDateTime(item?.paymentDate, true)}</Text>
                                 <View style={styles.wrapCost}>
                                     <Text style={styles.costSale}>
                                         {item.discountedPrice ? item.discountedPrice?.toLocaleString('vi-VN') : item.price?.toLocaleString('vi-VN')}

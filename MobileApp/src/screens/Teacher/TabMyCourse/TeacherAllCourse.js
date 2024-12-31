@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 export const TeacherAllCourse = ({route})=>{
     const navigation = useNavigation()
     const idCourse = route?.params?.idCourse || null
+    const idLecture = route?.params?.idLecture || null
     const {state, dispatch} = useUser()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(true);
@@ -30,11 +31,12 @@ export const TeacherAllCourse = ({route})=>{
         if(idCourse !== null){
             navigation.navigate("Detail My Course", {
                 idCourse: idCourse,
+                idLecture: route?.params?.idLecture || null,
                 role: route?.params?.role
             });
         }
         getAllCourseOfTeacher()
-    }, [idCourse])
+    }, [idCourse, idLecture])
     
     if (loading) {
         // Render màn hình chờ khi dữ liệu đang được tải

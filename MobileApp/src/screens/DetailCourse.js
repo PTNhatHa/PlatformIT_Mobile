@@ -37,7 +37,6 @@ import { payment } from "../services/payment"
 export const DetailCourse =({route})=>{
     const navigation = useNavigation()
     const idCourse = route.params?.idCourse || 0
-    // console.log(idCourse);
     const initRole = route.params?.role || 0 //0: guest, 1: teacher, 2: student
     const [role, setRole] = useState(initRole)
     const [data, setData] = useState([])
@@ -625,7 +624,7 @@ export const DetailCourse =({route})=>{
                             role={role} 
                             idCourse={data.idCourse} 
                             nameCourse={data.courseTitle}
-                            
+                            idLecture={route?.params?.idLecture || 0}
                         />
                     </>
                 : selectBtn === 1 ?

@@ -48,7 +48,8 @@ const initLecture = [
 
 export const ModalCourseContent = ({
     role=0, idCourse, nameCourse,
-    selectLecture, setSelectLecture = ()=>{}, setTimeReached=()=>{}
+    selectLecture, setSelectLecture = ()=>{},
+    idLecture
 })=>{
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
@@ -161,7 +162,6 @@ export const ModalCourseContent = ({
             const response = await updateSection(selectSection.idSection, newSection, state.idUser)
             if(response){
                 setLongPressSection(false)
-                // getCourse()
                 getListSection()
             }
         } catch (error) {
@@ -175,7 +175,6 @@ export const ModalCourseContent = ({
             console.log(response);
             if(response){
                 setLongPressSection(false)
-                // getCourse()
                 getListSection()
             }
         } catch (error) {
@@ -200,14 +199,8 @@ export const ModalCourseContent = ({
                                 style={[styles.wrapSection, selectObject.idSection === item.idSection && {backgroundColor: COLORS.main30}]} 
                                 onPress={()=>{
                                     handleShowSection(item.idSection)
-                                    // setSelectLecture({
-                                    //     ...selectObject,
-                                    //     idSection: !checkIsShow ? item.idSection : 0,
-                                    //     sectionName: item.sectionName,
-                                    // })
                                     if(!selectLecture){
                                         setSelectObject({
-                                            // ...selectObject,
                                             idSection: !checkIsShow ? item.idSection : 0,
                                             sectionName: item.sectionName,
                                         })
@@ -249,6 +242,7 @@ export const ModalCourseContent = ({
                                         courseEndDate={data.courseEndDate}
                                         idTeacher={data.idTeacher}
                                         reload={getListSection}
+                                        isNoti={lec.idLecture === idLecture && role === 1}
                                     />
                                 )}
                                 {role === 1 &&
