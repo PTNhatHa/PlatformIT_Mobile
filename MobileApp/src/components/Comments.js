@@ -109,9 +109,6 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
             setLoading(false)
         }
     }
-    useEffect(()=>{
-
-    }, [])
 
     useEffect(()=>{
         getAllCmt()
@@ -138,7 +135,7 @@ export const Comments = ({idLecture, idTeacher, idComment = 0})=>{
 
     useEffect(()=>{
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`http://${currentIP}:5000/notificationHub?lectureId=${idLecture}`)
+            .withUrl(`${currentIP}:5000/notificationHub?lectureId=${idLecture}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
         
