@@ -473,11 +473,23 @@ export const DetailCourse =({route})=>{
                         <>
                         </>
                     } */}
-                    {(state.idRole === 3 && role === 0) &&
-                        <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
-                            <Text style={styles.infoBtnText}>Pay for this course</Text>
-                        </TouchableOpacity>
-                    }                                                      
+                    {!(data.registStartDate && (new Date() >= new Date(data.registStartDate)) && (new Date() <= new Date(data.registEndDate))) ?
+                        <>
+                            {(state.idRole === 3 && role === 0) &&
+                                <View style={styles.infoBtn}>
+                                    <Text style={styles.infoBtnText}>Can't pay now</Text>
+                                </View>
+                            }
+                        </>
+                        :
+                        <>
+                            {(state.idRole === 3 && role === 0) &&
+                                <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
+                                    <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                </TouchableOpacity>
+                            }                                                      
+                        </>
+                    }
                 </View>
             </View>
             {data.introduction && 

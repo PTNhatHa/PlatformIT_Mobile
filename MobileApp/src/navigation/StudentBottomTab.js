@@ -33,6 +33,7 @@ import { getAllUserConversations } from "../services/message";
 import { CommentNoti } from "../screens/CommentNoti";
 import { StudentPaymentHistory } from "../screens/Student/TabAccount/StudentPaymentHistory";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppState } from 'react-native';
 
 const StackHomeScreen = ()=>{
     const StackHome = createNativeStackNavigator()
@@ -258,6 +259,9 @@ export const StudentBottomTab = ()=>{
     const [unReadNoti, setUnReadNoti]= useState(0)
     const [unReadMess, setUnReadMess]= useState(0)
     const intervalRef = useRef(null)
+    const connectionRefNoti = useRef(null); // Lưu trữ kết nối
+    const connectionRefChat = useRef(null); // Lưu trữ kết nối
+    const appState = useRef(AppState.currentState); // Theo dõi trạng thái app
     
     const getNoti = async()=>{
         const response = await getAllNotificationOfUser(state.idUser)
@@ -323,52 +327,81 @@ export const StudentBottomTab = ()=>{
     }, [])
 
     useEffect(() => {
-        // console.log('Attempting to connect to SignalR hub...');
+        // Khởi tạo kết nối SignalR
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(`${currentIP}:5000/notificationHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
-        
+    
+        connectionRefNoti.current = connection; // Lưu kết nối vào ref
+    
         const startConnection = async () => {
             try {
                 await connection.start();
-                // console.log('Connected to SignalR hub.');
+                console.log('Connected to SignalR hub.');
+    
+                // Lắng nghe sự kiện cập nhật notification
                 connection.on('UpdateNotifications', (updatedNotifications) => {
-                    let notiUnRead = 0
-                    let processedData = updatedNotifications.map((notification) => {
+                    let notiUnRead = 0;
+                    const processedData = updatedNotifications.map((notification) => {
                         try {
-                            if(notification.isRead === 0){
-                                notiUnRead +=1
+                            if (notification.isRead === 0) {
+                                notiUnRead += 1;
                             }
                             return {
                                 ...notification,
                                 timestamp: parseRelativeTime(notification.relativeTime),
                             };
                         } catch (error) {
-                        console.log('Error parsing notification:', notification, error);
-                        return notification; // Fallback
+                            console.log('Error parsing notification:', notification, error);
+                            return notification; // Fallback
                         }
                     });
-                    setUnReadNoti(notiUnRead)
-                    setAllNoti(processedData)
+                    setUnReadNoti(notiUnRead);
+                    setAllNoti(processedData);
                 });
             } catch (error) {
                 console.log('SignalR Connection Error:', error);
             }
-        };    
-        startConnection();
+        };
     
+        // Bắt sự kiện kết nối bị ngắt
         connection.onclose((error) => {
             console.log('SignalR connection closed:', error);
-            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+            setTimeout(() => startConnection(), 5000); // Thử kết nối lại sau 5 giây
         });
+    
+        // Xử lý trạng thái AppState
+        const handleAppStateChange = (nextAppState) => {
+            if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+                // Ứng dụng quay lại => Tái kết nối nếu bị mất kết nối
+                if (connection.state === signalR.HubConnectionState.Disconnected) {
+                    console.log('App quay lại, tái kết nối SignalR...');
+                    startConnection();
+                }
+            } else if (nextAppState === 'background') {
+                // Ứng dụng chuyển sang background => Dừng kết nối
+                if (connection.state === signalR.HubConnectionState.Connected) {
+                    console.log('App vào background, ngắt kết nối SignalR...');
+                    connection.stop().then(() => console.log('SignalR connection stopped.'));
+                }
+            }
+            appState.current = nextAppState;
+        };
+    
+        // Thêm listener cho AppState
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+        // Khởi động kết nối khi component mount
+        startConnection();
     
         return () => {
             console.log('Stopping SignalR connection...');
             connection.stop().then(() => console.log('SignalR connection stopped.'));
+            subscription.remove(); // Dọn dẹp listener
         };
     }, []);
-
+    
     
     const updateReadMess = async(idUser)=>{
         try {
@@ -382,35 +415,42 @@ export const StudentBottomTab = ()=>{
     }
     
     // NewChat
-    useEffect(()=>{
+    useEffect(() => {
+        // Khởi tạo kết nối SignalR
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(`${currentIP}:5000/chatHub?userId=${state.idUser}`)
             .configureLogging(signalR.LogLevel.Information)
             .build();
-        
+    
+        connectionRefChat.current = connection; // Lưu kết nối vào ref
+    
         const startConnection = async () => {
             try {
                 await connection.start();
-                connection.on('UpdateChatList', async(updatedConversation) => {
+                console.log('Connected to SignalR chat hub.');
+    
+                // Lắng nghe sự kiện cập nhật danh sách chat
+                connection.on('UpdateChatList', async (updatedConversation) => {
                     try {
                         const response = updatedConversation;
-                        const currentChat = await AsyncStorage.getItem('currentChat')
+                        const currentChat = await AsyncStorage.getItem('currentChat');
+    
                         if (response) {
                             const cleanedCurrentChat = currentChat?.trim(); // Loại bỏ khoảng trắng
                             const currentChatNumber = Number(cleanedCurrentChat);
                             const userIdNumber = Number(response[0]?.userId);
-                            console.log(">>>>>", currentChatNumber === userIdNumber);
                             if (currentChatNumber === userIdNumber) {
-                                // console.log("zooooo");
-                                updateReadMess(state.currentChat)
-                            } else{
-                                let messUnRead = 0
-                                response.forEach(item => {
+                                // Nếu đang trong cuộc trò chuyện hiện tại, cập nhật trạng thái đọc
+                                updateReadMess(state.currentChat);
+                            } else {
+                                // Nếu không, tính số tin nhắn chưa đọc
+                                let messUnRead = 0;
+                                response.forEach((item) => {
                                     if (item?.isRead === 0) {
                                         messUnRead += 1;
                                     }
                                 });
-                                setUnReadMess(messUnRead)
+                                setUnReadMess(messUnRead);
                             }
                         }
                     } catch (error) {
@@ -420,18 +460,46 @@ export const StudentBottomTab = ()=>{
             } catch (error) {
                 console.log('SignalR Connection Error:', error.message);
             }
-        };    
-        startConnection();
+        };
+    
+        // Bắt sự kiện kết nối bị ngắt
         connection.onclose((error) => {
             console.log('SignalR connection closed:', error);
-            setTimeout(() => startConnection(), 5000); // Retry every 5 seconds
+            setTimeout(() => startConnection(), 5000); // Thử kết nối lại sau 5 giây
         });
     
-        return () => {
-            console.log('Stopping SignalR connection...');
-            connection.stop().then(() => console.log('SignalR connection stopped.'));
+        // Xử lý trạng thái AppState
+        const handleAppStateChange = (nextAppState) => {
+            if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
+                // Ứng dụng quay lại => Tái kết nối nếu bị mất kết nối
+                if (connection.state === signalR.HubConnectionState.Disconnected) {
+                    console.log('App quay lại, tái kết nối SignalR chat hub...');
+                    startConnection();
+                }
+            } else if (nextAppState === 'background') {
+                // Ứng dụng chuyển sang background => Dừng kết nối
+                if (connection.state === signalR.HubConnectionState.Connected) {
+                    console.log('App vào background, ngắt kết nối SignalR chat hub...');
+                    connection.stop().then(() => console.log('SignalR chat hub connection stopped.'));
+                }
+            }
+            appState.current = nextAppState;
         };
-    }, [])
+    
+        // Thêm listener cho AppState
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+    
+        // Khởi động kết nối khi component mount
+        startConnection();
+    
+        return () => {
+            console.log('Stopping SignalR chat hub connection...');
+            connection.stop().then(() => console.log('SignalR chat hub connection stopped.'));
+            subscription.remove(); // Dọn dẹp listener
+        };
+    }, []);
+    
+
 
     return(
         <Tab.Navigator
