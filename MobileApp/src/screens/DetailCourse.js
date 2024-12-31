@@ -468,17 +468,17 @@ export const DetailCourse =({route})=>{
                             <Text style={styles.cost}>{data.discountedPrice}</Text>
                         }
                     </View>
-                    {/* {((new Date(data.registStartDate) <= new Date() && new Date() <= new Date(data.registEndDate)) ||
-                        data.price === null) &&
+
+                    {data.registStartDate ? 
                         <>
-                        </>
-                    } */}
-                    {!(data.registStartDate && (new Date() >= new Date(data.registStartDate)) && (new Date() <= new Date(data.registEndDate))) ?
-                        <>
-                            {(state.idRole === 3 && role === 0) &&
-                                <View style={styles.infoBtn}>
-                                    <Text style={styles.infoBtnText}>Can't pay now</Text>
-                                </View>
+                            {(new Date(data.registStartDate) <= new Date() && new Date() <= new Date(data.registEndDate)) &&
+                                <>
+                                    {(state.idRole === 3 && role === 0) &&
+                                        <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
+                                            <Text style={styles.infoBtnText}>Pay for this course</Text>
+                                        </TouchableOpacity>
+                                    } 
+                                </>
                             }
                         </>
                         :
@@ -487,9 +487,10 @@ export const DetailCourse =({route})=>{
                                 <TouchableOpacity style={styles.infoBtn} onPress={()=>payCourse()}>
                                     <Text style={styles.infoBtnText}>Pay for this course</Text>
                                 </TouchableOpacity>
-                            }                                                      
+                            } 
                         </>
                     }
+                    
                 </View>
             </View>
             {data.introduction && 

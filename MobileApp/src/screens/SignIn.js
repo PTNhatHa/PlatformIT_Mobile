@@ -9,39 +9,14 @@ import { signinApi } from "../services/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SET_INFO, useUser } from "../contexts/UserContext";
 import Feather from '@expo/vector-icons/Feather';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { determineFileType, validateEmail } from "../utils/utils";
 import { forgotPassword, getAvaImg, getUserInfo } from "../services/user";
 import CheckBox from "react-native-check-box";
 import { useFocusEffect } from "@react-navigation/native";
 const { width, height } = Dimensions.get('window');
-import { useAuthRequest } from 'expo-auth-session'; 
-import * as AuthSession from 'expo-auth-session';  
 
 export default SignIn = ({navigation}) => {
-
-    const discovery = {  
-        authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',  
-        tokenEndpoint: 'https://oauth2.googleapis.com/token',  
-        revocationEndpoint: 'https://oauth2.googleapis.com/revoke',  
-    };
-
-    const [request, response, promptAsync] = useAuthRequest({  
-        clientId: "605777517558-m6s2vvj805r7qfcgju63bhlpqi3vid6g.apps.googleusercontent.com",  
-        redirectUri: "https://auth.expo.io/@phanha182/MobileApp",  
-        scopes: ["profile", "email"],  
-        responseType: 'token',  
-    }, discovery);  
-    
-    useEffect(() => {  
-        if (response?.type === 'success') {  
-            const { access_token } = response.params;  
-            // Gọi API thông tin người dùng  
-        }  
-    }, [response]);  
-
-
     const [loading, setLoading] = useState(false);
     const {state, dispatch} = useUser()
     const [username, setUsername] = useState("")
@@ -209,16 +184,7 @@ export default SignIn = ({navigation}) => {
                         title={"Sign In"}
                         fontSize={20}
                         action={handleSignin}
-                    />
-                    <Text style={styles.textGray}>--- Students can sign in with ---</Text>
-                    <View style={{columnGap: 12, flexDirection: "row"}}>
-                        <TouchableOpacity style={styles.party3} onPress={()=>promptAsync()}>
-                            <FontAwesome name="google-plus" size={16} color="black" />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.party3}>
-                            <Feather name="github" size={16} color="black" />   
-                        </TouchableOpacity>
-                    </View>
+                    />                    
                 </View>
                 {/* Forgot Pass */}
                 <Modal
