@@ -30,10 +30,7 @@ export const ChangePassword = ({navigation})=>{
     const handleChangePassword = ()=>{
         if(!newPass || !confirmPass){
             setErrorConfirm("Fill all!")
-        }else
-        if(!errorConfirm)
-        {
-            console.log("==>zooo");
+        } else if(!errorConfirm){
             const saveChange = async()=>{
                 try{
                     const response = await changePassword(oldPass, newPass, state.idUser)
@@ -69,7 +66,14 @@ export const ChangePassword = ({navigation})=>{
                 label={"New password"} 
                 value={newPass} 
                 placeholder={"Your new password"}
-                onchangeText={setNewPass}
+                onchangeText={(v)=>{
+                    setNewPass(v)
+                    if(v.length < 5){
+                        setErrorConfirm("The password must be at least 5 characters long.")
+                    } else{
+                        setErrorConfirm(null)
+                    }
+                }}
                 isPassword={true}
             />
             <TextInputLabel 
