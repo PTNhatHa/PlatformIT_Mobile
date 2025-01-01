@@ -207,7 +207,10 @@ export const DetailCourse =({route})=>{
                 // Get test of student
                 const testOfStudent = await getTestOfCourseStudent(state.idUser, idCourse)
                 if(testOfStudent){
-                    setStudentTest(testOfStudent)
+                    setStudentTest(testOfStudent.filter(item => {
+                        return item.startDate !== null && new Date(item.startDate) <= new Date() || 
+                                item.startDate === null
+                    }))
                 }
                 // Progress
                 const progress = await getCourseProgressByIdStudent(idCourse, state.idUser)

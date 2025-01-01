@@ -103,7 +103,11 @@ export const StudentLectureDetail = ({route})=>{
         try {
             const response = await GetExerciseOfLecture(selectLecture.idLecture, state.idUser)
             if(response){
-                setExercises([...response.filter(ex => ex.isPublish === 1)])
+                setExercises([...response.filter(ex => {
+                    return ex.isPublish === 1 &&
+                            (ex.startDate !== null && new Date(ex.startDate) <= new Date() || 
+                            ex.startDate === null)
+                })])
             }
         } catch (error) {
             console.log("Error: ", error);
