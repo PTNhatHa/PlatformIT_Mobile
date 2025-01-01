@@ -197,11 +197,21 @@ export const CardAssignment = ({
                             </View>
                         }
                     </View>
-                    {role === 1 && data.dueDate !== null &&
-                        <View style={styles.content}>
-                            <FontAwesome6 name="calendar" size={12} color={COLORS.main} />
-                            <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
-                        </View>
+                    {(role === 1 && (data.startDate !== null || data.dueDate !== null)) && 
+                    <View style={styles.wrapDetail}>
+                        {role === 1 && data.startDate !== null &&
+                            <View style={styles.content}>
+                                <FontAwesome6 name="calendar" size={12} color={COLORS.main} />
+                                <Text style={styles.dataText}>Start: {formatDateTime(data.startDate, true)}</Text>
+                            </View>
+                        }
+                        {role === 1 && data.dueDate !== null &&
+                            <View style={styles.content}>
+                                <FontAwesome6 name="calendar" size={12} color={COLORS.main} />
+                                <Text style={styles.dataText}>Due: {formatDateTime(data.dueDate, true)}</Text>
+                            </View>
+                        }
+                    </View>
                     }
                     <View>
                         {data.nameCourse && <Text style={styles.dataText}>Course: {data.nameCourse}</Text>}

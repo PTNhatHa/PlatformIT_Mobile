@@ -133,7 +133,12 @@ export const StudentAllTest = ()=>{
             let upcoming = []
             let pastdue = []
             if(response){
-                response.map(item => {
+                response
+                .filter(item => {
+                    return item.startDate !== null && new Date(item.startDate) <= new Date() || 
+                            item.startDate === null
+                })
+                .map(item => {
                     if(item.isCompleted === 1){
                         completed = [...completed, item]
                     } else if(item.isPastDue){
