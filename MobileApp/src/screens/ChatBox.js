@@ -196,7 +196,7 @@ export const ChatBox = ({route})=>{
                                 } else{
                                     return(
                                         <View key={index}>
-                                            {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate) : formatDateTime(mess.createdDate, true)}</Text>}
+                                            {isShowDateTimePrev && <Text style={styles.textDateTime}>{isToday ? getTime(mess.createdDate, true) : formatDateTime(mess.createdDate, true)}</Text>}
                                             <View key={index} style={[styles.wrapFlex, styles.myMess]}>                                   
                                                 <Text style={[styles.dataMess, styles.dataMyMess, (mess.idSender === listMessage[index - 1]?.idSender && !isShowDateTimePrev) && styles.nonRadiusTopRight, (mess.idSender === listMessage[index + 1]?.idSender && !isShowDateTimeNext) && styles.nonRadiusBottomRight]}>
                                                     {mess.content}
@@ -221,6 +221,7 @@ export const ChatBox = ({route})=>{
                         ...newMessage,
                         content: v
                     })}
+                    multiline={true}
                 />
                 <TouchableOpacity onPress={()=>handleSendMessage()}>
                     <FontAwesome name="send-o" size={24} color="black" />
