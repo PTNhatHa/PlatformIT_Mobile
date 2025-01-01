@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Dimensions, Image, Linking, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, Dimensions, Image, Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { LinearGradient } from 'expo-linear-gradient';
 import BoyIT from "../../assets/images/BoyIT.png";
 import { ButtonBlu } from "../components/Button";
@@ -129,63 +129,65 @@ export default SignIn = ({navigation}) => {
     }, [username, password])
     return(
         <>
-            <View style={styles.container}>
+            <View style={{ flex: 1}}>
                 <LinearGradient
                     // Định nghĩa màu gradient
                     colors={['#003B57', '#409E8E']}
                     locations={[0,0.5]}
                     style={styles.background}
                 />
-                {/* Top */}
-                <View style={styles.topSignIn}>
-                    <Image source={BoyIT}/>
-                    <View style={{ rowGap: 5, alignItems: "flex-start" }}>
-                        <View>
-                            <Text style={styles.topTextBig}>Learn IT</Text>
-                            <Text style={styles.topTextBig}>Easily and Effectively!</Text>
+                <ScrollView contentContainerStyle={styles.container}>
+                    {/* Top */}
+                    <View style={styles.topSignIn}>
+                        <Image source={BoyIT}/>
+                        <View style={{ rowGap: 5, alignItems: "flex-start" }}>
+                            <View>
+                                <Text style={styles.topTextBig}>Learn IT</Text>
+                                <Text style={styles.topTextBig}>Easily and Effectively!</Text>
+                            </View>
+                            <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
+                            <ButtonBlu
+                                title={"Sign Up"}
+                                action={()=>{navigation.navigate("Sign up")}}
+                            />
                         </View>
-                        <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
-                        <ButtonBlu
-                            title={"Sign Up"}
-                            action={()=>{navigation.navigate("Sign up")}}
-                        />
                     </View>
-                </View>
 
-                {/* Sign in */}
-                <View style={styles.wrapSignIn}>
-                    <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign in</Text>
-                    <View style={{width: "100%", rowGap: 6}}>
-                        <TextInputIcon
-                            value={username}
-                            placeholder={"Username"}
-                            icon={<Feather name="user" size={24} color={COLORS.stroke} />}
-                            onchangeText={setUsername}
-                        />
-                        <TextInputIcon
-                            value={password}
-                            placeholder={"Password"}
-                            icon={<Feather name="lock" size={24} color={COLORS.stroke} />}
-                            onchangeText={setPassword}
-                            error={error}
-                            isPassword={true}
-                        />
-                        <CheckBox
-                            isChecked={isRemember}
-                            onClick={()=>setIsRemember(!isRemember)}
-                            checkBoxColor={COLORS.secondMain}
-                            rightText="Remember me"
-                        />
-                        <TouchableOpacity onPress={()=>setIsForgot(true)}>
-                            <Text style={styles.textGray}>Forgot your password?</Text>
-                        </TouchableOpacity>
+                    {/* Sign in */}
+                    <View style={styles.wrapSignIn}>
+                        <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign in</Text>
+                        <View style={{width: "100%", rowGap: 6}}>
+                            <TextInputIcon
+                                value={username}
+                                placeholder={"Username"}
+                                icon={<Feather name="user" size={24} color={COLORS.stroke} />}
+                                onchangeText={setUsername}
+                            />
+                            <TextInputIcon
+                                value={password}
+                                placeholder={"Password"}
+                                icon={<Feather name="lock" size={24} color={COLORS.stroke} />}
+                                onchangeText={setPassword}
+                                error={error}
+                                isPassword={true}
+                            />
+                            <CheckBox
+                                isChecked={isRemember}
+                                onClick={()=>setIsRemember(!isRemember)}
+                                checkBoxColor={COLORS.secondMain}
+                                rightText="Remember me"
+                            />
+                            <TouchableOpacity onPress={()=>setIsForgot(true)}>
+                                <Text style={styles.textGray}>Forgot your password?</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <ButtonBlu 
+                            title={"Sign In"}
+                            fontSize={20}
+                            action={handleSignin}
+                        />                    
                     </View>
-                    <ButtonBlu 
-                        title={"Sign In"}
-                        fontSize={20}
-                        action={handleSignin}
-                    />                    
-                </View>
+                </ScrollView>
                 {/* Forgot Pass */}
                 <Modal
                     visible={isForgot}
@@ -259,8 +261,8 @@ const styles = StyleSheet.create({
       },
     wrapSignIn: {
         backgroundColor: "white",
-        // height: "75%",
-        flex: 1,
+        height: "75%",
+        // flex: 1,
         width: "100%",
         borderRadius: 8,
         shadowColor: "#000", // Màu của bóng đổ
@@ -277,16 +279,6 @@ const styles = StyleSheet.create({
         color: COLORS.stroke,
         fontSize: 16
       },
-    party3:{
-        borderWidth: 1,
-        borderColor: COLORS.stroke,
-        borderRadius: 90,
-        padding: 6,
-        width: 35,
-        height: 35,
-        justifyContent: "center",
-        alignItems: "center"
-      },
     isSend:{
         color: COLORS.secondMain,
         fontSize: 16,
@@ -299,7 +291,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(117, 117, 117, 0.9)',
         width: "100%",
         height: "100%",
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 250,
         justifyContent: "center",
         alignItems: "center"
     },
@@ -307,7 +300,7 @@ const styles = StyleSheet.create({
         alignSelf: "flex-end"
     },
     forgot: {
-        height: "", 
+        height: 200, 
         paddingVertical: 16,
         paddingHorizontal: 16,
         paddingBottom: 24

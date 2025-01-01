@@ -324,7 +324,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         columnGap: 8,
         backgroundColor: COLORS.lightGray,
-        alignItems: "center"
+        alignItems: "center",
+        height: 42
     },
     container: {
         borderBottomWidth: 1,
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
     input:{
         fontSize: 16,
         // width: "85%",
-        flex: 1
+        flex: 1,
     },
     error:{
         color: COLORS.red
