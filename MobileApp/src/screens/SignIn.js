@@ -147,7 +147,7 @@ export default SignIn = ({navigation}) => {
                             </View>
                             <Text style={styles.topTextSmall}>Don’t have an account yet?</Text>
                             <ButtonBlu
-                                title={"Sign Up"}
+                                title={"Register"}
                                 action={()=>{navigation.navigate("Sign up")}}
                             />
                         </View>

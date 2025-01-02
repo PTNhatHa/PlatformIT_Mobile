@@ -162,7 +162,7 @@ export default SignUp = ({navigation}) => {
             }else
             if(response){
                 console.log(response);
-                Alert.alert("Sign up", "Sign up successfully")
+                Alert.alert("Register", "Register successfully")
                 await AsyncStorage.setItem('username', username)
                 await AsyncStorage.setItem('password', "")
                 setErrorConfirm(null)
@@ -202,7 +202,7 @@ export default SignUp = ({navigation}) => {
 
                     {/* Sign up */}
                     <View style={styles.wrapSignUp}>
-                        <Text style={{ fontSize: 48, fontWeight: "bold"}}>Sign up</Text>
+                        <Text style={{ fontSize: 48, fontWeight: "bold"}}>Register</Text>
                         <View style={{width: "100%", rowGap: 6}}>
                             <TextInputIcon
                                 value={name}
@@ -244,7 +244,7 @@ export default SignUp = ({navigation}) => {
                             />
                         </View>
                         <ButtonBlu 
-                            title={"Sign Up"}
+                            title={"Register"}
                             fontSize={20}
                             action={()=>handleOnPressSignup()}
                         />

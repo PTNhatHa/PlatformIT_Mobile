@@ -343,8 +343,8 @@ export const DetailCourse =({route})=>{
             }
         }
         Alert.alert(
-            "Confirm enroll",
-            "Are you sure you want to enroll this course?",
+            "Buy Confirmation",
+            "Are you sure to buy this course?",
             [
                 {
                     text: "Yes",
@@ -402,7 +402,7 @@ export const DetailCourse =({route})=>{
 
     useEffect(()=>{
         if(search || filterStudent){
-            let result = studentList.courseStudentProgress ? [...studentList.courseStudentProgress] : []
+            let result = studentList?.courseStudentProgress ? [...studentList?.courseStudentProgress] : []
             if(filterStudent){
                 result = handleFilter(result, filterStudent)
             }
@@ -465,9 +465,21 @@ export const DetailCourse =({route})=>{
                         </View>
                     }
                     <View style={styles.inforContent}>
-                        <Text style={styles.costSale}>{data.price ? `${data.price}VND` : "Free"}</Text>
-                        {data.discountedPrice &&
-                            <Text style={styles.cost}>{data.discountedPrice}</Text>
+                        {data.price !== null ?
+                            <>
+                                <Text style={styles.costSale}>
+                                    {data.discountedPrice ? data.discountedPrice?.toLocaleString('vi-VN') : data.price?.toLocaleString('vi-VN')}
+                                    <Text style={{textDecorationLine: "underline"}}>đ</Text>    
+                                </Text>
+                                {data.discountedPrice && 
+                                    <Text style={styles.cost}>
+                                        {data.price?.toLocaleString('vi-VN')}
+                                        <Text style={{textDecorationLine: "underline"}}>đ</Text>  
+                                    </Text>
+                                }
+                            </>
+                            :
+                                <Text style={styles.costSale}>Free</Text>
                         }
                     </View>
 

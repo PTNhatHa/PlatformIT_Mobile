@@ -2,29 +2,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { SigninSignup } from './src/navigation/SigninSignup';
 import { UserProvider } from './src/contexts/UserContext';
-import { ModalCourseContent } from './src/components/ModalCourseContent';
-import { StudentLectureDetail } from './src/screens/Student/TabMyCourse/StudentLectureDetail';
-import { Comments } from './src/components/Comments';
-import { TeacherLectureDetail } from './src/screens/Teacher/TabMyCourse/TeacherLectureDetail';
-import { TeacherLectureCreate } from './src/screens/Teacher/TabMyCourse/TeacherLectureCreate';
-import { TeacherAllAssignment } from './src/screens/Teacher/TabMyAssignment/TeacherAllAssignment';
-import { TeacherAsgmCreate } from './src/screens/Teacher/TabMyAssignment/TeacherAsgmCreate';
-import SigninGg from './src/components/SigninGg';
-import { DetailTeacher } from './src/screens/DetailTeacher';
-import { CardAssignment } from './src/components/CardAssignment';
-import { FilterAsgm, FilterStudentOverview, FilterStudentProgress } from './src/components/Filter';
-import { CustomSwitch } from './src/components/CustomSwitch';
-import { SelectCourseBox } from './src/components/TextInputField';
-import { StudentDetailAsgm } from './src/screens/Student/TabMyTest/StudentDetailAsgm';
-import { SubmittedCircle } from './src/components/SubmittedCircle';
-import { COLORS } from './src/utils/constants';
-import { TeacherDetailAsgm } from './src/screens/Teacher/TabMyAssignment/TeacherDetailAsgm';
-import { CardStudentAttendance, CardStudentDetailAsgm } from './src/components/CardStudent';
-import { ChatBoard } from './src/screens/ChatBoard';
-import { ChatBox } from './src/screens/ChatBox';
-import { CommentNoti } from './src/screens/CommentNoti';
-import { StudentDoAsgm } from './src/screens/Student/TabMyTest/StudentDoAsgm';
-import { StudentPaymentHistory } from './src/screens/Student/TabAccount/StudentPaymentHistory';
 
 export default function App() {
   return (
@@ -32,7 +9,6 @@ export default function App() {
       <NavigationContainer>
         <UserProvider>
           <SigninSignup/>
-          {/* <StudentPaymentHistory/> */}
         </UserProvider>
       </NavigationContainer>
     </SafeAreaView>

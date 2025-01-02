@@ -19,7 +19,7 @@ export const TeacherAllCourse = ({route})=>{
             setLoading(true)
             const response = await getAllCourseCardsByIdTeacher(state.idUser)
             if(response){
-                setData(response)
+                setData(response.reverse())
             }
         } catch (error) {
             console.log("Error: ", error);

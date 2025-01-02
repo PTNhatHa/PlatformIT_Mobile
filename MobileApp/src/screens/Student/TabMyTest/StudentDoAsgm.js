@@ -24,7 +24,7 @@ export const StudentDoAsgm = ({route})=>{
     const [listQuestion, setListQuestion] = useState([])
     const [manualAnswer, setManualAnswer] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
-    const numberItem = 3
+    const numberItem = 10
 
     const [duration, setDuration] = useState(initduration*60);
     const [totalTime, setTotalTime] = useState(0);
@@ -42,7 +42,7 @@ export const StudentDoAsgm = ({route})=>{
         memoryValue: null,
         isShowTestcase: true
     })
-    const [studentCode, setStudentCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
+    const [studentCode, setStudentCode] = useState("")
     const [resultCode, setResultCode] = useState(null)
 
     // Lấy thời gian hiện tại theo múi giờ Việt Nam  
@@ -560,7 +560,7 @@ export const StudentDoAsgm = ({route})=>{
                                         />
                                         :
                                         <>
-                                        {currentAnswer.attachedFile ? 
+                                        {currentAnswer.attachedFile !== null ? 
                                             <View style={styles.wrapFile}>
                                                 <TouchableOpacity style={{flex: 1}} onPress={()=>openURL(currentAnswer.attachedFile.uri)}>
                                                     <Text>{currentAnswer.attachedFile.name}</Text>
@@ -661,7 +661,7 @@ export const StudentDoAsgm = ({route})=>{
                                 value={studentCode}
                                 onChangeText={(v)=>setStudentCode(v)}
                             />
-                            {resultCode &&
+                            {resultCode !== null &&
                                 <View>
                                     <Text style={styles.textGray14}>Result</Text>
                                     <ScrollView horizontal={true}>
@@ -695,7 +695,7 @@ export const StudentDoAsgm = ({route})=>{
                                     </ScrollView>
                                 </View>
                             }
-                            {questionCode.isAllowRunCode &&
+                            {(questionCode.isAllowRunCode === true || questionCode.isAllowRunCode === 1) &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>handleRunCodeTest()}>
                                     <Text style={styles.textWhite14}>Run</Text>
                                 </TouchableOpacity>

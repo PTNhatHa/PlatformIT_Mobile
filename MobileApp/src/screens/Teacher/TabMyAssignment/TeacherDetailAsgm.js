@@ -65,7 +65,7 @@ export const TeacherDetailAsgm = ({route})=>{
         isShowTestcase: false,
         isAllowRunCode: false
     })
-    const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
+    const [teacherCode, setTeacherCode] = useState("")
     const [resultCode, setResultCode] = useState(null)
     const [resultCodeStudent, setResultCodeStudent] = useState(null)
     const [isSettingCode, setIsSettingCode] = useState(null)
@@ -510,11 +510,13 @@ export const TeacherDetailAsgm = ({route})=>{
                         <View style={styles.container}>
                             <View>
                                 <Text style={styles.title}>{data.title}</Text>
-                                <View style={styles.wrapFlex}>
-                                    <Text style={styles.textBBlack12}>{data.assignmentItems?.length} {data.assignmentItems?.length > 1 ? "questions" : "question"}</Text>
-                                    <Octicons name="dot-fill" size={10} color="black" />
-                                    <Text style={styles.textBBlack12}>{totalMark} {totalMark > 1 ? "marks" : "mark"}</Text>
-                                </View>
+                                {data.assignmentItems?.length > 1 &&
+                                    <View style={styles.wrapFlex}>
+                                        <Text style={styles.textBBlack12}>{data.assignmentItems?.length} {data.assignmentItems?.length > 1 ? "questions" : "question"}</Text>
+                                        <Octicons name="dot-fill" size={10} color="black" />
+                                        <Text style={styles.textBBlack12}>{totalMark} {totalMark > 1 ? "marks" : "mark"}</Text>
+                                    </View>
+                                }
                             </View>
                             <View style={styles.wrapDetail}>
                                 <View style={styles.wrapFlex}>

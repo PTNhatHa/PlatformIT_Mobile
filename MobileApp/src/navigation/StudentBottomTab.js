@@ -115,6 +115,10 @@ const StackMyCourseScreen = ()=>{
                     headerShown: false,
                 }}
             />
+            <StackMyCourse.Screen
+                name="Detail Test"
+                component={StudentDetailAsgm}
+            />
 
             <StackMyCourse.Screen
                 name="Detail Course"

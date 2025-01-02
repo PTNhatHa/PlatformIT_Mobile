@@ -20,7 +20,7 @@ export const ViewAllFromDetail = ({route, myCourse = [], role = 0, refresh=()=>{
     const [dataFilter, setDataFilter] = useState([]);
 
     const [currentPage, setCurrentPage] = useState(1)
-    const numberItem = 10
+    const numberItem = 20
     const [currentData, setCurrentData] = useState(data?.slice((currentPage-1)*numberItem, currentPage*numberItem) || [])
     
     const [refreshing, setRefreshing] = useState(false)

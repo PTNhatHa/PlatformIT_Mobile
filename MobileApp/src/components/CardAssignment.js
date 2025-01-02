@@ -173,7 +173,7 @@ export const CardAssignment = ({
                             idAssignment: data.idAssignment,
                             isPastDue: data.isPastDue,
                             isCompleted: data.isCompleted
-                        })
+                        })                       
                     }
                 }}
             >

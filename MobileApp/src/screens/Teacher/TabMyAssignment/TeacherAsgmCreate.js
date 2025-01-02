@@ -93,7 +93,7 @@ export const TeacherAsgmCreate = ({route})=>{
         isShowTestcase: false,
         isAllowRunCode: false
     })
-    const [teacherCode, setTeacherCode] = useState("#include <stdio.h>\n\nint main(void) {\n  char name[10];\n  scanf(\"%s\", name);\n  printf(\"hello, %s\\n\", name);\n  return 0;\n}")
+    const [teacherCode, setTeacherCode] = useState("")
     const [listLanguage, setLanguage] = useState(null)    
     const [resultCode, setResultCode] = useState(null)
     const [isSettingCode, setIsSettingCode] = useState(null)

@@ -177,12 +177,13 @@ export const ScreenViewAll = ({route})=>{
                     if(dataFilterCourse.startRegist && new Date(item.registStartDate) >= new Date(dataFilterCourse.startRegist) ||
                         dataFilterCourse.endRegist && new Date(item.registEndDate) <= new Date(dataFilterCourse.endRegist)){
                         return true
-                    }
+                    } 
                     // startDuration - endDuration
                     if(dataFilterCourse.startDuration && new Date(item.courseStartDate) >= new Date(dataFilterCourse.startDuration) ||
                         dataFilterCourse.endDuration && new Date(item.courseEndDate) <= new Date(dataFilterCourse.endDuration)){
                         return true
                     }
+                    return true
                 }
                 return false
             })
