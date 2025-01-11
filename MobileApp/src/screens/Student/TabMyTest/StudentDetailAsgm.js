@@ -212,8 +212,13 @@ export const StudentDetailAsgm = ({route})=>{
                                     </>
                                 }
                             </View>
-                            {(((data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate))
+                            {/* {(((data.submittedDate === null && new Date() <= new Date(data.dueDate || data.courseEndDate))
                                 || (data.submittedDate === null && data.courseEndDate === null)) && isCanDo) &&
+                                <TouchableOpacity style={styles.btn} onPress={()=>handleStartAsgm()}>
+                                    <Text style={styles.textWhite14}>Start</Text>
+                                </TouchableOpacity>
+                            } */}
+                            {(isCanDo) &&
                                 <TouchableOpacity style={styles.btn} onPress={()=>handleStartAsgm()}>
                                     <Text style={styles.textWhite14}>Start</Text>
                                 </TouchableOpacity>
